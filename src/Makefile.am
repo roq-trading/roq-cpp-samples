@@ -1,1 +1,1 @@
-SUBDIRS = collector
+SUBDIRS = collector reference

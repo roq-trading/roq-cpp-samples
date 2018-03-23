@@ -12,6 +12,7 @@ AC_CONFIG_FILES([
  Makefile
  src/Makefile
  src/collector/Makefile
+ src/reference/Makefile
 ])
 AC_CONFIG_FILES([quinclas-examples.pc])
 
