@@ -66,6 +66,6 @@ Please refer to the Conda documentation ([link](https://conda.io/docs/user-guide
 
 If you prefer to not use Conda's GCC, you may want to install the following packages
 
-  sudo apt-get install -y autoconf autoconf-archive libtool pkgconfig gcc gdb
+	sudo apt-get install -y autoconf autoconf-archive libtool pkgconfig gcc gdb
 
 However, this requires you having *root* access.
