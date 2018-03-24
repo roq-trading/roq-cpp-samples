@@ -23,28 +23,30 @@ Create the Conda environment.
 	source miniconda3/bin/activate
 
 	# define conda channels
-	cat > honglin/.condarc << EOF
+	cat > miniconda3/.condarc << EOF
 	channels:
 	  - anaconda
 	  - http://quinclas.com/dist/conda/unstable
 	EOF
 
+Install dependencies (Conda packages).
+
 	# install the trading api
 	conda install -y quinclas-tradingapi
 
-	# and we're going to need some build tools
+	# [optional] we're going to need some tools to build from source
 	conda install -y autoconf automake libtool pkgconfig gcc_linux-64
 
 Compile the examples project.
 
-	# clone examples from github
-	git clone https://github.com/quinclas/examples
-	cd examples
-
-	# necessary environment variables for the build tool
+	# environment variables allowing the build tool to find dependencies
 	export LDFLAGS=-L"$CONDA_PREFIX/lib"
 	export CPPFLAGS=-I"$CONDA_PREFIX/include"
 	export PKG_CONFIG_PATH="$CONDA_PREFIX/lib/pkgconfig"
+
+	# clone examples from github
+	git clone https://github.com/quinclas/examples
+	cd examples
 
 	# configure the examples project
 	./autogen.sh && ./configure --prefix="$CONDA_PREFIX"
@@ -59,3 +61,11 @@ Compile the examples project.
 Here, for simplicity, we simply install into the Conda root environment.
 Best practice is to create a specific environment and *not* simply use the root environment.
 Please refer to the Conda documentation ([link](https://conda.io/docs/user-guide/tasks/manage-environments.html)) for further details on how to create environments.
+
+## Ubuntu
+
+If you prefer to not use Conda's GCC, you may want to install the following packages
+
+  sudo apt-get install -y autoconf autoconf-archive libtool pkgconfig gcc gdb
+
+However, this requires you having *root* access.
