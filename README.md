@@ -47,6 +47,9 @@ Install the dependencies (Conda packages).
 	# install the build toolchain (so we can build from source)
 	conda install -y autoconf automake libtool pkgconfig gcc_linux-64
 
+	# and we need git so we can clone from github
+	conda install -y git
+
 Compile the examples project.
 
 	# environment variables allowing the build tool to find dependencies
@@ -65,7 +68,7 @@ Compile the examples project.
 	make -j4
 
 	# test it works
-	cd examples/collector
+	cd src/collector
 	./example-collector --mode simulation --simulation-file SOME_FILE
 
 Here, for simplicity, we simply install into the Conda root environment.
