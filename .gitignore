@@ -38,5 +38,6 @@ m4/
 *.con
 
 src/collector/example-collector
+src/reference/reference-strategy
 
 *.csv

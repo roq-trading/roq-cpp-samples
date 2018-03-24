@@ -23,7 +23,7 @@ Create the Conda environment.
 	source miniconda3/bin/activate
 
 	# define conda channels
-	cat > miniconda3/.condarc << EOF
+	cat > honglin/.condarc << EOF
 	channels:
 	  - anaconda
 	  - http://quinclas.com/dist/conda/unstable
@@ -31,6 +31,9 @@ Create the Conda environment.
 
 	# install the trading api
 	conda install -y quinclas-tradingapi
+
+	# and we're going to need some build tools
+	conda install -y autoconf automake libtool pkgconfig gcc_linux-64
 
 Compile the examples project.
 
