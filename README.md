@@ -29,7 +29,7 @@ Create the Conda environment.
 	  - http://quinclas.com/dist/conda/unstable
 	EOF
 
-Install dependencies (Conda packages).
+Install the dependencies (Conda packages).
 
 	# install the trading api
 	conda install -y quinclas-tradingapi
