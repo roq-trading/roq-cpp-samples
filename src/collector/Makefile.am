@@ -1,6 +1,6 @@
 bin_PROGRAMS = example-collector
 example_collector_LDFLAGS = \
-	$(ROQ_API_LIBS) \
+	$(ROQ_LIBS) \
 	$(CCTZ_LIBS) \
 	$(CROSSGUID_LIBS) \
 	$(DOUBLE_CONVERSION_LIBS) \
@@ -12,7 +12,7 @@ example_collector_LDFLAGS = \
 example_collector_CPPFLAGS = \
 	-DROQ_SPDLOG \
 	-I$(top_srcdir)/src \
-	$(ROQ_API_CFLAGS) \
+	$(ROQ_CFLAGS) \
 	$(CCTZ_CFLAGS) \
 	$(CROSSGUID_CFLAGS) \
 	$(FLATBUFFERS_CFLAGS) \

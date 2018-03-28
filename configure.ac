@@ -132,16 +132,16 @@ PKG_CHECK_MODULES([LIBEVENT], [libevent], [], [
 ])
 
 # Find ucl.
-PKG_CHECK_MODULES([UCL], [libucl], [], [
+PKG_CHECK_MODULES([LIBUCL], [libucl], [], [
   AC_CHECK_HEADER(
     [ucl.h],
-    [AC_SUBST([UCL_CFLAGS])],
+    [AC_SUBST([LIBUCL_CFLAGS])],
     [AC_MSG_ERROR([unable to find ucl header files])]
   )
-  AC_SUBST([UCL_LIBS], [-lucl])
+  AC_SUBST([LIBUCL_LIBS], [-lucl])
 ])
 
-# Find tradingapi.
-PKG_CHECK_MODULES([ROQ_API], [roq-api])
+# Find roq.
+PKG_CHECK_MODULES([ROQ], [roq])
 
 AC_OUTPUT
