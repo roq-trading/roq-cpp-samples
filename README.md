@@ -39,13 +39,13 @@ Create the Conda environment.
 Install the dependencies (Conda packages).
 
 	# install the trading api
-	conda install -y roq-api
+	conda install -y roq
 
 	# THIS STEP IS OPTIONAL (see comment under the section about Ubuntu)
 	# install the build toolchain (so we can build from source)
 	conda install -y autoconf automake libtool pkgconfig gcc_linux-64
 
-	# and we need git so we can clone from github
+	# we also need git so we can clone from github
 	conda install -y git
 
 Compile the project.
