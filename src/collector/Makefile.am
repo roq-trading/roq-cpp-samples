@@ -1,6 +1,6 @@
 bin_PROGRAMS = example-collector
 example_collector_LDFLAGS = \
-	$(QUINCLAS_TRADINGAPI_LIBS) \
+	$(ROQ_API_LIBS) \
 	$(CCTZ_LIBS) \
 	$(CROSSGUID_LIBS) \
 	$(DOUBLE_CONVERSION_LIBS) \
@@ -10,9 +10,9 @@ example_collector_LDFLAGS = \
 	$(LIBUNWIND_LIBS) \
 	$(SPDLOG_LIBS)
 example_collector_CPPFLAGS = \
-	-DQUINCLAS_SPDLOG \
+	-DROQ_SPDLOG \
 	-I$(top_srcdir)/src \
-	$(QUINCLAS_TRADINGAPI_CFLAGS) \
+	$(ROQ_API_CFLAGS) \
 	$(CCTZ_CFLAGS) \
 	$(CROSSGUID_CFLAGS) \
 	$(FLATBUFFERS_CFLAGS) \

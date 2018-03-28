@@ -10,10 +10,8 @@ This repository contains various examples using the trading interface.
 
 ## Ubuntu (Not Required!)
 
-**We recommend using Conda's GCC.
-Please skip this section if you agree.**
-
-If you have root access, you may install the build toolchain outside Conda.
+**We recommend using Conda's build environment!
+This is only necessary if you want to use Ubuntu's native build environment.**
 
 	sudo apt-get install -y autoconf autoconf-archive libtool pkgconfig gcc gdb
 
@@ -35,13 +33,13 @@ Create the Conda environment.
 	cat > miniconda3/.condarc << EOF
 	channels:
 	  - anaconda
-	  - http://quinclas.com/dist/conda/unstable
+	  - http://roq-trading.com/dist/conda/unstable
 	EOF
 
 Install the dependencies (Conda packages).
 
 	# install the trading api
-	conda install -y quinclas-tradingapi
+	conda install -y roq-api
 
 	# THIS STEP IS OPTIONAL (see comment under the section about Ubuntu)
 	# install the build toolchain (so we can build from source)
@@ -50,21 +48,21 @@ Install the dependencies (Conda packages).
 	# and we need git so we can clone from github
 	conda install -y git
 
-Compile the examples project.
+Compile the project.
 
 	# environment variables allowing the build tool to find dependencies
 	export LDFLAGS=-L"$CONDA_PREFIX/lib"
 	export CPPFLAGS=-I"$CONDA_PREFIX/include"
 	export PKG_CONFIG_PATH="$CONDA_PREFIX/lib/pkgconfig"
 
-	# clone examples from github
-	git clone https://github.com/quinclas/examples
-	cd examples
+	# clone from github
+	git clone https://github.com/roq-trading/roq-samples
+	cd roq-samples
 
-	# configure the examples project
-	./autogen.sh && ./configure --prefix="$CONDA_PREFIX"
+	# configure the project
+	./autogen.sh && ./configure --prefix "$CONDA_PREFIX"
 
-	# build examples
+	# build
 	make -j4
 
 	# test it works

@@ -1,9 +1,9 @@
 m4_include(m4/ax_cxx_compile_stdcxx.m4)  # https://www.gnu.org/software/autoconf-archive/ax_cxx_compile_stdcxx.html
 
-AC_INIT([quinclas-examples],
-        [0.1],
+AC_INIT([roq-samples],
+        [0.1.2],
         [thraneh@gmail.com],
-        [quinclas-examples])
+        [roq-samples])
 
 AC_PREREQ([2.59])
 AC_CONFIG_MACRO_DIR([m4])
@@ -14,7 +14,7 @@ AC_CONFIG_FILES([
  src/collector/Makefile
  src/reference/Makefile
 ])
-AC_CONFIG_FILES([quinclas-examples.pc])
+AC_CONFIG_FILES([roq-samples.pc])
 
 AM_INIT_AUTOMAKE([-Wall -Werror foreign subdir-objects])
 
@@ -142,6 +142,6 @@ PKG_CHECK_MODULES([UCL], [libucl], [], [
 ])
 
 # Find tradingapi.
-PKG_CHECK_MODULES([QUINCLAS_TRADINGAPI], [quinclas-tradingapi])
+PKG_CHECK_MODULES([ROQ_API], [roq-api])
 
 AC_OUTPUT
