@@ -23,14 +23,14 @@ Download Miniconda [here](https://conda.io/miniconda.html).
 
 Create the Conda environment.
 
-	# install miniconda
+	# install miniconda (to your home directory)
 	bash Miniconda3-latest-Linux-x86_64.sh -b
 
 	# activate miniconda
-	source miniconda3/bin/activate
+	source ~/miniconda3/bin/activate
 
 	# define conda channels
-	cat > miniconda3/.condarc << EOF
+	cat > ~/miniconda3/.condarc << EOF
 	channels:
 	  - anaconda
 	  - http://roq-trading.com/dist/conda/unstable
@@ -48,12 +48,14 @@ Install the dependencies (Conda packages).
 	# we also need git so we can clone from github
 	conda install -y git
 
-Compile the project.
+Define the build environment.
 
-	# environment variables allowing the build tool to find dependencies
+	# environment variables allowing the build tools find dependencies
 	export LDFLAGS=-L"$CONDA_PREFIX/lib"
 	export CPPFLAGS=-I"$CONDA_PREFIX/include"
 	export PKG_CONFIG_PATH="$CONDA_PREFIX/lib/pkgconfig"
+
+Clone, compile and test this project.
 
 	# clone from github
 	git clone https://github.com/roq-trading/roq-samples
