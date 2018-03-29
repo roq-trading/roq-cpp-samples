@@ -34,31 +34,38 @@ The example also shows how one should implement the client for live trading or s
 
 Demonstrating how to pass updates (events) between the typical components of a real trading strategy.
 
-The example has the basic structure for
+The example has the basic (but *not* finalized!) structure for
 
 * Risk management.
 * Order management.
 * Position management.
 * Gateway management.
 
-This is not a finalized solution, mostly because each trading strategy works differently.
+**Warning!**
+This is not a finalized solution!
+It is only meant to demonstrate a typical (reference) implementation.
 
 A market-taker strategy may not want to deal with the complexities of limit orders.
-Perhaps it only sends IOC (immediate or cancel) orders.
-The life-time of such an order is fairly easy to manage.
-The reference example may be overkill for such strategies.
+Perhaps it only sends IOC (Immediate or Cancel) orders.
+The life-time of such orders is fairly easy to manage.
+This reference example, with complex risk management, may be overkill for such strategies.
 
-A market making strategy wil have to manage limit orders.
-Such a strategy is much more complicated.
-A risk manager is necessary to protect against inadvertenly sending too many limit orders.
+However, a market making strategy wil have to manage the life-time of limit orders.
+Such strategies are therefore much more complicated.
+Risk management is necessary to protect against inadvertenly sending too many limit orders.
 
-The job of the risk manager is to compare existing (sent and live) orders to existing positions and risk limits.
-The job of the order manager is to manage the order state transitions.
-The job of the position manager is to accumulate fills (trades) as they arrive.
-The gateway manager maintains the top-level routing between gateways on the one side, and the various components
-(just described) on the other side.
+Thus
+
+* The job of the risk manager is to compare existing (sent and live) orders to existing positions and risk limits.
+* The job of the order manager is to manage state transitions for (potentially) many orders.
+* The job of the position manager is to accumulate fills (trades) as they arrive.
+* The job of the gateway manager is to route events.
+  On the one side it interacts with the gateways.
+  On the other side it interacts with the various components of the trading system.
 
 The example also shows how one should implement the client for live trading or simulation.
+
+Feel free to [contact us](mailto:hans.thrane@roq-trading.com) if you need help with implementing your own strategy.
 
 ## Conda
 
