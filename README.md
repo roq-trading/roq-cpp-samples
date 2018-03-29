@@ -63,8 +63,9 @@ The example also shows how one should implement the client for live trading or s
 ## Conda
 
 Here we demonstrate only very basic usage of Conda environments.
-Please refer to the [Conda documentation](https://conda.io/docs/user-guide/tasks/manage-environments.html)
-for further details.
+
+Please refer to the Conda documentation for further details on how to
+[manage environments](https://conda.io/docs/user-guide/tasks/manage-environments.html).
 
 ### Basic Steps
 
@@ -102,8 +103,8 @@ Configure the build environment
 
 Install the Roq API
 
-	# install the api
-	conda install -y roq-api
+	# install roq
+	conda install -y roq
 
 	# clone roq-samples (this repo)
 	git clone https://github.com/roq-trading/roq-samples
@@ -124,11 +125,18 @@ Install the Roq API
 We *strongly* suggest using Conda's build toolchain to avoid ABI incompatibilities.
 This section is only shown for completeness.
 
-However, you're free to use any other build toolchain as long as it's ABI compatible with
-the Roq API downloaded from Conda.
+However, you're (obviously) free to use any other build toolchain as long as it's
+ABI compatible with the Roq API downloaded from Conda.
+(And if that's still not sufficient, you'll have to resort to building the Roq API from source).
 
-A few dependencies are then required in order to compile on Ubuntu.
-You may have to run the following command to prepare the system
+A few package dependencies are required in order to compile on Ubuntu.
+
+* autoconf
+* libtool
+* pkg-config
+* gcc
+
+You may have to run the following command to prepare your system
 
 	sudo apt-get install -y autoconf autoconf-archive libtool pkgconfig gcc
 
