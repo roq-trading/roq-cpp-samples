@@ -22,6 +22,7 @@ This repository contains two examples.
 A collector writing market data to `stdout`.
 And a reference strategy demonstrating components typically involved when writing an actual trading strategy.
 
+
 ### Collector
 
 The most basic example demonstrating how to work with the event handlers.
@@ -67,12 +68,14 @@ The example also shows how one should implement the client for live trading or s
 
 Feel free to [contact us](mailto:info@roq-trading.com) if you need help with implementing your own strategy.
 
+
 ## Conda
 
 Here we demonstrate only very basic usage of Conda environments.
 
 Please refer to the Conda documentation for further details on how to
 [manage environments](https://conda.io/docs/user-guide/tasks/manage-environments.html).
+
 
 ### Basic Steps
 
@@ -95,13 +98,15 @@ Create the Conda environment
 	  - http://roq-trading.com/dist/conda/unstable
 	EOF
 
-Configure the build environment
+Install the build tools
 
 	# (optional) install the conda build toolchain
 	conda install -y autoconf automake libtool pkgconfig gcc_linux-64
 
 	# (optional) install git
 	conda install -y git
+
+Configure the build environment
 
 	# define environment variables
 	export LDFLAGS=-L"$CONDA_PREFIX/lib"
@@ -113,6 +118,8 @@ Install the Roq API
 	# install roq
 	conda install -y roq
 
+Clone this project (from github) and compile from source
+
 	# clone roq-samples (this repo)
 	git clone https://github.com/roq-trading/roq-samples
 	cd roq-samples
@@ -123,13 +130,17 @@ Install the Roq API
 	# compile
 	make -j4
 
-	# test
+Test if it works
+
+	# test simultion
 	cd src/collector
-	./example-collector --mode simulation --simulation-file SOME_FILE
+	./example-collector --mode simulation --simulation-file test.csv
+
 
 ### Ubuntu (system-wide build toolchain)
 
 We *strongly* suggest using Conda's build toolchain to avoid ABI incompatibilities.
+You really don't need to use system-wide build tools.
 This section is only shown for completeness.
 
 However, you're (obviously) free to use any other build toolchain as long as it's
