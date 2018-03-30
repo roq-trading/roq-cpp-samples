@@ -9,7 +9,7 @@ Copyright (c) 2017-2018, Hans Erik Thrane
 
 ## Contact
 
-You should [contact us](mailto:hans.thrane@roq-trading.com) if you want to
+You should [contact us](mailto:info@roq-trading.com) if you want to
 
 * Obtain a gateway license key.
 * Discuss a specific gateway implementation.
@@ -65,7 +65,7 @@ Thus
 
 The example also shows how one should implement the client for live trading or simulation.
 
-Feel free to [contact us](mailto:hans.thrane@roq-trading.com) if you need help with implementing your own strategy.
+Feel free to [contact us](mailto:info@roq-trading.com) if you need help with implementing your own strategy.
 
 ## Conda
 
