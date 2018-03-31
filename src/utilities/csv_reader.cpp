@@ -1,6 +1,6 @@
 /* Copyright (c) 2017-2018, Hans Erik Thrane */
 
-#include "reference/csv_reader.h"
+#include "utilities/csv_reader.h"
 
 #include <cstring>
 #include <iomanip>
@@ -13,7 +13,7 @@ static const char *EMPTY = "";
 }  // namespace
 
 namespace examples {
-namespace reference {
+namespace utilities {
 
 CsvReader::CsvReader(const std::string& path, size_t max_columns)
     : _file(path, O_RDONLY),
@@ -98,5 +98,5 @@ const std::pair<const char *, size_t>& CsvReader::get_raw(size_t index) const {
   throw std::out_of_range("Not a valid column");
 }
 
-}  // namespace reference
+}  // namespace utilities
 }  // namespace examples

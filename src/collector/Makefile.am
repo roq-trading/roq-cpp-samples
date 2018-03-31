@@ -1,5 +1,6 @@
 bin_PROGRAMS = example-collector
 example_collector_LDFLAGS = \
+	$(top_builddir)/src/utilities/libutilities.la \
 	$(ROQ_LIBS) \
 	$(CCTZ_LIBS) \
 	$(CROSSGUID_LIBS) \
@@ -22,10 +23,6 @@ example_collector_CPPFLAGS = \
 	$(SPDLOG_CFLAGS)
 example_collector_SOURCES = \
 	collector.cpp \
-	csv_reader.cpp \
-	generator.cpp \
 	main.cpp
 EXTRA_example_collector_SOURCES = \
-	collector.h \
-	csv_reader.h \
-	generator.h
+	collector.h

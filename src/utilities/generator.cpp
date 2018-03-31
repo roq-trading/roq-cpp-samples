@@ -1,6 +1,6 @@
 /* Copyright (c) 2017-2018, Hans Erik Thrane */
 
-#include "reference/generator.h"
+#include "utilities/generator.h"
 
 #include <roq/logging.h>
 #include <roq/stream.h>
@@ -8,7 +8,7 @@
 #include <limits>
 
 namespace examples {
-namespace reference {
+namespace utilities {
 
 const size_t MAX_COLUMNS = 40;
 const char *TIME_FORMAT_FILE = "%Y%m%d %H:%M:%S";
@@ -90,5 +90,5 @@ void Generator::dispatch(roq::Strategy& strategy) {
   strategy.on(roq::BatchEndEvent { .message_info = message_info });
 }
 
-}  // namespace reference
+}  // namespace utilities
 }  // namespace examples

@@ -8,10 +8,10 @@
 #include <string>
 #include <utility>
 
-#include "collector/csv_reader.h"
+#include "utilities/csv_reader.h"
 
 namespace examples {
-namespace collector {
+namespace utilities {
 
 class Generator final : public roq::simulation::Generator {
  public:
@@ -26,5 +26,5 @@ class Generator final : public roq::simulation::Generator {
   uint64_t _message_id = 0;
 };
 
-}  // namespace collector
+}  // namespace utilities
 }  // namespace examples

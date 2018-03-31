@@ -1,1 +1,1 @@
-SUBDIRS = collector reference
+SUBDIRS = utilities collector reference

@@ -11,7 +11,7 @@
 #include <vector>
 
 namespace examples {
-namespace collector {
+namespace utilities {
 
 // Note! This is *not* meant to be a generic CSV reader.
 
@@ -41,5 +41,5 @@ class CsvReader final {
   size_t _length;
 };
 
-}  // namespace collector
+}  // namespace utilities
 }  // namespace examples

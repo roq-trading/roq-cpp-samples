@@ -1,5 +1,6 @@
 bin_PROGRAMS = reference-strategy
 reference_strategy_LDFLAGS = \
+	$(top_builddir)/src/utilities/libutilities.la \
 	$(ROQ_LIBS) \
 	$(CCTZ_LIBS) \
 	$(CROSSGUID_LIBS) \
@@ -25,10 +26,8 @@ reference_strategy_CPPFLAGS = \
 reference_strategy_SOURCES = \
   config.cpp \
   config_reader.cpp \
-  csv_reader.cpp \
   exposure.cpp \
   gateway_manager.cpp \
-  generator.cpp \
   order.cpp \
   order_manager.cpp \
   position_manager.cpp \
@@ -39,10 +38,8 @@ reference_strategy_SOURCES = \
 EXTRA_reference_strategy_SOURCES = \
   config.h \
   config_reader.h \
-  csv_reader.h \
   exposure.h \
   gateway_manager.h \
-  generator.h \
   order.h \
   order_manager.h \
   position_manager.h \

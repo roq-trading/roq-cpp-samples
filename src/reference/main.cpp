@@ -8,7 +8,8 @@
 
 #include "reference/config_reader.h"
 #include "reference/gateway_manager.h"
-#include "reference/generator.h"
+
+#include "utilities/generator.h"
 
 using namespace examples::reference;  // NOLINT
 
@@ -62,7 +63,8 @@ int main(int argc, char *argv[]) {
     }
 
     std::list<std::unique_ptr<roq::simulation::Generator> > generators;
-    generators.emplace_back(new Generator(FLAGS_simulation_file));
+    generators.emplace_back(
+        new examples::utilities::Generator(FLAGS_simulation_file));
 
     roq::simulation::Controller<GatewayManager>(
         std::move(generators)).create_and_dispatch(std::move(config));
