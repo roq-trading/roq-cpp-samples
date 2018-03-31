@@ -3,6 +3,7 @@
 #include "reference/generator.h"
 
 #include <roq/logging.h>
+#include <roq/stream.h>
 
 #include <limits>
 
