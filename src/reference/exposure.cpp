@@ -8,7 +8,7 @@
 namespace examples {
 namespace reference {
 
-void Exposure::update(update_t type, roq::common::TradeDirection direction,
+void Exposure::update(update_t type, roq::TradeDirection direction,
                       double quantity) {
   auto& exposure = get_exposure(direction);
   switch (type) {
@@ -40,7 +40,7 @@ void Exposure::update(update_t type, roq::common::TradeDirection direction,
   }
 }
 
-double Exposure::get(roq::common::TradeDirection direction) const {
+double Exposure::get(roq::TradeDirection direction) const {
   const auto& exposure = get_exposure(direction);
   auto result = exposure.created - exposure.filled - exposure.cancelled - exposure.rejected;
   LOG_IF(FATAL, is_less_than_or_equal(0.0, result)) <<
@@ -48,24 +48,24 @@ double Exposure::get(roq::common::TradeDirection direction) const {
   return result;
 }
 
-Exposure::exposure_t& Exposure::get_exposure(roq::common::TradeDirection direction) {
+Exposure::exposure_t& Exposure::get_exposure(roq::TradeDirection direction) {
   switch (direction) {
-    case roq::common::TradeDirection::Undefined:
+    case roq::TradeDirection::Undefined:
       LOG(FATAL) << "Unexpected direction";
-    case roq::common::TradeDirection::Buy:
+    case roq::TradeDirection::Buy:
       return _bid;
-    case roq::common::TradeDirection::Sell:
+    case roq::TradeDirection::Sell:
       return _offer;
   }
 }
 
-const Exposure::exposure_t& Exposure::get_exposure(roq::common::TradeDirection direction) const {
+const Exposure::exposure_t& Exposure::get_exposure(roq::TradeDirection direction) const {
   switch (direction) {
-    case roq::common::TradeDirection::Undefined:
+    case roq::TradeDirection::Undefined:
       LOG(FATAL) << "Unexpected direction";
-    case roq::common::TradeDirection::Buy:
+    case roq::TradeDirection::Buy:
       return _bid;
-    case roq::common::TradeDirection::Sell:
+    case roq::TradeDirection::Sell:
       return _offer;
   }
 }

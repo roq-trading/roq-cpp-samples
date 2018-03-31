@@ -7,18 +7,18 @@ namespace reference {
 
 TradingModel::TradingModel(const Config& config) : _config(config) {}
 
-void TradingModel::on(const roq::common::TimerEvent& event) {
+void TradingModel::on(const roq::TimerEvent& event) {
 }
 
-void TradingModel::on(const roq::common::MarketByPriceEvent& event) {
-  const roq::common::MarketByPrice& market_by_price = event.market_by_price;
+void TradingModel::on(const roq::MarketByPriceEvent& event) {
+  const roq::MarketByPrice& market_by_price = event.market_by_price;
   const auto& layer = market_by_price.depth[0];
   // trivial model-price dervied from order imbalance
   _model_price = (layer.bid_price * layer.ask_quantity + layer.ask_price * layer.bid_quantity) /
                  (layer.bid_quantity + layer.ask_quantity);
 }
 
-void TradingModel::on(const roq::common::TradeSummaryEvent& event) {
+void TradingModel::on(const roq::TradeSummaryEvent& event) {
 }
 
 }  // namespace reference

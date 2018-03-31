@@ -18,7 +18,7 @@ RiskManager::RiskManager(const Config& config, const PositionManager& position_m
 // TODO(thraneh): access global time -- risk limits could very well be time-dependent
 
 bool RiskManager::can_trade(const std::string& instrument,
-                            roq::common::TradeDirection direction,
+                            roq::TradeDirection direction,
                             double quantity, double exposure) const {
   assert(quantity >= 0.0 && exposure >= 0.0);
   auto position = _position_manager.get_position(instrument);

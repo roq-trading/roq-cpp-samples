@@ -20,7 +20,7 @@ class OrderManager final {
  public:
   // constructor
   OrderManager(const Config& config, const RiskManager& risk_manager,
-               roq::common::Strategy::Dispatcher& dispatcher);
+               roq::Strategy::Dispatcher& dispatcher);
 
   // create order (convenience)
   uint32_t buy(const char *order_template, double quantity,
@@ -29,23 +29,23 @@ class OrderManager final {
                 double limit_price);
 
   // event handlers
-  void on(const roq::common::TimerEvent& event);
-  void on(const roq::common::CreateOrderAckEvent& event);
-  void on(const roq::common::ModifyOrderAckEvent& event);
-  void on(const roq::common::CancelOrderAckEvent& event);
-  void on(const roq::common::OrderUpdateEvent& order_update);
+  void on(const roq::TimerEvent& event);
+  void on(const roq::CreateOrderAckEvent& event);
+  void on(const roq::ModifyOrderAckEvent& event);
+  void on(const roq::CancelOrderAckEvent& event);
+  void on(const roq::OrderUpdateEvent& order_update);
 
  private:
   uint32_t create_order(const char *order_template,
-                        roq::common::TradeDirection direction,
+                        roq::TradeDirection direction,
                         double quantity, double limit_price);
   void add_timeout_check(uint32_t order_id);
-  void check(const roq::common::MessageInfo& message_info);
+  void check(const roq::MessageInfo& message_info);
 
  private:
   const Config& _config;
   const RiskManager& _risk_manager;
-  roq::common::Strategy::Dispatcher& _dispatcher;
+  roq::Strategy::Dispatcher& _dispatcher;
   // consistency check
   time_point_t _last_update_time;
   // order management

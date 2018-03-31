@@ -11,9 +11,9 @@ namespace reference {
 class Exposure {
  public:
   typedef enum { Create, Fill, Cancel, Reject } update_t;
-  void update(update_t type, roq::common::TradeDirection direction,
+  void update(update_t type, roq::TradeDirection direction,
               double quantity);
-  double get(roq::common::TradeDirection direction) const;
+  double get(roq::TradeDirection direction) const;
 
  private:
   typedef struct {
@@ -24,8 +24,8 @@ class Exposure {
   } exposure_t;
   exposure_t _bid;
   exposure_t _offer;
-  exposure_t& get_exposure(roq::common::TradeDirection direction);
-  const exposure_t& get_exposure(roq::common::TradeDirection direction) const;
+  exposure_t& get_exposure(roq::TradeDirection direction);
+  const exposure_t& get_exposure(roq::TradeDirection direction) const;
 };
 
 }  // namespace reference

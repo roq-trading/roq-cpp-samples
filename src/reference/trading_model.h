@@ -12,9 +12,9 @@ namespace reference {
 class TradingModel final {
  public:
   explicit TradingModel(const Config& config);
-  void on(const roq::common::TimerEvent&);
-  void on(const roq::common::MarketByPriceEvent&);
-  void on(const roq::common::TradeSummaryEvent&);
+  void on(const roq::TimerEvent&);
+  void on(const roq::MarketByPriceEvent&);
+  void on(const roq::TradeSummaryEvent&);
   // TODO(thraneh): something more realistic
   double get_model_price() const { return _model_price; }
   double get_target_position() const { return _target_position; }

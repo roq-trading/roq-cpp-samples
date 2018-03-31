@@ -12,8 +12,8 @@ bool is_equal(double lhs, double rhs);
 bool is_less_than_or_equal(double lhs, double rhs);
 
 // trading api helpers
-double sign(const roq::common::TradeDirection direction);
-double signed_quantity(const roq::common::TradeDirection direction, const double quantity);
+double sign(const roq::TradeDirection direction);
+double signed_quantity(const roq::TradeDirection direction, const double quantity);
 
 }  // namespace reference
 }  // namespace examples

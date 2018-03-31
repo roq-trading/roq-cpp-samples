@@ -12,45 +12,45 @@
 namespace examples {
 namespace collector {
 
-class Collector final : public roq::common::Strategy {
+class Collector final : public roq::Strategy {
  public:
-  explicit Collector(roq::common::Strategy::Dispatcher& dispatcher) : _dispatcher(dispatcher) {}
+  explicit Collector(roq::Strategy::Dispatcher& dispatcher) : _dispatcher(dispatcher) {}
 
   struct State final {
     explicit State(const std::string& instrument) : instrument(instrument) {}
-    void update(const roq::common::MarketByPriceEvent&);
-    void update(const roq::common::TradeSummaryEvent&);
+    void update(const roq::MarketByPriceEvent&);
+    void update(const roq::TradeSummaryEvent&);
     std::string instrument;
-    roq::common::time_point_t exchange_time;
-    roq::common::time_point_t receive_time;
-    roq::common::Layer depth[5] = {};
+    roq::time_point_t exchange_time;
+    roq::time_point_t receive_time;
+    roq::Layer depth[5] = {};
     double price = 0.0;
     double volume = 0.0;
     double turnover = 0.0;
   };
 
  protected:
-  void on(const roq::common::TimerEvent&) override {}
-  void on(const roq::common::ConnectionStatusEvent&) override {}
-  void on(const roq::common::BatchBeginEvent&) override {}
-  void on(const roq::common::BatchEndEvent&) override;
-  void on(const roq::common::ReadyEvent&) override {}
-  void on(const roq::common::GatewayStatusEvent&) override {}
-  void on(const roq::common::ReferenceDataEvent&) override {}
-  void on(const roq::common::MarketStatusEvent&) override {}
-  void on(const roq::common::MarketByPriceEvent&) override;
-  void on(const roq::common::TradeSummaryEvent&) override;
-  void on(const roq::common::CreateOrderAckEvent&) override {}
-  void on(const roq::common::ModifyOrderAckEvent&) override {}
-  void on(const roq::common::CancelOrderAckEvent&) override {}
-  void on(const roq::common::OrderUpdateEvent&) override {}
-  void on(const roq::common::TradeUpdateEvent&) override {}
-  void on(const roq::common::PositionUpdateEvent&) override {}
+  void on(const roq::TimerEvent&) override {}
+  void on(const roq::ConnectionStatusEvent&) override {}
+  void on(const roq::BatchBeginEvent&) override {}
+  void on(const roq::BatchEndEvent&) override;
+  void on(const roq::ReadyEvent&) override {}
+  void on(const roq::GatewayStatusEvent&) override {}
+  void on(const roq::ReferenceDataEvent&) override {}
+  void on(const roq::MarketStatusEvent&) override {}
+  void on(const roq::MarketByPriceEvent&) override;
+  void on(const roq::TradeSummaryEvent&) override;
+  void on(const roq::CreateOrderAckEvent&) override {}
+  void on(const roq::ModifyOrderAckEvent&) override {}
+  void on(const roq::CancelOrderAckEvent&) override {}
+  void on(const roq::OrderUpdateEvent&) override {}
+  void on(const roq::TradeUpdateEvent&) override {}
+  void on(const roq::PositionUpdateEvent&) override {}
 
   State& get(const std::string& instrument);
 
  private:
-  roq::common::Strategy::Dispatcher& _dispatcher;
+  roq::Strategy::Dispatcher& _dispatcher;
   std::unordered_map<std::string, State> _cache;
   std::unordered_set<State*> _dirty;
 };

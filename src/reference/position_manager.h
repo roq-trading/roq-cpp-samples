@@ -11,7 +11,7 @@ namespace reference {
 
 class PositionManager final {
  public:
-  void on(const roq::common::TradeUpdate& trade_update);
+  void on(const roq::TradeUpdate& trade_update);
   double get_position(const std::string& instrument) const;
  private:
   std::unordered_map<std::string, double> _trades;

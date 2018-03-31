@@ -17,11 +17,11 @@ bool is_less_than_or_equal(double lhs, double rhs) {
   return lhs <= (rhs + TOLERANCE);
 }
 
-double sign(const roq::common::TradeDirection direction) {
+double sign(const roq::TradeDirection direction) {
   switch (direction) {
-    case roq::common::TradeDirection::Buy:
+    case roq::TradeDirection::Buy:
       return 1.0;
-    case roq::common::TradeDirection::Sell:
+    case roq::TradeDirection::Sell:
       return -1.0;
     default:
       LOG(FATAL) << "Received unknown trade direction!";
@@ -29,7 +29,7 @@ double sign(const roq::common::TradeDirection direction) {
   }
 }
 
-double signed_quantity(const roq::common::TradeDirection direction, const double quantity) {
+double signed_quantity(const roq::TradeDirection direction, const double quantity) {
   assert(quantity >= 0.0);
   return sign(direction) * quantity;
 }
