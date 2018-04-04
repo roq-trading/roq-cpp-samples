@@ -49,7 +49,7 @@ void Generator::dispatch(roq::Strategy& strategy) {
     .source_create_time = receive_time,
     .client_receive_time = receive_time,
     .routing_latency = std::chrono::microseconds(0),
-    .is_cached = false,
+    .from_cache = false,
     .is_last = false,
   };
   strategy.on(roq::BatchBeginEvent { .message_info = message_info});
