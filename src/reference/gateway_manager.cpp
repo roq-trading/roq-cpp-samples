@@ -36,7 +36,10 @@ void GatewayManager::on(const roq::BatchBeginEvent&) {
 void GatewayManager::on(const roq::BatchEndEvent&) {
 }
 
-void GatewayManager::on(const roq::ReadyEvent&) {
+void GatewayManager::on(const roq::DownloadBeginEvent&) {
+}
+
+void GatewayManager::on(const roq::DownloadEndEvent&) {
 }
 
 void GatewayManager::on(const roq::GatewayStatusEvent& event) {

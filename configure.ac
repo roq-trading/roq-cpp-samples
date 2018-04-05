@@ -11,9 +11,10 @@ AC_CONFIG_AUX_DIR([build-aux])
 AC_CONFIG_FILES([
  Makefile
  src/Makefile
+ src/utilities/Makefile
  src/collector/Makefile
  src/reference/Makefile
- src/utilities/Makefile
+ src/order_management/Makefile
 ])
 AC_CONFIG_FILES([roq-samples.pc])
 

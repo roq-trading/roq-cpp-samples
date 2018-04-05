@@ -39,5 +39,6 @@ m4/
 
 src/collector/example-collector
 src/reference/reference-strategy
+src/order_management/example-order-management
 
 *.csv

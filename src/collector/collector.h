@@ -14,10 +14,12 @@ namespace collector {
 
 class Collector final : public roq::Strategy {
  public:
-  explicit Collector(roq::Strategy::Dispatcher& dispatcher) : _dispatcher(dispatcher) {}
+  explicit Collector(roq::Strategy::Dispatcher& dispatcher)
+      : _dispatcher(dispatcher) {}
 
   struct State final {
-    explicit State(const std::string& instrument) : instrument(instrument) {}
+    explicit State(const std::string& instrument)
+        : instrument(instrument) {}
     void update(const roq::MarketByPriceEvent&);
     void update(const roq::TradeSummaryEvent&);
     std::string instrument;
@@ -34,7 +36,8 @@ class Collector final : public roq::Strategy {
   void on(const roq::ConnectionStatusEvent&) override {}
   void on(const roq::BatchBeginEvent&) override {}
   void on(const roq::BatchEndEvent&) override;
-  void on(const roq::ReadyEvent&) override {}
+  void on(const roq::DownloadBeginEvent&) override {}
+  void on(const roq::DownloadEndEvent&) override {}
   void on(const roq::GatewayStatusEvent&) override {}
   void on(const roq::ReferenceDataEvent&) override {}
   void on(const roq::MarketStatusEvent&) override {}
