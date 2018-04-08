@@ -23,11 +23,16 @@ void Strategy::update(const MarketData& market_data) {
   // do we have a jump?
   if (std::fabs(change_in_ticks) < _threshold)
     return;
-  // branch-less sign (SO: 1903954)
-  auto sign = (0.0 < change_in_ticks) - (change_in_ticks < 0.0);
+  // branch-free sign (stack overflow: 1903954)
+  auto sign_change = (0.0 < change_in_ticks) - (change_in_ticks < 0.0);
+  auto position = get_position();
+  auto sign_position = (0.0 < position) - (position < 0.0);
+  // are we going to increase an already existing position?
+  if ((sign_change * sign_position) < 0)
+    return;
   // try to send a new order
   try {
-    switch (sign) {
+    switch (sign_change) {
       case 1: {
         try_trade(roq::TradeDirection::Sell, _quantity, best.bid_price);
         break;

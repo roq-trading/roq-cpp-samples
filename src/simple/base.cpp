@@ -295,8 +295,8 @@ double BaseStrategy::get_short_position(PositionType type) const {
 }
 
 double BaseStrategy::get_position() const {
-  return _long_position_sod + _long_position_new +
-    _short_position_sod + _short_position_new;
+  return (_long_position_sod + _long_position_new) -
+    (_short_position_sod + _short_position_new);
 }
 
 // Ready to trade?
