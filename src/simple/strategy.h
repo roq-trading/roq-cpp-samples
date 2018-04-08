@@ -3,15 +3,20 @@
 #pragma once
 
 #include <limits>
+#include <string>
 
 #include "simple/base.h"
+#include "simple/config.h"
 
 namespace examples {
 namespace simple {
 
 class Strategy final : public BaseStrategy {
  public:
-  using BaseStrategy::BaseStrategy;
+  Strategy(
+    roq::Strategy::Dispatcher& dispatcher,
+    const Config& config,
+    const std::string& gateway);
 
  protected:
   void reset() override;
@@ -24,8 +29,8 @@ class Strategy final : public BaseStrategy {
     double price);
 
  private:
-  const double _quantity = 1.0;
-  double _threshold = 2.0;  // multiplier on tick-size
+  const double _threshold;
+  const double _quantity;
   double _previous = std::numeric_limits<double>::quiet_NaN();
 };
 

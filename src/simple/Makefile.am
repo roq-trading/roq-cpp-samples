@@ -8,6 +8,7 @@ example_simple_LDFLAGS = \
 	$(FLATBUFFERS_LIBS) \
 	$(GFLAGS_LIBS) \
 	$(LIBEVENT_LIBS) \
+	$(LIBUCL_LIBS) \
 	$(LIBUNWIND_LIBS) \
 	$(SPDLOG_LIBS)
 example_simple_CPPFLAGS = \
@@ -19,13 +20,20 @@ example_simple_CPPFLAGS = \
 	$(FLATBUFFERS_CFLAGS) \
 	$(GFLAGS_CFLAGS) \
 	$(LIBEVENT_CFLAGS) \
+	$(LIBUCL_CFLAGS) \
 	$(LIBUNWIND_CFLAGS) \
 	$(SPDLOG_CFLAGS)
 example_simple_SOURCES = \
 	base.cpp \
+	config.cpp \
+	config_reader.cpp \
 	strategy.cpp \
 	main.cpp
 EXTRA_example_simple_SOURCES = \
 	base.h \
+	config.h \
+	config_reader.h \
 	market_data.h \
 	strategy.h
+configdir=$(datadir)/roq/samples
+config_DATA = simple.conf instruments.conf

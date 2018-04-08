@@ -5,7 +5,12 @@
 #include <roq/logging.h>
 #include <roq/stream.h>
 
+#include <gflags/gflags.h>
+
 #include <algorithm>
+
+DEFINE_string(ioc_open, "ioc_open", "Order template.");
+DEFINE_string(ioc_close, "ioc_close", "Order template.");
 
 namespace examples {
 namespace simple {
@@ -16,15 +21,11 @@ BaseStrategy::BaseStrategy(
     roq::Strategy::Dispatcher& dispatcher,
     const std::string& exchange,
     const std::string& instrument,
-    const std::string& gateway,
-    const std::string& ioc_open,
-    const std::string& ioc_close)
+    const std::string& gateway)
     : _dispatcher(dispatcher),
       _exchange(exchange),
       _instrument(instrument),
-      _gateway(gateway),
-      _ioc_open(ioc_open),
-      _ioc_close(ioc_close) {
+      _gateway(gateway) {
 }
 
 // event handlers
@@ -233,19 +234,19 @@ void BaseStrategy::on(const roq::TradeSummaryEvent& event) {
 // create order helpers
 
 uint32_t BaseStrategy::buy_ioc_open(const double quantity, const double price) {
-  return create_order(roq::TradeDirection::Buy, quantity, price, _ioc_open);
+  return create_order(roq::TradeDirection::Buy, quantity, price, FLAGS_ioc_open);
 }
 
 uint32_t BaseStrategy::sell_ioc_open(const double quantity, const double price) {
-  return create_order(roq::TradeDirection::Sell, quantity, price, _ioc_open);
+  return create_order(roq::TradeDirection::Sell, quantity, price, FLAGS_ioc_open);
 }
 
 uint32_t BaseStrategy::buy_ioc_close(const double quantity, const double price) {
-  return create_order(roq::TradeDirection::Buy, quantity, price, _ioc_close);
+  return create_order(roq::TradeDirection::Buy, quantity, price, FLAGS_ioc_close);
 }
 
 uint32_t BaseStrategy::sell_ioc_close(const double quantity, const double price) {
-  return create_order(roq::TradeDirection::Sell, quantity, price, _ioc_close);
+  return create_order(roq::TradeDirection::Sell, quantity, price, FLAGS_ioc_close);
 }
 
 // Generic function to create an order.
@@ -319,9 +320,9 @@ bool BaseStrategy::is_ready() const {
 // Returns false if the order template is a "close".
 // Terminate program execution if the order template is unknown.
 bool BaseStrategy::parse_open_close(const char *order_template) {
-  if (_ioc_open.compare(order_template) == 0)
+  if (FLAGS_ioc_open.compare(order_template) == 0)
     return true;
-  if (_ioc_close.compare(order_template) == 0)
+  if (FLAGS_ioc_close.compare(order_template) == 0)
     return false;
   LOG(FATAL) << "Unknown order_template=\"" << order_template << "\"";
 }

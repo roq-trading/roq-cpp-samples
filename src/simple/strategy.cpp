@@ -7,6 +7,19 @@
 namespace examples {
 namespace simple {
 
+Strategy::Strategy(
+    roq::Strategy::Dispatcher& dispatcher,
+    const Config& config,
+    const std::string& gateway)
+    : BaseStrategy(
+          dispatcher,
+          config.exchange,
+          config.instrument,
+          gateway),
+      _threshold(config.threshold),
+      _quantity(config.quantity) {
+}
+
 void Strategy::reset() {
   _previous = std::numeric_limits<double>::quiet_NaN();
 }
@@ -23,7 +36,7 @@ void Strategy::update(const MarketData& market_data) {
   // do we have a jump?
   if (std::fabs(change_in_ticks) < _threshold)
     return;
-  // branch-free sign (stack overflow: 1903954)
+  // using branch-free sign (stack overflow: 1903954)
   auto sign_change = (0.0 < change_in_ticks) - (change_in_ticks < 0.0);
   auto position = get_position();
   auto sign_position = (0.0 < position) - (position < 0.0);

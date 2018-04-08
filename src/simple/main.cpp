@@ -5,18 +5,18 @@
 #include <roq/client.h>
 #include <roq/logging.h>
 
+#include "simple/config_reader.h"
 #include "simple/strategy.h"
+
+DEFINE_string(config_file, "",
+    "Config filename for strategy (path)");
+DEFINE_string(config_variables, "",
+    "Optional config filename for variables (path)");
 
 DEFINE_string(gateways, "",
     "List of gateway connection details. "
     "Comma separated. "
     "For example: \"femas=user:password@:/var/tmp/femasapi.sock\".");
-
-DEFINE_string(exchange, "", "Exchange name.");
-DEFINE_string(instrument, "", "Instrument name.");
-
-DEFINE_string(ioc_open, "ioc_open", "Order template.");
-DEFINE_string(ioc_close, "ioc_close", "Order template.");
 
 using namespace examples::simple;  // NOLINT
 
@@ -31,18 +31,17 @@ int main(int argc, char *argv[]) {
 
   // validate command-line options
 
+  if (FLAGS_config_file.empty()) {
+    LOG(ERROR) << "Missing parameter: --config-file";
+    std::exit(EXIT_FAILURE);
+  }
+
+  auto config = ConfigReader::parse(
+      FLAGS_config_file,
+      FLAGS_config_variables);
+
   if (FLAGS_gateways.empty()) {
     LOG(ERROR) << "Missing parameter: --gateways";
-    std::exit(EXIT_FAILURE);
-  }
-
-  if (FLAGS_exchange.empty()) {
-    LOG(ERROR) << "Missing parameter: --exchange";
-    std::exit(EXIT_FAILURE);
-  }
-
-  if (FLAGS_instrument.empty()) {
-    LOG(ERROR) << "Missing parameter: --instrument";
     std::exit(EXIT_FAILURE);
   }
 
@@ -54,9 +53,7 @@ int main(int argc, char *argv[]) {
 
   roq::client::Controller<Strategy>(
       std::move(gateways)).create_and_dispatch(
-          FLAGS_exchange, FLAGS_instrument,
-          gateway,
-          FLAGS_ioc_open, FLAGS_ioc_close);
+          config, gateway);
 
   return EXIT_SUCCESS;
 }

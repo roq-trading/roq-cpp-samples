@@ -32,9 +32,7 @@ class BaseStrategy : public roq::Strategy {
       roq::Strategy::Dispatcher& dispatcher,
       const std::string& exchange,
       const std::string& instrument,
-      const std::string& gateway,
-      const std::string& ioc_open,
-      const std::string& ioc_close);
+      const std::string& gateway);
 
   const std::string& get_exchange() const { return _exchange; }
   const std::string& get_instrument() const { return _instrument; }
@@ -106,8 +104,6 @@ class BaseStrategy : public roq::Strategy {
   const std::string _exchange;
   const std::string _instrument;
   const std::string _gateway;
-  const std::string _ioc_open;
-  const std::string _ioc_close;
   // state management
   bool _download = false;
   bool _order_manager_ready = false;
