@@ -5,7 +5,7 @@
 #include <roq/api.h>
 
 namespace examples {
-namespace order_management {
+namespace simple {
 
 struct MarketData final {
   roq::Layer depth[roq::MAX_DEPTH];
@@ -17,5 +17,5 @@ struct MarketData final {
   uint16_t channel;
 };
 
-}  // namespace order_management
+}  // namespace simple
 }  // namespace examples

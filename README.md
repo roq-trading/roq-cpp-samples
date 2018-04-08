@@ -31,6 +31,11 @@ The example shows how to aggregate multiple updates (events) arriving as a batch
 The example also shows how one should implement the client for live trading or simulation.
 
 
+### Simple
+
+Demonstrating a very simple strategy implementation.
+
+
 ### Reference
 
 Demonstrating how to pass updates (events) between the typical components of a real trading strategy.

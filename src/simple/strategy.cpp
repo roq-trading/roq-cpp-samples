@@ -1,11 +1,11 @@
 /* Copyright (c) 2017-2018, Hans Erik Thrane */
 
-#include "order_management/strategy.h"
+#include "simple/strategy.h"
 
 #include <roq/logging.h>
 
 namespace examples {
-namespace order_management {
+namespace simple {
 
 void Strategy::reset() {
   _previous = std::numeric_limits<double>::quiet_NaN();
@@ -67,5 +67,5 @@ void Strategy::try_trade(
   }
 }
 
-}  // namespace order_management
+}  // namespace simple
 }  // namespace examples

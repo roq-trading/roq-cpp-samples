@@ -7,10 +7,10 @@
 #include <string>
 #include <unordered_map>
 
-#include "order_management/market_data.h"
+#include "simple/market_data.h"
 
 namespace examples {
-namespace order_management {
+namespace simple {
 
 /**
  * A simple base strategy supporting
@@ -123,5 +123,5 @@ class BaseStrategy : public roq::Strategy {
   bool _market_data_dirty = false;
 };
 
-}  // namespace order_management
+}  // namespace simple
 }  // namespace examples

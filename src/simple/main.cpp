@@ -5,7 +5,7 @@
 #include <roq/client.h>
 #include <roq/logging.h>
 
-#include "order_management/strategy.h"
+#include "simple/strategy.h"
 
 DEFINE_string(gateways, "",
     "List of gateway connection details. "
@@ -18,7 +18,7 @@ DEFINE_string(instrument, "", "Instrument name.");
 DEFINE_string(ioc_open, "ioc_open", "Order template.");
 DEFINE_string(ioc_close, "ioc_close", "Order template.");
 
-using namespace examples::order_management;  // NOLINT
+using namespace examples::simple;  // NOLINT
 
 int main(int argc, char *argv[]) {
   // initialize logging library

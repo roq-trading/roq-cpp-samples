@@ -1,1 +1,1 @@
-SUBDIRS = utilities collector reference order_management
+SUBDIRS = utilities collector reference simple

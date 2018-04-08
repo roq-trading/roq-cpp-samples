@@ -1,6 +1,6 @@
 /* Copyright (c) 2017-2018, Hans Erik Thrane */
 
-#include "order_management/base.h"
+#include "simple/base.h"
 
 #include <roq/logging.h>
 #include <roq/stream.h>
@@ -8,7 +8,7 @@
 #include <algorithm>
 
 namespace examples {
-namespace order_management {
+namespace simple {
 
 const char *TRADER = "Trader";  // FIXME(thraneh): introduce an enum for this!
 
@@ -326,5 +326,5 @@ bool BaseStrategy::parse_open_close(const char *order_template) {
   LOG(FATAL) << "Unknown order_template=\"" << order_template << "\"";
 }
 
-}  // namespace order_management
+}  // namespace simple
 }  // namespace examples

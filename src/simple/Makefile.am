@@ -1,5 +1,5 @@
-bin_PROGRAMS = example-order-management
-example_order_management_LDFLAGS = \
+bin_PROGRAMS = example-simple
+example_simple_LDFLAGS = \
 	$(top_builddir)/src/utilities/libutilities.la \
 	$(ROQ_LIBS) \
 	$(CCTZ_LIBS) \
@@ -10,7 +10,7 @@ example_order_management_LDFLAGS = \
 	$(LIBEVENT_LIBS) \
 	$(LIBUNWIND_LIBS) \
 	$(SPDLOG_LIBS)
-example_order_management_CPPFLAGS = \
+example_simple_CPPFLAGS = \
 	-DROQ_SPDLOG \
 	-I$(top_srcdir)/src \
 	$(ROQ_CFLAGS) \
@@ -21,11 +21,11 @@ example_order_management_CPPFLAGS = \
 	$(LIBEVENT_CFLAGS) \
 	$(LIBUNWIND_CFLAGS) \
 	$(SPDLOG_CFLAGS)
-example_order_management_SOURCES = \
+example_simple_SOURCES = \
 	base.cpp \
 	strategy.cpp \
 	main.cpp
-EXTRA_example_order_management_SOURCES = \
+EXTRA_example_simple_SOURCES = \
 	base.h \
 	market_data.h \
 	strategy.h

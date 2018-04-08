@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 
 ---
 
+## 0.1.3 -
+
+### Added
+* A very simple strategy.
+
+
 ## 0.1.2 - 2018-03-31
 
 ### Added

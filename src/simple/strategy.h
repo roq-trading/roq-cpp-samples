@@ -4,10 +4,10 @@
 
 #include <limits>
 
-#include "order_management/base.h"
+#include "simple/base.h"
 
 namespace examples {
-namespace order_management {
+namespace simple {
 
 class Strategy final : public BaseStrategy {
  public:
@@ -29,5 +29,5 @@ class Strategy final : public BaseStrategy {
   double _previous = std::numeric_limits<double>::quiet_NaN();
 };
 
-}  // namespace order_management
+}  // namespace simple
 }  // namespace examples
