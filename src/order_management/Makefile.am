@@ -27,4 +27,5 @@ example_order_management_SOURCES = \
 	main.cpp
 EXTRA_example_order_management_SOURCES = \
 	base.h \
+	market_data.h \
 	strategy.h

@@ -18,9 +18,6 @@ DEFINE_string(instrument, "", "Instrument name.");
 DEFINE_string(ioc_open, "ioc_open", "Order template.");
 DEFINE_string(ioc_close, "ioc_close", "Order template.");
 
-DEFINE_string(gtc_open, "gtc_open", "Order template.");
-DEFINE_string(gtc_close, "gtc_close", "Order template.");
-
 using namespace examples::order_management;  // NOLINT
 
 int main(int argc, char *argv[]) {
@@ -59,8 +56,7 @@ int main(int argc, char *argv[]) {
       std::move(gateways)).create_and_dispatch(
           FLAGS_exchange, FLAGS_instrument,
           gateway,
-          FLAGS_ioc_open, FLAGS_ioc_close,
-          FLAGS_gtc_open, FLAGS_gtc_close);
+          FLAGS_ioc_open, FLAGS_ioc_close);
 
   return EXIT_SUCCESS;
 }
