@@ -42,7 +42,7 @@ void Strategy::update(const MarketData& market_data) {
   auto value = compute(market_data);
   auto signal = value - _previous;
   _previous = value;
-  // write signal to std::cout
+  // write signal to std::cout [csv]
   write_signal(market_data, value, signal);
   // only trade if the magnitude of the signal exceeds the threshold
   if (std::fabs(signal) < _threshold || std::isnan(signal))
@@ -56,11 +56,12 @@ void Strategy::update(const MarketData& market_data) {
   // in other words: do not increase an already existing position
   if ((sign_signal * sign_position) < 0)
     return;
-  // all checks have passed: create the order
+  // all checks have passed: now create the order
+  // arguments for the create_order function ...
   auto args = create_order_args(sign_signal, best);
-  // write order to std::cout
+  // ... so the order parameters can be written to std::cout [csv]
   write_create_order(market_data, args);
-  // try order creation
+  // ... and then call the create_order function with those arguments
   try {
     /* FIXME(thraneh): disabled until the simulator supports order-matching
     // TODO(thraneh): use parameter pack, e.g. stack overflow: 7858817
