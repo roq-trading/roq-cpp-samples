@@ -22,10 +22,12 @@ BaseStrategy::BaseStrategy(
     const std::string& exchange,
     const std::string& instrument,
     const std::string& gateway)
-    : _dispatcher(dispatcher),
-      _exchange(exchange),
+    : _exchange(exchange),
       _instrument(instrument),
-      _gateway(gateway) {
+      _gateway(gateway),
+      _ioc_open(FLAGS_ioc_open),
+      _ioc_close(FLAGS_ioc_close),
+      _dispatcher(dispatcher) {
 }
 
 // event handlers

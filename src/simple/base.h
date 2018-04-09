@@ -98,12 +98,16 @@ class BaseStrategy : public roq::Strategy {
   bool filter(const char *exchange, const char *instrument);
   bool parse_open_close(const char *order_template);
 
- private:
-  roq::Strategy::Dispatcher& _dispatcher;
+ protected:
   // configuration
   const std::string _exchange;
   const std::string _instrument;
   const std::string _gateway;
+  const std::string _ioc_open;
+  const std::string _ioc_close;
+
+ private:
+  roq::Strategy::Dispatcher& _dispatcher;
   // state management
   bool _download = false;
   bool _order_manager_ready = false;
