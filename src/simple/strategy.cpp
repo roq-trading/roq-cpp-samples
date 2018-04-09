@@ -47,7 +47,7 @@ void Strategy::update(const MarketData& market_data) {
   // only trade if the magnitude of the signal exceeds the threshold
   if (std::fabs(signal) < _threshold || std::isnan(signal))
     return;
-  // direction of the signal
+  // direction of signal
   auto sign_signal = (0.0 < signal) - (signal < 0.0);  // stack overflow: 1903954
   // direction of current position
   auto position = get_position();
@@ -56,12 +56,12 @@ void Strategy::update(const MarketData& market_data) {
   // in other words: do not increase an already existing position
   if ((sign_signal * sign_position) < 0)
     return;
-  // all checks have passed: now create the order
-  // arguments for the create_order function ...
+  // all pre-trade checks have now passed
+  // arguments for the create_order function...
   auto args = create_order_args(sign_signal, best);
   // ... so the order parameters can be written to std::cout [csv]
   write_create_order(market_data, args);
-  // ... and then call the create_order function with those arguments
+  // ... and then call the create_order function with those same arguments
   try {
     /* FIXME(thraneh): disabled until the simulator supports order-matching
     // TODO(thraneh): use parameter pack, e.g. stack overflow: 7858817
@@ -76,8 +76,11 @@ void Strategy::update(const MarketData& market_data) {
     // roq::NotConnected
     // - client has lost connection to gateway
     // roq::NotReady
-    // - gateway has lost connection to broker
-    // - gateway is downloading information to client
+    // - gateway is not in the ready state (e.g. disconnected from
+    //   broker or downloading information to client)
+    // - instrument status doesn't allow trading (e.g. not currently
+    //   a trading session or trading halt)
+    // - any other validating checks performed by the base strategy
     LOG(WARNING) << "Failed to create order. Reason=\"" << e.what() << "\"";
   }
 }
