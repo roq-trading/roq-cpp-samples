@@ -63,10 +63,10 @@ void Generator::dispatch(roq::Strategy& strategy) {
   for (auto i = 0; i < 5; ++i) {
     auto offset = 3 + (i * 4);
     roq::Layer& layer = market_by_price.depth[i];
-    layer.bid_price = _csv_reader.get_number(offset + 0);
-    layer.bid_quantity = _csv_reader.get_number(offset + 1);
-    layer.ask_price = _csv_reader.get_number(offset + 2);
-    layer.ask_quantity = _csv_reader.get_number(offset + 3);
+    layer.ask_price = _csv_reader.get_number(offset + 0);
+    layer.ask_quantity = _csv_reader.get_number(offset + 1);
+    layer.bid_price = _csv_reader.get_number(offset + 2);
+    layer.bid_quantity = _csv_reader.get_number(offset + 3);
   }
   VLOG(1) << market_by_price;
   strategy.on(roq::MarketByPriceEvent {

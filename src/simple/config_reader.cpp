@@ -57,6 +57,7 @@ static Config create_config(const ucl::Ucl& setting) {
   Config result {
     .exchange     = setting.lookup("exchange").string_value(),
     .instrument   = setting.lookup("instrument").string_value(),
+    .weighted     = setting.lookup("weighted").bool_value(),
     .threshold    = setting.lookup("threshold").number_value(),
     .quantity     = static_cast<double>(
         setting.lookup("quantity").int_value()),

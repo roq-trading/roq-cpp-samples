@@ -13,6 +13,7 @@ namespace simple {
 struct Config final {
   std::string exchange;
   std::string instrument;
+  bool weighted;
   double threshold;
   double quantity;
 };

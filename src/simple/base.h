@@ -107,7 +107,7 @@ class BaseStrategy : public roq::Strategy {
   // state management
   bool _download = false;
   bool _order_manager_ready = false;
-  double _tick_size = 0.01;
+  double _tick_size = 0.1;
   uint32_t _max_order_id = 0;
   bool _market_open = false;
   double _long_position_sod = 0.0;

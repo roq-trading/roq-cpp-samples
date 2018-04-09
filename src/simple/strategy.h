@@ -23,12 +23,14 @@ class Strategy final : public BaseStrategy {
   void update(const MarketData&) override;
 
  private:
+  double compute(const MarketData&) const;
   void try_trade(
     roq::TradeDirection direction,
     double quantity,
     double price);
 
  private:
+  const bool _weighted;
   const double _threshold;
   const double _quantity;
   double _previous = std::numeric_limits<double>::quiet_NaN();
