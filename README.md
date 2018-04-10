@@ -139,7 +139,7 @@ Test if it works
 
 	# test simultion
 	cd src/collector
-	./example-collector --mode simulation --simulation-file test.csv
+	./example-collector --simulation-file test.csv
 
 
 ### Ubuntu (system-wide build toolchain)

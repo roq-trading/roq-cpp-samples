@@ -9,9 +9,6 @@
 #include "collector/collector.h"
 #include "utilities/generator.h"
 
-DEFINE_string(mode, "",
-    "Mode of operation (trading|simulation)");
-
 DEFINE_string(gateways, "",
     "List of gateway connection details. "
     "Comma separated. "
@@ -33,18 +30,9 @@ int main(int argc, char *argv[]) {
 
   // validate command-line options
 
-  if (FLAGS_mode == "trading") {
-    if (FLAGS_gateways.empty()) {
-      LOG(ERROR) << "Missing parameter: --gateways";
-      std::exit(EXIT_FAILURE);
-    }
+  if (FLAGS_gateways.empty()) {
+    // mode: simulation
 
-    auto gateways = roq::client::Gateways::create(FLAGS_gateways);
-
-    roq::client::Controller<Collector>(
-        std::move(gateways)).create_and_dispatch();
-
-  } else if (FLAGS_mode == "simulation") {
     if (FLAGS_simulation_file.empty()) {
       LOG(ERROR) << "Missing parameter: --simulation-file";
       std::exit(EXIT_FAILURE);
@@ -58,8 +46,17 @@ int main(int argc, char *argv[]) {
         std::move(generators)).create_and_dispatch();
 
   } else {
-    LOG(ERROR) << "Invalid parameter: mode=\"" << FLAGS_mode << "\"";
-    std::exit(EXIT_FAILURE);
+    // mode: trading
+
+    if (FLAGS_simulation_file.empty() == false) {
+      LOG(ERROR) << "Not possible to combine simulation with live trading.";
+      std::exit(EXIT_FAILURE);
+    }
+
+    auto gateways = roq::client::Gateways::create(FLAGS_gateways);
+
+    roq::client::Controller<Collector>(
+        std::move(gateways)).create_and_dispatch();
   }
 
   return EXIT_SUCCESS;
