@@ -24,7 +24,8 @@ namespace simple {
  *   # maintenance of yesterday's long/short position
  *   # maintenance of current long/short position
  *
- * The real strategy should only implement the update() method.
+ * A derived strategy should only implement the update() method.
+ * Everything else is managed by this base implementation.
  */
 class BaseStrategy : public roq::Strategy {
  public:
@@ -37,24 +38,29 @@ class BaseStrategy : public roq::Strategy {
   const std::string& get_exchange() const { return _exchange; }
   const std::string& get_instrument() const { return _instrument; }
 
+  const std::string& get_order_template(bool close) const {
+    return close ? _ioc_close : _ioc_open;
+  }
+
   double get_tick_size() const { return _tick_size; }
 
   enum class PositionType {
-    StartOfDay,
-    NewActivity,
-    Current
+    StartOfDay,   // today's start of day position
+    NewActivity,  // today's new activity
+    Current       // current position
   };
+
   double get_long_position(PositionType type) const;
   double get_short_position(PositionType type) const;
-  double get_position() const;
+
+  double get_net_position(PositionType type) const;
 
   bool is_ready() const;
 
-  virtual void reset() = 0;
   virtual void update(const MarketData&) = 0;
 
  private:
-  // event handlers:
+  // api event handlers:
   // - timer
   void on(const roq::TimerEvent&) override;
   // - connection
@@ -82,13 +88,9 @@ class BaseStrategy : public roq::Strategy {
   void on(const roq::TradeSummaryEvent&) override;
 
  protected:
-  // create order helpers
-  uint32_t buy_ioc_open(const double quantity, const double price);
-  uint32_t sell_ioc_open(const double quantity, const double price);
-  uint32_t buy_ioc_close(const double quantity, const double price);
-  uint32_t sell_ioc_close(const double quantity, const double price);
+  // create order
   uint32_t create_order(
-      roq::TradeDirection direciton,
+      roq::TradeDirection direction,
       const double quantity,
       const double price,
       const std::string& order_template);
@@ -98,16 +100,14 @@ class BaseStrategy : public roq::Strategy {
   bool filter(const char *exchange, const char *instrument);
   bool parse_open_close(const char *order_template);
 
- protected:
+ private:
+  roq::Strategy::Dispatcher& _dispatcher;
   // configuration
   const std::string _exchange;
   const std::string _instrument;
   const std::string _gateway;
   const std::string _ioc_open;
   const std::string _ioc_close;
-
- private:
-  roq::Strategy::Dispatcher& _dispatcher;
   // state management
   bool _download = false;
   bool _order_manager_ready = false;

@@ -20,7 +20,6 @@ class Strategy final : public BaseStrategy {
     const std::string& gateway);
 
  protected:
-  void reset() override;
   void update(const MarketData& market_data) override;
 
  private:

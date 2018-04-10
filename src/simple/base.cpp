@@ -252,24 +252,6 @@ void BaseStrategy::on(const roq::TradeSummaryEvent& event) {
   _market_data_dirty = true;
 }
 
-// create order helpers
-
-uint32_t BaseStrategy::buy_ioc_open(const double quantity, const double price) {
-  return create_order(roq::TradeDirection::Buy, quantity, price, FLAGS_ioc_open);
-}
-
-uint32_t BaseStrategy::sell_ioc_open(const double quantity, const double price) {
-  return create_order(roq::TradeDirection::Sell, quantity, price, FLAGS_ioc_open);
-}
-
-uint32_t BaseStrategy::buy_ioc_close(const double quantity, const double price) {
-  return create_order(roq::TradeDirection::Buy, quantity, price, FLAGS_ioc_close);
-}
-
-uint32_t BaseStrategy::sell_ioc_close(const double quantity, const double price) {
-  return create_order(roq::TradeDirection::Sell, quantity, price, FLAGS_ioc_close);
-}
-
 // Generic function to create an order.
 uint32_t BaseStrategy::create_order(
     const roq::TradeDirection direction,
@@ -311,6 +293,7 @@ double BaseStrategy::get_long_position(PositionType type) const {
   switch (type) {
     case PositionType::StartOfDay: return _long_position_sod;
     case PositionType::NewActivity: return _long_position_new;
+    case PositionType::Current: return _long_position_sod + _long_position_new;
   }
 }
 
@@ -318,17 +301,17 @@ double BaseStrategy::get_short_position(PositionType type) const {
   switch (type) {
     case PositionType::StartOfDay: return _short_position_sod;
     case PositionType::NewActivity: return _short_position_new;
+    case PositionType::Current: return _short_position_sod + _short_position_new;
   }
 }
 
-double BaseStrategy::get_position() const {
-  return (_long_position_sod + _long_position_new) -
-    (_short_position_sod + _short_position_new);
+double BaseStrategy::get_net_position(PositionType type) const {
+  return get_long_position(type) - get_short_position(type);
 }
 
 // Ready to trade?
-// Verifies all variables relating to state management.
-// Returns true if it's possible to trade.
+// Returns true if it may be possible to trade.
+// Returns false if it is not possible to trade.
 bool BaseStrategy::is_ready() const {
   return !_download && _order_manager_ready && _market_open;
 }
@@ -336,12 +319,10 @@ bool BaseStrategy::is_ready() const {
 // The interface is generic an supposed to work for a multitude of
 // gateways. The client therefore has no access to market specific
 // fields. Those extra fields are only visible to the gateway. The
-// client can, however, leverage the fields through templates.
+// client can, however, leverage such extra fields through templates.
 // The gateway will ensure all order updates includes the original
 // name of the template. The client can therefore safely compare
 // the name of the template with that it used to create the order.
-// Thus, we have a fairly simple approach to determing if an order
-// was "open" or "close".
 // Returns true if the order template is an "open".
 // Returns false if the order template is a "close".
 // Terminate program execution if the order template is unknown.

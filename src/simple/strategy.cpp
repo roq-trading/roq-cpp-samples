@@ -35,10 +35,6 @@ Strategy::Strategy(
       _quantity(config.quantity) {
 }
 
-void Strategy::reset() {
-  _previous = std::numeric_limits<double>::quiet_NaN();
-}
-
 void Strategy::update(const MarketData& market_data) {
   const auto& best = market_data.depth[0];
   // do we have a proper two-sided market?
@@ -56,7 +52,7 @@ void Strategy::update(const MarketData& market_data) {
   // direction of signal
   auto sign_signal = sign(signal);
   // direction of current position
-  auto position = get_position();
+  auto position = get_net_position(PositionType::Current);
   auto sign_position = sign(position);
   // exposure is limited to configured quantity
   // in other words: do not increase an already existing position
@@ -70,10 +66,10 @@ void Strategy::update(const MarketData& market_data) {
   // ... and then call the create_order function with those same arguments
   try {
     create_order(
-        std::get<0>(args),
-        std::get<1>(args),
-        std::get<2>(args),
-        std::get<3>(args));
+        std::get<0>(args),   // direction
+        std::get<1>(args),   // quantity
+        std::get<2>(args),   // price
+        std::get<3>(args));  // order template
   } catch (roq::Exception& e) {
     // possible reasons;
     //   roq::NotConnected
@@ -84,15 +80,16 @@ void Strategy::update(const MarketData& market_data) {
     //   - instrument status doesn't allow trading (e.g. not currently
     //     a trading session or trading halt)
     //   - any other validating checks performed by the base strategy
-    LOG(WARNING) << "Failed to create order. Reason=\"" << e.what() << "\"";
+    LOG(WARNING) << "Unable to create order. Reason=\"" << e.what() << "\"";
   }
 }
 
 double Strategy::compute(const MarketData& market_data) const {
   if (_weighted) {
     // weighted mid price
-    // a real-life application would probably choose to assign
-    // importance (weighting) based on layer's distance from best
+    // a real-life application should probably assign
+    // importance (weighting) based on layer's distance
+    // from best
     double sum_1 = 0.0, sum_2 = 0.0;
     for (const auto& layer : market_data.depth) {
       sum_1 += layer.bid_price * layer.bid_quantity +
@@ -119,7 +116,7 @@ Strategy::create_order_args_t Strategy::create_order_args(
           roq::TradeDirection::Sell,
           _quantity,
           best.bid_price,
-          close ? _ioc_close : _ioc_open);
+          get_order_template(close));
     }
     case -1: {
       auto close =
@@ -129,7 +126,7 @@ Strategy::create_order_args_t Strategy::create_order_args(
           roq::TradeDirection::Buy,
           _quantity,
           best.ask_price,
-          close ? _ioc_close : _ioc_open);
+          get_order_template(close));
     }
     default: {
       LOG(FATAL) << "Unexpected (sign_signal=" << sign_signal << ")";
@@ -137,14 +134,19 @@ Strategy::create_order_args_t Strategy::create_order_args(
   }
 }
 
+// csv output
+
 void Strategy::write_signal(
     const MarketData& market_data,
     double value,
     double signal) {
   const auto& best = market_data.depth[0];
+  auto msecs = std::chrono::duration_cast<std::chrono::milliseconds>(
+    market_data.exchange_time.time_since_epoch()).count();
   std::cout <<
     PREFIX_SIGNAL << DELIMITER <<
-    market_data.exchange_time.time_since_epoch().count() << DELIMITER <<
+    (msecs / 1000) << DELIMITER <<
+    (msecs % 1000) << DELIMITER <<
     best.bid_price << DELIMITER <<
     best.bid_quantity << DELIMITER <<
     best.ask_price << DELIMITER <<
@@ -157,10 +159,13 @@ void Strategy::write_signal(
 void Strategy::write_create_order(
     const MarketData& market_data,
     const Strategy::create_order_args_t& args) {
+  auto msecs = std::chrono::duration_cast<std::chrono::milliseconds>(
+    market_data.exchange_time.time_since_epoch()).count();
   std::cout <<
     PREFIX_CREATE_ORDER << DELIMITER <<
-    market_data.exchange_time.time_since_epoch().count() << DELIMITER <<
-    std::get<0>(args) << DELIMITER <<       // trade direction
+    (msecs / 1000) << DELIMITER <<
+    (msecs % 1000) << DELIMITER <<
+    std::get<0>(args) << DELIMITER <<       // direction
     std::get<1>(args) << DELIMITER <<       // quantity
     std::get<2>(args) << DELIMITER <<       // price
     QUOTE << std::get<3>(args) << QUOTE <<  // order template
