@@ -62,7 +62,7 @@ class BaseStrategy : public roq::Strategy {
  private:
   // api event handlers:
   // - timer
-  void on(const roq::TimerEvent&) override;
+  void on(const roq::TimerEvent&) override {}
   // - connection
   void on(const roq::ConnectionStatusEvent&) override {}
   // - batch

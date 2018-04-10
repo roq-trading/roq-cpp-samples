@@ -24,25 +24,21 @@ BaseStrategy::BaseStrategy(
     const std::string& exchange,
     const std::string& instrument,
     const std::string& gateway)
-    : _exchange(exchange),
+    : _dispatcher(dispatcher),
+      _exchange(exchange),
       _instrument(instrument),
       _gateway(gateway),
       _ioc_open(FLAGS_ioc_open),
-      _ioc_close(FLAGS_ioc_close),
-      _dispatcher(dispatcher) {
+      _ioc_close(FLAGS_ioc_close) {
   LOG(INFO) << "real_trading=" << (FLAGS_real_trading ? "true" : "false");
 }
 
 // event handlers
 
-void BaseStrategy::on(const roq::TimerEvent&) {
-  // TODO(thraneh): check time-out
-}
-
 // download
 
 void BaseStrategy::on(const roq::DownloadBeginEvent& event) {
-  // raise the download flag to block order management
+  // set download flag (block strategy from creating new orders)
   _download = true;
   LOG(INFO) << "download=" << (_download ? "true" : "false");
   // reset all variables tracking order management state
@@ -63,7 +59,7 @@ void BaseStrategy::on(const roq::DownloadEndEvent& event) {
     _max_order_id = max_order_id;
     LOG(INFO) << "max_order_id=" << _max_order_id;
   }
-  // reset the download flag to allow order management
+  // reset download flag
   _download = false;
   LOG(INFO) << "download=" << (_download ? "true" : "false");
 }
@@ -79,7 +75,7 @@ void BaseStrategy::on(const roq::BatchEndEvent&) {
     update(_market_data);
 }
 
-// either
+// either (could be the market data or order management gateway)
 
 void BaseStrategy::on(const roq::GatewayStatusEvent& event) {
   const auto& gateway_status = event.gateway_status;
@@ -281,7 +277,7 @@ uint32_t BaseStrategy::create_order(
 
 // general utilities
 
-// Filter update?
+// Filter update
 // Returns true if the update should be filtered (excluded).
 bool BaseStrategy::filter(const char *exchange, const char *instrument) {
   return _instrument.compare(instrument) != 0 || _exchange.compare(exchange) != 0;
