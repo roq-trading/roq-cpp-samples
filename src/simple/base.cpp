@@ -163,11 +163,11 @@ void BaseStrategy::on(const roq::OrderUpdateEvent& event) {
     return;
   LOG(INFO) << "order_update=" << order_update;
   // ensure we never recycle order id's
-  _max_order_id = std::max(_max_order_id, order_update.opaque);
+  _max_order_id = std::max(_max_order_id, order_update.order_id);
   // determine if the intention was to open or close
   auto open = parse_open_close(order_update.order_template);
   // compute fill quantity (and keep track of total traded quantity)
-  auto& previous = _order_traded_quantity[order_update.opaque];
+  auto& previous = _order_traded_quantity[order_update.order_id];
   auto fill_quantity = std::max(0.0, order_update.traded_quantity - previous);
   previous = order_update.traded_quantity;
   // update positions for new activity
@@ -277,7 +277,7 @@ uint32_t BaseStrategy::create_order(
     throw roq::NotReady();
   auto order_id = ++_max_order_id;
   roq::CreateOrder create_order {
-    .opaque         = order_id,
+    .order_id       = order_id,
     .order_template = order_template.c_str(),
     .exchange       = _exchange.c_str(),
     .instrument     = _instrument.c_str(),

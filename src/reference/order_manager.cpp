@@ -45,7 +45,7 @@ uint32_t OrderManager::create_order(const char *order_template,
   auto order_id = ++_next_order_id;
   try {
     roq::CreateOrder create_order {
-      .opaque         = order_id,
+      .order_id       = order_id,
       .order_template = order_template,
       .exchange       = _config.exchange.c_str(),
       .instrument     = _config.instrument.c_str(),
@@ -79,7 +79,7 @@ void OrderManager::on(const roq::TimerEvent& event) {
 void OrderManager::on(const roq::CreateOrderAckEvent& event) {
   check(event.message_info);
   const auto& create_order_ack = event.create_order_ack;
-  auto order_id = create_order_ack.opaque;
+  auto order_id = create_order_ack.order_id;
   auto iter = _orders.find(order_id);
   if (iter == _orders.end())
     return;
@@ -92,8 +92,8 @@ void OrderManager::on(const roq::CreateOrderAckEvent& event) {
     _orders.erase(iter);
   } else {
     // record the order id known to the gateway -- we need it if the user later want to modify or cancel
-    if (create_order_ack.order_id > 0)
-      order.gateway_order_id = create_order_ack.order_id;
+    if (create_order_ack.order_local_id > 0)
+      order.gateway_order_id = create_order_ack.order_local_id;
   }
 }
 
@@ -106,7 +106,7 @@ void OrderManager::on(const roq::ModifyOrderAckEvent& event) {
 void OrderManager::on(const roq::CancelOrderAckEvent& event) {
   check(event.message_info);
   const auto& cancel_order_ack = event.cancel_order_ack;
-  auto order_id = cancel_order_ack.opaque;
+  auto order_id = cancel_order_ack.order_id;
   if (cancel_order_ack.failure) {
     LOG(WARNING) << "Order cancellation did not succeed!";
   } else {
@@ -124,7 +124,7 @@ void OrderManager::on(const roq::CancelOrderAckEvent& event) {
 void OrderManager::on(const roq::OrderUpdateEvent& event) {
   check(event.message_info);
   const auto& order_update = event.order_update;
-  auto order_id = order_update.opaque;
+  auto order_id = order_update.order_id;
   auto iter = _orders.find(order_id);
   if (iter == _orders.end()) {
     LOG(WARNING) << "Got update for non-existing order! (The order could already have timed out).";
@@ -136,7 +136,7 @@ void OrderManager::on(const roq::OrderUpdateEvent& event) {
   bool has_fill = !is_equal(fill, 0.0);
   if (has_fill)
     _exposure.update(Exposure::Fill, order.direction, fill);
-  switch (order_update.status) {
+  switch (order_update.order_status) {
     case roq::OrderStatus::Undefined: {
       // this is wrong -- an (unknown? new?) enum has probably not been processed by the gateway
       LOG(FATAL) << "Unexpected order status!";

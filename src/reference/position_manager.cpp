@@ -8,7 +8,7 @@ namespace examples {
 namespace reference {
 
 void PositionManager::on(const roq::TradeUpdate& trade_update) {
-  const auto trade_id = trade_update.external_trade_id;
+  const auto trade_id = trade_update.trade_external_id;
   const auto real_quantity = signed_quantity(
       trade_update.trade_direction, trade_update.quantity);
   const auto insert_result = _trades.emplace(
