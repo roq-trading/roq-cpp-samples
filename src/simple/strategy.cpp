@@ -5,6 +5,10 @@
 #include <roq/logging.h>
 #include <roq/stream.h>
 
+#include <gflags/gflags.h>
+
+DEFINE_bool(real_trading, false, "Real trading? (Send orders).");
+
 namespace examples {
 namespace simple {
 
@@ -27,6 +31,7 @@ Strategy::Strategy(
       _weighted(config.weighted),
       _threshold(config.threshold),
       _quantity(config.quantity) {
+  LOG(INFO) << "real_trading=" << (FLAGS_real_trading ? "true" : "false");
 }
 
 void Strategy::reset() {
@@ -63,14 +68,13 @@ void Strategy::update(const MarketData& market_data) {
   write_create_order(market_data, args);
   // ... and then call the create_order function with those same arguments
   try {
-    /* FIXME(thraneh): disabled until the simulator supports order-matching
-    // TODO(thraneh): use parameter pack, e.g. stack overflow: 7858817
-    create_order(
-        std::get<0>(args),
-        std::get<1>(args),
-        std::get<2>(args),
-        std::get<3>(args));
-    */
+    // FIXME(thraneh): disabled until the simulator supports order-matching
+    if (FLAGS_real_trading)
+      create_order(  // TODO(thraneh): use parameter pack, e.g. stack overflow: 7858817
+          std::get<0>(args),
+          std::get<1>(args),
+          std::get<2>(args),
+          std::get<3>(args));
   } catch (roq::Exception& e) {
     // possible reasons;
     // roq::NotConnected

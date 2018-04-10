@@ -41,7 +41,7 @@ void BaseStrategy::on(const roq::TimerEvent&) {
 void BaseStrategy::on(const roq::DownloadBeginEvent& event) {
   // raise the download flag to block order management
   _download = true;
-  LOG(INFO) << "Update: download=" << (_download ? "true" : "false");
+  LOG(INFO) << "download=" << (_download ? "true" : "false");
   // reset all variables tracking order management state
   _order_manager_ready = false;
   _market_open = false;
@@ -58,11 +58,11 @@ void BaseStrategy::on(const roq::DownloadEndEvent& event) {
   auto max_order_id = std::max(_max_order_id, download_end.max_order_id);
   if (_max_order_id != max_order_id) {
     _max_order_id = max_order_id;
-    LOG(INFO) << "Update: max_order_id=" << _max_order_id;
+    LOG(INFO) << "max_order_id=" << _max_order_id;
   }
   // reset the download flag to allow order management
   _download = false;
-  LOG(INFO) << "Update: download=" << (_download ? "true" : "false");
+  LOG(INFO) << "download=" << (_download ? "true" : "false");
 }
 
 // batch
@@ -80,7 +80,7 @@ void BaseStrategy::on(const roq::BatchEndEvent&) {
 
 void BaseStrategy::on(const roq::GatewayStatusEvent& event) {
   const auto& gateway_status = event.gateway_status;
-  LOG(INFO) << gateway_status;
+  LOG(INFO) << "gateway_status=" << gateway_status;
   // return early if it's not the gateway's order management status
   if (std::strcmp(TRADER, gateway_status.name) != 0)
     return;
@@ -88,7 +88,7 @@ void BaseStrategy::on(const roq::GatewayStatusEvent& event) {
   auto order_manager_ready = gateway_status.status == roq::GatewayState::Ready;
   if (_order_manager_ready != order_manager_ready) {
     _order_manager_ready = order_manager_ready;
-    LOG(INFO) << "Update: order_manager_ready=" << (_order_manager_ready ? "true" : "false");
+    LOG(INFO) << "order_manager_ready=" << (_order_manager_ready ? "true" : "false");
   }
 }
 
@@ -99,10 +99,12 @@ void BaseStrategy::on(const roq::ReferenceDataEvent& event) {
   // return early if it's not the instrument we want to trade
   if (filter(reference_data.exchange, reference_data.instrument))
     return;
+  LOG(INFO) << "reference_data=" << reference_data;
   // instrument's tick size
-  if (_tick_size != reference_data.tick_size) {
-    _tick_size = reference_data.tick_size;
-    LOG(INFO) << "Update: tick_size=" << _tick_size;
+  auto tick_size = reference_data.tick_size;
+  if (_tick_size != tick_size && tick_size != 0.0) {
+    _tick_size = tick_size;
+    LOG(INFO) << "tick_size=" << _tick_size;
   }
 }
 
@@ -111,11 +113,12 @@ void BaseStrategy::on(const roq::MarketStatusEvent& event) {
   // return early if it's not the instrument we want to trade
   if (filter(market_status.exchange, market_status.instrument))
     return;
+  LOG(INFO) << "market_status=" << market_status;
   // instrument's trading status
   auto market_open = market_status.trading_status == roq::TradingStatus::Open;
   if (_market_open != market_open) {
     _market_open = market_open;
-    LOG(INFO) << "Update: market_open=" << (_market_open ? "true" : "false");
+    LOG(INFO) << "market_open=" << (_market_open ? "true" : "false");
   }
 }
 
@@ -126,17 +129,18 @@ void BaseStrategy::on(const roq::PositionUpdateEvent& event) {
   // return early if it's not the instrument we want to trade
   if (filter(position_update.exchange, position_update.instrument))
     return;
+  LOG(INFO) << "position_update=" << position_update;
   // initialize start of day position using yesterday's close position
   // note! this is an example-choice, we could also have configured this.
   switch (position_update.trade_direction) {
     case roq::TradeDirection::Buy: {
       _long_position_sod = position_update.position_yesterday;
-      LOG(INFO) << "Update: long_position_sod=" << _long_position_sod;
+      LOG(INFO) << "long_position_sod=" << _long_position_sod;
       break;
     }
     case roq::TradeDirection::Sell: {
       _short_position_sod = position_update.position_yesterday;
-      LOG(INFO) << "Update: short_position_sod=" << _short_position_sod;
+      LOG(INFO) << "short_position_sod=" << _short_position_sod;
       break;
     }
     default: {
@@ -157,6 +161,9 @@ void BaseStrategy::on(const roq::OrderUpdateEvent& event) {
   // return early if it's not the instrument we want to trade
   if (filter(order_update.exchange, order_update.instrument))
     return;
+  LOG(INFO) << "order_update=" << order_update;
+  // ensure we never recycle order id's
+  _max_order_id = std::max(_max_order_id, order_update.opaque);
   // determine if the intention was to open or close
   auto open = parse_open_close(order_update.order_template);
   // compute fill quantity (and keep track of total traded quantity)
@@ -167,12 +174,12 @@ void BaseStrategy::on(const roq::OrderUpdateEvent& event) {
   switch (order_update.trade_direction) {
     case roq::TradeDirection::Buy: {
       _long_position_new += fill_quantity;
-      LOG(INFO) << "Update: long_position_new=" << _long_position_new;
+      LOG(INFO) << "long_position_new=" << _long_position_new;
       break;
     }
     case roq::TradeDirection::Sell: {
       _short_position_new += fill_quantity;
-      LOG(INFO) << "Update: short_position_new=" << _short_position_new;
+      LOG(INFO) << "short_position_new=" << _short_position_new;
       break;
     }
     default: {
@@ -184,21 +191,30 @@ void BaseStrategy::on(const roq::OrderUpdateEvent& event) {
 // request-response
 
 void BaseStrategy::on(const roq::CreateOrderAckEvent& event) {
-  LOG(INFO) << event;
-  const auto& create_order_ack = event.create_order_ack;
   LOG_IF(FATAL, _download) << "Unexpected";
+  const auto& create_order_ack = event.create_order_ack;
+  LOG_IF(INFO, create_order_ack.failure == false) <<
+      "create_order_ack=" << create_order_ack;
+  LOG_IF(WARNING, create_order_ack.failure) <<
+      "create_order_ack=" << create_order_ack;
 }
 
 void BaseStrategy::on(const roq::ModifyOrderAckEvent& event) {
-  LOG(INFO) << event;
-  const auto& modify_order_ack = event.modify_order_ack;
   LOG_IF(FATAL, _download) << "Unexpected";
+  const auto& modify_order_ack = event.modify_order_ack;
+  LOG_IF(INFO, modify_order_ack.failure == false) <<
+      "modify_order_ack=" << modify_order_ack;
+  LOG_IF(WARNING, modify_order_ack.failure) <<
+      "modify_order_ack=" << modify_order_ack;
 }
 
 void BaseStrategy::on(const roq::CancelOrderAckEvent& event) {
-  LOG(INFO) << event;
-  const auto& cancel_order_ack = event.cancel_order_ack;
   LOG_IF(FATAL, _download) << "Unexpected";
+  const auto& cancel_order_ack = event.cancel_order_ack;
+  LOG_IF(INFO, cancel_order_ack.failure == false) <<
+      "cancel_order_ack=" << cancel_order_ack;
+  LOG_IF(WARNING, cancel_order_ack.failure) <<
+      "cancel_order_ack=" << cancel_order_ack;
 }
 
 // market data
@@ -269,6 +285,7 @@ uint32_t BaseStrategy::create_order(
     .quantity       = quantity,
     .limit_price    = price,
   };
+  LOG(INFO) << "create_order=" << create_order;
   _dispatcher.send(create_order, _gateway.c_str());
   return order_id;
 }
