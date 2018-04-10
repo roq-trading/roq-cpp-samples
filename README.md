@@ -18,22 +18,28 @@ You should [contact us](mailto:info@roq-trading.com) if you want to
 
 ## Introduction
 
-This repository contains two examples.
-A collector writing market data to `stdout`.
-And a reference strategy demonstrating components typically involved when writing an actual trading strategy.
+This repository contains examples.
+
+* Market data listener demonstrating how to aggregate batch updates and write the result to `stdout`.
+* Simple example demonstrating everything needed to implement a market taking strategy.
+* Generic reference strategy skeleton demonstrating components typically involved when writing an actual trading strategy.
 
 
-### Collector
+### Collect
 
 The most basic example demonstrating how to work with the event handlers.
 
 The example shows how to aggregate multiple updates (events) arriving as a batch.
-The example also shows how one should implement the client for live trading or simulation.
+The example also shows how the same strategy can be connected to a gateway or used with an in-process simulator.
 
 
 ### Simple
 
-Demonstrating a very simple strategy implementation.
+Demonstrating a very simple market taker strategy.
+
+The strategy looks for jumps as measured by a simple mid-price model.
+Reversal is expected if the jump exceeds a configured threshold in which case an IOC order may be sent.
+The example also tries to deal with typical open/close considerations normally found in Chinese markets.
 
 
 ### Reference
