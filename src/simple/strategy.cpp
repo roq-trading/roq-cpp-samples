@@ -9,11 +9,17 @@ namespace examples {
 namespace simple {
 
 namespace {
+// constants
 const char *PREFIX_SIGNAL = "S";
 const char *PREFIX_CREATE_ORDER = "O";
 const char *DELIMITER = ",";
 const char *QUOTE = "\"";
+// sign (stack overflow: 1903954)
+template <typename T>
+int sign(T value) {
+  return (T(0) < value) - (value < T(0));
 }
+}  // namespace
 
 Strategy::Strategy(
     roq::Strategy::Dispatcher& dispatcher,
@@ -48,10 +54,10 @@ void Strategy::update(const MarketData& market_data) {
   if (std::fabs(signal) < _threshold || std::isnan(signal))
     return;
   // direction of signal
-  auto sign_signal = (0.0 < signal) - (signal < 0.0);  // stack overflow: 1903954
+  auto sign_signal = sign(signal);
   // direction of current position
   auto position = get_position();
-  auto sign_position = (0.0 < position) - (position < 0.0);  // stack overflow: 1903954
+  auto sign_position = sign(position);
   // exposure is limited to configured quantity
   // in other words: do not increase an already existing position
   if ((sign_signal * sign_position) < 0)
@@ -63,7 +69,7 @@ void Strategy::update(const MarketData& market_data) {
   write_create_order(market_data, args);
   // ... and then call the create_order function with those same arguments
   try {
-    create_order(  // TODO(thraneh): use parameter pack, e.g. stack overflow: 7858817
+    create_order(
         std::get<0>(args),
         std::get<1>(args),
         std::get<2>(args),
