@@ -5,10 +5,6 @@
 #include <roq/logging.h>
 #include <roq/stream.h>
 
-#include <gflags/gflags.h>
-
-DEFINE_bool(real_trading, false, "Real trading? (Send orders).");
-
 namespace examples {
 namespace simple {
 
@@ -31,7 +27,6 @@ Strategy::Strategy(
       _weighted(config.weighted),
       _threshold(config.threshold),
       _quantity(config.quantity) {
-  LOG(INFO) << "real_trading=" << (FLAGS_real_trading ? "true" : "false");
 }
 
 void Strategy::reset() {
@@ -68,23 +63,21 @@ void Strategy::update(const MarketData& market_data) {
   write_create_order(market_data, args);
   // ... and then call the create_order function with those same arguments
   try {
-    // FIXME(thraneh): disabled until the simulator supports order-matching
-    if (FLAGS_real_trading)
-      create_order(  // TODO(thraneh): use parameter pack, e.g. stack overflow: 7858817
-          std::get<0>(args),
-          std::get<1>(args),
-          std::get<2>(args),
-          std::get<3>(args));
+    create_order(  // TODO(thraneh): use parameter pack, e.g. stack overflow: 7858817
+        std::get<0>(args),
+        std::get<1>(args),
+        std::get<2>(args),
+        std::get<3>(args));
   } catch (roq::Exception& e) {
     // possible reasons;
-    // roq::NotConnected
-    // - client has lost connection to gateway
-    // roq::NotReady
-    // - gateway is not in the ready state (e.g. disconnected from
-    //   broker or downloading information to client)
-    // - instrument status doesn't allow trading (e.g. not currently
-    //   a trading session or trading halt)
-    // - any other validating checks performed by the base strategy
+    //   roq::NotConnected
+    //   - client has lost connection to gateway
+    //   roq::NotReady
+    //   - gateway is not in the ready state (e.g. disconnected from
+    //     broker or downloading information to client)
+    //   - instrument status doesn't allow trading (e.g. not currently
+    //     a trading session or trading halt)
+    //   - any other validating checks performed by the base strategy
     LOG(WARNING) << "Failed to create order. Reason=\"" << e.what() << "\"";
   }
 }

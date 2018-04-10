@@ -12,6 +12,8 @@
 DEFINE_string(ioc_open, "ioc_open", "Order template.");
 DEFINE_string(ioc_close, "ioc_close", "Order template.");
 
+DEFINE_bool(real_trading, false, "Real trading? (Meaning: Send orders).");
+
 namespace examples {
 namespace simple {
 
@@ -28,6 +30,7 @@ BaseStrategy::BaseStrategy(
       _ioc_open(FLAGS_ioc_open),
       _ioc_close(FLAGS_ioc_close),
       _dispatcher(dispatcher) {
+  LOG(INFO) << "real_trading=" << (FLAGS_real_trading ? "true" : "false");
 }
 
 // event handlers
@@ -276,17 +279,21 @@ uint32_t BaseStrategy::create_order(
   if (is_ready() == false)  // to avoid increasing local order id's for no reason
     throw roq::NotReady();
   auto order_id = ++_max_order_id;
-  roq::CreateOrder create_order {
-    .order_id       = order_id,
-    .order_template = order_template.c_str(),
-    .exchange       = _exchange.c_str(),
-    .instrument     = _instrument.c_str(),
-    .direction      = direction,
-    .quantity       = quantity,
-    .limit_price    = price,
-  };
-  LOG(INFO) << "create_order=" << create_order;
-  _dispatcher.send(create_order, _gateway.c_str());
+  if (FLAGS_real_trading) {
+    roq::CreateOrder create_order {
+      .order_id       = order_id,
+      .order_template = order_template.c_str(),
+      .exchange       = _exchange.c_str(),
+      .instrument     = _instrument.c_str(),
+      .direction      = direction,
+      .quantity       = quantity,
+      .limit_price    = price,
+    };
+    LOG(INFO) << "create_order=" << create_order;
+    _dispatcher.send(create_order, _gateway.c_str());
+  } else {
+    LOG(WARNING) << "Real trading has been disabled: *** ORDER IS NOT CREATED ***";
+  }
   return order_id;
 }
 

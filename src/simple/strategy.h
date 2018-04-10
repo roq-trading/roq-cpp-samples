@@ -28,10 +28,10 @@ class Strategy final : public BaseStrategy {
 
  private:
   typedef std::tuple<
-    roq::TradeDirection,
-    double,
-    double,
-    std::string> create_order_args_t;
+      roq::TradeDirection,
+      double,
+      double,
+      std::string> create_order_args_t;
   create_order_args_t create_order_args(
       int sign_signal,
       const roq::Layer& best) const;
@@ -43,7 +43,7 @@ class Strategy final : public BaseStrategy {
       double signal);
   static void write_create_order(
       const MarketData& market_data,
-      const Strategy::create_order_args_t& args);
+      const create_order_args_t& args);
 
  private:
   const bool _weighted;
