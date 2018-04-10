@@ -66,6 +66,7 @@ void Strategy::update(const MarketData& market_data) {
   write_create_order(market_data, args);
   // ... and then call the create_order function with those same arguments
   try {
+    // explicitly select the argument (c++17's std::apply would be convenient here)
     create_order(
         std::get<0>(args),   // direction
         std::get<1>(args),   // quantity
