@@ -67,7 +67,7 @@ int main(int argc, char *argv[]) {
 
     roq::simulation::Controller<Strategy>(
         std::move(generators)).create_and_dispatch(
-            config, gateway);
+            gateway, config);
   } else {
     // mode: trading
 
@@ -86,7 +86,7 @@ int main(int argc, char *argv[]) {
 
     roq::client::Controller<Strategy>(
         std::move(gateways)).create_and_dispatch(
-            config, gateway);
+            gateway, config);
   }
 
   return EXIT_SUCCESS;

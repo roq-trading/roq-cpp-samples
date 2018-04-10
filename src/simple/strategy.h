@@ -16,8 +16,8 @@ class Strategy final : public BaseStrategy {
  public:
   Strategy(
     roq::Strategy::Dispatcher& dispatcher,
-    const Config& config,
-    const std::string& gateway);
+    const std::string& gateway,
+    const Config& config);
 
  protected:
   void update(const MarketData& market_data) override;

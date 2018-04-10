@@ -9,6 +9,7 @@ std::ostream& operator<<(std::ostream& stream, const Config& value) {
   return stream << "{"
     "exchange=\"" << value.exchange << "\", "
     "instrument=\"" << value.instrument << "\", "
+    "tick_size=" << value.tick_size << ", "
     "weighted=" << (value.weighted ? "true" : "false") << ", "
     "threshold=" << value.threshold << ", "
     "quantity=" << value.quantity <<

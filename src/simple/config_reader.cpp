@@ -6,11 +6,8 @@
 
 #include <roq/logging.h>
 
-// #include <cstdlib>
 #include <fstream>
 #include <map>
-// #include <utility>
-// #include <vector>
 
 namespace examples {
 namespace simple {
@@ -57,6 +54,7 @@ static Config create_config(const ucl::Ucl& setting) {
   Config result {
     .exchange     = setting.lookup("exchange").string_value(),
     .instrument   = setting.lookup("instrument").string_value(),
+    .tick_size    = setting.lookup("tick_size").number_value(),
     .weighted     = setting.lookup("weighted").bool_value(),
     .threshold    = setting.lookup("threshold").number_value(),
     .quantity     = static_cast<double>(

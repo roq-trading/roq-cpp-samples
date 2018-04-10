@@ -23,13 +23,14 @@ int sign(T value) {
 
 Strategy::Strategy(
     roq::Strategy::Dispatcher& dispatcher,
-    const Config& config,
-    const std::string& gateway)
+    const std::string& gateway,
+    const Config& config)
     : BaseStrategy(
           dispatcher,
+          gateway,
           config.exchange,
           config.instrument,
-          gateway),
+          config.tick_size),
       _weighted(config.weighted),
       _threshold(config.threshold),
       _quantity(config.quantity) {

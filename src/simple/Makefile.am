@@ -27,6 +27,7 @@ example_simple_SOURCES = \
 	base.cpp \
 	config.cpp \
 	config_reader.cpp \
+	position.cpp \
 	strategy.cpp \
 	main.cpp
 EXTRA_example_simple_SOURCES = \
@@ -34,6 +35,7 @@ EXTRA_example_simple_SOURCES = \
 	config.h \
 	config_reader.h \
 	market_data.h \
+	position.h \
 	strategy.h
 configdir=$(datadir)/roq/samples
 config_DATA = simple.conf instruments.conf

@@ -8,6 +8,7 @@
 #include <unordered_map>
 
 #include "simple/market_data.h"
+#include "simple/position.h"
 
 namespace examples {
 namespace simple {
@@ -31,9 +32,10 @@ class BaseStrategy : public roq::Strategy {
  public:
   explicit BaseStrategy(
       roq::Strategy::Dispatcher& dispatcher,
+      const std::string& gateway,
       const std::string& exchange,
       const std::string& instrument,
-      const std::string& gateway);
+      double tick_size);
 
   const std::string& get_exchange() const { return _exchange; }
   const std::string& get_instrument() const { return _instrument; }
@@ -44,16 +46,15 @@ class BaseStrategy : public roq::Strategy {
 
   double get_tick_size() const { return _tick_size; }
 
-  enum class PositionType {
-    StartOfDay,   // today's start of day position
-    NewActivity,  // today's new activity
-    Current       // current position
-  };
-
-  double get_long_position(PositionType type) const;
-  double get_short_position(PositionType type) const;
-
-  double get_net_position(PositionType type) const;
+  double get_long_position(PositionType type) const {
+    return _long_position.get(type);
+  }
+  double get_short_position(PositionType type) const {
+    return _short_position.get(type);
+  }
+  double get_net_position(PositionType type) const {
+    return get_long_position(type) - get_short_position(type);
+  }
 
   bool is_ready() const;
 
@@ -103,21 +104,19 @@ class BaseStrategy : public roq::Strategy {
  private:
   roq::Strategy::Dispatcher& _dispatcher;
   // configuration
-  const std::string _exchange;
-  const std::string _instrument;
   const std::string _gateway;
   const std::string _ioc_open;
   const std::string _ioc_close;
+  const std::string _exchange;
+  const std::string _instrument;
   // state management
   bool _download = false;
   bool _order_manager_ready = false;
-  double _tick_size = 0.2;
+  double _tick_size;
   uint32_t _max_order_id = 0;
   bool _market_open = false;
-  double _long_position_sod = 0.0;
-  double _short_position_sod = 0.0;
-  double _long_position_new = 0.0;
-  double _short_position_new = 0.0;
+  Position _long_position;
+  Position _short_position;
   std::unordered_map<uint32_t, double> _order_traded_quantity;
   MarketData _market_data = {};
   bool _market_data_dirty = false;

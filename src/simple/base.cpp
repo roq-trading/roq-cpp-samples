@@ -21,15 +21,17 @@ const char *TRADER = "Trader";  // FIXME(thraneh): introduce an enum for this!
 
 BaseStrategy::BaseStrategy(
     roq::Strategy::Dispatcher& dispatcher,
+    const std::string& gateway,
     const std::string& exchange,
     const std::string& instrument,
-    const std::string& gateway)
+    double tick_size)
     : _dispatcher(dispatcher),
-      _exchange(exchange),
-      _instrument(instrument),
       _gateway(gateway),
       _ioc_open(FLAGS_ioc_open),
-      _ioc_close(FLAGS_ioc_close) {
+      _ioc_close(FLAGS_ioc_close),
+      _exchange(exchange),
+      _instrument(instrument),
+      _tick_size(tick_size) {
   LOG(INFO) << "real_trading=" << (FLAGS_real_trading ? "true" : "false");
 }
 
@@ -44,10 +46,8 @@ void BaseStrategy::on(const roq::DownloadBeginEvent& event) {
   // reset all variables tracking order management state
   _order_manager_ready = false;
   _market_open = false;
-  _long_position_sod = 0.0;
-  _short_position_sod = 0.0;
-  _long_position_new = 0.0;
-  _short_position_new = 0.0;
+  _long_position.reset();
+  _short_position.reset();
   _order_traded_quantity.clear();
 }
 
@@ -133,13 +133,11 @@ void BaseStrategy::on(const roq::PositionUpdateEvent& event) {
   // note! this is an example-choice, we could also have configured this.
   switch (position_update.trade_direction) {
     case roq::TradeDirection::Buy: {
-      _long_position_sod = position_update.position_yesterday;
-      LOG(INFO) << "long_position_sod=" << _long_position_sod;
+      _long_position.set_start_of_day(position_update.position_yesterday);
       break;
     }
     case roq::TradeDirection::Sell: {
-      _short_position_sod = position_update.position_yesterday;
-      LOG(INFO) << "short_position_sod=" << _short_position_sod;
+      _short_position.set_start_of_day(position_update.position_yesterday);
       break;
     }
     default: {
@@ -172,13 +170,11 @@ void BaseStrategy::on(const roq::OrderUpdateEvent& event) {
   // update positions for new activity
   switch (order_update.trade_direction) {
     case roq::TradeDirection::Buy: {
-      _long_position_new += fill_quantity;
-      LOG(INFO) << "long_position_new=" << _long_position_new;
+      _long_position.add_new_activity(fill_quantity);
       break;
     }
     case roq::TradeDirection::Sell: {
-      _short_position_new += fill_quantity;
-      LOG(INFO) << "short_position_new=" << _short_position_new;
+      _short_position.add_new_activity(fill_quantity);
       break;
     }
     default: {
@@ -281,28 +277,6 @@ uint32_t BaseStrategy::create_order(
 // Returns true if the update should be filtered (excluded).
 bool BaseStrategy::filter(const char *exchange, const char *instrument) {
   return _instrument.compare(instrument) != 0 || _exchange.compare(exchange) != 0;
-}
-
-// Current or start-of-day positions.
-
-double BaseStrategy::get_long_position(PositionType type) const {
-  switch (type) {
-    case PositionType::StartOfDay: return _long_position_sod;
-    case PositionType::NewActivity: return _long_position_new;
-    case PositionType::Current: return _long_position_sod + _long_position_new;
-  }
-}
-
-double BaseStrategy::get_short_position(PositionType type) const {
-  switch (type) {
-    case PositionType::StartOfDay: return _short_position_sod;
-    case PositionType::NewActivity: return _short_position_new;
-    case PositionType::Current: return _short_position_sod + _short_position_new;
-  }
-}
-
-double BaseStrategy::get_net_position(PositionType type) const {
-  return get_long_position(type) - get_short_position(type);
 }
 
 // Ready to trade?
