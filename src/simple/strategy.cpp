@@ -25,7 +25,7 @@ Strategy::Strategy(
     roq::Strategy::Dispatcher& dispatcher,
     const std::string& gateway,
     const Config& config)
-    : BaseStrategy(
+    : common::SimpleStrategy(
           dispatcher,
           gateway,
           config.exchange,
@@ -36,24 +36,26 @@ Strategy::Strategy(
       _quantity(config.quantity) {
 }
 
-void Strategy::update(const MarketData& market_data) {
+void Strategy::update(const common::MarketData& market_data) {
   const auto& best = market_data.depth[0];
   // do we have a proper two-sided market?
   if (best.bid_quantity == 0.0 && best.ask_quantity == 0.0)
     return;
   // compute the signal and compare to previous
-  auto value = compute(market_data);
+  auto value = compute(
+      market_data.depth,
+      sizeof(market_data.depth) / sizeof(market_data.depth[0]));
   auto signal = value - _previous;
   _previous = value;
   // write signal to std::cout [csv]
-  write_signal(market_data, value, signal);
+  write_signal(market_data.exchange_time, best, value, signal);
   // only trade if the magnitude of the signal exceeds the threshold
   if (std::fabs(signal) < _threshold || std::isnan(signal))
     return;
   // direction of signal
   auto sign_signal = sign(signal);
   // direction of current position
-  auto position = get_net_position(PositionType::Current);
+  auto position = get_net_position(common::PositionType::Current);
   auto sign_position = sign(position);
   // exposure is limited to configured quantity
   // in other words: do not increase an already existing position
@@ -63,7 +65,7 @@ void Strategy::update(const MarketData& market_data) {
   // arguments for the create_order function...
   auto args = create_order_args(sign_signal, best);
   // ... so the order parameters can be written to std::cout [csv]
-  write_create_order(market_data, args);
+  write_create_order(market_data.exchange_time, args);
   // ... and then call the create_order function with those same arguments
   try {
     // explicitly select the argument (c++17's std::apply would be convenient here)
@@ -86,14 +88,15 @@ void Strategy::update(const MarketData& market_data) {
   }
 }
 
-double Strategy::compute(const MarketData& market_data) const {
+double Strategy::compute(const roq::Layer *depth, size_t length) const {
   if (_weighted) {
     // weighted mid price
     // a real-life application should probably assign
     // importance (weighting) based on layer's distance
     // from best
     double sum_1 = 0.0, sum_2 = 0.0;
-    for (const auto& layer : market_data.depth) {
+    for (auto i = 0; i < length; ++i) {
+      const auto& layer = depth[i];
       sum_1 += layer.bid_price * layer.bid_quantity +
                layer.ask_price * layer.ask_quantity;
       sum_2 += layer.bid_quantity + layer.ask_quantity;
@@ -101,7 +104,7 @@ double Strategy::compute(const MarketData& market_data) const {
     return sum_1 / sum_2 / get_tick_size();
   } else {
     // simple mid price
-    const auto& best = market_data.depth[0];
+    const auto& best = depth[0];
     return 0.5 * (best.bid_price + best.ask_price) / get_tick_size();
   }
 }
@@ -112,8 +115,8 @@ Strategy::create_order_args_t Strategy::create_order_args(
   switch (sign_signal) {
     case 1: {
       auto close =
-          get_short_position(PositionType::NewActivity) <
-          get_long_position(PositionType::StartOfDay);
+          get_short_position(common::PositionType::NewActivity) <
+          get_long_position(common::PositionType::StartOfDay);
       return std::make_tuple(
           roq::TradeDirection::Sell,
           _quantity,
@@ -122,8 +125,8 @@ Strategy::create_order_args_t Strategy::create_order_args(
     }
     case -1: {
       auto close =
-          get_long_position(PositionType::NewActivity) <
-          get_short_position(PositionType::StartOfDay);
+          get_long_position(common::PositionType::NewActivity) <
+          get_short_position(common::PositionType::StartOfDay);
       return std::make_tuple(
           roq::TradeDirection::Buy,
           _quantity,
@@ -139,12 +142,12 @@ Strategy::create_order_args_t Strategy::create_order_args(
 // csv output
 
 void Strategy::write_signal(
-    const MarketData& market_data,
+    roq::time_point_t exchange_time,
+    const roq::Layer& best,
     double value,
     double signal) {
-  const auto& best = market_data.depth[0];
   auto msecs = std::chrono::duration_cast<std::chrono::milliseconds>(
-    market_data.exchange_time.time_since_epoch()).count();
+    exchange_time.time_since_epoch()).count();
   std::cout <<
     PREFIX_SIGNAL << DELIMITER <<
     (msecs / 1000) << DELIMITER <<
@@ -159,10 +162,10 @@ void Strategy::write_signal(
 }
 
 void Strategy::write_create_order(
-    const MarketData& market_data,
+    roq::time_point_t exchange_time,
     const Strategy::create_order_args_t& args) {
   auto msecs = std::chrono::duration_cast<std::chrono::milliseconds>(
-    market_data.exchange_time.time_since_epoch()).count();
+    exchange_time.time_since_epoch()).count();
   std::cout <<
     PREFIX_CREATE_ORDER << DELIMITER <<
     (msecs / 1000) << DELIMITER <<

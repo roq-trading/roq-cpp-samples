@@ -6,13 +6,14 @@
 #include <string>
 #include <tuple>
 
-#include "simple/base.h"
 #include "simple/config.h"
+
+#include "common/simple_strategy.h"
 
 namespace examples {
 namespace simple {
 
-class Strategy final : public BaseStrategy {
+class Strategy final : public common::SimpleStrategy {
  public:
   Strategy(
     roq::Strategy::Dispatcher& dispatcher,
@@ -20,10 +21,10 @@ class Strategy final : public BaseStrategy {
     const Config& config);
 
  protected:
-  void update(const MarketData& market_data) override;
+  void update(const common::MarketData& market_data) override;
 
  private:
-  double compute(const MarketData& market_data) const;
+  double compute(const roq::Layer *depth, size_t length) const;
 
  private:
   typedef std::tuple<
@@ -37,17 +38,20 @@ class Strategy final : public BaseStrategy {
 
  private:
   static void write_signal(
-      const MarketData& market_data,
+      roq::time_point_t exchange_time,
+      const roq::Layer& best,
       double value,
       double signal);
   static void write_create_order(
-      const MarketData& market_data,
+      roq::time_point_t exchange_time,
       const create_order_args_t& args);
 
  private:
+  // configuration
   const bool _weighted;
   const double _threshold;
   const double _quantity;
+  // state
   double _previous = std::numeric_limits<double>::quiet_NaN();
 };
 

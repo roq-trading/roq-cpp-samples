@@ -1,6 +1,7 @@
 bin_PROGRAMS = example-simple
 example_simple_LDFLAGS = \
 	$(top_builddir)/src/utilities/libutilities.la \
+	$(top_builddir)/src/common/libcommon.la \
 	$(ROQ_LIBS) \
 	$(CCTZ_LIBS) \
 	$(CROSSGUID_LIBS) \
@@ -24,18 +25,13 @@ example_simple_CPPFLAGS = \
 	$(LIBUNWIND_CFLAGS) \
 	$(SPDLOG_CFLAGS)
 example_simple_SOURCES = \
-	base.cpp \
 	config.cpp \
 	config_reader.cpp \
-	position.cpp \
 	strategy.cpp \
 	main.cpp
 EXTRA_example_simple_SOURCES = \
-	base.h \
 	config.h \
 	config_reader.h \
-	market_data.h \
-	position.h \
 	strategy.h
 configdir=$(datadir)/roq/samples
 config_DATA = simple.conf instruments.conf

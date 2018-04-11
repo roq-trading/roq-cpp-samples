@@ -3,7 +3,7 @@
 #pragma once
 
 namespace examples {
-namespace simple {
+namespace common {
 
 enum class PositionType {
   StartOfDay,   // today's start of day position
@@ -23,5 +23,5 @@ class Position final {
   double _new_activity = 0.0;
 };
 
-}  // namespace simple
+}  // namespace common
 }  // namespace examples

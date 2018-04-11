@@ -1,11 +1,11 @@
 /* Copyright (c) 2017-2018, Hans Erik Thrane */
 
-#include "simple/position.h"
+#include "common/position.h"
 
 #include <roq/logging.h>
 
 namespace examples {
-namespace simple {
+namespace common {
 
 void Position::reset() {
   _start_of_day = _new_activity = 0.0;
@@ -29,5 +29,5 @@ double Position::get(PositionType type) const {
   }
 }
 
-}  // namespace simple
+}  // namespace common
 }  // namespace examples

@@ -5,7 +5,7 @@
 #include <roq/api.h>
 
 namespace examples {
-namespace simple {
+namespace common {
 
 struct MarketData final {
   roq::Layer depth[roq::MAX_DEPTH];
@@ -17,5 +17,5 @@ struct MarketData final {
   uint16_t channel;
 };
 
-}  // namespace simple
+}  // namespace common
 }  // namespace examples

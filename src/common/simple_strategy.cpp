@@ -1,6 +1,6 @@
 /* Copyright (c) 2017-2018, Hans Erik Thrane */
 
-#include "simple/base.h"
+#include "common/simple_strategy.h"
 
 #include <roq/logging.h>
 #include <roq/stream.h>
@@ -15,11 +15,11 @@ DEFINE_string(ioc_close, "ioc_close", "Order template.");
 DEFINE_bool(real_trading, false, "Real trading? (Meaning: Send orders).");
 
 namespace examples {
-namespace simple {
+namespace common {
 
 const char *TRADER = "Trader";  // FIXME(thraneh): introduce an enum for this!
 
-BaseStrategy::BaseStrategy(
+SimpleStrategy::SimpleStrategy(
     roq::Strategy::Dispatcher& dispatcher,
     const std::string& gateway,
     const std::string& exchange,
@@ -39,7 +39,7 @@ BaseStrategy::BaseStrategy(
 
 // download
 
-void BaseStrategy::on(const roq::DownloadBeginEvent& event) {
+void SimpleStrategy::on(const roq::DownloadBeginEvent& event) {
   // set download flag (block strategy from creating new orders)
   _download = true;
   LOG(INFO) << "download=" << (_download ? "true" : "false");
@@ -51,7 +51,7 @@ void BaseStrategy::on(const roq::DownloadBeginEvent& event) {
   _order_traded_quantity.clear();
 }
 
-void BaseStrategy::on(const roq::DownloadEndEvent& event) {
+void SimpleStrategy::on(const roq::DownloadEndEvent& event) {
   const auto& download_end = event.download_end;
   // the gateway keeps track of order id's (they can't be recycled)
   auto max_order_id = std::max(_max_order_id, download_end.max_order_id);
@@ -66,18 +66,18 @@ void BaseStrategy::on(const roq::DownloadEndEvent& event) {
 
 // batch
 
-void BaseStrategy::on(const roq::BatchBeginEvent&) {
+void SimpleStrategy::on(const roq::BatchBeginEvent&) {
   _market_data_dirty = false;
 }
 
-void BaseStrategy::on(const roq::BatchEndEvent&) {
+void SimpleStrategy::on(const roq::BatchEndEvent&) {
   if (_market_data_dirty)
     update(_market_data);
 }
 
 // either (could be the market data or order management gateway)
 
-void BaseStrategy::on(const roq::GatewayStatusEvent& event) {
+void SimpleStrategy::on(const roq::GatewayStatusEvent& event) {
   const auto& gateway_status = event.gateway_status;
   LOG(INFO) << "gateway_status=" << gateway_status;
   // return early if it's not the gateway's order management status
@@ -93,7 +93,7 @@ void BaseStrategy::on(const roq::GatewayStatusEvent& event) {
 
 // order manager
 
-void BaseStrategy::on(const roq::ReferenceDataEvent& event) {
+void SimpleStrategy::on(const roq::ReferenceDataEvent& event) {
   const auto& reference_data = event.reference_data;
   // return early if it's not the instrument we want to trade
   if (filter(reference_data.exchange, reference_data.instrument))
@@ -107,7 +107,7 @@ void BaseStrategy::on(const roq::ReferenceDataEvent& event) {
   }
 }
 
-void BaseStrategy::on(const roq::MarketStatusEvent& event) {
+void SimpleStrategy::on(const roq::MarketStatusEvent& event) {
   const auto& market_status = event.market_status;
   // return early if it's not the instrument we want to trade
   if (filter(market_status.exchange, market_status.instrument))
@@ -122,8 +122,7 @@ void BaseStrategy::on(const roq::MarketStatusEvent& event) {
 }
 
 // Note! Position updates are only sent during the download phase.
-void BaseStrategy::on(const roq::PositionUpdateEvent& event) {
-  LOG(INFO) << event;
+void SimpleStrategy::on(const roq::PositionUpdateEvent& event) {
   const auto& position_update = event.position_update;
   // return early if it's not the instrument we want to trade
   if (filter(position_update.exchange, position_update.instrument))
@@ -152,8 +151,7 @@ void BaseStrategy::on(const roq::PositionUpdateEvent& event) {
 // events, we're able to recover the state at which we left off if
 // either the gateway restarts (or reconnects) or the client for
 // whatever reason has to be restarted.
-void BaseStrategy::on(const roq::OrderUpdateEvent& event) {
-  LOG(INFO) << event;
+void SimpleStrategy::on(const roq::OrderUpdateEvent& event) {
   const auto& order_update = event.order_update;
   // return early if it's not the instrument we want to trade
   if (filter(order_update.exchange, order_update.instrument))
@@ -185,7 +183,7 @@ void BaseStrategy::on(const roq::OrderUpdateEvent& event) {
 
 // request-response
 
-void BaseStrategy::on(const roq::CreateOrderAckEvent& event) {
+void SimpleStrategy::on(const roq::CreateOrderAckEvent& event) {
   LOG_IF(FATAL, _download) << "Unexpected";
   const auto& create_order_ack = event.create_order_ack;
   LOG_IF(INFO, create_order_ack.failure == false) <<
@@ -194,7 +192,7 @@ void BaseStrategy::on(const roq::CreateOrderAckEvent& event) {
       "create_order_ack=" << create_order_ack;
 }
 
-void BaseStrategy::on(const roq::ModifyOrderAckEvent& event) {
+void SimpleStrategy::on(const roq::ModifyOrderAckEvent& event) {
   LOG_IF(FATAL, _download) << "Unexpected";
   const auto& modify_order_ack = event.modify_order_ack;
   LOG_IF(INFO, modify_order_ack.failure == false) <<
@@ -203,7 +201,7 @@ void BaseStrategy::on(const roq::ModifyOrderAckEvent& event) {
       "modify_order_ack=" << modify_order_ack;
 }
 
-void BaseStrategy::on(const roq::CancelOrderAckEvent& event) {
+void SimpleStrategy::on(const roq::CancelOrderAckEvent& event) {
   LOG_IF(FATAL, _download) << "Unexpected";
   const auto& cancel_order_ack = event.cancel_order_ack;
   LOG_IF(INFO, cancel_order_ack.failure == false) <<
@@ -214,7 +212,7 @@ void BaseStrategy::on(const roq::CancelOrderAckEvent& event) {
 
 // market data
 
-void BaseStrategy::on(const roq::MarketByPriceEvent& event) {
+void SimpleStrategy::on(const roq::MarketByPriceEvent& event) {
   const auto& market_by_price = event.market_by_price;
   // return early if it's not the instrument we want to trade
   if (filter(market_by_price.exchange, market_by_price.instrument))
@@ -229,7 +227,7 @@ void BaseStrategy::on(const roq::MarketByPriceEvent& event) {
   _market_data_dirty = true;
 }
 
-void BaseStrategy::on(const roq::TradeSummaryEvent& event) {
+void SimpleStrategy::on(const roq::TradeSummaryEvent& event) {
   const auto& trade_summary = event.trade_summary;
   // return early if it's not the instrument we want to trade
   if (filter(trade_summary.exchange, trade_summary.instrument))
@@ -245,7 +243,7 @@ void BaseStrategy::on(const roq::TradeSummaryEvent& event) {
 }
 
 // Generic function to create an order.
-uint32_t BaseStrategy::create_order(
+uint32_t SimpleStrategy::create_order(
     const roq::TradeDirection direction,
     const double quantity,
     const double price,
@@ -275,14 +273,14 @@ uint32_t BaseStrategy::create_order(
 
 // Filter update
 // Returns true if the update should be filtered (excluded).
-bool BaseStrategy::filter(const char *exchange, const char *instrument) {
+bool SimpleStrategy::filter(const char *exchange, const char *instrument) {
   return _instrument.compare(instrument) != 0 || _exchange.compare(exchange) != 0;
 }
 
 // Ready to trade?
 // Returns true if it may be possible to trade.
 // Returns false if it is not possible to trade.
-bool BaseStrategy::is_ready() const {
+bool SimpleStrategy::is_ready() const {
   return !_download && _order_manager_ready && _market_open;
 }
 
@@ -296,7 +294,7 @@ bool BaseStrategy::is_ready() const {
 // Returns true if the order template is an "open".
 // Returns false if the order template is a "close".
 // Terminate program execution if the order template is unknown.
-bool BaseStrategy::parse_open_close(const char *order_template) {
+bool SimpleStrategy::parse_open_close(const char *order_template) {
   if (FLAGS_ioc_open.compare(order_template) == 0)
     return true;
   if (FLAGS_ioc_close.compare(order_template) == 0)
@@ -304,5 +302,5 @@ bool BaseStrategy::parse_open_close(const char *order_template) {
   LOG(FATAL) << "Unknown order_template=\"" << order_template << "\"";
 }
 
-}  // namespace simple
+}  // namespace common
 }  // namespace examples

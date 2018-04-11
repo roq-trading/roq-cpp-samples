@@ -12,6 +12,7 @@ AC_CONFIG_FILES([
  Makefile
  src/Makefile
  src/utilities/Makefile
+ src/common/Makefile
  src/collector/Makefile
  src/reference/Makefile
  src/simple/Makefile

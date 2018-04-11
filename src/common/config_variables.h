@@ -2,19 +2,17 @@
 
 #pragma once
 
+#include <map>
 #include <string>
 
-#include "simple/config.h"
-
 namespace examples {
-namespace simple {
+namespace common {
 
-class ConfigReader final {
+class ConfigVariables final {
  public:
-  static Config read(
-      const std::string& config_file,
+  static std::map<std::string, std::string> read(
       const std::string& config_variables);
 };
 
-}  // namespace simple
+}  // namespace common
 }  // namespace examples

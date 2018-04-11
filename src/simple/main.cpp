@@ -45,7 +45,7 @@ int main(int argc, char *argv[]) {
     std::exit(EXIT_FAILURE);
   }
 
-  auto config = ConfigReader::parse(
+  auto config = ConfigReader::read(
       FLAGS_config_file,
       FLAGS_config_variables);
 

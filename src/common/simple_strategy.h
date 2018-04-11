@@ -7,11 +7,11 @@
 #include <string>
 #include <unordered_map>
 
-#include "simple/market_data.h"
-#include "simple/position.h"
+#include "common/market_data.h"
+#include "common/position.h"
 
 namespace examples {
-namespace simple {
+namespace common {
 
 /**
  * A simple base strategy supporting
@@ -28,9 +28,9 @@ namespace simple {
  * A derived strategy should only implement the update() method.
  * Everything else is managed by this base implementation.
  */
-class BaseStrategy : public roq::Strategy {
+class SimpleStrategy : public roq::Strategy {
  public:
-  explicit BaseStrategy(
+  explicit SimpleStrategy(
       roq::Strategy::Dispatcher& dispatcher,
       const std::string& gateway,
       const std::string& exchange,
@@ -122,5 +122,5 @@ class BaseStrategy : public roq::Strategy {
   bool _market_data_dirty = false;
 };
 
-}  // namespace simple
+}  // namespace common
 }  // namespace examples

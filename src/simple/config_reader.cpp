@@ -9,39 +9,21 @@
 #include <fstream>
 #include <map>
 
+#include "common/config_variables.h"
+
 namespace examples {
 namespace simple {
 
 namespace {
-// Parse a variables config file.
-static std::map<std::string, std::string> parse_variables(
-    const std::string& config_variables) {
-  std::map<std::string, std::string> result;
-  if (config_variables.empty())
-    return result;
-  LOG(INFO) << "Parsing variables file (\"" << config_variables << "\")";
-  std::ifstream file(config_variables);
-  LOG_IF(FATAL, file.fail()) << "Unable to read \"" << config_variables << "\"";
-  std::string data((std::istreambuf_iterator<char>(file)),
-      std::istreambuf_iterator<char>());
-  std::string error;
-  auto config = ucl::Ucl::parse(data, error);
-  LOG_IF(FATAL, !error.empty()) << error;
-  for (auto iter : config) {
-    auto key = iter.key();
-    auto value = iter.string_value();
-    result.emplace(key, value);
-  }
-  return result;
-}
-// Parse a config file.
+// Read and parse config file.
 // Optionally expand variables using another config file.
-static ucl::Ucl parse_config_file(const std::string& config_file,
+static ucl::Ucl read_config_file(const std::string& config_file,
     const std::string& config_variables) {
-  auto variables = parse_variables(config_variables);
-  LOG(INFO) << "Parsing config file (\"" << config_file << "\")";
+  auto variables = common::ConfigVariables::read(config_variables);
+  LOG(INFO) << "Reading config file \"" << config_file << "\"";
   std::ifstream file(config_file);
   LOG_IF(FATAL, file.fail()) << "Unable to read \"" << config_file << "\"";
+  LOG(INFO) << "Parsing config file";
   std::string data((std::istreambuf_iterator<char>(file)),
       std::istreambuf_iterator<char>());
   std::string error;
@@ -49,7 +31,7 @@ static ucl::Ucl parse_config_file(const std::string& config_file,
   LOG_IF(FATAL, !error.empty()) << error;
   return result;
 }
-// Create config from a parsed config file.
+// Create config object from parsed config file.
 static Config create_config(const ucl::Ucl& setting) {
   Config result {
     .exchange     = setting.lookup("exchange").string_value(),
@@ -65,10 +47,10 @@ static Config create_config(const ucl::Ucl& setting) {
 }
 }  // namespace
 
-Config ConfigReader::parse(const std::string& config_file,
+Config ConfigReader::read(const std::string& config_file,
     const std::string& config_variables) {
   try {
-    auto config = parse_config_file(config_file, config_variables);
+    auto config = read_config_file(config_file, config_variables);
     auto root = config["strategy"];
     LOG_IF(FATAL, root.type() == UCL_NULL) <<
       "Root (strategy) was not found in the config file";
