@@ -16,9 +16,9 @@ namespace simple {
 class Strategy final : public common::SimpleStrategy {
  public:
   Strategy(
-    roq::Strategy::Dispatcher& dispatcher,
-    const std::string& gateway,
-    const Config& config);
+      roq::Strategy::Dispatcher& dispatcher,
+      const std::string& gateway,
+      const Config& config);
 
  protected:
   void update(const common::MarketData& market_data) override;
@@ -47,11 +47,11 @@ class Strategy final : public common::SimpleStrategy {
       const create_order_args_t& args);
 
  private:
-  // configuration
+  // Configuration.
   const bool _weighted;
   const double _threshold;
   const double _quantity;
-  // state
+  // State management.
   double _previous = std::numeric_limits<double>::quiet_NaN();
 };
 

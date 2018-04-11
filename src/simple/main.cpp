@@ -30,15 +30,15 @@ using namespace examples::simple;  // NOLINT
 
 
 int main(int argc, char *argv[]) {
-  // initialize logging library
+  // Initialize logging library.
   roq::logging::Logger::initialize(true);
 
-  // parse command-line options
+  // Parse command-line options.
 
   gflags::ParseCommandLineFlags(&argc, &argv, true);
   gflags::ShutDownCommandLineFlags();
 
-  // configuration
+  // Read configuration.
 
   if (FLAGS_config_file.empty()) {
     LOG(ERROR) << "Missing parameter: --config-file";
@@ -50,14 +50,14 @@ int main(int argc, char *argv[]) {
       FLAGS_config_variables);
 
   if (FLAGS_gateways.empty()) {
-    // mode: simulation
+    // Mode: Simulation.
 
     if (FLAGS_simulation_file.empty()) {
       LOG(ERROR) << "Missing parameter: --simulation-file";
       std::exit(EXIT_FAILURE);
     }
 
-    // create market-data generators
+    // Create market-data generators.
     std::list<std::unique_ptr<roq::simulation::Generator> > generators;
     generators.emplace_back(
         new examples::utilities::Generator(FLAGS_simulation_file));
@@ -69,19 +69,19 @@ int main(int argc, char *argv[]) {
         std::move(generators)).create_and_dispatch(
             gateway, config);
   } else {
-    // mode: trading
+    // Mode: Trading.
 
     if (FLAGS_simulation_file.empty() == false) {
       LOG(ERROR) << "Not possible to combine simulation with live trading.";
       std::exit(EXIT_FAILURE);
     }
 
-    // parse gateway connection-details
+    // Parse gateway connection-details.
     auto gateways = roq::client::Gateways::create(FLAGS_gateways);
 
     LOG_IF(FATAL, gateways.size() != 1) << "Expected exactly one gateway";
 
-    // strategy must know the name of the gateway to send requests to
+    // Strategy must know the name of the gateway to send requests to.
     const auto& gateway = (*gateways.begin()).first;
 
     roq::client::Controller<Strategy>(

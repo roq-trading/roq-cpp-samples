@@ -9,12 +9,12 @@ namespace examples {
 namespace simple {
 
 namespace {
-// constants
+// Constants
 const char *PREFIX_SIGNAL = "S";
 const char *PREFIX_CREATE_ORDER = "O";
 const char *DELIMITER = ",";
 const char *QUOTE = "\"";
-// sign (stack overflow: 1903954)
+// Compute sign (stack overflow: 1903954)
 template <typename T>
 int sign(T value) {
   return (T(0) < value) - (value < T(0));
@@ -38,62 +38,66 @@ Strategy::Strategy(
 
 void Strategy::update(const common::MarketData& market_data) {
   const auto& best = market_data.depth[0];
-  // do we have a proper two-sided market?
+  // Is it a proper two-sided market?
   if (best.bid_quantity == 0.0 && best.ask_quantity == 0.0)
     return;
-  // compute the signal and compare to previous
+  // Compute signal and compare to previous.
   auto value = compute(
       market_data.depth,
       sizeof(market_data.depth) / sizeof(market_data.depth[0]));
   auto signal = value - _previous;
   _previous = value;
-  // write signal to std::cout [csv]
+  // Write signal to std::cout [csv].
   write_signal(market_data.exchange_time, best, value, signal);
-  // only trade if the magnitude of the signal exceeds the threshold
+  // Only trade if the magnitude of the signal exceeds threshold
   if (std::fabs(signal) < _threshold || std::isnan(signal))
     return;
-  // direction of signal
+  // Direction of signal.
   auto sign_signal = sign(signal);
-  // direction of current position
+  // Direction of current position.
   auto position = get_net_position(common::PositionType::Current);
   auto sign_position = sign(position);
-  // exposure is limited to configured quantity
-  // in other words: do not increase an already existing position
+  // Exposure is limited to configured quantity.
+  // In other words: do not increase an already existing position.
   if ((sign_signal * sign_position) < 0)
     return;
-  // all pre-trade checks have now passed
-  // arguments for the create_order function...
+  // All pre-trade checks have now passed.
+  // Find arguments for the create_order function...
   auto args = create_order_args(sign_signal, best);
-  // ... so the order parameters can be written to std::cout [csv]
+  // ... so the arguments can be written to std::cout [csv]
   write_create_order(market_data.exchange_time, args);
   // ... and then call the create_order function with those same arguments
   try {
-    // explicitly select the argument (c++17's std::apply would be convenient here)
+    // (c++17's std::apply would be very convenient here :-)
     create_order(
         std::get<0>(args),   // direction
         std::get<1>(args),   // quantity
         std::get<2>(args),   // price
         std::get<3>(args));  // order template
   } catch (roq::Exception& e) {
-    // possible reasons;
+    // Possible reasons;
     //   roq::NotConnected
-    //   - client has lost connection to gateway
+    //   - Client has lost connection to gateway
     //   roq::NotReady
-    //   - gateway is not in the ready state (e.g. disconnected from
+    //   - Gateway is not in the ready state (e.g. disconnected from
     //     broker or downloading information to client)
-    //   - instrument status doesn't allow trading (e.g. not currently
+    //   - Instrument status doesn't allow trading (e.g. not currently
     //     a trading session or trading halt)
-    //   - any other validating checks performed by the base strategy
+    //   - Any other validating checks performed by the base strategy
+    // You can avoid the roq::NotReady exception by checking the is_ready()
+    // method before trying to create a new order.
+    // You must, however, always be prepared to deal with disconnection
+    // between gateway and client.
     LOG(WARNING) << "Unable to create order. Reason=\"" << e.what() << "\"";
   }
 }
 
 double Strategy::compute(const roq::Layer *depth, size_t length) const {
   if (_weighted) {
-    // weighted mid price
-    // a real-life application should probably assign
+    // Weighted mid price.
+    // A real-life application should probably assign
     // importance (weighting) based on layer's distance
-    // from best
+    // from best.
     double sum_1 = 0.0, sum_2 = 0.0;
     for (auto i = 0; i < length; ++i) {
       const auto& layer = depth[i];
@@ -103,7 +107,7 @@ double Strategy::compute(const roq::Layer *depth, size_t length) const {
     }
     return sum_1 / sum_2 / get_tick_size();
   } else {
-    // simple mid price
+    // Simple mid price.
     const auto& best = depth[0];
     return 0.5 * (best.bid_price + best.ask_price) / get_tick_size();
   }
@@ -113,7 +117,7 @@ Strategy::create_order_args_t Strategy::create_order_args(
     int sign_signal,
     const roq::Layer& best) const {
   switch (sign_signal) {
-    case 1: {
+    case 1: {  // sell on the up-tick
       auto close =
           get_short_position(common::PositionType::NewActivity) <
           get_long_position(common::PositionType::StartOfDay);
@@ -123,7 +127,7 @@ Strategy::create_order_args_t Strategy::create_order_args(
           best.bid_price,
           get_order_template(close));
     }
-    case -1: {
+    case -1: {  // buy on the down-tick
       auto close =
           get_long_position(common::PositionType::NewActivity) <
           get_short_position(common::PositionType::StartOfDay);
@@ -139,7 +143,7 @@ Strategy::create_order_args_t Strategy::create_order_args(
   }
 }
 
-// csv output
+// CSV output
 
 void Strategy::write_signal(
     roq::time_point_t exchange_time,
