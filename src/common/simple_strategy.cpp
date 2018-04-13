@@ -64,9 +64,7 @@ void SimpleStrategy::on(const roq::DownloadEndEvent& event) {
   LOG(INFO) << "download=" << (_download ? "true" : "false");
   LOG(INFO) << "long_position=" << _long_position;
   LOG(INFO) << "short_position=" << _short_position;
-  auto position = _long_position.get(PositionType::Current) -
-                  _short_position.get(PositionType::Current);
-  LOG(INFO) << "position=" << position;
+  LOG(INFO) << "position=" << get_net_position(PositionType::Current);
 }
 
 // batch
@@ -189,11 +187,8 @@ void SimpleStrategy::on(const roq::OrderUpdateEvent& event) {
       LOG(FATAL) << "Unexpected";
     }
   }
-  if (_download == false) {
-    auto position = _long_position.get(PositionType::Current) -
-                    _short_position.get(PositionType::Current);
-    LOG(INFO) << "position=" << position;
-  }
+  if (_download == false)
+    LOG(INFO) << "position=" << get_net_position(PositionType::Current);
 }
 
 // request-response
