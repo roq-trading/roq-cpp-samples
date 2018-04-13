@@ -11,6 +11,15 @@ void Position::reset() {
   _start_of_day = _new_activity = 0.0;
 }
 
+double Position::get(PositionType type) const {
+  switch (type) {
+    case PositionType::StartOfDay: return _start_of_day;
+    case PositionType::NewActivity: return _new_activity;
+    case PositionType::Current: return _start_of_day + _new_activity;
+    case PositionType::Reference: return _reference;
+  }
+}
+
 void Position::set_start_of_day(double position) {
   LOG_IF(FATAL, position < -0.0) << "Unexpected position=" << position;
   _start_of_day = position;
@@ -21,12 +30,18 @@ void Position::add_new_activity(double quantity) {
   _new_activity += quantity;
 }
 
-double Position::get(PositionType type) const {
-  switch (type) {
-    case PositionType::StartOfDay: return _start_of_day;
-    case PositionType::NewActivity: return _new_activity;
-    case PositionType::Current: return _start_of_day + _new_activity;
-  }
+void Position::set_reference(double position) {
+  LOG_IF(FATAL, position < -0.0) << "Unexpected position=" << position;
+  _reference = position;
+}
+
+std::ostream& operator<<(std::ostream& stream, const Position& position) {
+  return stream << "{"
+    "start_of_day=" << position.get(PositionType::StartOfDay) << ", "
+    "new_activity=" << position.get(PositionType::NewActivity) << ", "
+    "current=" << position.get(PositionType::Current) << ", "
+    "reference=" << position.get(PositionType::Reference) <<
+    "}";
 }
 
 }  // namespace common

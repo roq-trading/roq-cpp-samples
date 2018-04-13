@@ -62,6 +62,11 @@ void SimpleStrategy::on(const roq::DownloadEndEvent& event) {
   // reset download flag
   _download = false;
   LOG(INFO) << "download=" << (_download ? "true" : "false");
+  LOG(INFO) << "long_position=" << _long_position;
+  LOG(INFO) << "short_position=" << _short_position;
+  auto position = _long_position.get(PositionType::Current) -
+                  _short_position.get(PositionType::Current);
+  LOG(INFO) << "position=" << position;
 }
 
 // batch
@@ -79,7 +84,6 @@ void SimpleStrategy::on(const roq::BatchEndEvent&) {
 
 void SimpleStrategy::on(const roq::GatewayStatusEvent& event) {
   const auto& gateway_status = event.gateway_status;
-  LOG(INFO) << "gateway_status=" << gateway_status;
   // return early if it's not the gateway's order management status
   if (std::strcmp(TRADER, gateway_status.name) != 0)
     return;
@@ -98,7 +102,6 @@ void SimpleStrategy::on(const roq::ReferenceDataEvent& event) {
   // return early if it's not the instrument we want to trade
   if (filter(reference_data.exchange, reference_data.instrument))
     return;
-  LOG(INFO) << "reference_data=" << reference_data;
   // instrument's tick size
   auto tick_size = reference_data.tick_size;
   if (_tick_size != tick_size && tick_size != 0.0) {
@@ -112,7 +115,6 @@ void SimpleStrategy::on(const roq::MarketStatusEvent& event) {
   // return early if it's not the instrument we want to trade
   if (filter(market_status.exchange, market_status.instrument))
     return;
-  LOG(INFO) << "market_status=" << market_status;
   // instrument's trading status
   auto market_open = market_status.trading_status == roq::TradingStatus::Open;
   if (_market_open != market_open) {
@@ -127,16 +129,21 @@ void SimpleStrategy::on(const roq::PositionUpdateEvent& event) {
   // return early if it's not the instrument we want to trade
   if (filter(position_update.exchange, position_update.instrument))
     return;
-  LOG(INFO) << "position_update=" << position_update;
   // initialize start of day position using yesterday's close position
   // note! this is an example-choice, we could also have configured this.
   switch (position_update.trade_direction) {
     case roq::TradeDirection::Buy: {
+      auto test = _long_position.get(PositionType::StartOfDay) != 0.0;
+      LOG_IF(FATAL, test) << "Unexpected";
       _long_position.set_start_of_day(position_update.position_yesterday);
+      _long_position.set_reference(position_update.position);
       break;
     }
     case roq::TradeDirection::Sell: {
+      auto test = _short_position.get(PositionType::StartOfDay) != 0.0;
+      LOG_IF(FATAL, test) << "Unexpected";
       _short_position.set_start_of_day(position_update.position_yesterday);
+      _short_position.set_reference(position_update.position);
       break;
     }
     default: {
@@ -156,7 +163,6 @@ void SimpleStrategy::on(const roq::OrderUpdateEvent& event) {
   // return early if it's not the instrument we want to trade
   if (filter(order_update.exchange, order_update.instrument))
     return;
-  LOG(INFO) << "order_update=" << order_update;
   // ensure we never recycle order id's
   _max_order_id = std::max(_max_order_id, order_update.order_id);
   // determine if the intention was to open or close
@@ -169,15 +175,24 @@ void SimpleStrategy::on(const roq::OrderUpdateEvent& event) {
   switch (order_update.trade_direction) {
     case roq::TradeDirection::Buy: {
       _long_position.add_new_activity(fill_quantity);
+      if (_download == false)
+        LOG(INFO) << "long_position=" << _long_position;
       break;
     }
     case roq::TradeDirection::Sell: {
       _short_position.add_new_activity(fill_quantity);
+      if (_download == false)
+        LOG(INFO) << "short_position=" << _short_position;
       break;
     }
     default: {
       LOG(FATAL) << "Unexpected";
     }
+  }
+  if (_download == false) {
+    auto position = _long_position.get(PositionType::Current) -
+                    _short_position.get(PositionType::Current);
+    LOG(INFO) << "position=" << position;
   }
 }
 
@@ -186,8 +201,6 @@ void SimpleStrategy::on(const roq::OrderUpdateEvent& event) {
 void SimpleStrategy::on(const roq::CreateOrderAckEvent& event) {
   LOG_IF(FATAL, _download) << "Unexpected";
   const auto& create_order_ack = event.create_order_ack;
-  LOG_IF(INFO, create_order_ack.failure == false) <<
-      "create_order_ack=" << create_order_ack;
   LOG_IF(WARNING, create_order_ack.failure) <<
       "create_order_ack=" << create_order_ack;
 }
@@ -195,8 +208,6 @@ void SimpleStrategy::on(const roq::CreateOrderAckEvent& event) {
 void SimpleStrategy::on(const roq::ModifyOrderAckEvent& event) {
   LOG_IF(FATAL, _download) << "Unexpected";
   const auto& modify_order_ack = event.modify_order_ack;
-  LOG_IF(INFO, modify_order_ack.failure == false) <<
-      "modify_order_ack=" << modify_order_ack;
   LOG_IF(WARNING, modify_order_ack.failure) <<
       "modify_order_ack=" << modify_order_ack;
 }
@@ -204,8 +215,6 @@ void SimpleStrategy::on(const roq::ModifyOrderAckEvent& event) {
 void SimpleStrategy::on(const roq::CancelOrderAckEvent& event) {
   LOG_IF(FATAL, _download) << "Unexpected";
   const auto& cancel_order_ack = event.cancel_order_ack;
-  LOG_IF(INFO, cancel_order_ack.failure == false) <<
-      "cancel_order_ack=" << cancel_order_ack;
   LOG_IF(WARNING, cancel_order_ack.failure) <<
       "cancel_order_ack=" << cancel_order_ack;
 }
