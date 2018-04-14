@@ -32,6 +32,7 @@ class Collector final : public roq::Strategy {
   };
 
  protected:
+  const roq::Strategy::subscriptions_t& get_subscriptions() const override;
   void on(const roq::TimerEvent&) override {}
   void on(const roq::ConnectionStatusEvent&) override {}
   void on(const roq::BatchBeginEvent&) override {}

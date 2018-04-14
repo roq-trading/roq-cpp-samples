@@ -36,6 +36,9 @@ class BaseStrategy : public roq::Strategy {
   virtual void update(const MarketData&) = 0;
 
  private:
+  const roq::Strategy::subscriptions_t& get_subscriptions() const override {
+    return _subscriptions;
+  }
   // api event handlers:
   // - timer
   void on(const roq::TimerEvent&) override {}
@@ -72,6 +75,7 @@ class BaseStrategy : public roq::Strategy {
   Gateway _gateway;
   std::vector<Instrument> _instruments;
   const std::unordered_map<std::string, Instrument *> _lookup;
+  const roq::Strategy::subscriptions_t _subscriptions;
   bool _instruments_ready = false;
   std::unordered_set<Instrument *> _dirty;
 };

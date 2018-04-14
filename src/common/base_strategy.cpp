@@ -34,6 +34,15 @@ std::unordered_map<std::string, Instrument *> create(
     result.emplace(instrument.get_instrument(), &instrument);
   return result;
 }
+roq::Strategy::subscriptions_t create(
+    const std::string& gateway,
+    const std::vector<Instrument>& instruments) {
+  roq::Strategy::subscriptions_t result;
+  auto& tmp = result[gateway];
+  for (const auto& instrument : instruments)
+    tmp[instrument.get_exchange()].emplace_back(instrument.get_instrument());
+  return result;
+}
 }  // namespace
 
 BaseStrategy::BaseStrategy(
@@ -42,7 +51,8 @@ BaseStrategy::BaseStrategy(
     const Config& config)
     : _gateway(dispatcher, gateway),
       _instruments(create(_gateway, config)),
-      _lookup(create(_instruments)) {
+      _lookup(create(_instruments)),
+      _subscriptions(create(gateway, _instruments)) {
 }
 
 // event handlers

@@ -33,6 +33,12 @@ SimpleStrategy::SimpleStrategy(
       _ioc_close(FLAGS_ioc_close),
       _exchange(exchange),
       _instrument(instrument),
+      _subscriptions {
+        { _gateway, {
+            { _exchange, { _instrument } }
+          }
+        },
+      },
       _tick_size(tick_size) {
   LOG(INFO) << "real_trading=" << (FLAGS_real_trading ? "true" : "false");
 }

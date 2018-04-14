@@ -16,6 +16,13 @@ GatewayManager::GatewayManager(
       _order_manager(_config, _risk_manager, _dispatcher),
       _trading_model(_config) {}
 
+// methods
+
+const roq::Strategy::subscriptions_t& GatewayManager::get_subscriptions() const {
+  static roq::Strategy::subscriptions_t subscriptions;
+  return subscriptions;
+}
+
 // event handlers
 
 void GatewayManager::on(const roq::TimerEvent& event) {

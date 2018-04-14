@@ -23,6 +23,12 @@ std::ostream& operator<<(std::ostream& stream, roq::time_point_t time_point) {
 }
 }  // namespace
 
+const roq::Strategy::subscriptions_t& Collector::get_subscriptions() const {
+  // empty means subscribe everything
+  static roq::Strategy::subscriptions_t subscriptions;
+  return subscriptions;
+}
+
 void Collector::on(const roq::BatchEndEvent&) {
   for (auto iter : _dirty)
     std::cout << *iter << std::endl;

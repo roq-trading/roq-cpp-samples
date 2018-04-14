@@ -61,6 +61,10 @@ class SimpleStrategy : public roq::Strategy {
   virtual void update(const MarketData&) = 0;
 
  private:
+  // api methods
+  const roq::Strategy::subscriptions_t& get_subscriptions() const override {
+    return _subscriptions;
+  }
   // api event handlers:
   // - timer
   void on(const roq::TimerEvent&) override {}
@@ -109,6 +113,8 @@ class SimpleStrategy : public roq::Strategy {
   const std::string _ioc_close;
   const std::string _exchange;
   const std::string _instrument;
+  // subscriptions
+  const roq::Strategy::subscriptions_t _subscriptions;
   // state management
   bool _download = false;
   bool _order_manager_ready = false;

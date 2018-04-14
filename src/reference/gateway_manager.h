@@ -26,6 +26,8 @@ class GatewayManager final : public roq::Strategy {
                  Config&& config);
 
  protected:
+  // methods
+  const roq::Strategy::subscriptions_t& get_subscriptions() const override;
   // event handlers
   void on(const roq::TimerEvent&) override;
   void on(const roq::ConnectionStatusEvent&) override;
