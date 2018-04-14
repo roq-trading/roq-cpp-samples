@@ -127,21 +127,24 @@ void BaseStrategy::on(const roq::OrderUpdateEvent& event) {
 // request-response
 
 void BaseStrategy::on(const roq::CreateOrderAckEvent& event) {
-  const auto& create_order_ack = event.create_order_ack;
-  LOG_IF(WARNING, create_order_ack.failure) <<
-      "create_order_ack=" << create_order_ack;
+  apply(
+      event.create_order_ack.exchange,
+      event.create_order_ack.instrument,
+      [&event](Instrument& instrument) { instrument.on(event); });
 }
 
 void BaseStrategy::on(const roq::ModifyOrderAckEvent& event) {
-  const auto& modify_order_ack = event.modify_order_ack;
-  LOG_IF(WARNING, modify_order_ack.failure) <<
-      "modify_order_ack=" << modify_order_ack;
+  apply(
+      event.modify_order_ack.exchange,
+      event.modify_order_ack.instrument,
+      [&event](Instrument& instrument) { instrument.on(event); });
 }
 
 void BaseStrategy::on(const roq::CancelOrderAckEvent& event) {
-  const auto& cancel_order_ack = event.cancel_order_ack;
-  LOG_IF(WARNING, cancel_order_ack.failure) <<
-      "cancel_order_ack=" << cancel_order_ack;
+  apply(
+      event.cancel_order_ack.exchange,
+      event.cancel_order_ack.instrument,
+      [&event](Instrument& instrument) { instrument.on(event); });
 }
 
 // market data

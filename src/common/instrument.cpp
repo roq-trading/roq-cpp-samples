@@ -134,6 +134,24 @@ void Instrument::on(const roq::OrderUpdateEvent& event) {
   }
 }
 
+void Instrument::on(const roq::CreateOrderAckEvent& event) {
+  const auto& create_order_ack = event.create_order_ack;
+  LOG_IF(WARNING, create_order_ack.failure) <<
+      "create_order_ack=" << create_order_ack;
+}
+
+void Instrument::on(const roq::ModifyOrderAckEvent& event) {
+  const auto& modify_order_ack = event.modify_order_ack;
+  LOG_IF(WARNING, modify_order_ack.failure) <<
+      "modify_order_ack=" << modify_order_ack;
+}
+
+void Instrument::on(const roq::CancelOrderAckEvent& event) {
+  const auto& cancel_order_ack = event.cancel_order_ack;
+  LOG_IF(WARNING, cancel_order_ack.failure) <<
+      "cancel_order_ack=" << cancel_order_ack;
+}
+
 void Instrument::on(const roq::MarketByPriceEvent& event) {
   const auto& market_by_price = event.market_by_price;
   std::memcpy(

@@ -40,6 +40,9 @@ class Instrument final {
   void on(const roq::MarketStatusEvent& event);
   void on(const roq::PositionUpdateEvent& event);
   void on(const roq::OrderUpdateEvent& event);
+  void on(const roq::CreateOrderAckEvent& event);
+  void on(const roq::ModifyOrderAckEvent& event);
+  void on(const roq::CancelOrderAckEvent& event);
   void on(const roq::MarketByPriceEvent& event);
   void on(const roq::TradeSummaryEvent& event);
   uint32_t create_order(
