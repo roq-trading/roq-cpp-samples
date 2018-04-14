@@ -30,15 +30,7 @@ class BaseStrategy : public roq::Strategy {
   const Instrument& at(size_t index) const {
     return _instruments[index];
   }
-  Instrument& operator[](size_t index) { return at(index); }
-  const Instrument& operator[](size_t index) const { return at(index); }
-  bool is_ready() const { return _gateway.is_ready() && _instruments_ready; }
-  uint32_t create_order(
-      size_t index,
-      roq::TradeDirection direction,
-      double quantity,
-      double price,
-      const std::string& order_template);
+  bool is_ready() const;
 
  protected:
   virtual void update(const MarketData&) = 0;

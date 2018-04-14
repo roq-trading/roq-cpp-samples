@@ -39,6 +39,10 @@ void Instrument::reset() {
   _short_position.reset();
 }
 
+bool Instrument::is_ready() const {
+  return _gateway.is_ready() && _market_open;
+}
+
 double Instrument::get_long_position(PositionType type) const {
   return _long_position.get(type);
 }
@@ -178,6 +182,8 @@ uint32_t Instrument::create_order(
     double price,
     const std::string& order_template) {
   LOG_IF(FATAL, _tradeable == false) << "Unexpected";
+  if (is_ready() == false)
+    throw roq::NotReady();
   return _gateway.create_order(
       _exchange,
       _instrument,

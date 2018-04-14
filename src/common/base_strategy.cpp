@@ -94,10 +94,11 @@ void BaseStrategy::on(const roq::MarketStatusEvent& event) {
       event.market_status.exchange,
       event.market_status.instrument,
       [&event](Instrument& instrument) {instrument.on(event); })) {
-    // are *all* instruments are ready for trading?
+    // are *all* tradeable instruments ready for trading?
     bool ready = true;
     for (const auto& instrument : _instruments)
-      ready = instrument.is_ready() ? ready : false;
+      if (instrument.can_trade())
+        ready = instrument.is_ready() ? ready : false;
     _instruments_ready = ready;
   }
 }
@@ -169,19 +170,8 @@ void BaseStrategy::on(const roq::TradeSummaryEvent& event) {
       });
 }
 
-uint32_t BaseStrategy::create_order(
-    size_t index,
-    roq::TradeDirection direction,
-    double quantity,
-    double price,
-    const std::string& order_template) {
-  if (is_ready() == false)  // here to avoid increasing order id's for no reason
-    throw roq::NotReady();
-  return _instruments[index].create_order(
-      direction,
-      quantity,
-      price,
-      order_template);
+bool BaseStrategy::is_ready() const {
+  return _gateway.is_ready() && _instruments_ready;
 }
 
 // general utilities

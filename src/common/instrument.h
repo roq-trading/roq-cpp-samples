@@ -30,7 +30,7 @@ class Instrument final {
   const std::string& get_instrument() const { return _instrument; }
   double get_risk_limit() const { return _risk_limit; }
   bool can_trade() const { return _tradeable; }
-  bool is_ready() const { return _market_open; }
+  bool is_ready() const;
   double get_long_position(PositionType type) const;
   double get_short_position(PositionType type) const;
   double get_net_position(PositionType type) const;
