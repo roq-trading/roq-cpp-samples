@@ -7,8 +7,16 @@
 namespace examples {
 namespace common {
 
+Position::Position(double position)
+    : _manual(position),
+      _use_position_update(std::isnan(position)),
+      _start_of_day(_use_position_update ? 0.0 : _manual) {
+  LOG_IF(FATAL, _manual < 0.0) << "Unexpected";
+}
+
 void Position::reset() {
-  _start_of_day = _new_activity = 0.0;
+  _start_of_day = _use_position_update ? 0.0 : _manual;
+  _new_activity = 0.0;
 }
 
 double Position::get(PositionType type) const {
@@ -35,12 +43,12 @@ void Position::set_reference(double position) {
   _reference = position;
 }
 
-std::ostream& operator<<(std::ostream& stream, const Position& position) {
+std::ostream& Position::write(std::ostream& stream) const {
   return stream << "{"
-    "start_of_day=" << position.get(PositionType::StartOfDay) << ", "
-    "new_activity=" << position.get(PositionType::NewActivity) << ", "
-    "current=" << position.get(PositionType::Current) << ", "
-    "reference=" << position.get(PositionType::Reference) <<
+    "start_of_day=" << get(PositionType::StartOfDay) << ", "
+    "new_activity=" << get(PositionType::NewActivity) << ", "
+    "current=" << get(PositionType::Current) << ", "
+    "reference=" << get(PositionType::Reference) <<
     "}";
 }
 

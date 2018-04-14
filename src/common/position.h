@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include <limits>
 #include <ostream>
 
 namespace examples {
@@ -16,19 +17,28 @@ enum class PositionType {
 
 class Position final {
  public:
+  explicit Position(
+      double position = std::numeric_limits<double>::quiet_NaN());
   void reset();
   double get(PositionType type) const;
   void set_start_of_day(double position);
   void add_new_activity(double quantity);
   void set_reference(double position);
+  std::ostream& write(std::ostream& stream) const;
 
  private:
-  double _start_of_day = 0.0;
+  const double _manual;
+  const bool _use_position_update;
+  double _start_of_day;
   double _new_activity = 0.0;
   double _reference = 0.0;  // debug
 };
 
-std::ostream& operator<<(std::ostream&, const Position&);
+inline std::ostream& operator<<(
+    std::ostream& stream,
+    const Position& position) {
+  return position.write(stream);
+}
 
 }  // namespace common
 }  // namespace examples

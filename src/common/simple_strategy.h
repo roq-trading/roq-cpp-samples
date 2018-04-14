@@ -92,8 +92,8 @@ class SimpleStrategy : public roq::Strategy {
   // create order
   uint32_t create_order(
       roq::TradeDirection direction,
-      const double quantity,
-      const double price,
+      double quantity,
+      double price,
       const std::string& order_template);
 
  private:
@@ -118,7 +118,11 @@ class SimpleStrategy : public roq::Strategy {
   Position _long_position;
   Position _short_position;
   std::unordered_map<uint32_t, double> _order_traded_quantity;
-  MarketData _market_data = {};
+  MarketData _market_data = {
+    .index = 0,
+    .exchange = _exchange.c_str(),
+    .instrument = _instrument.c_str(),
+  };
   bool _market_data_dirty = false;
 };
 

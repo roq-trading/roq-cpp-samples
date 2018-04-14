@@ -17,7 +17,9 @@ DEFINE_bool(real_trading, false, "Real trading? (Meaning: Send orders).");
 namespace examples {
 namespace common {
 
+namespace {
 const char *TRADER = "Trader";  // FIXME(thraneh): introduce an enum for this!
+}  // namespace
 
 SimpleStrategy::SimpleStrategy(
     roq::Strategy::Dispatcher& dispatcher,
@@ -248,9 +250,9 @@ void SimpleStrategy::on(const roq::TradeSummaryEvent& event) {
 
 // Generic function to create an order.
 uint32_t SimpleStrategy::create_order(
-    const roq::TradeDirection direction,
-    const double quantity,
-    const double price,
+    roq::TradeDirection direction,
+    double quantity,
+    double price,
     const std::string& order_template) {
   if (is_ready() == false)  // to avoid increasing local order id's for no reason
     throw roq::NotReady();

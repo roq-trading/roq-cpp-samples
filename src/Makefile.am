@@ -1,1 +1,1 @@
-SUBDIRS = utilities common collector reference simple
+SUBDIRS = utilities common collector reference simple spread

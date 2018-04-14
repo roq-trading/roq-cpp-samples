@@ -16,6 +16,7 @@ AC_CONFIG_FILES([
  src/collector/Makefile
  src/reference/Makefile
  src/simple/Makefile
+ src/spread/Makefile
 ])
 AC_CONFIG_FILES([roq-samples.pc])
 

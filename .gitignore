@@ -40,5 +40,6 @@ m4/
 src/collector/example-collector
 src/reference/reference-strategy
 src/simple/example-simple
+src/spread/example-spread
 
 *.csv
