@@ -140,13 +140,17 @@ void SimpleStrategy::on(const roq::PositionUpdateEvent& event) {
     case roq::Side::Buy: {
       auto test = _long_position.get(PositionType::StartOfDay) != 0.0;
       LOG_IF(FATAL, test) << "Unexpected";
-      _long_position.set_start_of_day(position_update.position);
+      _long_position.set_start_of_day(
+          position_update.last_order_id,
+          position_update.position);
       break;
     }
     case roq::Side::Sell: {
       auto test = _short_position.get(PositionType::StartOfDay) != 0.0;
       LOG_IF(FATAL, test) << "Unexpected";
-      _short_position.set_start_of_day(position_update.position);
+      _short_position.set_start_of_day(
+          position_update.last_order_id,
+          position_update.position);
       break;
     }
     default: {
@@ -177,13 +181,13 @@ void SimpleStrategy::on(const roq::OrderUpdateEvent& event) {
   // update positions for new activity
   switch (order_update.side) {
     case roq::Side::Buy: {
-      _long_position.add_new_activity(fill_quantity);
+      _long_position.add_new_activity(order_update.order_id, fill_quantity);
       if (_download == false)
         LOG(INFO) << "long_position=" << _long_position;
       break;
     }
     case roq::Side::Sell: {
-      _short_position.add_new_activity(fill_quantity);
+      _short_position.add_new_activity(order_update.order_id, fill_quantity);
       if (_download == false)
         LOG(INFO) << "short_position=" << _short_position;
       break;

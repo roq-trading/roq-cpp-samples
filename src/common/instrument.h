@@ -66,13 +66,13 @@ class Instrument final {
   Gateway& _gateway;
   const std::string _exchange;
   const std::string _symbol;
-  double _risk_limit;
-  bool _tradeable;
+  const double _risk_limit;
+  const bool _tradeable;
+  MarketData _market_data;  // aggregator for MarketByPrice and TradeSummary
+  double _tick_size;
   bool _market_open = false;
   Position _long_position;
   Position _short_position;
-  double _tick_size;
-  MarketData _market_data;  // aggregator for MarketByPrice and TradeSummary
   std::unordered_set<uint32_t> _live_orders;
 };
 

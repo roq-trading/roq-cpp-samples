@@ -120,8 +120,8 @@ Strategy::create_order_args_t Strategy::create_order_args(
   switch (sign_signal) {
     case 1: {  // sell on the up-tick
       auto close =
-          get_short_position(common::PositionType::NewActivity) <
-          get_long_position(common::PositionType::StartOfDay);
+          get_long_position(common::PositionType::StartOfDay) >
+          get_short_position(common::PositionType::NewActivity);
       return std::make_tuple(
           roq::Side::Sell,
           _quantity,
@@ -130,8 +130,8 @@ Strategy::create_order_args_t Strategy::create_order_args(
     }
     case -1: {  // buy on the down-tick
       auto close =
-          get_long_position(common::PositionType::NewActivity) <
-          get_short_position(common::PositionType::StartOfDay);
+          get_short_position(common::PositionType::StartOfDay) >
+          get_long_position(common::PositionType::NewActivity);
       return std::make_tuple(
           roq::Side::Buy,
           _quantity,

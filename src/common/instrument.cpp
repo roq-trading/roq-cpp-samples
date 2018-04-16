@@ -23,14 +23,14 @@ Instrument::Instrument(
       _symbol(symbol),
       _risk_limit(risk_limit),
       _tradeable(_risk_limit != 0.0),
-      _long_position(long_position),
-      _short_position(short_position),
-      _tick_size(tick_size),
       _market_data {
         .index = _index,
         .exchange = _exchange.c_str(),
         .symbol = _symbol.c_str()
-      } {
+      },
+      _tick_size(tick_size),
+      _long_position(long_position),
+      _short_position(short_position) {
 }
 
 void Instrument::reset() {
@@ -74,22 +74,26 @@ void Instrument::on(const roq::MarketStatusEvent& event) {
   }
 }
 
-// Note! Position updates are only sent during the download phase.
 void Instrument::on(const roq::PositionUpdateEvent& event) {
   const auto& position_update = event.position_update;
   // initialize start of day position using yesterday's close position
   // note! this is an example-choice, we could also have configured this.
+  auto account = position_update.account;
   switch (position_update.side) {
     case roq::Side::Buy: {
       auto test = _long_position.get(PositionType::StartOfDay) != 0.0;
       LOG_IF(FATAL, test) << "Unexpected";
-      _long_position.set_start_of_day(position_update.position);
+      _long_position.set_start_of_day(
+          position_update.last_order_id,
+          position_update.position);
       break;
     }
     case roq::Side::Sell: {
       auto test = _short_position.get(PositionType::StartOfDay) != 0.0;
       LOG_IF(FATAL, test) << "Unexpected";
-      _short_position.set_start_of_day(position_update.position);
+      _short_position.set_start_of_day(
+          position_update.last_order_id,
+          position_update.position);
       break;
     }
     default: {
@@ -112,16 +116,18 @@ void Instrument::on(const roq::OrderUpdateEvent& event) {
   auto open = _gateway.parse_open_close(order_update.order_template);
   // computed fill quantity (based on traded quantity vs previous)
   auto fill_quantity = _gateway.get_fill_quantity(order_update);
+  // account
+  auto account = order_update.account;
   // update positions for new activity
   switch (order_update.side) {
     case roq::Side::Buy: {
-      _long_position.add_new_activity(fill_quantity);
+      _long_position.add_new_activity(order_update.order_id, fill_quantity);
       if (download == false)
         LOG(INFO) << "long_position=" << _long_position;
       break;
     }
     case roq::Side::Sell: {
-      _short_position.add_new_activity(fill_quantity);
+      _short_position.add_new_activity(order_update.order_id, fill_quantity);
       if (download == false)
         LOG(INFO) << "short_position=" << _short_position;
       break;

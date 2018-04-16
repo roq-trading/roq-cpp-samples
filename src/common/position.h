@@ -20,13 +20,14 @@ class Position final {
       double position = std::numeric_limits<double>::quiet_NaN());
   void reset();
   double get(PositionType type) const;
-  void set_start_of_day(double position);
-  void add_new_activity(double quantity);
+  void set_start_of_day(uint32_t last_order_id, double position);
+  void add_new_activity(uint32_t order_id, double quantity);
   std::ostream& write(std::ostream& stream) const;
 
  private:
   const double _manual;
   const bool _use_position_update;
+  uint32_t _last_order_id;
   double _start_of_day;
   double _new_activity = 0.0;
 };
