@@ -95,7 +95,8 @@ class SimpleStrategy : public roq::Strategy {
  protected:
   // create order
   uint32_t create_order(
-      roq::TradeDirection direction,
+      const std::string& account,
+      roq::Side side,
       double quantity,
       double price,
       const std::string& order_template);

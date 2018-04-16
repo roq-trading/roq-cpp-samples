@@ -79,19 +79,17 @@ void Instrument::on(const roq::PositionUpdateEvent& event) {
   const auto& position_update = event.position_update;
   // initialize start of day position using yesterday's close position
   // note! this is an example-choice, we could also have configured this.
-  switch (position_update.trade_direction) {
-    case roq::TradeDirection::Buy: {
+  switch (position_update.side) {
+    case roq::Side::Buy: {
       auto test = _long_position.get(PositionType::StartOfDay) != 0.0;
       LOG_IF(FATAL, test) << "Unexpected";
-      _long_position.set_start_of_day(position_update.position_yesterday);
-      _long_position.set_reference(position_update.position);
+      _long_position.set_start_of_day(position_update.position);
       break;
     }
-    case roq::TradeDirection::Sell: {
+    case roq::Side::Sell: {
       auto test = _short_position.get(PositionType::StartOfDay) != 0.0;
       LOG_IF(FATAL, test) << "Unexpected";
-      _short_position.set_start_of_day(position_update.position_yesterday);
-      _short_position.set_reference(position_update.position);
+      _short_position.set_start_of_day(position_update.position);
       break;
     }
     default: {
@@ -115,14 +113,14 @@ void Instrument::on(const roq::OrderUpdateEvent& event) {
   // computed fill quantity (based on traded quantity vs previous)
   auto fill_quantity = _gateway.get_fill_quantity(order_update);
   // update positions for new activity
-  switch (order_update.trade_direction) {
-    case roq::TradeDirection::Buy: {
+  switch (order_update.side) {
+    case roq::Side::Buy: {
       _long_position.add_new_activity(fill_quantity);
       if (download == false)
         LOG(INFO) << "long_position=" << _long_position;
       break;
     }
-    case roq::TradeDirection::Sell: {
+    case roq::Side::Sell: {
       _short_position.add_new_activity(fill_quantity);
       if (download == false)
         LOG(INFO) << "short_position=" << _short_position;
@@ -154,25 +152,29 @@ void Instrument::on(const roq::TradeSummaryEvent& event) {
   _market_data.price = trade_summary.price;
   _market_data.volume = trade_summary.volume;
   _market_data.turnover = trade_summary.turnover;
-  _market_data.direction = trade_summary.direction;
+  _market_data.side = trade_summary.side;
   _market_data.exchange_time = trade_summary.exchange_time;
   _market_data.channel = trade_summary.channel;
 }
 
 uint32_t Instrument::create_order(
-    roq::TradeDirection direction,
+    const std::string& account,
+    roq::Side side,
     double quantity,
     double price,
+    roq::TimeInForce time_in_force,
     const std::string& order_template) {
   LOG_IF(FATAL, _tradeable == false) << "Unexpected";
   if (is_ready() == false)
     throw roq::NotReady();
   auto order_id = _gateway.create_order(
+      account,
       _exchange,
       _symbol,
-      direction,
+      side,
       quantity,
       price,
+      time_in_force,
       order_template,
       *this);
   _live_orders.insert(order_id);

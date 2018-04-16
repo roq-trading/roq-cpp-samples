@@ -28,13 +28,15 @@ class Gateway final {
   bool parse_open_close(const char *order_template) const;
   double get_fill_quantity(const roq::OrderUpdate& order_update);
   uint32_t create_order(
+      const std::string& account,
       const std::string& exchange,
       const std::string& symbol,
-      roq::TradeDirection direction,
+      roq::Side side,
       double quantity,
       double price,
+      roq::TimeInForce time_in_force,
       const std::string& order_template,
-      Instrument& handler);
+      Instrument& instrument);
   void modify_order(
       uint32_t order_id,
       double quantity_change,

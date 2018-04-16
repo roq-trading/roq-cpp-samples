@@ -78,7 +78,7 @@ void Generator::dispatch(roq::Strategy& strategy) {
     .price = _csv_reader.get_number(24),
     .volume = _csv_reader.get_number(34),
     .turnover = _csv_reader.get_number(33),
-    .direction = roq::TradeDirection::Undefined,
+    .side = roq::Side::Undefined,
     .exchange_time = exchange_time,
     .channel = L2_TOPIC_ID,
   };

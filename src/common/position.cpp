@@ -24,7 +24,6 @@ double Position::get(PositionType type) const {
     case PositionType::StartOfDay: return _start_of_day;
     case PositionType::NewActivity: return _new_activity;
     case PositionType::Current: return _start_of_day + _new_activity;
-    case PositionType::Reference: return _reference;
   }
 }
 
@@ -38,17 +37,11 @@ void Position::add_new_activity(double quantity) {
   _new_activity += quantity;
 }
 
-void Position::set_reference(double position) {
-  LOG_IF(FATAL, position < -0.0) << "Unexpected position=" << position;
-  _reference = position;
-}
-
 std::ostream& Position::write(std::ostream& stream) const {
   return stream << "{"
     "start_of_day=" << get(PositionType::StartOfDay) << ", "
     "new_activity=" << get(PositionType::NewActivity) << ", "
-    "current=" << get(PositionType::Current) << ", "
-    "reference=" << get(PositionType::Reference) <<
+    "current=" << get(PositionType::Current) <<
     "}";
 }
 

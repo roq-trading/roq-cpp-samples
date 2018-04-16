@@ -44,9 +44,11 @@ class Instrument final {
   void on(const roq::MarketByPriceEvent& event);  // TODO(thraneh): hide from user
   void on(const roq::TradeSummaryEvent& event);  // TODO(thraneh): hide from user
   uint32_t create_order(
-      roq::TradeDirection direction,
+      const std::string& account,
+      roq::Side side,
       double quantity,
       double price,
+      roq::TimeInForce time_in_force,
       const std::string& order_template);
   void modify_order(
       uint32_t order_id,

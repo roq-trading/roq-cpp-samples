@@ -12,7 +12,7 @@ namespace simple {
 
 struct Config final {
   std::string exchange;
-  std::string instrument;
+  std::string symbol;
   double tick_size;
   bool weighted;
   double threshold;

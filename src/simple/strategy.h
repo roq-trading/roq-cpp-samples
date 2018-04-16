@@ -28,7 +28,7 @@ class Strategy final : public common::SimpleStrategy {
 
  private:
   typedef std::tuple<
-      roq::TradeDirection,
+      roq::Side,
       double,
       double,
       std::string> create_order_args_t;

@@ -102,29 +102,34 @@ void Gateway::update_max_order_id(uint32_t order_id) {
 }
 
 uint32_t Gateway::create_order(
+    const std::string& account,
     const std::string& exchange,
     const std::string& symbol,
-    roq::TradeDirection direction,
+    roq::Side side,
     double quantity,
     double price,
+    roq::TimeInForce time_in_force,
     const std::string& order_template,
-    Instrument& handler) {
+    Instrument& instrument) {
   if (is_ready() == false)
     throw roq::NotReady();
   auto order_id = ++_max_order_id;
   LOG_IF(FATAL, is_order_live(order_id)) << "Unexpected";
   roq::CreateOrder create_order {
     .order_id       = order_id,
-    .order_template = order_template.c_str(),
+    .account        = account.c_str(),
     .exchange       = exchange.c_str(),
     .symbol         = symbol.c_str(),
-    .direction      = direction,
+    .side           = side,
     .quantity       = quantity,
+    .order_type     = roq::OrderType::Limit,
     .limit_price    = price,
+    .time_in_force  = time_in_force,
+    .order_template = order_template.c_str(),
   };
   LOG(INFO) << "create_order=" << create_order;
   _dispatcher.send(create_order, _name.c_str());
-  _live_orders[order_id] = &handler;
+  _live_orders[order_id] = &instrument;
   return order_id;
 }
 

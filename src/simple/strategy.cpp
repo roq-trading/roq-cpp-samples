@@ -29,7 +29,7 @@ Strategy::Strategy(
           dispatcher,
           gateway,
           config.exchange,
-          config.instrument,
+          config.symbol,
           config.tick_size),
       _weighted(config.weighted),
       _threshold(config.threshold),
@@ -70,7 +70,8 @@ void Strategy::update(const common::MarketData& market_data) {
   try {
     // (c++17's std::apply would be very convenient here :-)
     create_order(
-        std::get<0>(args),   // direction
+        "",  // account
+        std::get<0>(args),   // side
         std::get<1>(args),   // quantity
         std::get<2>(args),   // price
         std::get<3>(args));  // order template
@@ -122,7 +123,7 @@ Strategy::create_order_args_t Strategy::create_order_args(
           get_short_position(common::PositionType::NewActivity) <
           get_long_position(common::PositionType::StartOfDay);
       return std::make_tuple(
-          roq::TradeDirection::Sell,
+          roq::Side::Sell,
           _quantity,
           best.bid_price,
           get_order_template(close));
@@ -132,7 +133,7 @@ Strategy::create_order_args_t Strategy::create_order_args(
           get_long_position(common::PositionType::NewActivity) <
           get_short_position(common::PositionType::StartOfDay);
       return std::make_tuple(
-          roq::TradeDirection::Buy,
+          roq::Side::Buy,
           _quantity,
           best.ask_price,
           get_order_template(close));
@@ -174,7 +175,7 @@ void Strategy::write_create_order(
     PREFIX_CREATE_ORDER << DELIMITER <<
     (msecs / 1000) << DELIMITER <<
     (msecs % 1000) << DELIMITER <<
-    std::get<0>(args) << DELIMITER <<       // direction
+    std::get<0>(args) << DELIMITER <<       // side
     std::get<1>(args) << DELIMITER <<       // quantity
     std::get<2>(args) << DELIMITER <<       // price
     QUOTE << std::get<3>(args) << QUOTE <<  // order template

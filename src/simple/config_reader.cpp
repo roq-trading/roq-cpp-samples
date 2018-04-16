@@ -35,7 +35,7 @@ static ucl::Ucl read_config_file(const std::string& config_file,
 static Config create_config(const ucl::Ucl& setting) {
   Config result {
     .exchange     = setting.lookup("exchange").string_value(),
-    .instrument   = setting.lookup("instrument").string_value(),
+    .symbol       = setting.lookup("symbol").string_value(),
     .tick_size    = setting.lookup("tick_size").number_value(),
     .weighted     = setting.lookup("weighted").bool_value(),
     .threshold    = setting.lookup("threshold").number_value(),

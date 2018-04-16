@@ -15,7 +15,7 @@ struct MarketData final {
   double price;
   double volume;
   double turnover;
-  roq::TradeDirection direction;
+  roq::Side side;
   roq::time_point_t exchange_time;
   uint16_t channel;
 };

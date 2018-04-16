@@ -137,19 +137,17 @@ void SimpleStrategy::on(const roq::PositionUpdateEvent& event) {
     return;
   // initialize start of day position using yesterday's close position
   // note! this is an example-choice, we could also have configured this.
-  switch (position_update.trade_direction) {
-    case roq::TradeDirection::Buy: {
+  switch (position_update.side) {
+    case roq::Side::Buy: {
       auto test = _long_position.get(PositionType::StartOfDay) != 0.0;
       LOG_IF(FATAL, test) << "Unexpected";
-      _long_position.set_start_of_day(position_update.position_yesterday);
-      _long_position.set_reference(position_update.position);
+      _long_position.set_start_of_day(position_update.position);
       break;
     }
-    case roq::TradeDirection::Sell: {
+    case roq::Side::Sell: {
       auto test = _short_position.get(PositionType::StartOfDay) != 0.0;
       LOG_IF(FATAL, test) << "Unexpected";
-      _short_position.set_start_of_day(position_update.position_yesterday);
-      _short_position.set_reference(position_update.position);
+      _short_position.set_start_of_day(position_update.position);
       break;
     }
     default: {
@@ -178,14 +176,14 @@ void SimpleStrategy::on(const roq::OrderUpdateEvent& event) {
   auto fill_quantity = std::max(0.0, order_update.traded_quantity - previous);
   previous = order_update.traded_quantity;
   // update positions for new activity
-  switch (order_update.trade_direction) {
-    case roq::TradeDirection::Buy: {
+  switch (order_update.side) {
+    case roq::Side::Buy: {
       _long_position.add_new_activity(fill_quantity);
       if (_download == false)
         LOG(INFO) << "long_position=" << _long_position;
       break;
     }
-    case roq::TradeDirection::Sell: {
+    case roq::Side::Sell: {
       _short_position.add_new_activity(fill_quantity);
       if (_download == false)
         LOG(INFO) << "short_position=" << _short_position;
@@ -248,7 +246,7 @@ void SimpleStrategy::on(const roq::TradeSummaryEvent& event) {
   _market_data.price = trade_summary.price;
   _market_data.volume = trade_summary.volume;
   _market_data.turnover = trade_summary.turnover;
-  _market_data.direction = trade_summary.direction;
+  _market_data.side = trade_summary.side;
   _market_data.exchange_time = trade_summary.exchange_time;
   _market_data.channel = trade_summary.channel;
   _market_data_dirty = true;
@@ -256,7 +254,8 @@ void SimpleStrategy::on(const roq::TradeSummaryEvent& event) {
 
 // Generic function to create an order.
 uint32_t SimpleStrategy::create_order(
-    roq::TradeDirection direction,
+    const std::string& account,
+    roq::Side side,
     double quantity,
     double price,
     const std::string& order_template) {
@@ -266,12 +265,15 @@ uint32_t SimpleStrategy::create_order(
   if (FLAGS_real_trading) {
     roq::CreateOrder create_order {
       .order_id       = order_id,
-      .order_template = order_template.c_str(),
+      .account        = account.c_str(),
       .exchange       = _exchange.c_str(),
       .symbol         = _symbol.c_str(),
-      .direction      = direction,
+      .side           = side,
       .quantity       = quantity,
+      .order_type     = roq::OrderType::Limit,
       .limit_price    = price,
+      .time_in_force  = roq::TimeInForce::IOC,
+      .order_template = order_template.c_str(),
     };
     LOG(INFO) << "create_order=" << create_order;
     _dispatcher.send(create_order, _gateway.c_str());

@@ -12,7 +12,6 @@ enum class PositionType {
   StartOfDay,   // today's start of day position
   NewActivity,  // today's new activity
   Current,      // current position
-  Reference,    // position when downloaded (debug)
 };
 
 class Position final {
@@ -23,7 +22,6 @@ class Position final {
   double get(PositionType type) const;
   void set_start_of_day(double position);
   void add_new_activity(double quantity);
-  void set_reference(double position);
   std::ostream& write(std::ostream& stream) const;
 
  private:
@@ -31,7 +29,6 @@ class Position final {
   const bool _use_position_update;
   double _start_of_day;
   double _new_activity = 0.0;
-  double _reference = 0.0;  // debug
 };
 
 inline std::ostream& operator<<(
