@@ -18,8 +18,8 @@ namespace {
 // FIXME(thraneh): drop hard-coded config
 const common::Config CONFIG = {
   .instruments = {
-    { .exchange = "CFFEX", .instrument = "T1806", .risk_limit = 1.0 },
-    { .exchange = "CFFEX", .instrument = "TF1806", .risk_limit = 2.0 },
+    { .exchange = "CFFEX", .symbol = "T1806", .risk_limit = 1.0 },
+    { .exchange = "CFFEX", .symbol = "TF1806", .risk_limit = 2.0 },
   },
 };
 }

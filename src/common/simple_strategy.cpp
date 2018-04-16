@@ -25,17 +25,17 @@ SimpleStrategy::SimpleStrategy(
     roq::Strategy::Dispatcher& dispatcher,
     const std::string& gateway,
     const std::string& exchange,
-    const std::string& instrument,
+    const std::string& symbol,
     double tick_size)
     : _dispatcher(dispatcher),
       _gateway(gateway),
       _ioc_open(FLAGS_ioc_open),
       _ioc_close(FLAGS_ioc_close),
       _exchange(exchange),
-      _instrument(instrument),
+      _symbol(symbol),
       _subscriptions {
         { _gateway, {
-            { _exchange, { _instrument } }
+            { _exchange, { _symbol } }
           }
         },
       },
@@ -105,10 +105,10 @@ void SimpleStrategy::on(const roq::GatewayStatusEvent& event) {
 
 void SimpleStrategy::on(const roq::ReferenceDataEvent& event) {
   const auto& reference_data = event.reference_data;
-  // return early if it's not the instrument we want to trade
-  if (filter(reference_data.exchange, reference_data.instrument))
+  // return early if it's not the symbol we want to trade
+  if (filter(reference_data.exchange, reference_data.symbol))
     return;
-  // instrument's tick size
+  // symbol's tick size
   auto tick_size = reference_data.tick_size;
   if (_tick_size != tick_size && tick_size != 0.0) {
     _tick_size = tick_size;
@@ -118,10 +118,10 @@ void SimpleStrategy::on(const roq::ReferenceDataEvent& event) {
 
 void SimpleStrategy::on(const roq::MarketStatusEvent& event) {
   const auto& market_status = event.market_status;
-  // return early if it's not the instrument we want to trade
-  if (filter(market_status.exchange, market_status.instrument))
+  // return early if it's not the symbol we want to trade
+  if (filter(market_status.exchange, market_status.symbol))
     return;
-  // instrument's trading status
+  // symbol's trading status
   auto market_open = market_status.trading_status == roq::TradingStatus::Open;
   if (_market_open != market_open) {
     _market_open = market_open;
@@ -132,8 +132,8 @@ void SimpleStrategy::on(const roq::MarketStatusEvent& event) {
 // Note! Position updates are only sent during the download phase.
 void SimpleStrategy::on(const roq::PositionUpdateEvent& event) {
   const auto& position_update = event.position_update;
-  // return early if it's not the instrument we want to trade
-  if (filter(position_update.exchange, position_update.instrument))
+  // return early if it's not the symbol we want to trade
+  if (filter(position_update.exchange, position_update.symbol))
     return;
   // initialize start of day position using yesterday's close position
   // note! this is an example-choice, we could also have configured this.
@@ -166,8 +166,8 @@ void SimpleStrategy::on(const roq::PositionUpdateEvent& event) {
 // whatever reason has to be restarted.
 void SimpleStrategy::on(const roq::OrderUpdateEvent& event) {
   const auto& order_update = event.order_update;
-  // return early if it's not the instrument we want to trade
-  if (filter(order_update.exchange, order_update.instrument))
+  // return early if it's not the symbol we want to trade
+  if (filter(order_update.exchange, order_update.symbol))
     return;
   // ensure we never recycle order id's
   _max_order_id = std::max(_max_order_id, order_update.order_id);
@@ -226,8 +226,8 @@ void SimpleStrategy::on(const roq::CancelOrderAckEvent& event) {
 
 void SimpleStrategy::on(const roq::MarketByPriceEvent& event) {
   const auto& market_by_price = event.market_by_price;
-  // return early if it's not the instrument we want to trade
-  if (filter(market_by_price.exchange, market_by_price.instrument))
+  // return early if it's not the symbol we want to trade
+  if (filter(market_by_price.exchange, market_by_price.symbol))
     return;
   // update snapshot view of market data
   std::memcpy(
@@ -241,8 +241,8 @@ void SimpleStrategy::on(const roq::MarketByPriceEvent& event) {
 
 void SimpleStrategy::on(const roq::TradeSummaryEvent& event) {
   const auto& trade_summary = event.trade_summary;
-  // return early if it's not the instrument we want to trade
-  if (filter(trade_summary.exchange, trade_summary.instrument))
+  // return early if it's not the symbol we want to trade
+  if (filter(trade_summary.exchange, trade_summary.symbol))
     return;
   // update snapshot view of market data
   _market_data.price = trade_summary.price;
@@ -268,7 +268,7 @@ uint32_t SimpleStrategy::create_order(
       .order_id       = order_id,
       .order_template = order_template.c_str(),
       .exchange       = _exchange.c_str(),
-      .instrument     = _instrument.c_str(),
+      .symbol         = _symbol.c_str(),
       .direction      = direction,
       .quantity       = quantity,
       .limit_price    = price,
@@ -285,8 +285,8 @@ uint32_t SimpleStrategy::create_order(
 
 // Filter update
 // Returns true if the update should be filtered (excluded).
-bool SimpleStrategy::filter(const char *exchange, const char *instrument) {
-  return _instrument.compare(instrument) != 0 || _exchange.compare(exchange) != 0;
+bool SimpleStrategy::filter(const char *exchange, const char *symbol) {
+  return _symbol.compare(symbol) != 0 || _exchange.compare(exchange) != 0;
 }
 
 // Ready to trade?

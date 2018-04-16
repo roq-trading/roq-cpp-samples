@@ -14,7 +14,6 @@ AC_CONFIG_FILES([
  src/utilities/Makefile
  src/common/Makefile
  src/collector/Makefile
- src/reference/Makefile
  src/simple/Makefile
  src/spread/Makefile
 ])

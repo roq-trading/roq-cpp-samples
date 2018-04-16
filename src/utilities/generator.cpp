@@ -55,7 +55,7 @@ void Generator::dispatch(roq::Strategy& strategy) {
   strategy.on(roq::BatchBeginEvent { .message_info = message_info});
   roq::MarketByPrice market_by_price = {
     .exchange = EXCHANGE,
-    .instrument = symbol.c_str(),
+    .symbol = symbol.c_str(),
     .depth = {},
     .exchange_time = exchange_time,
     .channel = L2_TOPIC_ID,
@@ -74,7 +74,7 @@ void Generator::dispatch(roq::Strategy& strategy) {
       .market_by_price = market_by_price });
   roq::TradeSummary trade_summary = {
     .exchange = EXCHANGE,
-    .instrument = symbol.c_str(),
+    .symbol = symbol.c_str(),
     .price = _csv_reader.get_number(24),
     .volume = _csv_reader.get_number(34),
     .turnover = _csv_reader.get_number(33),

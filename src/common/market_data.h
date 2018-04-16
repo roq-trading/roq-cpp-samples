@@ -10,7 +10,7 @@ namespace common {
 struct MarketData final {
   const size_t index;
   const char *exchange;
-  const char *instrument;
+  const char *symbol;
   roq::Layer depth[roq::MAX_DEPTH];
   double price;
   double volume;

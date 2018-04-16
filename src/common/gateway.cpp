@@ -103,7 +103,7 @@ void Gateway::update_max_order_id(uint32_t order_id) {
 
 uint32_t Gateway::create_order(
     const std::string& exchange,
-    const std::string& instrument,
+    const std::string& symbol,
     roq::TradeDirection direction,
     double quantity,
     double price,
@@ -117,7 +117,7 @@ uint32_t Gateway::create_order(
     .order_id       = order_id,
     .order_template = order_template.c_str(),
     .exchange       = exchange.c_str(),
-    .instrument     = instrument.c_str(),
+    .symbol         = symbol.c_str(),
     .direction      = direction,
     .quantity       = quantity,
     .limit_price    = price,

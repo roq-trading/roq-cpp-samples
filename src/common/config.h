@@ -11,7 +11,7 @@ namespace common {
 struct Config {
   struct Instrument final {
     std::string exchange;
-    std::string instrument;
+    std::string symbol;
     double risk_limit;  // optional
     double long_position;  // optional, start of day
     double short_position;  // optional, start of day

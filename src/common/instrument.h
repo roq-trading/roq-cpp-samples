@@ -21,14 +21,14 @@ class Instrument final {
       size_t index,
       Gateway& gateway,
       const std::string& exchange,
-      const std::string& instrument,
+      const std::string& symbol,
       double risk_limit,
       double long_position,
       double short_position,
       double tick_size);
   void reset();  // TODO(thraneh): hide from user
   const std::string& get_exchange() const { return _exchange; }
-  const std::string& get_instrument() const { return _instrument; }
+  const std::string& get_symbol() const { return _symbol; }
   double get_risk_limit() const { return _risk_limit; }
   bool can_trade() const { return _tradeable; }
   bool is_ready() const;
@@ -63,7 +63,7 @@ class Instrument final {
   const size_t _index;
   Gateway& _gateway;
   const std::string _exchange;
-  const std::string _instrument;
+  const std::string _symbol;
   double _risk_limit;
   bool _tradeable;
   bool _market_open = false;

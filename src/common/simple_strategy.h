@@ -18,7 +18,7 @@ namespace common {
  *
  *   # IOC orders
  *   # single exchange
- *   # single instrument
+ *   # single symbol
  *   # single gateway
  *   # no exposure / risk management
  *   # aggregated view of MarketByPrice and TradeSummary
@@ -34,11 +34,11 @@ class SimpleStrategy : public roq::Strategy {
       roq::Strategy::Dispatcher& dispatcher,
       const std::string& gateway,
       const std::string& exchange,
-      const std::string& instrument,
+      const std::string& symbol,
       double tick_size);
 
   const std::string& get_exchange() const { return _exchange; }
-  const std::string& get_instrument() const { return _instrument; }
+  const std::string& get_symbol() const { return _symbol; }
 
   const std::string& get_order_template(bool close) const {
     return close ? _ioc_close : _ioc_open;
@@ -102,7 +102,7 @@ class SimpleStrategy : public roq::Strategy {
 
  private:
   // general utilities
-  bool filter(const char *exchange, const char *instrument);
+  bool filter(const char *exchange, const char *symbol);
   bool parse_open_close(const char *order_template);
 
  private:
@@ -112,7 +112,7 @@ class SimpleStrategy : public roq::Strategy {
   const std::string _ioc_open;
   const std::string _ioc_close;
   const std::string _exchange;
-  const std::string _instrument;
+  const std::string _symbol;
   // subscriptions
   const roq::Strategy::subscriptions_t _subscriptions;
   // state management
@@ -127,7 +127,7 @@ class SimpleStrategy : public roq::Strategy {
   MarketData _market_data = {
     .index = 0,
     .exchange = _exchange.c_str(),
-    .instrument = _instrument.c_str(),
+    .symbol = _symbol.c_str(),
   };
   bool _market_data_dirty = false;
 };

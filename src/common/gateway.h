@@ -29,7 +29,7 @@ class Gateway final {
   double get_fill_quantity(const roq::OrderUpdate& order_update);
   uint32_t create_order(
       const std::string& exchange,
-      const std::string& instrument,
+      const std::string& symbol,
       roq::TradeDirection direction,
       double quantity,
       double price,

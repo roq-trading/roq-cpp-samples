@@ -12,7 +12,7 @@ Instrument::Instrument(
     size_t index,
     Gateway& gateway,
     const std::string& exchange,
-    const std::string& instrument,
+    const std::string& symbol,
     double risk_limit,
     double long_position,
     double short_position,
@@ -20,7 +20,7 @@ Instrument::Instrument(
     : _index(index),
       _gateway(gateway),
       _exchange(exchange),
-      _instrument(instrument),
+      _symbol(symbol),
       _risk_limit(risk_limit),
       _tradeable(_risk_limit != 0.0),
       _long_position(long_position),
@@ -29,7 +29,7 @@ Instrument::Instrument(
       _market_data {
         .index = _index,
         .exchange = _exchange.c_str(),
-        .instrument = _instrument.c_str()
+        .symbol = _symbol.c_str()
       } {
 }
 
@@ -169,7 +169,7 @@ uint32_t Instrument::create_order(
     throw roq::NotReady();
   auto order_id = _gateway.create_order(
       _exchange,
-      _instrument,
+      _symbol,
       direction,
       quantity,
       price,
@@ -232,7 +232,7 @@ std::ostream& Instrument::write(std::ostream& stream) const {
   return stream << "{"
     "index=" << _index << ", "
     "exchange=" << _exchange << ", "
-    "instrument=" << _instrument << ", "
+    "symbol=" << _symbol << ", "
     "tick_size=" << _tick_size << ", "
     "market_open=" << (_market_open ? "true" : "false") << ", "
     "long_position=" << _long_position << ", "

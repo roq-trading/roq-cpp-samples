@@ -68,7 +68,7 @@ class BaseStrategy : public roq::Strategy {
   // utilities
   bool apply(
       const std::string& exchange,
-      const std::string& instrument,
+      const std::string& symbol,
       std::function<void(Instrument&)> function);
 
  private:

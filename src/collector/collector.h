@@ -18,11 +18,11 @@ class Collector final : public roq::Strategy {
       : _dispatcher(dispatcher) {}
 
   struct State final {
-    explicit State(const std::string& instrument)
-        : instrument(instrument) {}
+    explicit State(const std::string& symbol)
+        : symbol(symbol) {}
     void update(const roq::MarketByPriceEvent&);
     void update(const roq::TradeSummaryEvent&);
-    std::string instrument;
+    std::string symbol;
     roq::time_point_t exchange_time;
     roq::time_point_t receive_time;
     roq::Layer depth[5] = {};
@@ -51,7 +51,7 @@ class Collector final : public roq::Strategy {
   void on(const roq::TradeUpdateEvent&) override {}
   void on(const roq::PositionUpdateEvent&) override {}
 
-  State& get(const std::string& instrument);
+  State& get(const std::string& symbol);
 
  private:
   roq::Strategy::Dispatcher& _dispatcher;

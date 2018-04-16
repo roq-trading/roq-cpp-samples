@@ -36,17 +36,17 @@ void Collector::on(const roq::BatchEndEvent&) {
 }
 
 void Collector::on(const roq::MarketByPriceEvent& event) {
-  get(event.market_by_price.instrument).update(event);
+  get(event.market_by_price.symbol).update(event);
 }
 
 void Collector::on(const roq::TradeSummaryEvent& event) {
-  get(event.trade_summary.instrument).update(event);
+  get(event.trade_summary.symbol).update(event);
 }
 
-Collector::State& Collector::get(const std::string& instrument) {
-  auto iter = _cache.find(instrument);
+Collector::State& Collector::get(const std::string& symbol) {
+  auto iter = _cache.find(symbol);
   if (iter == _cache.end())
-    iter = _cache.insert({instrument, State(instrument)}).first;
+    iter = _cache.insert({symbol, State(symbol)}).first;
   auto& result = (*iter).second;
   _dirty.insert(&result);
   return result;
@@ -75,7 +75,7 @@ void Collector::State::update(
 
 std::ostream& operator<<(std::ostream& stream, Collector::State& state) {
   return stream <<
-    state.instrument << DELIMITER <<
+    state.symbol << DELIMITER <<
     state.exchange_time << DELIMITER <<
     state.receive_time << DELIMITER <<
     state.depth[0].ask_price << DELIMITER <<

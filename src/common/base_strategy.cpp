@@ -20,7 +20,7 @@ std::vector<Instrument> instruments(Gateway& gateway, const Config& config) {
       i,
       gateway,
       instrument.exchange,
-      instrument.instrument,
+      instrument.symbol,
       instrument.risk_limit,
       instrument.long_position,
       instrument.short_position,
@@ -32,7 +32,7 @@ std::unordered_map<std::string, Instrument *> lookup(
     std::vector<Instrument>& instruments) {
   std::unordered_map<std::string, Instrument *> result;
   for (auto& instrument : instruments)
-    result.emplace(instrument.get_instrument(), &instrument);
+    result.emplace(instrument.get_symbol(), &instrument);
   return result;
 }
 roq::Strategy::subscriptions_t subscriptions(
@@ -41,7 +41,7 @@ roq::Strategy::subscriptions_t subscriptions(
   roq::Strategy::subscriptions_t result;
   auto& tmp = result[gateway];
   for (const auto& instrument : instruments)
-    tmp[instrument.get_exchange()].emplace_back(instrument.get_instrument());
+    tmp[instrument.get_exchange()].emplace_back(instrument.get_symbol());
   return result;
 }
 }  // namespace
@@ -101,14 +101,14 @@ void BaseStrategy::on(const roq::GatewayStatusEvent& event) {
 void BaseStrategy::on(const roq::ReferenceDataEvent& event) {
   apply(
       event.reference_data.exchange,
-      event.reference_data.instrument,
+      event.reference_data.symbol,
       [&event](Instrument& instrument) { instrument.on(event); });
 }
 
 void BaseStrategy::on(const roq::MarketStatusEvent& event) {
   if (apply(
       event.market_status.exchange,
-      event.market_status.instrument,
+      event.market_status.symbol,
       [&event](Instrument& instrument) {instrument.on(event); })) {
     // are *all* tradeable instruments now ready for trading?
     bool ready = true;
@@ -123,7 +123,7 @@ void BaseStrategy::on(const roq::MarketStatusEvent& event) {
 void BaseStrategy::on(const roq::PositionUpdateEvent& event) {
   apply(
       event.position_update.exchange,
-      event.position_update.instrument,
+      event.position_update.symbol,
       [&event](Instrument& instrument) { instrument.on(event); });
 }
 
@@ -137,7 +137,7 @@ void BaseStrategy::on(const roq::OrderUpdateEvent& event) {
   if (_gateway.is_downloading()) {
     apply(
         event.order_update.exchange,
-        event.order_update.instrument,
+        event.order_update.symbol,
         [this, &event](Instrument& instrument) { _gateway.on(event, &instrument); });
   } else {
     _gateway.on(event);
@@ -163,7 +163,7 @@ void BaseStrategy::on(const roq::CancelOrderAckEvent& event) {
 void BaseStrategy::on(const roq::MarketByPriceEvent& event) {
   apply(
       event.market_by_price.exchange,
-      event.market_by_price.instrument,
+      event.market_by_price.symbol,
       [this, &event](Instrument& instrument) {
         instrument.on(event);
         _market_data_updated.insert(&instrument);
@@ -173,7 +173,7 @@ void BaseStrategy::on(const roq::MarketByPriceEvent& event) {
 void BaseStrategy::on(const roq::TradeSummaryEvent& event) {
   apply(
       event.trade_summary.exchange,
-      event.trade_summary.instrument,
+      event.trade_summary.symbol,
       [this, &event](Instrument& instrument) {
         instrument.on(event);
         _market_data_updated.insert(&instrument);
@@ -188,9 +188,9 @@ bool BaseStrategy::is_ready() const {
 
 bool BaseStrategy::apply(
     const std::string& exchange,
-    const std::string& instrument,
+    const std::string& symbol,
     std::function<void(Instrument&)> function) {
-  auto iter = _lookup.find(instrument);
+  auto iter = _lookup.find(symbol);
   if (iter != _lookup.end())
     function(*(*iter).second);
 }
