@@ -9,6 +9,7 @@
 #include "config/key_value.h"
 
 DEFINE_string(strategy, "", "strategy config file (path).");
+DEFINE_string(strategy_name, "", "strategy name.");
 DEFINE_string(strategy_group, "", "strategy group config file (path).");
 
 using namespace examples::config;  // NOLINT
@@ -32,7 +33,9 @@ int main(int argc, char *argv[]) {
   }
 
   if (FLAGS_strategy_group.empty() == false) {
-    auto strategy = ConfigReader::parse("GQIF", FLAGS_strategy_group);
+    auto strategy = ConfigReader::parse(
+        FLAGS_strategy_name,
+        FLAGS_strategy_group);
     LOG(INFO) << strategy;
     // TODO(thraneh): clean up
     auto directory = roq::filesystem::dirname(FLAGS_strategy_group);

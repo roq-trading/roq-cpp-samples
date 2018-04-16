@@ -7,4 +7,6 @@ else
 	PREFIX=
 fi
 
-$PREFIX ./example-config --strategy-group ~/strategy_gxu_group.json
+$PREFIX ./example-config \
+	--strategy-name GQIF \
+	--strategy-group ~/strategy_gxu_group.json
