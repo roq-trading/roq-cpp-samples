@@ -2,27 +2,26 @@
 
 #pragma once
 
-#include <rapidjson/document.h>
-
+#include <ostream>
 #include <string>
+#include <vector>
 
 namespace examples {
 namespace config {
 
-class JSON final {
- public:
-  explicit JSON(const std::string& path);
+struct Strategy final {
+  std::string strategy_kind;
+  std::vector<std::string> instruments;
+  std::vector<std::string> accounts;
+  std::string config_file;
 
   std::ostream& write(std::ostream&) const;
-
- private:
-  rapidjson::Document _document;
 };
 
 inline std::ostream& operator<<(
     std::ostream& stream,
-    const JSON& json) {
-  return json.write(stream);
+    const Strategy& strategy) {
+  return strategy.write(stream);
 }
 
 }  // namespace config

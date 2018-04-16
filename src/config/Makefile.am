@@ -25,6 +25,7 @@ example_config_CPPFLAGS = \
 	$(RAPIDJSON_CFLAGS) \
 	$(SPDLOG_CFLAGS)
 example_config_SOURCES = \
-	json.cpp \
+	config_reader.cpp \
 	key_value.cpp \
+	strategy.cpp \
 	main.cpp

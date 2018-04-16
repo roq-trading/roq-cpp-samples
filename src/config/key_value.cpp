@@ -140,6 +140,7 @@ std::string KeyValue::get_string(
 }
 
 std::ostream& KeyValue::write(std::ostream& stream) const {
+  stream << "{";
   bool first = true;
   for (auto& iter : _ucl) {
     if (!first)
@@ -173,7 +174,7 @@ std::ostream& KeyValue::write(std::ostream& stream) const {
         break;
     }
   }
-  return stream;
+  return stream << "}";
 }
 
 }  // namespace config

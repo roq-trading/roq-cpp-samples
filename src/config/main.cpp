@@ -2,13 +2,14 @@
 
 #include <gflags/gflags.h>
 
+#include <roq/filesystem.h>
 #include <roq/logging.h>
 
-#include "config/json.h"
+#include "config/config_reader.h"
 #include "config/key_value.h"
 
-DEFINE_string(strategy, "", "strategy (path).");
-DEFINE_string(strategy_group, "", "strategy group (path).");
+DEFINE_string(strategy, "", "strategy config file (path).");
+DEFINE_string(strategy_group, "", "strategy group config file (path).");
 
 using namespace examples::config;  // NOLINT
 
@@ -31,7 +32,13 @@ int main(int argc, char *argv[]) {
   }
 
   if (FLAGS_strategy_group.empty() == false) {
-    JSON config(FLAGS_strategy_group);
+    auto strategy = ConfigReader::parse("GQIF", FLAGS_strategy_group);
+    LOG(INFO) << strategy;
+    // TODO(thraneh): clean up
+    auto directory = roq::filesystem::dirname(FLAGS_strategy_group);
+    auto config_file = directory + "/" + strategy.config_file;
+    LOG(INFO) << config_file;
+    KeyValue config(config_file);
     LOG(INFO) << config;
   }
 
