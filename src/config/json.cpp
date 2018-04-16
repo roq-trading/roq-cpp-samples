@@ -4,11 +4,27 @@
 
 #include <roq/logging.h>
 
+#include <fstream>
+#include <map>
+
 namespace examples {
 namespace config {
 
-JSON::JSON(const std::string& path) {
-  LOG(FATAL) << "Not implemented";
+namespace {
+static rapidjson::Document parse(const std::string& path) {
+  std::ifstream file(path);
+  LOG_IF(FATAL, file.fail()) << "Unable to read \"" << path << "\"";
+  std::string data((std::istreambuf_iterator<char>(file)),
+      std::istreambuf_iterator<char>());
+  rapidjson::Document document;
+  document.Parse(data.c_str());
+  return document;
+}
+}  // namespace
+
+
+JSON::JSON(const std::string& path)
+    : _document(parse(path)) {
 }
 
 std::ostream& JSON::write(std::ostream& stream) const {

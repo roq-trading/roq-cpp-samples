@@ -2,8 +2,6 @@
 
 #include "config/key_value.h"
 
-#include <ucl++.h>
-
 #include <roq/logging.h>
 
 #include <fstream>

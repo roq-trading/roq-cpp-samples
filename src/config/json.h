@@ -2,6 +2,8 @@
 
 #pragma once
 
+#include <rapidjson/document.h>
+
 #include <string>
 
 namespace examples {
@@ -12,6 +14,9 @@ class JSON final {
   explicit JSON(const std::string& path);
 
   std::ostream& write(std::ostream&) const;
+
+ private:
+  rapidjson::Document _document;
 };
 
 inline std::ostream& operator<<(
