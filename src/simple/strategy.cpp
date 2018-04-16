@@ -28,6 +28,7 @@ Strategy::Strategy(
     : common::SimpleStrategy(
           dispatcher,
           gateway,
+          config.account,
           config.exchange,
           config.symbol,
           config.tick_size),
@@ -70,7 +71,6 @@ void Strategy::update(const common::MarketData& market_data) {
   try {
     // (c++17's std::apply would be very convenient here :-)
     create_order(
-        "",  // account
         std::get<0>(args),   // side
         std::get<1>(args),   // quantity
         std::get<2>(args),   // price

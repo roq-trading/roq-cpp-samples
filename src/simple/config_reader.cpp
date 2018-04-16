@@ -34,6 +34,7 @@ static ucl::Ucl read_config_file(const std::string& config_file,
 // Create config object from parsed config file.
 static Config create_config(const ucl::Ucl& setting) {
   Config result {
+    .account      = setting.lookup("account").string_value(),
     .exchange     = setting.lookup("exchange").string_value(),
     .symbol       = setting.lookup("symbol").string_value(),
     .tick_size    = setting.lookup("tick_size").number_value(),

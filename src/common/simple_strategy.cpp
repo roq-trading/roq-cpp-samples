@@ -9,9 +9,6 @@
 
 #include <algorithm>
 
-DEFINE_string(ioc_open, "ioc_open", "Order template.");
-DEFINE_string(ioc_close, "ioc_close", "Order template.");
-
 DEFINE_bool(real_trading, false, "Real trading? (Meaning: Send orders).");
 
 namespace examples {
@@ -24,13 +21,15 @@ const char *TRADER = "Trader";  // FIXME(thraneh): introduce an enum for this!
 SimpleStrategy::SimpleStrategy(
     roq::Strategy::Dispatcher& dispatcher,
     const std::string& gateway,
+    const std::string& account,
     const std::string& exchange,
     const std::string& symbol,
     double tick_size)
     : _dispatcher(dispatcher),
       _gateway(gateway),
-      _ioc_open(FLAGS_ioc_open),
-      _ioc_close(FLAGS_ioc_close),
+      _open("open"),
+      _close("close"),
+      _account(account),
       _exchange(exchange),
       _symbol(symbol),
       _subscriptions {
@@ -254,7 +253,6 @@ void SimpleStrategy::on(const roq::TradeSummaryEvent& event) {
 
 // Generic function to create an order.
 uint32_t SimpleStrategy::create_order(
-    const std::string& account,
     roq::Side side,
     double quantity,
     double price,
@@ -265,7 +263,7 @@ uint32_t SimpleStrategy::create_order(
   if (FLAGS_real_trading) {
     roq::CreateOrder create_order {
       .order_id       = order_id,
-      .account        = account.c_str(),
+      .account        = _account.c_str(),
       .exchange       = _exchange.c_str(),
       .symbol         = _symbol.c_str(),
       .side           = side,
@@ -309,9 +307,9 @@ bool SimpleStrategy::is_ready() const {
 // Returns false if the order template is a "close".
 // Terminate program execution if the order template is unknown.
 bool SimpleStrategy::parse_open_close(const char *order_template) {
-  if (FLAGS_ioc_open.compare(order_template) == 0)
+  if (_open.compare(order_template) == 0)
     return true;
-  if (FLAGS_ioc_close.compare(order_template) == 0)
+  if (_close.compare(order_template) == 0)
     return false;
   LOG(FATAL) << "Unknown order_template=\"" << order_template << "\"";
 }

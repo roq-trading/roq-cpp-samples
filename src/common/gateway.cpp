@@ -19,16 +19,16 @@ const char *TRADER = "Trader";  // FIXME(thraneh): introduce an enum for this!
 }  // namespace
 
 // Currently only supporting a single gateway...
-DEFINE_string(gtc_open, "gtc_open", "Order template.");
-DEFINE_string(gtc_close, "gtc_close", "Order template.");
+DEFINE_string(open, "open", "Order template.");
+DEFINE_string(close, "close", "Order template.");
 
 Gateway::Gateway(
     roq::Strategy::Dispatcher& dispatcher,
     const std::string& name)
     : _dispatcher(dispatcher),
       _name(name),
-      _gtc_open(FLAGS_gtc_open),
-      _gtc_close(FLAGS_gtc_close) {
+      _open(FLAGS_open),
+      _close(FLAGS_close) {
 }
 
 void Gateway::on(const roq::TimerEvent& event) {
@@ -205,9 +205,9 @@ bool Gateway::is_order_live(uint32_t order_id) const {
 // Returns false if the order template is a "close".
 // Terminate program execution if the order template is unknown.
 bool Gateway::parse_open_close(const char *order_template) const {
-  if (_gtc_open.compare(order_template) == 0)
+  if (_open.compare(order_template) == 0)
     return true;
-  if (_gtc_close.compare(order_template) == 0)
+  if (_close.compare(order_template) == 0)
     return false;
   LOG(FATAL) << "Unknown order_template=\"" << order_template << "\"";
 }

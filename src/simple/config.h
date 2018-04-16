@@ -11,6 +11,7 @@ namespace examples {
 namespace simple {
 
 struct Config final {
+  std::string account;
   std::string exchange;
   std::string symbol;
   double tick_size;

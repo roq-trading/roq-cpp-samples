@@ -33,6 +33,7 @@ class SimpleStrategy : public roq::Strategy {
   explicit SimpleStrategy(
       roq::Strategy::Dispatcher& dispatcher,
       const std::string& gateway,
+      const std::string& account,
       const std::string& exchange,
       const std::string& symbol,
       double tick_size);
@@ -41,7 +42,7 @@ class SimpleStrategy : public roq::Strategy {
   const std::string& get_symbol() const { return _symbol; }
 
   const std::string& get_order_template(bool close) const {
-    return close ? _ioc_close : _ioc_open;
+    return close ? _close : _open;
   }
 
   double get_tick_size() const { return _tick_size; }
@@ -95,7 +96,6 @@ class SimpleStrategy : public roq::Strategy {
  protected:
   // create order
   uint32_t create_order(
-      const std::string& account,
       roq::Side side,
       double quantity,
       double price,
@@ -110,8 +110,9 @@ class SimpleStrategy : public roq::Strategy {
   roq::Strategy::Dispatcher& _dispatcher;
   // configuration
   const std::string _gateway;
-  const std::string _ioc_open;
-  const std::string _ioc_close;
+  const std::string _open;
+  const std::string _close;
+  const std::string _account;
   const std::string _exchange;
   const std::string _symbol;
   // subscriptions

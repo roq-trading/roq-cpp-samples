@@ -16,7 +16,7 @@ class Gateway final {
  public:
   Gateway(roq::Strategy::Dispatcher& dispatcher, const std::string& name);
   const std::string& get_order_template(bool close) const {
-    return close ? _gtc_close : _gtc_open;
+    return close ? _close : _open;
   }
   bool is_downloading() const { return _download; }
   bool is_ready() const { return _download == false && _order_manager_ready; }
@@ -56,8 +56,8 @@ class Gateway final {
  private:
   roq::Strategy::Dispatcher& _dispatcher;
   const std::string _name;
-  const std::string _gtc_open;
-  const std::string _gtc_close;
+  const std::string _open;
+  const std::string _close;
   bool _download = false;
   bool _order_manager_ready = false;
   uint32_t _max_order_id = 0;
