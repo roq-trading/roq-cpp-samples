@@ -9,6 +9,7 @@ example_config_LDFLAGS = \
 	$(LIBEVENT_LIBS) \
 	$(LIBUCL_LIBS) \
 	$(LIBUNWIND_LIBS) \
+	$(RAPIDJSON_LIBS) \
 	$(SPDLOG_LIBS)
 example_config_CPPFLAGS = \
 	-DROQ_SPDLOG \
@@ -21,6 +22,7 @@ example_config_CPPFLAGS = \
 	$(LIBEVENT_CFLAGS) \
 	$(LIBUCL_CFLAGS) \
 	$(LIBUNWIND_CFLAGS) \
+	$(RAPIDJSON_CFLAGS) \
 	$(SPDLOG_CFLAGS)
 example_config_SOURCES = \
 	json.cpp \
