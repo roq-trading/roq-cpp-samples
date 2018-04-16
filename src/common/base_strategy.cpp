@@ -11,7 +11,8 @@ namespace examples {
 namespace common {
 
 namespace {
-std::vector<Instrument> create(Gateway& gateway, const Config& config) {
+// constructor utilities
+std::vector<Instrument> instruments(Gateway& gateway, const Config& config) {
   std::vector<Instrument> result;
   for (auto i = 0; i < config.instruments.size(); ++i) {
     const auto& instrument = config.instruments[i];
@@ -27,14 +28,14 @@ std::vector<Instrument> create(Gateway& gateway, const Config& config) {
   }
   return result;
 }
-std::unordered_map<std::string, Instrument *> create(
+std::unordered_map<std::string, Instrument *> lookup(
     std::vector<Instrument>& instruments) {
   std::unordered_map<std::string, Instrument *> result;
   for (auto& instrument : instruments)
     result.emplace(instrument.get_instrument(), &instrument);
   return result;
 }
-roq::Strategy::subscriptions_t create(
+roq::Strategy::subscriptions_t subscriptions(
     const std::string& gateway,
     const std::vector<Instrument>& instruments) {
   roq::Strategy::subscriptions_t result;
@@ -50,12 +51,17 @@ BaseStrategy::BaseStrategy(
     const std::string& gateway,
     const Config& config)
     : _gateway(dispatcher, gateway),
-      _instruments(create(_gateway, config)),
-      _lookup(create(_instruments)),
-      _subscriptions(create(gateway, _instruments)) {
+      _instruments(instruments(_gateway, config)),
+      _lookup(lookup(_instruments)),
+      _subscriptions(subscriptions(gateway, _instruments)) {
 }
 
 // event handlers
+
+// timer
+void BaseStrategy::on(const roq::TimerEvent& event) {
+  _gateway.on(event);
+}
 
 // download
 
@@ -75,13 +81,13 @@ void BaseStrategy::on(const roq::DownloadEndEvent& event) {
 // batch
 
 void BaseStrategy::on(const roq::BatchBeginEvent&) {
-  LOG_IF(FATAL, _dirty.empty() == false) << "Unexpected";
+  LOG_IF(FATAL, _market_data_updated.empty() == false) << "Unexpected";
 }
 
 void BaseStrategy::on(const roq::BatchEndEvent&) {
-  for (auto instrument : _dirty)
+  for (auto instrument : _market_data_updated)
     update(instrument->get_market_data());
-  _dirty.clear();
+  _market_data_updated.clear();
 }
 
 // market data or order manager
@@ -104,7 +110,7 @@ void BaseStrategy::on(const roq::MarketStatusEvent& event) {
       event.market_status.exchange,
       event.market_status.instrument,
       [&event](Instrument& instrument) {instrument.on(event); })) {
-    // are *all* tradeable instruments ready for trading?
+    // are *all* tradeable instruments now ready for trading?
     bool ready = true;
     for (const auto& instrument : _instruments)
       if (instrument.can_trade())
@@ -128,34 +134,28 @@ void BaseStrategy::on(const roq::PositionUpdateEvent& event) {
 // either the gateway restarts (or reconnects) or the client for
 // whatever reason has to be restarted.
 void BaseStrategy::on(const roq::OrderUpdateEvent& event) {
-  _gateway.on(event);  // track max order id
-  apply(
-      event.order_update.exchange,
-      event.order_update.instrument,
-      [&event](Instrument& instrument) { instrument.on(event); });
+  if (_gateway.is_downloading()) {
+    apply(
+        event.order_update.exchange,
+        event.order_update.instrument,
+        [this, &event](Instrument& instrument) { _gateway.on(event, &instrument); });
+  } else {
+    _gateway.on(event);
+  }
 }
 
 // request-response
 
 void BaseStrategy::on(const roq::CreateOrderAckEvent& event) {
-  apply(
-      event.create_order_ack.exchange,
-      event.create_order_ack.instrument,
-      [&event](Instrument& instrument) { instrument.on(event); });
+  _gateway.on(event);
 }
 
 void BaseStrategy::on(const roq::ModifyOrderAckEvent& event) {
-  apply(
-      event.modify_order_ack.exchange,
-      event.modify_order_ack.instrument,
-      [&event](Instrument& instrument) { instrument.on(event); });
+  _gateway.on(event);
 }
 
 void BaseStrategy::on(const roq::CancelOrderAckEvent& event) {
-  apply(
-      event.cancel_order_ack.exchange,
-      event.cancel_order_ack.instrument,
-      [&event](Instrument& instrument) { instrument.on(event); });
+  _gateway.on(event);
 }
 
 // market data
@@ -166,7 +166,7 @@ void BaseStrategy::on(const roq::MarketByPriceEvent& event) {
       event.market_by_price.instrument,
       [this, &event](Instrument& instrument) {
         instrument.on(event);
-        _dirty.insert(&instrument);
+        _market_data_updated.insert(&instrument);
       });
 }
 
@@ -176,7 +176,7 @@ void BaseStrategy::on(const roq::TradeSummaryEvent& event) {
       event.trade_summary.instrument,
       [this, &event](Instrument& instrument) {
         instrument.on(event);
-        _dirty.insert(&instrument);
+        _market_data_updated.insert(&instrument);
       });
 }
 

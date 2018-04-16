@@ -37,6 +37,7 @@ void Instrument::reset() {
   _market_open = false;
   _long_position.reset();
   _short_position.reset();
+  _live_orders.clear();
 }
 
 bool Instrument::is_ready() const {
@@ -138,24 +139,6 @@ void Instrument::on(const roq::OrderUpdateEvent& event) {
   }
 }
 
-void Instrument::on(const roq::CreateOrderAckEvent& event) {
-  const auto& create_order_ack = event.create_order_ack;
-  LOG_IF(WARNING, create_order_ack.failure) <<
-      "create_order_ack=" << create_order_ack;
-}
-
-void Instrument::on(const roq::ModifyOrderAckEvent& event) {
-  const auto& modify_order_ack = event.modify_order_ack;
-  LOG_IF(WARNING, modify_order_ack.failure) <<
-      "modify_order_ack=" << modify_order_ack;
-}
-
-void Instrument::on(const roq::CancelOrderAckEvent& event) {
-  const auto& cancel_order_ack = event.cancel_order_ack;
-  LOG_IF(WARNING, cancel_order_ack.failure) <<
-      "cancel_order_ack=" << cancel_order_ack;
-}
-
 void Instrument::on(const roq::MarketByPriceEvent& event) {
   const auto& market_by_price = event.market_by_price;
   std::memcpy(
@@ -184,13 +167,65 @@ uint32_t Instrument::create_order(
   LOG_IF(FATAL, _tradeable == false) << "Unexpected";
   if (is_ready() == false)
     throw roq::NotReady();
-  return _gateway.create_order(
+  auto order_id = _gateway.create_order(
       _exchange,
       _instrument,
       direction,
       quantity,
       price,
-      order_template);
+      order_template,
+      *this);
+  _live_orders.insert(order_id);
+  return order_id;
+}
+
+void Instrument::modify_order(
+    uint32_t order_id,
+    double quantity_change,
+    double limit_price) {
+  LOG_IF(FATAL, can_trade() == false) << "Unexpected";
+  if (is_order_live(order_id) == false)
+    throw roq::OrderNotLive();
+  if (is_ready() == false)
+    throw roq::NotReady();
+  _gateway.modify_order(
+      order_id,
+      quantity_change,
+      limit_price,
+      *this);
+}
+
+void Instrument::cancel_order(uint32_t order_id) {
+  LOG_IF(FATAL, can_trade() == false) << "Unexpected";
+  if (is_order_live(order_id) == false)
+    throw roq::OrderNotLive();
+  if (is_ready() == false)
+    throw roq::NotReady();
+  _gateway.cancel_order(
+      order_id,
+      *this);
+}
+
+void Instrument::on(const roq::CreateOrderAckEvent& event) {
+  const auto& create_order_ack = event.create_order_ack;
+  LOG_IF(WARNING, create_order_ack.failure) <<
+      "create_order_ack=" << create_order_ack;
+}
+
+void Instrument::on(const roq::ModifyOrderAckEvent& event) {
+  const auto& modify_order_ack = event.modify_order_ack;
+  LOG_IF(WARNING, modify_order_ack.failure) <<
+      "modify_order_ack=" << modify_order_ack;
+}
+
+void Instrument::on(const roq::CancelOrderAckEvent& event) {
+  const auto& cancel_order_ack = event.cancel_order_ack;
+  LOG_IF(WARNING, cancel_order_ack.failure) <<
+      "cancel_order_ack=" << cancel_order_ack;
+}
+
+bool Instrument::is_order_live(uint32_t order_id) const {
+  return _live_orders.find(order_id) != _live_orders.end();
 }
 
 std::ostream& Instrument::write(std::ostream& stream) const {

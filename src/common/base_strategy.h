@@ -41,7 +41,7 @@ class BaseStrategy : public roq::Strategy {
   }
   // api event handlers:
   // - timer
-  void on(const roq::TimerEvent&) override {}
+  void on(const roq::TimerEvent&) override;
   // - connection
   void on(const roq::ConnectionStatusEvent&) override {}
   // - batch
@@ -77,7 +77,7 @@ class BaseStrategy : public roq::Strategy {
   const std::unordered_map<std::string, Instrument *> _lookup;
   const roq::Strategy::subscriptions_t _subscriptions;
   bool _instruments_ready = false;
-  std::unordered_set<Instrument *> _dirty;
+  std::unordered_set<Instrument *> _market_data_updated;
 };
 
 }  // namespace common
