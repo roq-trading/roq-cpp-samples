@@ -45,7 +45,8 @@ std::ostream& Position::write(std::ostream& stream) const {
   return stream << "{"
     "start_of_day=" << get(PositionType::StartOfDay) << ", "
     "new_activity=" << get(PositionType::NewActivity) << ", "
-    "current=" << get(PositionType::Current) <<
+    "current=" << get(PositionType::Current) << ", "
+    "last_order_id=" << _last_order_id <<
     "}";
 }
 
