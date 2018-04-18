@@ -140,17 +140,13 @@ void SimpleStrategy::on(const roq::PositionUpdateEvent& event) {
     case roq::Side::Buy: {
       auto test = _long_position.get(PositionType::StartOfDay) != 0.0;
       LOG_IF(FATAL, test) << "Unexpected";
-      _long_position.set_start_of_day(
-          position_update.last_order_id,
-          position_update.position);
+      _long_position.on(position_update);
       break;
     }
     case roq::Side::Sell: {
       auto test = _short_position.get(PositionType::StartOfDay) != 0.0;
       LOG_IF(FATAL, test) << "Unexpected";
-      _short_position.set_start_of_day(
-          position_update.last_order_id,
-          position_update.position);
+      _short_position.on(position_update);
       break;
     }
     default: {
@@ -181,15 +177,17 @@ void SimpleStrategy::on(const roq::OrderUpdateEvent& event) {
   // update positions for new activity
   switch (order_update.side) {
     case roq::Side::Buy: {
-      _long_position.add_new_activity(order_update.order_id, fill_quantity);
-      if (_download == false)
-        LOG(INFO) << "long_position=" << _long_position;
+      if (open)
+        _long_position.open(order_update.order_id, fill_quantity);
+      else
+        _short_position.close(order_update.order_id, fill_quantity);
       break;
     }
     case roq::Side::Sell: {
-      _short_position.add_new_activity(order_update.order_id, fill_quantity);
-      if (_download == false)
-        LOG(INFO) << "short_position=" << _short_position;
+      if (open)
+        _short_position.open(order_update.order_id, fill_quantity);
+      else
+        _long_position.close(order_update.order_id, fill_quantity);
       break;
     }
     default: {
@@ -257,6 +255,7 @@ void SimpleStrategy::on(const roq::TradeSummaryEvent& event) {
 
 // Generic function to create an order.
 uint32_t SimpleStrategy::create_order(
+    const std::string& account,
     roq::Side side,
     double quantity,
     double price,
@@ -267,7 +266,7 @@ uint32_t SimpleStrategy::create_order(
   if (FLAGS_real_trading) {
     roq::CreateOrder create_order {
       .order_id       = order_id,
-      .account        = _account.c_str(),
+      .account        = account.c_str(),
       .exchange       = _exchange.c_str(),
       .symbol         = _symbol.c_str(),
       .side           = side,
@@ -283,6 +282,24 @@ uint32_t SimpleStrategy::create_order(
     LOG(WARNING) << "Real trading has been disabled: *** ORDER IS NOT CREATED ***";
   }
   return order_id;
+}
+
+uint32_t SimpleStrategy::buy_ioc(double quantity, double price) {
+  return create_order(
+      _account,
+      roq::Side::Buy,
+      quantity,
+      price,
+      get_order_template(_short_position.can_close()));
+}
+
+uint32_t SimpleStrategy::sell_ioc(double quantity, double price) {
+  return create_order(
+      _account,
+      roq::Side::Sell,
+      quantity,
+      price,
+      get_order_template(_long_position.can_close()));
 }
 
 // general utilities

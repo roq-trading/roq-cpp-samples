@@ -63,18 +63,15 @@ void Strategy::update(const common::MarketData& market_data) {
   if ((sign_signal * sign_position) < 0)
     return;
   // All pre-trade checks have now passed.
-  // Find arguments for the create_order function...
-  auto args = create_order_args(sign_signal, best);
-  // ... so the arguments can be written to std::cout [csv]
-  write_create_order(market_data.exchange_time, args);
-  // ... and then call the create_order function with those same arguments
   try {
-    // (c++17's std::apply would be very convenient here :-)
-    create_order(
-        std::get<0>(args),   // side
-        std::get<1>(args),   // quantity
-        std::get<2>(args),   // price
-        std::get<3>(args));  // order template
+    switch (sign_signal) {
+      case 1:
+        sell_ioc(_quantity, best.bid_price);
+        break;
+      case -1:
+        buy_ioc(_quantity, best.ask_price);
+        break;
+    }
   } catch (roq::Exception& e) {
     // Possible reasons;
     //   roq::NotConnected
@@ -114,36 +111,6 @@ double Strategy::compute(const roq::Layer *depth, size_t length) const {
   }
 }
 
-Strategy::create_order_args_t Strategy::create_order_args(
-    int sign_signal,
-    const roq::Layer& best) const {
-  switch (sign_signal) {
-    case 1: {  // sell on the up-tick
-      auto close =
-          get_long_position(common::PositionType::StartOfDay) >
-          get_short_position(common::PositionType::NewActivity);
-      return std::make_tuple(
-          roq::Side::Sell,
-          _quantity,
-          best.bid_price,
-          get_order_template(close));
-    }
-    case -1: {  // buy on the down-tick
-      auto close =
-          get_short_position(common::PositionType::StartOfDay) >
-          get_long_position(common::PositionType::NewActivity);
-      return std::make_tuple(
-          roq::Side::Buy,
-          _quantity,
-          best.ask_price,
-          get_order_template(close));
-    }
-    default: {
-      LOG(FATAL) << "Unexpected (sign_signal=" << sign_signal << ")";
-    }
-  }
-}
-
 // CSV output
 
 void Strategy::write_signal(
@@ -166,6 +133,7 @@ void Strategy::write_signal(
     std::endl;
 }
 
+/*
 void Strategy::write_create_order(
     roq::time_point_t exchange_time,
     const Strategy::create_order_args_t& args) {
@@ -181,6 +149,7 @@ void Strategy::write_create_order(
     QUOTE << std::get<3>(args) << QUOTE <<  // order template
     std::endl;
 }
+*/
 
 }  // namespace simple
 }  // namespace examples

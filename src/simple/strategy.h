@@ -27,24 +27,11 @@ class Strategy final : public common::SimpleStrategy {
   double compute(const roq::Layer *depth, size_t length) const;
 
  private:
-  typedef std::tuple<
-      roq::Side,
-      double,
-      double,
-      std::string> create_order_args_t;
-  create_order_args_t create_order_args(
-      int sign_signal,
-      const roq::Layer& best) const;
-
- private:
   static void write_signal(
       roq::time_point_t exchange_time,
       const roq::Layer& best,
       double value,
       double signal);
-  static void write_create_order(
-      roq::time_point_t exchange_time,
-      const create_order_args_t& args);
 
  private:
   // Configuration.

@@ -76,29 +76,16 @@ void Instrument::on(const roq::MarketStatusEvent& event) {
 
 void Instrument::on(const roq::PositionUpdateEvent& event) {
   const auto& position_update = event.position_update;
-  // initialize start of day position using yesterday's close position
-  // note! this is an example-choice, we could also have configured this.
   auto account = position_update.account;
   switch (position_update.side) {
-    case roq::Side::Buy: {
-      auto test = _long_position.get(PositionType::StartOfDay) != 0.0;
-      LOG_IF(FATAL, test) << "Unexpected";
-      _long_position.set_start_of_day(
-          position_update.last_order_id,
-          position_update.position);
+    case roq::Side::Buy:
+      _long_position.on(position_update);
       break;
-    }
-    case roq::Side::Sell: {
-      auto test = _short_position.get(PositionType::StartOfDay) != 0.0;
-      LOG_IF(FATAL, test) << "Unexpected";
-      _short_position.set_start_of_day(
-          position_update.last_order_id,
-          position_update.position);
+    case roq::Side::Sell:
+      _short_position.on(position_update);
       break;
-    }
-    default: {
+    default:
       LOG(FATAL) << "Unexpected";
-    }
   }
 }
 
@@ -110,8 +97,22 @@ void Instrument::on(const roq::PositionUpdateEvent& event) {
 // whatever reason has to be restarted.
 void Instrument::on(const roq::OrderUpdateEvent& event) {
   const auto& order_update = event.order_update;
-  // download?
-  auto download = event.message_info.from_cache;  // HANS -- same as download???
+  switch (order_update.order_status) {
+    // normal
+    case roq::OrderStatus::Sent:
+    case roq::OrderStatus::Accepted:
+    case roq::OrderStatus::Pending:
+    case roq::OrderStatus::Working:
+    case roq::OrderStatus::Completed:
+      break;
+    // missed?
+    case roq::OrderStatus::Canceled:
+      LOG(WARNING) << "*** ORDER WAS CANCELED ***";
+      break;
+    default:
+      LOG(WARNING) << "Unhandled order_status=" << order_update.order_status;
+      return;
+  }
   // determine if the intention was to open or close
   auto open = _gateway.parse_open_close(order_update.order_template);
   // computed fill quantity (based on traded quantity vs previous)
@@ -121,22 +122,24 @@ void Instrument::on(const roq::OrderUpdateEvent& event) {
   // update positions for new activity
   switch (order_update.side) {
     case roq::Side::Buy: {
-      _long_position.add_new_activity(order_update.order_id, fill_quantity);
-      if (download == false)
-        LOG(INFO) << "long_position=" << _long_position;
+      if (open)
+        _long_position.open(order_update.order_id, fill_quantity);
+      else
+        _short_position.close(order_update.order_id, fill_quantity);
       break;
     }
     case roq::Side::Sell: {
-      _short_position.add_new_activity(order_update.order_id, fill_quantity);
-      if (download == false)
-        LOG(INFO) << "short_position=" << _short_position;
+      if (open)
+        _short_position.open(order_update.order_id, fill_quantity);
+      else
+        _long_position.close(order_update.order_id, fill_quantity);
       break;
     }
     default: {
       LOG(FATAL) << "Unexpected";
     }
   }
-  if (download == false) {
+  if (event.message_info.from_cache == false) {
     auto position = _long_position.get(PositionType::Current) -
         _short_position.get(PositionType::Current);
     LOG(INFO) << "position=" << position;

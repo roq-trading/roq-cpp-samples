@@ -96,10 +96,14 @@ class SimpleStrategy : public roq::Strategy {
  protected:
   // create order
   uint32_t create_order(
-      roq::Side side,
-      double quantity,
-      double price,
-      const std::string& order_template);
+    const std::string& account,
+    roq::Side side,
+    double quantity,
+    double price,
+    const std::string& order_template);
+  // helpers
+  uint32_t buy_ioc(double quantity, double price);
+  uint32_t sell_ioc(double quantity, double price);
 
  private:
   // general utilities

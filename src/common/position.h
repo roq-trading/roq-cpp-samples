@@ -2,6 +2,8 @@
 
 #pragma once
 
+#include <roq/api.h>
+
 #include <limits>
 #include <ostream>
 
@@ -9,9 +11,12 @@ namespace examples {
 namespace common {
 
 enum class PositionType {
-  StartOfDay,   // today's start of day position
-  NewActivity,  // today's new activity
-  Current,      // current position
+  // status
+  StartOfDay,  // today's start of day position
+  Closed,      // today's close activity
+  Opened,      // today's open activity
+  // derived
+  Current,     // "net" open position
 };
 
 class Position final {
@@ -19,9 +24,11 @@ class Position final {
   explicit Position(
       double position = std::numeric_limits<double>::quiet_NaN());
   void reset();
+  bool can_close() const;
   double get(PositionType type) const;
-  void set_start_of_day(uint32_t last_order_id, double position);
-  void add_new_activity(uint32_t order_id, double quantity);
+  void on(const roq::PositionUpdate& position_update);
+  void open(uint32_t order_id, double quantity);
+  void close(uint32_t order_id, double quantity);
   std::ostream& write(std::ostream& stream) const;
 
  private:
@@ -29,7 +36,8 @@ class Position final {
   const bool _use_position_update;
   uint32_t _last_order_id;
   double _start_of_day;
-  double _new_activity = 0.0;
+  double _closed = 0.0;
+  double _opened = 0.0;
 };
 
 inline std::ostream& operator<<(
