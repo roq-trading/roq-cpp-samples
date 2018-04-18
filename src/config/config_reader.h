@@ -2,6 +2,8 @@
 
 #pragma once
 
+#include <string>
+
 #include "config/strategy.h"
 
 namespace examples {
