@@ -67,12 +67,22 @@ void Strategy::update(const common::MarketData& market_data) {
   try {
     switch (sign_signal) {
       case 1:
+        write_order(
+            market_data.exchange_time,
+            roq::Side::Sell,
+            _quantity,
+            best.bid_price);
         if (FLAGS_real_trading)
           at(0).sell_ioc(_quantity, best.bid_price);
         else
           LOG(WARNING) << "Trading is *not* enabled (use --real-trading)";
         break;
       case -1:
+        write_order(
+            market_data.exchange_time,
+            roq::Side::Buy,
+            _quantity,
+            best.ask_price);
         if (FLAGS_real_trading)
           at(0).buy_ioc(_quantity, best.ask_price);
         else
@@ -140,23 +150,22 @@ void Strategy::write_signal(
     std::endl;
 }
 
-/*
-void Strategy::write_create_order(
+void Strategy::write_order(
     roq::time_point_t exchange_time,
-    const Strategy::create_order_args_t& args) {
+    roq::Side side,
+    double quantity,
+    double price) {
   auto msecs = std::chrono::duration_cast<std::chrono::milliseconds>(
     exchange_time.time_since_epoch()).count();
   std::cout <<
     PREFIX_CREATE_ORDER << DELIMITER <<
     (msecs / 1000) << DELIMITER <<
     (msecs % 1000) << DELIMITER <<
-    std::get<0>(args) << DELIMITER <<       // side
-    std::get<1>(args) << DELIMITER <<       // quantity
-    std::get<2>(args) << DELIMITER <<       // price
-    QUOTE << std::get<3>(args) << QUOTE <<  // order template
+    side << DELIMITER <<
+    quantity << DELIMITER <<
+    price << DELIMITER <<
     std::endl;
 }
-*/
 
 }  // namespace simple
 }  // namespace examples

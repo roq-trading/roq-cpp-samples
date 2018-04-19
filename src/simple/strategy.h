@@ -32,6 +32,11 @@ class Strategy final : public common::BaseStrategy {
       const roq::Layer& best,
       double value,
       double signal);
+  static void write_order(
+      roq::time_point_t exchange_time,
+      roq::Side side,
+      double quantity,
+      double price);
 
  private:
   // Configuration.
