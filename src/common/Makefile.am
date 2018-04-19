@@ -12,11 +12,11 @@ libcommon_la_CPPFLAGS = \
 	$(SPDLOG_CFLAGS)
 libcommon_la_SOURCES = \
 	base_strategy.cpp \
+	config.cpp \
 	config_variables.cpp \
 	gateway.cpp \
 	instrument.cpp \
-	position.cpp \
-	simple_strategy.cpp
+	position.cpp
 libcommon_la_includedir = $(includedir)/roq/samples
 libcommon_la_include_HEADERS = \
 	base_strategy.h \
@@ -25,5 +25,4 @@ libcommon_la_include_HEADERS = \
 	gateway.h \
 	instrument.h \
 	market_data.h \
-	position.h \
-	simple_strategy.h
+	position.h

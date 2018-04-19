@@ -5,6 +5,10 @@
 #include <roq/logging.h>
 #include <roq/stream.h>
 
+#include <gflags/gflags.h>
+
+DEFINE_bool(real_trading, false, "Real trading?");
+
 namespace examples {
 namespace simple {
 
@@ -25,13 +29,10 @@ Strategy::Strategy(
     roq::Strategy::Dispatcher& dispatcher,
     const std::string& gateway,
     const Config& config)
-    : common::SimpleStrategy(
+    : common::BaseStrategy(
           dispatcher,
           gateway,
-          config.account,
-          config.exchange,
-          config.symbol,
-          config.tick_size),
+          config.config),
       _weighted(config.weighted),
       _threshold(config.threshold),
       _quantity(config.quantity) {
@@ -56,7 +57,7 @@ void Strategy::update(const common::MarketData& market_data) {
   // Direction of signal.
   auto sign_signal = sign(signal);
   // Direction of current position.
-  auto position = get_net_position(common::PositionType::Current);
+  auto position = at(0).get_position();
   auto sign_position = sign(position);
   // Exposure is limited to configured quantity.
   // In other words: do not increase an already existing position.
@@ -66,10 +67,16 @@ void Strategy::update(const common::MarketData& market_data) {
   try {
     switch (sign_signal) {
       case 1:
-        sell_ioc(_quantity, best.bid_price);
+        if (FLAGS_real_trading)
+          at(0).sell_ioc(_quantity, best.bid_price);
+        else
+          LOG(WARNING) << "Trading is *not* enabled (use --real-trading)";
         break;
       case -1:
-        buy_ioc(_quantity, best.ask_price);
+        if (FLAGS_real_trading)
+          at(0).buy_ioc(_quantity, best.ask_price);
+        else
+          LOG(WARNING) << "Trading is *not* enabled (use --real-trading)";
         break;
     }
   } catch (roq::Exception& e) {
@@ -103,11 +110,11 @@ double Strategy::compute(const roq::Layer *depth, size_t length) const {
                layer.ask_price * layer.ask_quantity;
       sum_2 += layer.bid_quantity + layer.ask_quantity;
     }
-    return sum_1 / sum_2 / get_tick_size();
+    return sum_1 / sum_2 / at(0).get_tick_size();
   } else {
     // Simple mid price.
     const auto& best = depth[0];
-    return 0.5 * (best.bid_price + best.ask_price) / get_tick_size();
+    return 0.5 * (best.bid_price + best.ask_price) / at(0).get_tick_size();
   }
 }
 

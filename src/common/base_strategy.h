@@ -20,9 +20,6 @@ class BaseStrategy : public roq::Strategy {
       roq::Strategy::Dispatcher& dispatcher,
       const std::string& gateway,
       const Config& config);
-  const std::string& get_order_template(bool close) const {
-    return _gateway.get_order_template(close);
-  }
   size_t size() const { return _instruments.size(); }
   Instrument& at(size_t index) {
     return _instruments[index];
@@ -57,7 +54,7 @@ class BaseStrategy : public roq::Strategy {
   void on(const roq::MarketStatusEvent&) override;
   void on(const roq::PositionUpdateEvent&) override;
   void on(const roq::OrderUpdateEvent&) override;
-  void on(const roq::TradeUpdateEvent&) override {}
+  void on(const roq::TradeUpdateEvent&) override;
   // - order manager response
   void on(const roq::CreateOrderAckEvent&) override;
   void on(const roq::ModifyOrderAckEvent&) override;

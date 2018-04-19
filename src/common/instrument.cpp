@@ -8,35 +8,46 @@
 namespace examples {
 namespace common {
 
+namespace {
+std::unordered_map<std::string, Position> create_positions(
+    const std::map<std::string, std::pair<double, double> >& accounts) {
+  std::unordered_map<std::string, Position> result;
+  for (const auto& iter : accounts)
+    result.emplace(iter.first, Position(
+        true,  // HANS
+        iter.second.first,
+        iter.second.second));
+  return result;
+}
+}  // namespace
+
 Instrument::Instrument(
     size_t index,
     Gateway& gateway,
     const std::string& exchange,
     const std::string& symbol,
+    const std::map<std::string, std::pair<double, double> >& accounts,
     double risk_limit,
-    double long_position,
-    double short_position,
     double tick_size)
     : _index(index),
       _gateway(gateway),
       _exchange(exchange),
       _symbol(symbol),
+      _positions(create_positions(accounts)),
       _risk_limit(risk_limit),
-      _tradeable(_risk_limit != 0.0),
+      _tradeable(_positions.empty() == false),
       _market_data {
         .index = _index,
         .exchange = _exchange.c_str(),
         .symbol = _symbol.c_str()
       },
-      _tick_size(tick_size),
-      _long_position(long_position),
-      _short_position(short_position) {
+      _tick_size(tick_size) {
 }
 
 void Instrument::reset() {
   _market_open = false;
-  _long_position.reset();
-  _short_position.reset();
+  for (auto& iter : _positions)
+    iter.second.reset();
   _live_orders.clear();
 }
 
@@ -44,16 +55,11 @@ bool Instrument::is_ready() const {
   return _gateway.is_ready() && _market_open;
 }
 
-double Instrument::get_long_position(PositionType type) const {
-  return _long_position.get(type);
-}
-
-double Instrument::get_short_position(PositionType type) const {
-  return _short_position.get(type);
-}
-
-double Instrument::get_net_position(PositionType type) const {
-  return _long_position.get(type) - _short_position.get(type);
+double Instrument::get_position() const {
+  double result = 0;
+  for (const auto& iter : _positions)
+    result += iter.second.get_net();
+  return result;
 }
 
 void Instrument::on(const roq::ReferenceDataEvent& event) {
@@ -77,16 +83,12 @@ void Instrument::on(const roq::MarketStatusEvent& event) {
 void Instrument::on(const roq::PositionUpdateEvent& event) {
   const auto& position_update = event.position_update;
   auto account = position_update.account;
-  switch (position_update.side) {
-    case roq::Side::Buy:
-      _long_position.on(position_update);
-      break;
-    case roq::Side::Sell:
-      _short_position.on(position_update);
-      break;
-    default:
-      LOG(FATAL) << "Unexpected";
-  }
+  auto iter = _positions.find(account);
+  if (iter != _positions.end())
+    (*iter).second.on(position_update);
+  else
+    LOG(WARNING) << "Received unknown account for "
+      "position_update=" << position_update;
 }
 
 // Note! Order updates may be sent live or during the download phase.
@@ -97,6 +99,7 @@ void Instrument::on(const roq::PositionUpdateEvent& event) {
 // whatever reason has to be restarted.
 void Instrument::on(const roq::OrderUpdateEvent& event) {
   const auto& order_update = event.order_update;
+  // TODO(thraneh): we need to record proper statistics here
   switch (order_update.order_status) {
     // normal
     case roq::OrderStatus::Sent:
@@ -105,44 +108,39 @@ void Instrument::on(const roq::OrderUpdateEvent& event) {
     case roq::OrderStatus::Working:
     case roq::OrderStatus::Completed:
       break;
-    // missed?
+    // missed
     case roq::OrderStatus::Canceled:
-      LOG(WARNING) << "*** ORDER WAS CANCELED ***";
       break;
     default:
-      LOG(WARNING) << "Unhandled order_status=" << order_update.order_status;
+      LOG(WARNING) << "Received unknown or undefined order_status for "
+        "order_update=" << order_update;
       return;
   }
-  // determine if the intention was to open or close
-  auto open = _gateway.parse_open_close(order_update.order_template);
-  // computed fill quantity (based on traded quantity vs previous)
-  auto fill_quantity = _gateway.get_fill_quantity(order_update);
-  // account
-  auto account = order_update.account;
-  // update positions for new activity
-  switch (order_update.side) {
-    case roq::Side::Buy: {
-      if (open)
-        _long_position.open(order_update.order_id, fill_quantity);
-      else
-        _short_position.close(order_update.order_id, fill_quantity);
-      break;
-    }
-    case roq::Side::Sell: {
-      if (open)
-        _short_position.open(order_update.order_id, fill_quantity);
-      else
-        _long_position.close(order_update.order_id, fill_quantity);
-      break;
-    }
-    default: {
-      LOG(FATAL) << "Unexpected";
-    }
+  // update position
+  auto iter = _positions.find(order_update.account);
+  if (iter != _positions.end()) {
+    auto& position = (*iter).second;
+    position.on(order_update);
+    if (!_gateway.is_downloading())
+      LOG(INFO) << "Position {"
+        "account=\"" << order_update.account << "\", "
+        "position=" << position.get_net() <<
+        "}";
   }
-  if (event.message_info.from_cache == false) {
-    auto position = _long_position.get(PositionType::Current) -
-        _short_position.get(PositionType::Current);
-    LOG(INFO) << "position=" << position;
+}
+
+// note! trade updates *normally* arrives *after* order updates
+void Instrument::on(const roq::TradeUpdateEvent& event) {
+  const auto& trade_update = event.trade_update;
+  // update position
+  auto iter = _positions.find(trade_update.account);
+  if (iter != _positions.end()) {
+    auto& position = (*iter).second;
+    position.on(trade_update);
+    /*
+    if (!_gateway.is_downloading())
+      LOG(INFO) << position;
+    */
   }
 }
 
@@ -172,6 +170,7 @@ uint32_t Instrument::create_order(
     double quantity,
     double price,
     roq::TimeInForce time_in_force,
+    roq::PositionEffect position_effect,
     const std::string& order_template) {
   LOG_IF(FATAL, _tradeable == false) << "Unexpected";
   if (is_ready() == false)
@@ -184,10 +183,55 @@ uint32_t Instrument::create_order(
       quantity,
       price,
       time_in_force,
+      position_effect,
       order_template,
       *this);
   _live_orders.insert(order_id);
   return order_id;
+}
+
+void Instrument::buy_ioc(double quantity, double price) {
+  create_ioc(roq::Side::Buy, quantity, price);
+}
+
+void Instrument::sell_ioc(double quantity, double price) {
+  create_ioc(roq::Side::Sell, quantity, price);
+}
+
+void Instrument::create_ioc(
+    roq::Side side,
+    double quantity,
+    double price) {
+  // FIXME(thraneh): this can be done a lot more efficiently...
+  for (const auto& iter : _positions) {
+    auto position_effect = iter.second.get_effect(side, quantity);
+    if (position_effect == roq::PositionEffect::Close) {
+      create_order(
+          iter.first,
+          side,
+          quantity,
+          price,
+          roq::TimeInForce::IOC,
+          roq::PositionEffect::Close,
+          "default");
+      return;
+    }
+  }
+  for (const auto& iter : _positions) {
+    auto position_effect = iter.second.get_effect(side, quantity);
+    if (position_effect == roq::PositionEffect::Open) {
+      create_order(
+          iter.first,
+          side,
+          quantity,
+          price,
+          roq::TimeInForce::IOC,
+          roq::PositionEffect::Open,
+          "default");
+      return;
+    }
+  }
+  LOG(ERROR) << "Not possible to trade";  // FIXME(thraneh): use exception
 }
 
 void Instrument::modify_order(
@@ -202,8 +246,7 @@ void Instrument::modify_order(
   _gateway.modify_order(
       order_id,
       quantity_change,
-      limit_price,
-      *this);
+      limit_price);
 }
 
 void Instrument::cancel_order(uint32_t order_id) {
@@ -212,9 +255,7 @@ void Instrument::cancel_order(uint32_t order_id) {
     throw roq::OrderNotLive();
   if (is_ready() == false)
     throw roq::NotReady();
-  _gateway.cancel_order(
-      order_id,
-      *this);
+  _gateway.cancel_order(order_id);
 }
 
 void Instrument::on(const roq::CreateOrderAckEvent& event) {
@@ -240,16 +281,21 @@ bool Instrument::is_order_live(uint32_t order_id) const {
 }
 
 std::ostream& Instrument::write(std::ostream& stream) const {
-  return stream << "{"
+  stream << "{"
     "index=" << _index << ", "
     "exchange=" << _exchange << ", "
     "symbol=" << _symbol << ", "
     "tick_size=" << _tick_size << ", "
     "market_open=" << (_market_open ? "true" : "false") << ", "
-    "long_position=" << _long_position << ", "
-    "short_position=" << _short_position <<
-    // drop market data (not really state management)
-    "}";
+    "positions={";
+  bool first = true;
+  for (const auto& iter : _positions) {
+    if (first == false)
+      stream << ", ";
+    first = false;
+    stream << "\"" << iter.first << "\"=" << iter.second;
+  }
+  return stream <<"}";
 }
 
 }  // namespace common

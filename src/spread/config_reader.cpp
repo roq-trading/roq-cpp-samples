@@ -7,6 +7,7 @@
 #include <roq/logging.h>
 
 #include <fstream>
+#include <limits>
 #include <map>
 
 #include "common/config_variables.h"
@@ -16,13 +17,29 @@ namespace spread {
 
 namespace {
 // FIXME(thraneh): drop hard-coded config
+const auto NaN = std::numeric_limits<double>::quiet_NaN();
 const common::Config CONFIG = {
   .instruments = {
-    { .exchange = "CFFEX", .symbol = "T1806", .risk_limit = 1.0 },
-    { .exchange = "CFFEX", .symbol = "TF1806", .risk_limit = 2.0 },
+    {
+      .exchange = "CFFEX",
+      .symbol = "T1806",
+      .accounts = {
+        { "A1", { NaN, NAN } },
+      },
+      .risk_limit = 1.0
+    },
+    {
+      .exchange = "CFFEX",
+      .symbol = "TF1806",
+      .accounts = {
+        { "A1", { NaN, NaN } },
+        { "B2", { NaN, NaN } },
+      },
+      .risk_limit = 2.0
+    },
   },
 };
-}
+}  // namespace
 
 
 namespace {

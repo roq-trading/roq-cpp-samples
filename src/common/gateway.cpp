@@ -5,8 +5,6 @@
 #include <roq/logging.h>
 #include <roq/stream.h>
 
-#include <gflags/gflags.h>
-
 #include <algorithm>
 
 #include "common/instrument.h"
@@ -18,17 +16,11 @@ namespace {
 const char *TRADER = "Trader";  // FIXME(thraneh): introduce an enum for this!
 }  // namespace
 
-// Currently only supporting a single gateway...
-DEFINE_string(open, "open", "Order template.");
-DEFINE_string(close, "close", "Order template.");
-
 Gateway::Gateway(
     roq::Strategy::Dispatcher& dispatcher,
     const std::string& name)
     : _dispatcher(dispatcher),
-      _name(name),
-      _open(FLAGS_open),
-      _close(FLAGS_close) {
+      _name(name) {
 }
 
 void Gateway::on(const roq::TimerEvent& event) {
@@ -41,7 +33,6 @@ void Gateway::on(const roq::DownloadBeginEvent& event) {
   LOG(INFO) << "download=" << (_download ? "true" : "false");
   // reset all variables tracking order management state
   _order_manager_ready = false;
-  _order_traded_quantity.clear();
   // note! order_max_id must *NEVER* be reset
   _live_orders.clear();
 }
@@ -109,6 +100,7 @@ uint32_t Gateway::create_order(
     double quantity,
     double price,
     roq::TimeInForce time_in_force,
+    roq::PositionEffect position_effect,
     const std::string& order_template,
     Instrument& instrument) {
   if (is_ready() == false)
@@ -116,16 +108,17 @@ uint32_t Gateway::create_order(
   auto order_id = ++_max_order_id;
   LOG_IF(FATAL, is_order_live(order_id)) << "Unexpected";
   roq::CreateOrder create_order {
-    .order_id       = order_id,
-    .account        = account.c_str(),
-    .exchange       = exchange.c_str(),
-    .symbol         = symbol.c_str(),
-    .side           = side,
-    .quantity       = quantity,
-    .order_type     = roq::OrderType::Limit,
-    .limit_price    = price,
-    .time_in_force  = time_in_force,
-    .order_template = order_template.c_str(),
+    .order_id        = order_id,
+    .account         = account.c_str(),
+    .exchange        = exchange.c_str(),
+    .symbol          = symbol.c_str(),
+    .side            = side,
+    .quantity        = quantity,
+    .order_type      = roq::OrderType::Limit,
+    .limit_price     = price,
+    .time_in_force   = time_in_force,
+    .position_effect = position_effect,
+    .order_template  = order_template.c_str(),
   };
   LOG(INFO) << "create_order=" << create_order;
   _dispatcher.send(create_order, _name.c_str());
@@ -136,12 +129,13 @@ uint32_t Gateway::create_order(
 void Gateway::modify_order(
     uint32_t order_id,
     double quantity_change,
-    double limit_price,
-    Instrument& instrument) {
+    double limit_price) {
   if (is_order_live(order_id) == false)
     throw roq::OrderNotLive();
   if (is_ready() == false)
     throw roq::NotReady();
+  if (_live_orders.find(order_id) == _live_orders.end())
+    LOG(WARNING) << "Not a live order (order_id=" << order_id << ")";
   roq::ModifyOrder modify_order {
     .order_id        = order_id,
     .quantity_change = quantity_change,
@@ -151,13 +145,13 @@ void Gateway::modify_order(
   _dispatcher.send(modify_order, _name.c_str());
 }
 
-void Gateway::cancel_order(
-    uint32_t order_id,
-    Instrument& instrument) {
+void Gateway::cancel_order(uint32_t order_id) {
   if (is_order_live(order_id) == false)
     throw roq::OrderNotLive();
   if (is_ready() == false)
     throw roq::NotReady();
+  if (_live_orders.find(order_id) == _live_orders.end())
+    LOG(WARNING) << "Not a live order (order_id=" << order_id << ")";
   roq::CancelOrder cancel_order {
     .order_id = order_id,
   };
@@ -179,7 +173,7 @@ void Gateway::on(const roq::ModifyOrderAckEvent& event) {
   auto iter = _live_orders.find(modify_order_ack.order_id);
   if (iter != _live_orders.end())
     (*iter).second->on(event);
-  // there's nothing to do if a failure is being signalled...
+  // there's nothing to do if a failure is being signaled...
 }
 
 void Gateway::on(const roq::CancelOrderAckEvent& event) {
@@ -187,36 +181,11 @@ void Gateway::on(const roq::CancelOrderAckEvent& event) {
   auto iter = _live_orders.find(cancel_order_ack.order_id);
   if (iter != _live_orders.end())
     (*iter).second->on(event);
-  // there's nothing to do if a failure is being signalled...
+  // there's nothing to do if a failure is being signaled...
 }
 
 bool Gateway::is_order_live(uint32_t order_id) const {
   return _live_orders.find(order_id) != _live_orders.end();
-}
-
-// The interface is generic an supposed to work for a multitude of
-// gateways. The client therefore has no access to market specific
-// fields. Those extra fields are only visible to the gateway. The
-// client can, however, leverage such extra fields through templates.
-// The gateway will ensure all order updates includes the original
-// name of the template. The client can therefore safely compare
-// the name of the template with that it used to create the order.
-// Returns true if the order template is an "open".
-// Returns false if the order template is a "close".
-// Terminate program execution if the order template is unknown.
-bool Gateway::parse_open_close(const char *order_template) const {
-  if (_open.compare(order_template) == 0)
-    return true;
-  if (_close.compare(order_template) == 0)
-    return false;
-  LOG(FATAL) << "Unknown order_template=\"" << order_template << "\"";
-}
-
-double Gateway::get_fill_quantity(const roq::OrderUpdate& order_update) {
-  auto& previous = _order_traded_quantity[order_update.order_id];
-  auto result = std::max(0.0, order_update.traded_quantity - previous);
-  previous = order_update.traded_quantity;
-  return result;
 }
 
 }  // namespace common

@@ -8,12 +8,12 @@
 
 #include "simple/config.h"
 
-#include "common/simple_strategy.h"
+#include "common/base_strategy.h"
 
 namespace examples {
 namespace simple {
 
-class Strategy final : public common::SimpleStrategy {
+class Strategy final : public common::BaseStrategy {
  public:
   Strategy(
       roq::Strategy::Dispatcher& dispatcher,

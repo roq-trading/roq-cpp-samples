@@ -21,9 +21,8 @@ std::vector<Instrument> instruments(Gateway& gateway, const Config& config) {
       gateway,
       instrument.exchange,
       instrument.symbol,
+      instrument.accounts,
       instrument.risk_limit,
-      instrument.long_position,
-      instrument.short_position,
       instrument.tick_size);
   }
   return result;
@@ -72,16 +71,32 @@ void BaseStrategy::on(const roq::DownloadBeginEvent& event) {
   _instruments_ready = false;
 }
 
+namespace {
+std::ostream& operator<<(
+    std::ostream& stream,
+    const std::vector<Instrument>& instruments) {
+  stream << "[";
+  bool first = true;
+  for (const auto& instrument : instruments) {
+    if (!first)
+      stream << ", ";
+    first = false;
+    stream << instrument;
+  }
+  return stream << "]";
+}
+}  // namespace
+
 void BaseStrategy::on(const roq::DownloadEndEvent& event) {
   _gateway.on(event);
-  for (const auto& instrument : _instruments)
-    LOG(INFO) << instrument;
+  LOG(INFO) << "instruments=" << _instruments;
 }
 
 // batch
 
 void BaseStrategy::on(const roq::BatchBeginEvent&) {
-  LOG_IF(FATAL, _market_data_updated.empty() == false) << "Unexpected";
+  // internal check that end of batch has reset correctly
+  LOG_IF(FATAL, !_market_data_updated.empty()) << "Unexpected";
 }
 
 void BaseStrategy::on(const roq::BatchEndEvent&) {
@@ -121,10 +136,14 @@ void BaseStrategy::on(const roq::MarketStatusEvent& event) {
 
 // Note! Position updates are only sent during the download phase.
 void BaseStrategy::on(const roq::PositionUpdateEvent& event) {
-  apply(
+  if (!apply(
       event.position_update.exchange,
       event.position_update.symbol,
-      [&event](Instrument& instrument) { instrument.on(event); });
+      [&event](Instrument& instrument) { instrument.on(event); }))
+    LOG(WARNING) << "Received position update for unknown {"
+        "exchange=\"" << event.position_update.exchange << "\", "
+        "symbol=\"" << event.position_update.symbol << "\""
+        "}";
 }
 
 // Note! Order updates may be sent live or during the download phase.
@@ -135,13 +154,25 @@ void BaseStrategy::on(const roq::PositionUpdateEvent& event) {
 // whatever reason has to be restarted.
 void BaseStrategy::on(const roq::OrderUpdateEvent& event) {
   if (_gateway.is_downloading()) {
-    apply(
+    if (!apply(
         event.order_update.exchange,
         event.order_update.symbol,
-        [this, &event](Instrument& instrument) { _gateway.on(event, &instrument); });
+        [this, &event](Instrument& instrument) {
+            _gateway.on(event, &instrument); }))
+      LOG(WARNING) << "Received order update for unknown {"
+          "exchange=\"" << event.order_update.exchange << "\", "
+          "symbol=\"" << event.order_update.symbol << "\""
+          "}";
   } else {
     _gateway.on(event);
   }
+}
+
+void BaseStrategy::on(const roq::TradeUpdateEvent& event) {
+  apply(
+      event.trade_update.exchange,
+      event.trade_update.symbol,
+      [this, &event](Instrument& instrument) { instrument.on(event); });
 }
 
 // request-response
@@ -191,8 +222,10 @@ bool BaseStrategy::apply(
     const std::string& symbol,
     std::function<void(Instrument&)> function) {
   auto iter = _lookup.find(symbol);
-  if (iter != _lookup.end())
-    function(*(*iter).second);
+  if (iter == _lookup.end())
+    return false;
+  function(*(*iter).second);
+  return true;
 }
 
 }  // namespace common

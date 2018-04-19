@@ -4,40 +4,42 @@
 
 #include <roq/api.h>
 
-#include <limits>
 #include <ostream>
+#include <unordered_map>
 
 namespace examples {
 namespace common {
 
-enum class PositionType {
-  // status
-  StartOfDay,  // today's start of day position
-  Closed,      // today's close activity
-  Opened,      // today's open activity
-  // derived
-  Current,     // "net" open position
-};
-
 class Position final {
  public:
   explicit Position(
-      double position = std::numeric_limits<double>::quiet_NaN());
+      bool use_position_update,
+      double long_position,
+      double short_position);
   void reset();
-  bool can_close() const;
-  double get(PositionType type) const;
+  double get_net() const;
+  roq::PositionEffect get_effect(roq::Side side, double quantity) const;
   void on(const roq::PositionUpdate& position_update);
-  void open(uint32_t order_id, double quantity);
-  void close(uint32_t order_id, double quantity);
+  void on(const roq::OrderUpdate& order_update);
+  void on(const roq::TradeUpdate& trade_update);
   std::ostream& write(std::ostream& stream) const;
 
  private:
-  const double _manual;
   const bool _use_position_update;
-  uint32_t _last_order_id;
-  double _start_of_day;
-  double _closed = 0.0;
-  double _opened = 0.0;
+  // long
+  uint32_t _long_last_order_id = 0;
+  double _long_start_of_day;
+  double _long_closed = 0.0;
+  double _long_opened = 0.0;
+  uint32_t _long_last_trade_id = 0;
+  // short
+  uint32_t _short_last_order_id = 0;
+  double _short_start_of_day;
+  double _short_closed = 0.0;
+  double _short_opened = 0.0;
+  uint32_t _short_last_trade_id = 0;
+  // order
+  std::unordered_map<uint32_t, double> _traded_quantity;
 };
 
 inline std::ostream& operator<<(

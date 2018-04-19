@@ -2,7 +2,10 @@
 
 #pragma once
 
+#include <map>
+#include <ostream>
 #include <string>
+#include <utility>
 #include <vector>
 
 namespace examples {
@@ -12,13 +15,15 @@ struct Config {
   struct Instrument final {
     std::string exchange;
     std::string symbol;
+    typedef std::pair<double, double> position_t;
+    std::map<std::string, position_t> accounts;
     double risk_limit;  // optional
-    double long_position;  // optional, start of day
-    double short_position;  // optional, start of day
     double tick_size;  // optional
   };
   std::vector<Instrument> instruments;
 };
+
+std::ostream& operator<<(std::ostream& stream, const Config& value);
 
 
 }  // namespace common

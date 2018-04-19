@@ -7,14 +7,13 @@
 #include <ostream>
 #include <string>
 
+#include "common/config.h"
+
 namespace examples {
 namespace simple {
 
 struct Config final {
-  std::string account;
-  std::string exchange;
-  std::string symbol;
-  double tick_size;
+  common::Config config;
   bool weighted;
   double threshold;
   double quantity;
