@@ -40,7 +40,7 @@ static std::map<std::string, std::pair<double, double> > create_accounts(
   for (auto& iter : setting) {
     auto key = iter.key();
     if (key.empty()) {
-      // list format -- there are no positions
+      // list format (using position feed)
       result.emplace(iter.string_value(), std::make_pair(NaN, NaN));
     } else {
       // TODO(thraneh): also read start positions (but what format?)
@@ -49,26 +49,30 @@ static std::map<std::string, std::pair<double, double> > create_accounts(
   }
   return result;
 }
+// Create base instrument.
+static common::Config::Instrument create_base_instrument(
+    const ucl::Ucl& setting) {
+  return common::Config::Instrument {
+    .exchange   = setting.lookup("exchange").string_value(),
+    .symbol     = setting.lookup("symbol").string_value(),
+    .accounts   = create_accounts(setting.lookup("accounts")),
+    .risk_limit = setting.lookup("risk_limit").number_value(),
+    .tick_size  = setting.lookup("tick_size").number_value()
+  };
+}
 // Create base config.
 static common::Config create_base_config(const ucl::Ucl& setting) {
   common::Config result;
-  for (auto& iter : setting) {
-    LOG_IF(FATAL, iter.key() != "instrument") << "Expected instrument";
-    common::Config::Instrument instrument {
-      .exchange = iter.lookup("exchange").string_value(),
-      .symbol   = iter.lookup("symbol").string_value(),
-      .accounts = create_accounts(iter.lookup("accounts")),
-      .risk_limit = iter.lookup("risk_limit").number_value(),
-      .tick_size = iter.lookup("tick_size").number_value()
-    };
-    result.instruments.emplace_back(std::move(instrument));
-  }
+  LOG_IF(FATAL, setting.type() != UCL_ARRAY) << "Instruments must be an array";
+  for (auto i = 0; i < setting.size(); ++i)
+    result.instruments.emplace_back(
+        create_base_instrument(setting.at(i)));
   return result;
 }
 // Create config object from parsed config file.
 static Config create_config(const ucl::Ucl& setting) {
   Config result {
-    .config    = create_base_config(setting.lookup("portfolio")),
+    .config    = create_base_config(setting.lookup("instruments")),
     .weighted  = setting.lookup("weighted").bool_value(),
     .threshold = setting.lookup("threshold").number_value(),
     .quantity  = static_cast<double>(setting.lookup("quantity").int_value()),
