@@ -7,6 +7,7 @@
 
 #include <gflags/gflags.h>
 
+DEFINE_bool(write_csv, false, "Write CSV output?");
 DEFINE_bool(real_trading, false, "Real trading?");
 
 namespace examples {
@@ -50,7 +51,8 @@ void Strategy::update(const common::MarketData& market_data) {
   auto signal = value - _previous;
   _previous = value;
   // Write signal to std::cout [csv].
-  write_signal(market_data.exchange_time, best, value, signal);
+  if (FLAGS_write_csv)
+    write_signal(market_data.exchange_time, best, value, signal);
   // Only trade if the magnitude of the signal exceeds threshold
   if (std::fabs(signal) < _threshold || std::isnan(signal))
     return;
@@ -67,22 +69,24 @@ void Strategy::update(const common::MarketData& market_data) {
   try {
     switch (sign_signal) {
       case 1:
-        write_order(
-            market_data.exchange_time,
-            roq::Side::Sell,
-            _quantity,
-            best.bid_price);
+        if (FLAGS_write_csv)
+          write_order(
+              market_data.exchange_time,
+              roq::Side::Sell,
+              _quantity,
+              best.bid_price);
         if (FLAGS_real_trading)
           at(0).sell_ioc(_quantity, best.bid_price);
         else
           LOG(WARNING) << "Trading is *not* enabled (use --real-trading)";
         break;
       case -1:
-        write_order(
-            market_data.exchange_time,
-            roq::Side::Buy,
-            _quantity,
-            best.ask_price);
+        if (FLAGS_write_csv)
+          write_order(
+              market_data.exchange_time,
+              roq::Side::Buy,
+              _quantity,
+              best.ask_price);
         if (FLAGS_real_trading)
           at(0).buy_ioc(_quantity, best.ask_price);
         else
