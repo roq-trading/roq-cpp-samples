@@ -34,4 +34,4 @@ EXTRA_example_simple_SOURCES = \
 	config_reader.h \
 	strategy.h
 configdir=$(datadir)/roq/samples
-config_DATA = simple.conf instruments.conf
+config_DATA = simple.conf
