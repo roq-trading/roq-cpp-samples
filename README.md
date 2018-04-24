@@ -117,6 +117,14 @@ Install the build tools
 	# (optional) install git
 	conda install -y git
 
+Install the dependencies
+
+	# install roq
+	conda install -y roq
+
+  # install rapidjson (for the config example)
+	conda install -y roq-oss-rapidjson
+
 Configure the build environment
 
 	# define environment variables
@@ -124,10 +132,7 @@ Configure the build environment
 	export CPPFLAGS="$CPPFLAGS -I$CONDA_PREFIX/include"
 	export PKG_CONFIG_PATH="$CONDA_PREFIX/lib/pkgconfig"
 
-Install the dependencies
-
-	# install roq and rapidjson
-	conda install -y roq roq-oss-rapidjson
+*Note! These environment variables will be lost if you use `conda install` again*.
 
 Clone this project (from github) and compile from source
 
