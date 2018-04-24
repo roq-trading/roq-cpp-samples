@@ -120,8 +120,8 @@ Install the build tools
 Configure the build environment
 
 	# define environment variables
-	export LDFLAGS=-L"$CONDA_PREFIX/lib"
-	export CPPFLAGS=-I"$CONDA_PREFIX/include"
+	export LDFLAGS="$LDFLAGS -L$CONDA_PREFIX/lib"
+	export CPPFLAGS="$CPPFLAGS -I$CONDA_PREFIX/include"
 	export PKG_CONFIG_PATH="$CONDA_PREFIX/lib/pkgconfig"
 
 Install the Roq API
