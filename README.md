@@ -122,7 +122,7 @@ Install the dependencies
 	# install roq
 	conda install -y roq
 
-  # install rapidjson (for the config example)
+	# install rapidjson
 	conda install -y roq-oss-rapidjson
 
 Configure the build environment
