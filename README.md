@@ -124,10 +124,10 @@ Configure the build environment
 	export CPPFLAGS="$CPPFLAGS -I$CONDA_PREFIX/include"
 	export PKG_CONFIG_PATH="$CONDA_PREFIX/lib/pkgconfig"
 
-Install the Roq API
+Install the dependencies
 
-	# install roq
-	conda install -y roq
+	# install roq and rapidjson
+	conda install -y roq roq-oss-rapidjson
 
 Clone this project (from github) and compile from source
 
