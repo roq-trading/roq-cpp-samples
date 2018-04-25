@@ -113,6 +113,10 @@ void BaseStrategy::on(const roq::GatewayStatusEvent& event) {
 
 // order manager
 
+void BaseStrategy::on(const roq::AccountStatusEvent& event) {
+  // HANS -- what ???
+}
+
 void BaseStrategy::on(const roq::ReferenceDataEvent& event) {
   apply(
       event.reference_data.exchange,

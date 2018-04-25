@@ -50,6 +50,7 @@ class BaseStrategy : public roq::Strategy {
   // - order manager or market data
   void on(const roq::GatewayStatusEvent&) override;
   // - order manager update
+  void on(const roq::AccountStatusEvent&) override;
   void on(const roq::ReferenceDataEvent&) override;
   void on(const roq::MarketStatusEvent&) override;
   void on(const roq::PositionUpdateEvent&) override;
