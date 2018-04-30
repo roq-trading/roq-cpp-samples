@@ -1,5 +1,11 @@
 cmake_minimum_required(VERSION 3.0.2)
 
+# FIXME(thraneh): test and install targets
+
+# project
+
+project(roq-samples)
+
 # extra modules, e.g. find
 
 set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/CMake" ${CMAKE_MODULE_PATH})
@@ -12,12 +18,6 @@ set(CMAKE_CXX_STANDARD 11)
 # include source directories
 
 include_directories("${CMAKE_CURRENT_SOURCE_DIR}/src")
-
-# link RPATH
-
-# none of these work with dependencies:
-# SET(CMAKE_BUILD_WITH_INSTALL_RPATH TRUE)
-# SET(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
 
 # dependencies
 
@@ -33,26 +33,15 @@ find_package(Libevent REQUIRED)
 find_package(Ucl REQUIRED)
 find_package(Roq REQUIRED)
 
-# project
-
-project(roq-samples)
-
 include_directories("${CMAKE_CURRENT_SOURCE_DIR}/src")
 
 add_library(roq_samples_common STATIC
   ${CMAKE_CURRENT_SOURCE_DIR}/src/common/base_strategy.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/src/common/base_strategy.h
   ${CMAKE_CURRENT_SOURCE_DIR}/src/common/config.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/src/common/config.h
   ${CMAKE_CURRENT_SOURCE_DIR}/src/common/config_variables.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/src/common/config_variables.h
   ${CMAKE_CURRENT_SOURCE_DIR}/src/common/gateway.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/src/common/gateway.h
   ${CMAKE_CURRENT_SOURCE_DIR}/src/common/instrument.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/src/common/instrument.h
-  ${CMAKE_CURRENT_SOURCE_DIR}/src/common/market_data.h
   ${CMAKE_CURRENT_SOURCE_DIR}/src/common/position.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/src/common/position.h
 )
 
 set_target_properties(roq_samples_common PROPERTIES
@@ -72,9 +61,7 @@ target_include_directories(roq_samples_common PUBLIC
 
 add_library(roq_samples_utilities STATIC
   ${CMAKE_CURRENT_SOURCE_DIR}/src/utilities/csv_reader.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/src/utilities/csv_reader.h
   ${CMAKE_CURRENT_SOURCE_DIR}/src/utilities/generator.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/src/utilities/generator.h
 )
 
 set_target_properties(roq_samples_utilities PROPERTIES
@@ -94,7 +81,6 @@ target_include_directories(roq_samples_utilities PUBLIC
 
 add_executable(roq_samples_collector
   ${CMAKE_CURRENT_SOURCE_DIR}/src/collector/collector.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/src/collector/collector.h
   ${CMAKE_CURRENT_SOURCE_DIR}/src/collector/main.cpp
 )
 
@@ -130,12 +116,9 @@ target_link_libraries(roq_samples_collector
 
 add_executable(roq_samples_simple
   ${CMAKE_CURRENT_SOURCE_DIR}/src/simple/config.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/src/simple/config.h
   ${CMAKE_CURRENT_SOURCE_DIR}/src/simple/config_reader.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/src/simple/config_reader.h
   ${CMAKE_CURRENT_SOURCE_DIR}/src/simple/main.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/src/simple/strategy.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/src/simple/strategy.h
 )
 
 set_target_properties(roq_samples_simple PROPERTIES
