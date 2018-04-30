@@ -44,3 +44,5 @@ src/spread/example-spread
 src/config/example-config
 
 *.csv
+
+build/
