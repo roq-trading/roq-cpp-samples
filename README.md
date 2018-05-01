@@ -109,30 +109,15 @@ Create the Conda environment
 	  - http://roq-trading.com/dist/conda/unstable
 	EOF
 
-Install the build tools
+Prepare the Conda environment
 
-	# (optional) install the conda build toolchain
-	conda install -y autoconf automake libtool pkgconfig gcc_linux-64
+	# - install build and dev tools
+	# - install library dependencies
+	# - set CPPFLAGS, LDFLAGS and PKG_CONFIG_PATH
+	source scripts/conda.sh install
 
-	# (optional) install git
-	conda install -y git
-
-Install the dependencies
-
-	# install roq
-	conda install -y roq
-
-	# install rapidjson
-	conda install -y roq-oss-rapidjson
-
-Configure the build environment
-
-	# define environment variables
-	export LDFLAGS="$LDFLAGS -L$CONDA_PREFIX/lib"
-	export CPPFLAGS="$CPPFLAGS -I$CONDA_PREFIX/include"
-	export PKG_CONFIG_PATH="$CONDA_PREFIX/lib/pkgconfig"
-
-*Note! These environment variables will be lost if you use `conda install` again*.
+*Note! The environment variables will be lost if you use `conda install` again.
+If your environment variables have been replaced, simply run `source scripts.conda.sh` (without install)*.
 
 Clone this project (from github) and compile from source
 
@@ -141,7 +126,7 @@ Clone this project (from github) and compile from source
 	cd roq-samples
 
 	# configure the project
-	./autogen.sh && ./configure --prefix "$CONDA_PREFIX"
+	cmake -DCMAKE_BUILD_TYPE=Debug
 
 	# compile
 	make -j4
