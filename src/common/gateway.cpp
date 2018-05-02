@@ -108,8 +108,8 @@ uint32_t Gateway::create_order(
   auto order_id = ++_max_order_id;
   LOG_IF(FATAL, is_order_live(order_id)) << "Unexpected";
   roq::CreateOrder create_order {
-    .order_id        = order_id,
     .account         = account.c_str(),
+    .order_id        = order_id,
     .exchange        = exchange.c_str(),
     .symbol          = symbol.c_str(),
     .side            = side,
@@ -127,6 +127,7 @@ uint32_t Gateway::create_order(
 }
 
 void Gateway::modify_order(
+    const std::string& account,
     uint32_t order_id,
     double quantity_change,
     double limit_price) {
@@ -137,6 +138,7 @@ void Gateway::modify_order(
   if (_live_orders.find(order_id) == _live_orders.end())
     LOG(WARNING) << "Not a live order (order_id=" << order_id << ")";
   roq::ModifyOrder modify_order {
+    .account         = account.c_str(),
     .order_id        = order_id,
     .quantity_change = quantity_change,
     .limit_price     = limit_price,
@@ -145,7 +147,9 @@ void Gateway::modify_order(
   _dispatcher.send(modify_order, _name.c_str());
 }
 
-void Gateway::cancel_order(uint32_t order_id) {
+void Gateway::cancel_order(
+    const std::string& account,
+    uint32_t order_id) {
   if (is_order_live(order_id) == false)
     throw roq::OrderNotLive();
   if (is_ready() == false)
@@ -153,6 +157,7 @@ void Gateway::cancel_order(uint32_t order_id) {
   if (_live_orders.find(order_id) == _live_orders.end())
     LOG(WARNING) << "Not a live order (order_id=" << order_id << ")";
   roq::CancelOrder cancel_order {
+    .account  = account.c_str(),
     .order_id = order_id,
   };
   LOG(INFO) << "cancel_order=" << cancel_order;

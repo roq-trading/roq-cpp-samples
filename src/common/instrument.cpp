@@ -235,6 +235,7 @@ void Instrument::create_ioc(
 }
 
 void Instrument::modify_order(
+    const std::string& account,
     uint32_t order_id,
     double quantity_change,
     double limit_price) {
@@ -244,18 +245,21 @@ void Instrument::modify_order(
   if (is_ready() == false)
     throw roq::NotReady();
   _gateway.modify_order(
+      account,
       order_id,
       quantity_change,
       limit_price);
 }
 
-void Instrument::cancel_order(uint32_t order_id) {
+void Instrument::cancel_order(
+    const std::string& account,
+    uint32_t order_id) {
   LOG_IF(FATAL, can_trade() == false) << "Unexpected";
   if (is_order_live(order_id) == false)
     throw roq::OrderNotLive();
   if (is_ready() == false)
     throw roq::NotReady();
-  _gateway.cancel_order(order_id);
+  _gateway.cancel_order(account, order_id);
 }
 
 void Instrument::on(const roq::CreateOrderAckEvent& event) {

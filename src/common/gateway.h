@@ -34,10 +34,13 @@ class Gateway final {
       const std::string& order_template,
       Instrument& instrument);
   void modify_order(
+      const std::string& account,
       uint32_t order_id,
       double quantity_change,
       double limit_price);
-  void cancel_order(uint32_t order_id);
+  void cancel_order(
+      const std::string& account,
+      uint32_t order_id);
   void on(const roq::CreateOrderAckEvent& event);
   void on(const roq::ModifyOrderAckEvent& event);
   void on(const roq::CancelOrderAckEvent& event);

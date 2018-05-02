@@ -54,10 +54,13 @@ class Instrument final {
       roq::PositionEffect position_effect,
       const std::string& order_template);
   void modify_order(
+      const std::string& account,
       uint32_t order_id,
       double quantity_change,
       double limit_price);
-  void cancel_order(uint32_t order_id);
+  void cancel_order(
+      const std::string& account,
+      uint32_t order_id);
   // - helper
   void buy_ioc(double quantity, double price);
   void sell_ioc(double quantity, double price);
