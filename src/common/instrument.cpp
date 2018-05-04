@@ -28,7 +28,8 @@ Instrument::Instrument(
     const std::string& symbol,
     const std::map<std::string, std::pair<double, double> >& accounts,
     double risk_limit,
-    double tick_size)
+    double tick_size,
+    double multiplier)
     : _index(index),
       _gateway(gateway),
       _exchange(exchange),
@@ -41,7 +42,8 @@ Instrument::Instrument(
         .exchange = _exchange.c_str(),
         .symbol = _symbol.c_str()
       },
-      _tick_size(tick_size) {
+      _tick_size(tick_size),
+      _multiplier(multiplier) {
 }
 
 void Instrument::reset() {
@@ -68,6 +70,11 @@ void Instrument::on(const roq::ReferenceDataEvent& event) {
   if (_tick_size != tick_size && tick_size != 0.0) {
     _tick_size = tick_size;
     LOG(INFO) << "tick_size=" << _tick_size;
+  }
+  auto multiplier = reference_data.multiplier;
+  if (_multiplier != multiplier && multiplier != 0.0) {
+    _multiplier = multiplier;
+    LOG(INFO) << "multiplier=" << _multiplier;
   }
 }
 
@@ -290,6 +297,7 @@ std::ostream& Instrument::write(std::ostream& stream) const {
     "exchange=" << _exchange << ", "
     "symbol=" << _symbol << ", "
     "tick_size=" << _tick_size << ", "
+    "multiplier=" << _multiplier << ", "
     "market_open=" << (_market_open ? "true" : "false") << ", "
     "positions={";
   bool first = true;

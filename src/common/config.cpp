@@ -9,6 +9,7 @@
     std::map<std::string, position_t> accounts;
     double risk_limit;  // optional
     double tick_size;  // optional
+    double multiplier;  // optional
   };
 
 namespace examples {
@@ -39,7 +40,8 @@ std::ostream& operator<<(
     "symbol=\"" << instrument.symbol << "\", "
     "accounts=" << instrument.accounts << ", "
     "risk_limit=" << instrument.risk_limit << ", "
-    "tick_size=" << instrument.tick_size <<
+    "tick_size=" << instrument.tick_size << ", "
+    "multiplier=" << instrument.multiplier <<
     "}";
 }
 }  // namespace

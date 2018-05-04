@@ -19,6 +19,7 @@ struct Config {
     std::map<std::string, position_t> accounts;
     double risk_limit;  // optional
     double tick_size;  // optional
+    double multiplier;  // optional
   };
   std::vector<Instrument> instruments;
 };

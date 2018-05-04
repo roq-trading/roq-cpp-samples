@@ -23,7 +23,8 @@ std::vector<Instrument> instruments(Gateway& gateway, const Config& config) {
       instrument.symbol,
       instrument.accounts,
       instrument.risk_limit,
-      instrument.tick_size);
+      instrument.tick_size,
+      instrument.multiplier);
   }
   return result;
 }
