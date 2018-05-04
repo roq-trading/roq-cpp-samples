@@ -29,8 +29,8 @@ class CsvReader final {
   const std::pair<const char *, size_t>& get_raw(size_t index) const;
 
  private:
-  CsvReader(CsvReader&) = delete;
-  CsvReader& operator=(CsvReader&) = delete;
+  CsvReader(const CsvReader&) = delete;
+  void operator=(const CsvReader&) = delete;
 
  private:
   roq::file::File _file;
