@@ -43,9 +43,7 @@ Instrument::Instrument(
         .symbol = _symbol.c_str(),
         .tick_size = tick_size,
         .multiplier = multiplier,
-      },
-      _tick_size(tick_size),
-      _multiplier(multiplier) {
+      } {
 }
 
 void Instrument::reset() {
@@ -69,16 +67,14 @@ double Instrument::get_position() const {
 void Instrument::on(const roq::ReferenceDataEvent& event) {
   const auto& reference_data = event.reference_data;
   auto tick_size = reference_data.tick_size;
-  if (_tick_size != tick_size && tick_size != 0.0) {
-    _tick_size = tick_size;
-    _market_data.tick_size = _tick_size;
-    LOG(INFO) << "tick_size=" << _tick_size;
+  if (_market_data.tick_size != tick_size && tick_size != 0.0) {
+    _market_data.tick_size = tick_size;
+    LOG(INFO) << "tick_size=" << _market_data.tick_size;
   }
   auto multiplier = reference_data.multiplier;
-  if (_multiplier != multiplier && multiplier != 0.0) {
-    _multiplier = multiplier;
-    _market_data.multiplier = _multiplier;
-    LOG(INFO) << "multiplier=" << _multiplier;
+  if (_market_data.multiplier != multiplier && multiplier != 0.0) {
+    _market_data.multiplier = multiplier;
+    LOG(INFO) << "multiplier=" << _market_data.multiplier;
   }
 }
 
@@ -300,8 +296,8 @@ std::ostream& Instrument::write(std::ostream& stream) const {
     "index=" << _index << ", "
     "exchange=" << _exchange << ", "
     "symbol=" << _symbol << ", "
-    "tick_size=" << _tick_size << ", "
-    "multiplier=" << _multiplier << ", "
+    "tick_size=" << _market_data.tick_size << ", "
+    "multiplier=" << _market_data.multiplier << ", "
     "market_open=" << (_market_open ? "true" : "false") << ", "
     "positions={";
   bool first = true;

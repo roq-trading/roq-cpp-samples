@@ -35,8 +35,8 @@ class Instrument final {
   double get_risk_limit() const { return _risk_limit; }
   bool can_trade() const { return _tradeable; }
   bool is_ready() const;
-  double get_tick_size() const { return _tick_size; }
-  double get_multiplier() const { return _multiplier; }
+  double get_tick_size() const { return _market_data.tick_size; }
+  double get_multiplier() const { return _market_data.multiplier; }
   double get_position() const;
   const MarketData& get_market_data() const { return _market_data; }
   void on(const roq::ReferenceDataEvent& event);  // TODO(thraneh): hide from user
@@ -84,8 +84,6 @@ class Instrument final {
   const double _risk_limit;
   const bool _tradeable;
   MarketData _market_data;  // aggregator for MarketByPrice and TradeSummary
-  double _tick_size;
-  double _multiplier;
   bool _market_open = false;
   std::unordered_set<uint32_t> _live_orders;
 };
