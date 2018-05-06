@@ -114,6 +114,7 @@ Clone this project (from github) and compile from source
 	# clone roq-samples (this repo)
 	git clone https://github.com/roq-trading/roq-samples
 
+	# change to the newly created directory
 	cd roq-samples
 
 	# prepare the conda environment
@@ -126,7 +127,7 @@ Clone this project (from github) and compile from source
 	git submodule update --init --recursive
 
 	# configure the project
-	cmake -DCMAKE_BUILD_TYPE=Debug
+	cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX=$CONDA_PREFIX
 
 	# compile
 	make -j4
