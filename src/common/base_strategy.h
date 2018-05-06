@@ -44,13 +44,12 @@ class BaseStrategy : public roq::Strategy {
   // - batch
   void on(const roq::BatchBeginEvent&) override;
   void on(const roq::BatchEndEvent&) override;
-  // - download
+  // - market data
+  void on(const roq::MarketDataStatusEvent&) override;
+  // - order manager
+  void on(const roq::OrderManagerStatusEvent&) override;
   void on(const roq::DownloadBeginEvent&) override;
   void on(const roq::DownloadEndEvent&) override;
-  // - order manager or market data
-  void on(const roq::GatewayStatusEvent&) override;
-  // - order manager update
-  void on(const roq::AccountStatusEvent&) override;
   void on(const roq::ReferenceDataEvent&) override;
   void on(const roq::MarketStatusEvent&) override;
   void on(const roq::PositionUpdateEvent&) override;

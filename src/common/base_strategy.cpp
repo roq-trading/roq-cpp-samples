@@ -106,16 +106,16 @@ void BaseStrategy::on(const roq::BatchEndEvent&) {
   _market_data_updated.clear();
 }
 
-// market data or order manager
+// market data
 
-void BaseStrategy::on(const roq::GatewayStatusEvent& event) {
+void BaseStrategy::on(const roq::MarketDataStatusEvent& event) {
   _gateway.on(event);
 }
 
 // order manager
 
-void BaseStrategy::on(const roq::AccountStatusEvent& event) {
-  // HANS -- what ???
+void BaseStrategy::on(const roq::OrderManagerStatusEvent& event) {
+  _gateway.on(event);
 }
 
 void BaseStrategy::on(const roq::ReferenceDataEvent& event) {

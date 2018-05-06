@@ -18,9 +18,10 @@ class Gateway final {
   bool is_downloading() const { return _download; }
   bool is_ready() const { return _download == false && _order_manager_ready; }
   void on(const roq::TimerEvent& event);
+  void on(const roq::MarketDataStatusEvent& event);
+  void on(const roq::OrderManagerStatusEvent& event);
   void on(const roq::DownloadBeginEvent& event);
   void on(const roq::DownloadEndEvent& event);
-  void on(const roq::GatewayStatusEvent& event);
   void on(const roq::OrderUpdateEvent& event, Instrument *instrument = nullptr);
   uint32_t create_order(
       const std::string& account,

@@ -27,6 +27,20 @@ void Gateway::on(const roq::TimerEvent& event) {
   // TODO(thraneh): check order requests timing out
 }
 
+void Gateway::on(const roq::MarketDataStatusEvent& event) {
+}
+
+void Gateway::on(const roq::OrderManagerStatusEvent& event) {
+  const auto& order_manager_status = event.order_manager_status;
+  auto order_manager_ready =
+      order_manager_status.status == roq::GatewayStatus::Ready;
+  if (_order_manager_ready != order_manager_ready) {
+    _order_manager_ready = order_manager_ready;
+    LOG(INFO) << "order_manager_ready=" <<
+      (_order_manager_ready ? "true" : "false");
+  }
+}
+
 void Gateway::on(const roq::DownloadBeginEvent& event) {
   // set download flag (block strategy from creating new orders)
   _download = true;
@@ -43,19 +57,6 @@ void Gateway::on(const roq::DownloadEndEvent& event) {
   // reset download flag
   _download = false;
   LOG(INFO) << "download=" << (_download ? "true" : "false");
-}
-
-void Gateway::on(const roq::GatewayStatusEvent& event) {
-  const auto& gateway_status = event.gateway_status;
-  // return early if it's not the gateway's order management status
-  if (std::strcmp(TRADER, gateway_status.name) != 0)
-    return;
-  // ready?
-  auto order_manager_ready = gateway_status.status == roq::GatewayState::Ready;
-  if (_order_manager_ready != order_manager_ready) {
-    _order_manager_ready = order_manager_ready;
-    LOG(INFO) << "order_manager_ready=" << (_order_manager_ready ? "true" : "false");
-  }
 }
 
 // The mapping between order_id and instrument is normally set up

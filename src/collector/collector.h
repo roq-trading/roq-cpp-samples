@@ -37,10 +37,10 @@ class Collector final : public roq::Strategy {
   void on(const roq::ConnectionStatusEvent&) override {}
   void on(const roq::BatchBeginEvent&) override {}
   void on(const roq::BatchEndEvent&) override;
+  void on(const roq::MarketDataStatusEvent&) override {}
+  void on(const roq::OrderManagerStatusEvent&) override {}
   void on(const roq::DownloadBeginEvent&) override {}
   void on(const roq::DownloadEndEvent&) override {}
-  void on(const roq::GatewayStatusEvent&) override {}
-  void on(const roq::AccountStatusEvent&) override {}
   void on(const roq::ReferenceDataEvent&) override {}
   void on(const roq::MarketStatusEvent&) override {}
   void on(const roq::MarketByPriceEvent&) override;
