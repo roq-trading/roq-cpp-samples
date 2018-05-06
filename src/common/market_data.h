@@ -11,6 +11,8 @@ struct MarketData final {
   const size_t index;
   const char *exchange;
   const char *symbol;
+  double tick_size;
+  double multiplier;
   roq::Layer depth[roq::MAX_DEPTH];
   double price;
   double volume;

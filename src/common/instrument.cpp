@@ -40,7 +40,9 @@ Instrument::Instrument(
       _market_data {
         .index = _index,
         .exchange = _exchange.c_str(),
-        .symbol = _symbol.c_str()
+        .symbol = _symbol.c_str(),
+        .tick_size = tick_size,
+        .multiplier = multiplier,
       },
       _tick_size(tick_size),
       _multiplier(multiplier) {
@@ -69,11 +71,13 @@ void Instrument::on(const roq::ReferenceDataEvent& event) {
   auto tick_size = reference_data.tick_size;
   if (_tick_size != tick_size && tick_size != 0.0) {
     _tick_size = tick_size;
+    _market_data.tick_size = _tick_size;
     LOG(INFO) << "tick_size=" << _tick_size;
   }
   auto multiplier = reference_data.multiplier;
   if (_multiplier != multiplier && multiplier != 0.0) {
     _multiplier = multiplier;
+    _market_data.multiplier = _multiplier;
     LOG(INFO) << "multiplier=" << _multiplier;
   }
 }
