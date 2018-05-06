@@ -109,21 +109,21 @@ Create the Conda environment
 	  - http://roq-trading.com/dist/conda/unstable
 	EOF
 
-Prepare the Conda environment
+Clone this project (from github) and compile from source
 
+	# clone roq-samples (this repo)
+	git clone https://github.com/roq-trading/roq-samples
+
+	cd roq-samples
+
+	# prepare the conda environment
 	# - install build and dev tools
 	# - install library dependencies
 	# - set CPPFLAGS, LDFLAGS and PKG_CONFIG_PATH
 	source scripts/conda.sh install
 
-*Note! The environment variables will be lost if you use `conda install` again.
-If your environment variables have been replaced, simply run `source scripts.conda.sh` (without install)*.
-
-Clone this project (from github) and compile from source
-
-	# clone roq-samples (this repo)
-	git clone https://github.com/roq-trading/roq-samples
-	cd roq-samples
+	# update git submodules
+	git submodule update --init --recursive
 
 	# configure the project
 	cmake -DCMAKE_BUILD_TYPE=Debug
@@ -136,6 +136,9 @@ Test if it works
 	# test simultion
 	cd src/collector
 	./example-collector --simulation-file test.csv
+
+*Note! The environment variables will be lost if you use `conda install` again.
+If your environment variables have been replaced, simply run `source scripts.conda.sh` (without install)*.
 
 
 ### Ubuntu (system-wide build toolchain)
