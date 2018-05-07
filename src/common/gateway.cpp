@@ -104,8 +104,10 @@ uint32_t Gateway::create_order(
     roq::PositionEffect position_effect,
     const std::string& order_template,
     Instrument& instrument) {
-  if (is_ready() == false)
+  if (is_ready() == false) {
+    LOG(WARNING) << "Gateway is not in the ready state";
     throw roq::NotReady();
+  }
   auto order_id = ++_max_order_id;
   LOG_IF(FATAL, is_order_live(order_id)) << "Unexpected";
   roq::CreateOrder create_order {
@@ -134,8 +136,10 @@ void Gateway::modify_order(
     double limit_price) {
   if (is_order_live(order_id) == false)
     throw roq::OrderNotLive();
-  if (is_ready() == false)
+  if (is_ready() == false) {
+    LOG(WARNING) << "Gateway is not in the ready state";
     throw roq::NotReady();
+  }
   if (_live_orders.find(order_id) == _live_orders.end())
     LOG(WARNING) << "Not a live order (order_id=" << order_id << ")";
   roq::ModifyOrder modify_order {
@@ -153,8 +157,10 @@ void Gateway::cancel_order(
     uint32_t order_id) {
   if (is_order_live(order_id) == false)
     throw roq::OrderNotLive();
-  if (is_ready() == false)
+  if (is_ready() == false) {
+    LOG(WARNING) << "Gateway is not in the ready state";
     throw roq::NotReady();
+  }
   if (_live_orders.find(order_id) == _live_orders.end())
     LOG(WARNING) << "Not a live order (order_id=" << order_id << ")";
   roq::CancelOrder cancel_order {

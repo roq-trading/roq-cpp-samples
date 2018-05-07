@@ -180,8 +180,12 @@ uint32_t Instrument::create_order(
     roq::PositionEffect position_effect,
     const std::string& order_template) {
   LOG_IF(FATAL, _tradeable == false) << "Unexpected";
-  if (is_ready() == false)
+  if (is_ready() == false) {
+    LOG(WARNING) << "Instrument is not in the ready state {"
+    "symbol=\"" << _symbol << "\""
+    "}";
     throw roq::NotReady();
+  }
   auto order_id = _gateway.create_order(
       account,
       _exchange,
@@ -249,8 +253,12 @@ void Instrument::modify_order(
   LOG_IF(FATAL, can_trade() == false) << "Unexpected";
   if (is_order_live(order_id) == false)
     throw roq::OrderNotLive();
-  if (is_ready() == false)
+  if (is_ready() == false) {
+    LOG(WARNING) << "Instrument is not in the ready state {"
+    "symbol=\"" << _symbol << "\""
+    "}";
     throw roq::NotReady();
+  }
   _gateway.modify_order(
       account,
       order_id,
@@ -264,8 +272,12 @@ void Instrument::cancel_order(
   LOG_IF(FATAL, can_trade() == false) << "Unexpected";
   if (is_order_live(order_id) == false)
     throw roq::OrderNotLive();
-  if (is_ready() == false)
+  if (is_ready() == false) {
+    LOG(WARNING) << "Instrument is not in the ready state {"
+    "symbol=\"" << _symbol << "\""
+    "}";
     throw roq::NotReady();
+  }
   _gateway.cancel_order(account, order_id);
 }
 
