@@ -90,7 +90,6 @@ std::ostream& operator<<(
 
 void BaseStrategy::on(const roq::DownloadEndEvent& event) {
   _gateway.on(event);
-  LOG(INFO) << "instruments=" << _instruments;
 }
 
 // batch
@@ -116,6 +115,8 @@ void BaseStrategy::on(const roq::MarketDataStatusEvent& event) {
 
 void BaseStrategy::on(const roq::OrderManagerStatusEvent& event) {
   _gateway.on(event);
+  if (event.order_manager_status.status == roq::GatewayStatus::Ready)
+    LOG(INFO) << "instruments=" << _instruments;
 }
 
 void BaseStrategy::on(const roq::ReferenceDataEvent& event) {

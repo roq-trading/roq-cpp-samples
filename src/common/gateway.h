@@ -6,6 +6,7 @@
 
 #include <string>
 #include <unordered_map>
+#include <unordered_set>
 
 namespace examples {
 namespace common {
@@ -55,6 +56,7 @@ class Gateway final {
   const std::string _name;
   bool _download = false;
   bool _order_manager_ready = false;
+  std::unordered_set<std::string> _account_ready;
   uint32_t _max_order_id = 0;
   std::unordered_map<uint32_t, Instrument *> _live_orders;
 };

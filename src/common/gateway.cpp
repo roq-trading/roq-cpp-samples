@@ -28,35 +28,53 @@ void Gateway::on(const roq::TimerEvent& event) {
 }
 
 void Gateway::on(const roq::MarketDataStatusEvent& event) {
+  auto status = event.market_data_status.status;
+  auto ready = status == roq::GatewayStatus::Ready;
+  LOG(INFO) << "Market data " <<
+    "is " << (ready ? "" : "not ") << "ready";
 }
 
 void Gateway::on(const roq::OrderManagerStatusEvent& event) {
+  // FIXME(thraneh): this is now per account
   const auto& order_manager_status = event.order_manager_status;
   auto order_manager_ready =
       order_manager_status.status == roq::GatewayStatus::Ready;
   if (_order_manager_ready != order_manager_ready) {
     _order_manager_ready = order_manager_ready;
-    LOG(INFO) << "order_manager_ready=" <<
-      (_order_manager_ready ? "true" : "false");
   }
+  LOG(INFO) << "Order manager " <<
+    "account=\"" << order_manager_status.account << "\" "
+    "is " << (_order_manager_ready ? "" : "not ") << "ready";
 }
 
 void Gateway::on(const roq::DownloadBeginEvent& event) {
+  const auto& download_begin = event.download_begin;
+  auto account = download_begin.account;
+  if (std::strlen(account) == 0)
+    LOG(INFO) << "Downloading reference data";
+  else
+    LOG(INFO) << "Downloading account=\"" << account << "\"";
   // set download flag (block strategy from creating new orders)
+  // TODO(thraneh): no need for a "global" lock
   _download = true;
-  LOG(INFO) << "download=" << (_download ? "true" : "false");
+  VLOG(1) << "download=" << (_download ? "true" : "false");
   // reset all variables tracking order management state
-  _order_manager_ready = false;
+  _account_ready.erase(download_begin.account);
   // note! order_max_id must *NEVER* be reset
   _live_orders.clear();
 }
 
 void Gateway::on(const roq::DownloadEndEvent& event) {
-  // max order id
-  update_max_order_id(event.download_end.max_order_id);
+  const auto& download_end = event.download_end;
+  auto account = download_end.account;
+  auto max_order_id = download_end.max_order_id;
+
+  _account_ready.insert(account);
+  // max order id  HANS -- per account
+  update_max_order_id(max_order_id);
   // reset download flag
   _download = false;
-  LOG(INFO) << "download=" << (_download ? "true" : "false");
+  VLOG(1) << "download=" << (_download ? "true" : "false");
 }
 
 // The mapping between order_id and instrument is normally set up
