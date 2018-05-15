@@ -11,6 +11,7 @@ libcommon_la_CPPFLAGS = \
 	$(LIBUNWIND_CFLAGS) \
 	$(SPDLOG_CFLAGS)
 libcommon_la_SOURCES = \
+	account.cpp \
 	base_strategy.cpp \
 	config.cpp \
 	config_variables.cpp \
@@ -19,6 +20,7 @@ libcommon_la_SOURCES = \
 	position.cpp
 libcommon_la_includedir = $(includedir)/roq/samples
 libcommon_la_include_HEADERS = \
+	account.h \
 	base_strategy.h \
 	config.h \
 	config_variables.h \

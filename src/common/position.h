@@ -10,12 +10,20 @@
 namespace examples {
 namespace common {
 
+class Account;
+
 class Position final {
  public:
   explicit Position(
+      Account& account,
+      const std::string& exchange,
+      const std::string& symbol,
       bool use_position_update,
       double long_position,
       double short_position);
+  Account& get_account() { return _account; }
+  const std::string& get_exchange() const { return _exchange; }
+  const std::string& get_symbol() const { return _symbol; }
   void reset();
   double get_net() const;
   roq::PositionEffect get_effect(roq::Side side, double quantity) const;
@@ -25,6 +33,9 @@ class Position final {
   std::ostream& write(std::ostream& stream) const;
 
  private:
+  Account& _account;
+  const std::string _exchange;
+  const std::string _symbol;
   const bool _use_position_update;
   // long
   uint32_t _long_last_order_id = 0;

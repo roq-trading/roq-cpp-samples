@@ -46,8 +46,10 @@ class BaseStrategy : public roq::Strategy {
   void on(const roq::BatchEndEvent&) override;
   // - market data
   void on(const roq::MarketDataStatusEvent&) override;
+  // - market data update
+  void on(const roq::MarketByPriceEvent&) override;
+  void on(const roq::TradeSummaryEvent&) override;
   // - order manager
-  void on(const roq::OrderManagerStatusEvent&) override;
   void on(const roq::DownloadBeginEvent&) override;
   void on(const roq::DownloadEndEvent&) override;
   void on(const roq::ReferenceDataEvent&) override;
@@ -55,25 +57,32 @@ class BaseStrategy : public roq::Strategy {
   void on(const roq::PositionUpdateEvent&) override;
   void on(const roq::OrderUpdateEvent&) override;
   void on(const roq::TradeUpdateEvent&) override;
+  void on(const roq::OrderManagerStatusEvent&) override;
   // - order manager response
   void on(const roq::CreateOrderAckEvent&) override;
   void on(const roq::ModifyOrderAckEvent&) override;
   void on(const roq::CancelOrderAckEvent&) override;
-  // - market data update
-  void on(const roq::MarketByPriceEvent&) override;
-  void on(const roq::TradeSummaryEvent&) override;
   // utilities
   bool apply(
       const std::string& exchange,
       const std::string& symbol,
       std::function<void(Instrument&)> function);
+  bool apply(
+      const std::string& account,
+      std::function<void(Account&)> function);
 
  private:
   Gateway _gateway;
+  std::vector<Account> _accounts;
+  std::unordered_map<std::string, Account *> _accounts_by_name;
   std::vector<Instrument> _instruments;
-  const std::unordered_map<std::string, Instrument *> _lookup;
+  const std::unordered_map<std::string, Instrument *> _instruments_by_name;
+
   const roq::Strategy::subscriptions_t _subscriptions;
+
   bool _instruments_ready = false;
+  bool _accounts_ready = false;
+
   std::unordered_set<Instrument *> _market_data_updated;
 };
 

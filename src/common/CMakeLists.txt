@@ -3,6 +3,7 @@ cmake_minimum_required(VERSION 3.0)
 project(common)
 
 add_library(common STATIC
+  account.cpp
   base_strategy.cpp
   config.cpp
   config_variables.cpp

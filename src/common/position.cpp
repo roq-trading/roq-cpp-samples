@@ -15,10 +15,16 @@ const double TOLERANCE = 1.0e-8;
 }  // namespace
 
 Position::Position(
-      bool use_position_update,
-      double long_start_of_day,
-      double short_start_of_day)
-    : _use_position_update(use_position_update),
+    Account& account,
+    const std::string& exchange,
+    const std::string& symbol,
+    bool use_position_update,
+    double long_start_of_day,
+    double short_start_of_day)
+    : _account(account),
+      _exchange(exchange),
+      _symbol(symbol),
+      _use_position_update(use_position_update),
       _long_start_of_day(long_start_of_day),
       _short_start_of_day(short_start_of_day) {
   LOG_IF(FATAL, _long_start_of_day < 0.0) << "Unexpected";

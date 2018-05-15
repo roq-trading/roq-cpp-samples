@@ -9,4 +9,5 @@ fi
 
 $PREFIX ./example-simple \
 	--config-file simple.conf \
-	--gateways femas=trader:secret@/var/tmp/femasapi.sock $@
+	--gateways femas=test:1234@/var/tmp/femasapi.sock $@
+#	--gateways femas=trader:secret@/var/tmp/femasapi.sock $@
