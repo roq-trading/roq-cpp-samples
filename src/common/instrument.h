@@ -5,11 +5,13 @@
 #include <roq/api.h>
 
 #include <map>
+#include <memory>
 #include <ostream>
 #include <string>
 #include <unordered_map>
 #include <unordered_set>
 #include <utility>
+#include <vector>
 
 #include "common/market_data.h"
 #include "common/position.h"
@@ -26,9 +28,7 @@ class Instrument final {
       double risk_limit,
       double tick_size,
       double multiplier,
-      std::vector<Position *>&& positions);
-
-  void reset();  // TODO(thraneh): hide from user
+      std::vector<std::shared_ptr<Position> >&& positions);
 
   const std::string& get_exchange() const { return _exchange; }
   const std::string& get_symbol() const { return _symbol; }
@@ -40,10 +40,12 @@ class Instrument final {
   double get_position() const;
   const MarketData& get_market_data() const { return _market_data; }
 
-  void on(const roq::ReferenceDataEvent& event);  // TODO(thraneh): hide from user
-  void on(const roq::MarketStatusEvent& event);  // TODO(thraneh): hide from user
-  void on(const roq::MarketByPriceEvent& event);  // TODO(thraneh): hide from user
-  void on(const roq::TradeSummaryEvent& event);  // TODO(thraneh): hide from user
+  void on(const roq::MarketDataStatus&);
+  void on(const roq::MarketByPrice&);
+  void on(const roq::TradeSummary&);
+
+  void on(const roq::ReferenceData&);
+  void on(const roq::MarketStatus&);
 
   void buy_ioc(double quantity, double price);
   void sell_ioc(double quantity, double price);
@@ -54,6 +56,10 @@ class Instrument final {
   void create_ioc(roq::Side side, double quantity, double price);
 
  private:
+  Instrument(const Instrument&) = delete;
+  void operator=(const Instrument&) = delete;
+
+ private:
   const size_t _index;
   const std::string _exchange;
   const std::string _symbol;
@@ -61,11 +67,8 @@ class Instrument final {
   const bool _tradeable;
   MarketData _market_data;  // aggregator for MarketByPrice and TradeSummary
   bool _market_open = false;
-
-  std::vector<Position *> _positions;
-
-
-  std::unordered_set<uint32_t> _live_orders;  // HANS -- wrong, per OM
+  bool _market_data_ready = false;
+  std::vector<std::shared_ptr<Position> > _positions;
 };
 
 inline std::ostream& operator<<(

@@ -5,6 +5,10 @@
 #include <roq/logging.h>
 #include <roq/stream.h>
 
+#include "common/account.h"
+
+#define PREFIX "[" << _symbol << "] "
+
 namespace examples {
 namespace common {
 
@@ -15,7 +19,7 @@ Instrument::Instrument(
     double risk_limit,
     double tick_size,
     double multiplier,
-    std::vector<Position *>&& positions)
+    std::vector<std::shared_ptr<Position> >&& positions)
     : _index(index),
       _exchange(exchange),
       _symbol(symbol),
@@ -31,54 +35,28 @@ Instrument::Instrument(
       _positions(std::move(positions)) {
 }
 
-void Instrument::reset() {
-  _market_open = false;
-  /*
-  for (auto& iter : _positions)
-    iter.second.reset();
-  _live_orders.clear();
-  */
-}
-
 bool Instrument::is_ready() const {
-  // return _gateway.is_ready() && _market_open;
-  return false;  // HANS ???
+  return _market_data_ready && _market_open;
 }
 
 double Instrument::get_position() const {
   double result = 0.0;
-  /*
   for (const auto& iter : _positions)
-    result += iter.second.get_net();
-  */
+    result += iter->get_net();
   return result;
 }
 
-void Instrument::on(const roq::ReferenceDataEvent& event) {
-  const auto& reference_data = event.reference_data;
-  auto tick_size = reference_data.tick_size;
-  if (_market_data.tick_size != tick_size && tick_size != 0.0) {
-    _market_data.tick_size = tick_size;
-    LOG(INFO) << "tick_size=" << _market_data.tick_size;
-  }
-  auto multiplier = reference_data.multiplier;
-  if (_market_data.multiplier != multiplier && multiplier != 0.0) {
-    _market_data.multiplier = multiplier;
-    LOG(INFO) << "multiplier=" << _market_data.multiplier;
+void Instrument::on(const roq::MarketDataStatus& market_data_status) {
+  auto market_data_ready =
+      market_data_status.status == roq::GatewayStatus::Ready;
+  if (_market_data_ready != market_data_ready) {
+    _market_data_ready = market_data_ready;
+    LOG(INFO) << PREFIX "market_data_ready=" <<
+      (_market_data_ready ? "true" : "false");
   }
 }
 
-void Instrument::on(const roq::MarketStatusEvent& event) {
-  const auto& market_status = event.market_status;
-  auto market_open = market_status.trading_status == roq::TradingStatus::Open;
-  if (_market_open != market_open) {
-    _market_open = market_open;
-    LOG(INFO) << "market_open=" << (_market_open ? "true" : "false");
-  }
-}
-
-void Instrument::on(const roq::MarketByPriceEvent& event) {
-  const auto& market_by_price = event.market_by_price;
+void Instrument::on(const roq::MarketByPrice& market_by_price) {
   std::memcpy(
       _market_data.depth,
       market_by_price.depth,
@@ -87,8 +65,7 @@ void Instrument::on(const roq::MarketByPriceEvent& event) {
   _market_data.channel = market_by_price.channel;
 }
 
-void Instrument::on(const roq::TradeSummaryEvent& event) {
-  const auto& trade_summary = event.trade_summary;
+void Instrument::on(const roq::TradeSummary& trade_summary) {
   _market_data.price = trade_summary.price;
   _market_data.volume = trade_summary.volume;
   _market_data.turnover = trade_summary.turnover;
@@ -97,37 +74,26 @@ void Instrument::on(const roq::TradeSummaryEvent& event) {
   _market_data.channel = trade_summary.channel;
 }
 
-/*
-uint32_t Instrument::create_order(
-    const std::string& account,
-    roq::Side side,
-    double quantity,
-    double price,
-    roq::TimeInForce time_in_force,
-    roq::PositionEffect position_effect,
-    const std::string& order_template) {
-  LOG_IF(FATAL, _tradeable == false) << "Unexpected";
-  if (is_ready() == false) {
-    LOG(WARNING) << "Instrument is not in the ready state {"
-    "symbol=\"" << _symbol << "\""
-    "}";
-    throw roq::NotReady();
+void Instrument::on(const roq::ReferenceData& reference_data) {
+  auto tick_size = reference_data.tick_size;
+  if (_market_data.tick_size != tick_size && tick_size != 0.0) {
+    _market_data.tick_size = tick_size;
+    LOG(INFO) << PREFIX "tick_size=" << _market_data.tick_size;
   }
-  auto order_id = _gateway.create_order(
-      account,
-      _exchange,
-      _symbol,
-      side,
-      quantity,
-      price,
-      time_in_force,
-      position_effect,
-      order_template,
-      *this);
-  _live_orders.insert(order_id);
-  return order_id;
+  auto multiplier = reference_data.multiplier;
+  if (_market_data.multiplier != multiplier && multiplier != 0.0) {
+    _market_data.multiplier = multiplier;
+    LOG(INFO) << PREFIX "multiplier=" << _market_data.multiplier;
+  }
 }
-*/
+
+void Instrument::on(const roq::MarketStatus& market_status) {
+  auto market_open = market_status.trading_status == roq::TradingStatus::Open;
+  if (_market_open != market_open) {
+    _market_open = market_open;
+    LOG(INFO) << PREFIX "market_open=" << (_market_open ? "true" : "false");
+  }
+}
 
 void Instrument::buy_ioc(double quantity, double price) {
   create_ioc(roq::Side::Buy, quantity, price);
@@ -142,36 +108,38 @@ void Instrument::create_ioc(
     double quantity,
     double price) {
   // FIXME(thraneh): this can be done a lot more efficiently...
-  /*
-  for (const auto& iter : _positions) {
-    auto position_effect = iter.second.get_effect(side, quantity);
+  for (auto& position : _positions) {
+    auto position_effect = position->get_effect(side, quantity);
     if (position_effect == roq::PositionEffect::Close) {
-      create_order(
-          iter.first,
+      position->get_account().create_order(
+          _exchange,
+          _symbol,
           side,
           quantity,
           price,
           roq::TimeInForce::IOC,
           roq::PositionEffect::Close,
-          "default");
+          "default",
+          *this);  // FIXME(thraneh): drop (see account.cpp)
       return;
     }
   }
-  for (const auto& iter : _positions) {
-    auto position_effect = iter.second.get_effect(side, quantity);
+  for (auto& position : _positions) {
+    auto position_effect = position->get_effect(side, quantity);
     if (position_effect == roq::PositionEffect::Open) {
-      create_order(
-          iter.first,
+      position->get_account().create_order(
+          _exchange,
+          _symbol,
           side,
           quantity,
           price,
           roq::TimeInForce::IOC,
           roq::PositionEffect::Open,
-          "default");
+          "default",
+          *this);  // FIXME(thraneh): drop (see account.cpp)
       return;
     }
   }
-  */
   LOG(ERROR) << "Not possible to trade";  // FIXME(thraneh): use exception
 }
 

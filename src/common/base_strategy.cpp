@@ -11,86 +11,116 @@ namespace examples {
 namespace common {
 
 namespace {
-static std::vector<Account> create_accounts(
+static std::vector<std::shared_ptr<Account> > create_accounts(
     roq::Strategy::Dispatcher& dispatcher,
+    const std::string& gateway,
     const Config& config) {
-  std::vector<Account> result;
+  std::vector<std::shared_ptr<Account> > result;
   // HANS -- this is wrong -- need new config format
   for (auto i = 0; i < config.instruments.size(); ++i) {
     const auto& instrument = config.instruments[i];
     for (const auto& iter : instrument.accounts)
-      result.emplace_back(dispatcher, iter.first, config);
+      result.emplace_back(
+          std::make_shared<Account>(
+              dispatcher,
+              gateway,
+              iter.first,
+              config));
   }
   return result;
 }
-static std::unordered_map<std::string, Account *>
+static std::unordered_map<std::string, std::shared_ptr<Account> >
 create_accounts_by_name(
-    std::vector<Account>& accounts) {
-  std::unordered_map<std::string, Account *> result;
+    std::vector<std::shared_ptr<Account> >& accounts) {
+  std::unordered_map<std::string, std::shared_ptr<Account> > result;
   for (auto& iter : accounts) {
-    result.emplace(iter.get_name(), &iter);
+    result.emplace(iter->get_name(), iter);
   }
   return result;
 }
-static std::vector<Instrument> create_instruments(
+static std::vector<std::shared_ptr<Instrument> > create_instruments(
     const Config& config,
-    std::vector<Account>& accounts) {
-  std::vector<Instrument> result;
+    std::vector<std::shared_ptr<Account> >& accounts) {
+  std::vector<std::shared_ptr<Instrument> > result;
   for (auto i = 0; i < config.instruments.size(); ++i) {
     const auto& instrument = config.instruments[i];
-    std::vector<Position *> positions;
+    std::vector<std::shared_ptr<Position> > positions;
     for (auto& account : accounts)
       positions.emplace_back(
-          &account.get_position(
+          account->get_position(
               instrument.exchange,
               instrument.symbol));
     result.emplace_back(
-      i,
-      instrument.exchange,
-      instrument.symbol,
-      instrument.risk_limit,
-      instrument.tick_size,
-      instrument.multiplier,
-      std::move(positions));
+        std::make_shared<Instrument>(
+            i,
+            instrument.exchange,
+            instrument.symbol,
+            instrument.risk_limit,
+            instrument.tick_size,
+            instrument.multiplier,
+            std::move(positions)));
   }
   return result;
 }
-static std::unordered_map<std::string, Instrument *>
+static std::unordered_map<std::string, std::shared_ptr<Instrument> >
 create_instruments_by_name(
-    std::vector<Instrument>& instruments) {
-  std::unordered_map<std::string, Instrument *> result;
+    std::vector<std::shared_ptr<Instrument> >& instruments) {
+  std::unordered_map<std::string, std::shared_ptr<Instrument> > result;
   for (auto& instrument : instruments)
-    result.emplace(instrument.get_symbol(), &instrument);
+    result.emplace(instrument->get_symbol(), instrument);
   return result;
 }
 static roq::Strategy::subscriptions_t create_subscriptions(
     const std::string& gateway,
-    const std::vector<Instrument>& instruments) {
+    const std::vector<std::shared_ptr<Instrument> >& instruments) {
   roq::Strategy::subscriptions_t result;
   auto& tmp = result[gateway];
   for (const auto& instrument : instruments)
-    tmp[instrument.get_exchange()].emplace_back(instrument.get_symbol());
+    tmp[instrument->get_exchange()].emplace_back(instrument->get_symbol());
   return result;
 }
 }  // namespace
 
+namespace {
+std::ostream& operator<<(
+    std::ostream& stream,
+    const std::vector<std::shared_ptr<Account> >& accounts) {
+  stream << "[";
+  bool first = true;
+  for (const auto& account : accounts) {
+    if (!first)
+      stream << ", ";
+    stream << *account;
+    first = false;
+  }
+  return stream << "]";
+}
+std::ostream& operator<<(
+    std::ostream& stream,
+    const std::vector<std::shared_ptr<Instrument> >& instruments) {
+  stream << "[";
+  bool first = true;
+  for (const auto& instrument : instruments) {
+    if (!first)
+      stream << ", ";
+    stream << *instrument;
+    first = false;
+  }
+  return stream << "]";
+}
+}  // namespace
 BaseStrategy::BaseStrategy(
     roq::Strategy::Dispatcher& dispatcher,
     const std::string& gateway,
     const Config& config)
     : _gateway(dispatcher, gateway),
-      _accounts(create_accounts(dispatcher, config)),
+      _accounts(create_accounts(dispatcher, gateway, config)),
       _accounts_by_name(create_accounts_by_name(_accounts)),
       _instruments(create_instruments(config, _accounts)),
       _instruments_by_name(create_instruments_by_name(_instruments)),
       _subscriptions(create_subscriptions(gateway, _instruments)) {
-  // DEBUG
-  for (const auto& iter : _accounts_by_name) {
-    LOG(INFO) << iter.first << "=" << *iter.second;
-  }
-  for (const auto& iter : _instruments_by_name) {
-    LOG(INFO) << iter.first << "=" << *iter.second;
-  }
+  LOG(INFO) << "accounts=" << _accounts;
+  LOG(INFO) << "instruments=" << _instruments;
 }
 
 // event handlers
@@ -99,7 +129,7 @@ BaseStrategy::BaseStrategy(
 
 void BaseStrategy::on(const roq::TimerEvent& event) {
   for (auto& account : _accounts)
-    account.on(event);
+    account->on(event);
 }
 
 // batch
@@ -118,25 +148,29 @@ void BaseStrategy::on(const roq::BatchEndEvent&) {
 // market data
 
 void BaseStrategy::on(const roq::MarketDataStatusEvent& event) {
-  _gateway.on(event);
+  const auto& market_data_status = event.market_data_status;
+  for (auto& instrument : _instruments)
+    instrument->on(market_data_status);
 }
 
 void BaseStrategy::on(const roq::MarketByPriceEvent& event) {
+  const auto& market_by_price = event.market_by_price;
   apply(
-      event.market_by_price.exchange,
-      event.market_by_price.symbol,
+      market_by_price.exchange,
+      market_by_price.symbol,
       [&](Instrument& instrument) {
-        instrument.on(event);
+        instrument.on(market_by_price);
         _market_data_updated.insert(&instrument);
       });
 }
 
 void BaseStrategy::on(const roq::TradeSummaryEvent& event) {
+  const auto& trade_summary = event.trade_summary;
   apply(
-      event.trade_summary.exchange,
-      event.trade_summary.symbol,
+      trade_summary.exchange,
+      trade_summary.symbol,
       [&](Instrument& instrument) {
-        instrument.on(event);
+        instrument.on(trade_summary);
         _market_data_updated.insert(&instrument);
       });
 }
@@ -145,34 +179,27 @@ void BaseStrategy::on(const roq::TradeSummaryEvent& event) {
 
 void BaseStrategy::on(const roq::DownloadBeginEvent& event) {
   const auto& download_begin = event.download_begin;
-  apply(
-      download_begin.account,
-      [&](Account& account) {
-          account.on(download_begin); });
-}
-
-namespace {
-std::ostream& operator<<(
-    std::ostream& stream,
-    const std::vector<Instrument>& instruments) {
-  stream << "[";
-  bool first = true;
-  for (const auto& instrument : instruments) {
-    if (!first)
-      stream << ", ";
-    first = false;
-    stream << instrument;
+  if (std::strlen(download_begin.account)) {
+    apply(
+        download_begin.account,
+        [&](Account& account) {
+            account.on(download_begin); });
+  } else {
+    LOG(INFO) << "Reference data download starting...";
   }
-  return stream << "]";
 }
-}  // namespace
 
 void BaseStrategy::on(const roq::DownloadEndEvent& event) {
   const auto& download_end = event.download_end;
-  apply(
-      download_end.account,
-      [&](Account& account) {
-          account.on(download_end); });
+  if (std::strlen(download_end.account)) {
+    apply(
+        download_end.account,
+        [&](Account& account) {
+            account.on(download_end);
+            LOG(INFO) << "account=" << account; });
+  } else {
+    LOG(INFO) << "Reference data download completed";
+  }
 }
 
 // order manager
@@ -183,7 +210,7 @@ void BaseStrategy::on(const roq::ReferenceDataEvent& event) {
       reference_data.exchange,
       reference_data.symbol,
       [&](Instrument& instrument) {
-          instrument.on(event); });  // HANS -- why event?
+          instrument.on(reference_data); });
 }
 
 void BaseStrategy::on(const roq::MarketStatusEvent& event) {
@@ -192,13 +219,17 @@ void BaseStrategy::on(const roq::MarketStatusEvent& event) {
       market_status.exchange,
       market_status.symbol,
       [&](Instrument& instrument) {
-          instrument.on(event); })) {  // HANS -- why event?
+          instrument.on(market_status); })) {
     // are *all* instruments ready for trading?
     bool ready = true;
     for (const auto& instrument : _instruments)
-      if (instrument.can_trade())
-        ready = instrument.is_ready() ? ready : false;
-    _instruments_ready = ready;
+      if (instrument->can_trade())
+        ready = instrument->is_ready() ? ready : false;
+    if (_all_instruments_ready != ready) {
+      _all_instruments_ready = ready;
+      LOG(INFO) << "all_instruments_ready=" <<
+        (_all_instruments_ready ? "true" : "false");
+    }
   }
 }
 
@@ -215,7 +246,9 @@ void BaseStrategy::on(const roq::OrderUpdateEvent& event) {
   apply(
       order_update.account,
       [&](Account& account) {
-          account.on(order_update); });
+          account.on(order_update);
+          if (!account.is_downloading())
+            LOG(INFO) << "account=" << account; });
 }
 
 void BaseStrategy::on(const roq::TradeUpdateEvent& event) {
@@ -235,9 +268,12 @@ void BaseStrategy::on(const roq::OrderManagerStatusEvent& event) {
     // are *all* accounts ready for trading?
     bool ready = true;
     for (const auto& account : _accounts)
-      ready = account.is_ready() ? ready : false;
-    _accounts_ready = ready;
-    LOG(INFO) << "accounts_ready=" << (_accounts_ready ? "true" : "false");
+      ready = account->is_ready() ? ready : false;
+    if (_all_accounts_ready != ready) {
+      _all_accounts_ready = ready;
+      LOG(INFO) << "all_accounts_ready=" <<
+        (_all_accounts_ready ? "true" : "false");
+    }
   }
 }
 
@@ -268,7 +304,7 @@ void BaseStrategy::on(const roq::CancelOrderAckEvent& event) {
 }
 
 bool BaseStrategy::is_ready() const {
-  return _accounts_ready && _instruments_ready;
+  return _all_accounts_ready && _all_instruments_ready;
 }
 
 // general utilities

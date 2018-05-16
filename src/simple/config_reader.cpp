@@ -78,7 +78,7 @@ static Config create_config(const ucl::Ucl& setting) {
     .threshold = setting.lookup("threshold").number_value(),
     .quantity  = static_cast<double>(setting.lookup("quantity").int_value()),
   };
-  LOG(INFO) << result;
+  LOG(INFO) << "config=" << result;
   return result;
 }
 }  // namespace

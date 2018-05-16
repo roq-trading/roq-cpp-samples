@@ -5,35 +5,38 @@
 #include <roq/logging.h>
 #include <roq/stream.h>
 
+#include <algorithm>
+
 #define PREFIX "[" << _name << "] "
 
 namespace examples {
 namespace common {
 
 namespace {
-static std::vector<Position> create_positions(
+static std::vector<std::shared_ptr<Position> > create_positions(
     const Config& config,
     Account& account) {
-  std::vector<Position> result;
+  std::vector<std::shared_ptr<Position> > result;
   for (auto i = 0; i < config.instruments.size(); ++i) {
     const auto& instrument = config.instruments[i];
     result.emplace_back(
+      std::make_shared<Position>(
         account,
         instrument.exchange,
         instrument.symbol,
         true,
         // HANS -- need new config format to populate initial positions
         0.0,
-        0.0);
+        0.0));
   }
   return result;
 }
-static std::unordered_map<std::string, Position *>
+static std::unordered_map<std::string, std::shared_ptr<Position> >
 create_positions_by_symbol(
-    std::vector<Position>& positions) {
-  std::unordered_map<std::string, Position *> result;
+    std::vector<std::shared_ptr<Position> >& positions) {
+  std::unordered_map<std::string, std::shared_ptr<Position> > result;
   for (auto& iter : positions) {
-    result.emplace(iter.get_symbol(), &iter);
+    result.emplace(iter->get_symbol(), iter);
   }
   return result;
 }
@@ -41,18 +44,20 @@ create_positions_by_symbol(
 
 Account::Account(
     roq::Strategy::Dispatcher& dispatcher,
+    const std::string& gateway,
     const std::string& name,
     const Config& config)
     : _dispatcher(dispatcher),
+      _gateway(gateway),
       _name(name),
       _positions(create_positions(config, *this)),
       _positions_by_symbol(create_positions_by_symbol(_positions)) {
 }
 
-Position& Account::get_position(
+std::shared_ptr<Position> Account::get_position(
     const std::string& exchange,
     const std::string& symbol) {
-  return *_positions_by_symbol.at(symbol);
+  return _positions_by_symbol.at(symbol);
 }
 
 void Account::on(const roq::TimerEvent&) {
@@ -60,16 +65,21 @@ void Account::on(const roq::TimerEvent&) {
 }
 
 void Account::on(const roq::DownloadBegin& download_begin) {
+  LOG(INFO) << PREFIX "Account download starting...";
   _download = true;
-  _ready = false;
-  LOG(INFO) << PREFIX "Starting download...";
+  if (_order_manager_ready) {
+    _order_manager_ready = false;
+    LOG(INFO) << PREFIX "order_manager_ready=" <<
+      (_order_manager_ready ? "true" : "false");
+  }
+  for (auto& position : _positions)
+    position.reset();
 }
 
 void Account::on(const roq::DownloadEnd& download_end) {
   update_max_order_id(download_end.max_order_id);
   _download = false;
-  LOG(INFO) << PREFIX "Download completed";
-  LOG(INFO) << PREFIX << *this;
+  LOG(INFO) << PREFIX "Account download completed";
 }
 
 void Account::on(const roq::PositionUpdate& position_update) {
@@ -97,14 +107,17 @@ void Account::on(const roq::TradeUpdate& trade_update) {
 }
 
 void Account::on(const roq::OrderManagerStatus& order_manager_status) {
-  _ready = order_manager_status.status == roq::GatewayStatus::Ready;
-  LOG(INFO) << PREFIX "Order manager " <<
-    "is " << (_ready ? "" : "not ") << "ready";
+  auto order_manager_ready =
+      order_manager_status.status == roq::GatewayStatus::Ready;
+  if (_order_manager_ready != order_manager_ready)
+    _order_manager_ready = order_manager_ready;
+  LOG(INFO) << PREFIX "order_manager_ready=" <<
+    (_order_manager_ready ? "true" : "false");
 }
 
 void Account::update_max_order_id(uint32_t order_id) {
   auto max_order_id = std::max(order_id, _max_order_id);
-  if (max_order_id != _max_order_id) {
+  if (_max_order_id != max_order_id) {
     _max_order_id = max_order_id;
     LOG(INFO) << PREFIX "max_order_id=" << _max_order_id;
   }
@@ -131,7 +144,7 @@ uint32_t Account::create_order(
     roq::PositionEffect position_effect,
     const std::string& order_template,
     Instrument& instrument) {
-  if (!_ready) {
+  if (!_order_manager_ready) {
     LOG(WARNING) << PREFIX "Order manager is not in the ready state";
     throw roq::NotReady();
   }
@@ -151,7 +164,7 @@ uint32_t Account::create_order(
     .order_template  = order_template.c_str(),
   };
   LOG(INFO) << PREFIX "create_order=" << create_order;
-  _dispatcher.send(create_order, _name.c_str());
+  _dispatcher.send(create_order, _gateway.c_str());
   _live_orders[order_id] = &instrument;
   return order_id;
 }
@@ -162,7 +175,7 @@ void Account::modify_order(
     double limit_price) {
   if (is_order_live(order_id) == false)
     throw roq::OrderNotLive();
-  if (!_ready) {
+  if (!_order_manager_ready) {
     LOG(WARNING) << PREFIX "Order manager is not in the ready state";
     throw roq::NotReady();
   }
@@ -175,13 +188,13 @@ void Account::modify_order(
     .limit_price     = limit_price,
   };
   LOG(INFO) << PREFIX "modify_order=" << modify_order;
-  _dispatcher.send(modify_order, _name.c_str());
+  _dispatcher.send(modify_order, _gateway.c_str());
 }
 
 void Account::cancel_order(uint32_t order_id) {
   if (is_order_live(order_id) == false)
     throw roq::OrderNotLive();
-  if (!_ready) {
+  if (!_order_manager_ready) {
     LOG(WARNING) << PREFIX "Order manager is not in the ready state";
     throw roq::NotReady();
   }
@@ -192,7 +205,7 @@ void Account::cancel_order(uint32_t order_id) {
     .order_id = order_id,
   };
   LOG(INFO) << PREFIX "cancel_order=" << cancel_order;
-  _dispatcher.send(cancel_order, _name.c_str());
+  _dispatcher.send(cancel_order, _gateway.c_str());
 }
 
 void Account::on(const roq::CreateOrderAck& create_order_ack) {
@@ -232,7 +245,7 @@ std::ostream& Account::write(std::ostream& stream) const {
     "name=\"" << _name << "\", "
     "download=" << (_download ? "true" : "false") << ", "
     "max_order_id=" << _max_order_id << ", "
-    "ready=" << (_ready ? "true" : "false") << ", "
+    "ready=" << (_order_manager_ready ? "true" : "false") << ", "
     "positions={";
   bool first = true;
   for (const auto& iter : _positions_by_symbol) {

@@ -5,6 +5,7 @@
 #include <roq/api.h>
 
 #include <ostream>
+#include <string>
 #include <unordered_map>
 
 namespace examples {
@@ -21,6 +22,7 @@ class Position final {
       bool use_position_update,
       double long_position,
       double short_position);
+
   Account& get_account() { return _account; }
   const std::string& get_exchange() const { return _exchange; }
   const std::string& get_symbol() const { return _symbol; }
@@ -31,6 +33,10 @@ class Position final {
   void on(const roq::OrderUpdate& order_update);
   void on(const roq::TradeUpdate& trade_update);
   std::ostream& write(std::ostream& stream) const;
+
+ private:
+  Position(const Position&) = delete;
+  void operator=(const Position&) = delete;
 
  private:
   Account& _account;

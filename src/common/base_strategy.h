@@ -20,12 +20,13 @@ class BaseStrategy : public roq::Strategy {
       roq::Strategy::Dispatcher& dispatcher,
       const std::string& gateway,
       const Config& config);
+
   size_t size() const { return _instruments.size(); }
   Instrument& at(size_t index) {
-    return _instruments[index];
+    return *_instruments[index];
   }
   const Instrument& at(size_t index) const {
-    return _instruments[index];
+    return *_instruments[index];
   }
   bool is_ready() const;
 
@@ -73,15 +74,15 @@ class BaseStrategy : public roq::Strategy {
 
  private:
   Gateway _gateway;
-  std::vector<Account> _accounts;
-  std::unordered_map<std::string, Account *> _accounts_by_name;
-  std::vector<Instrument> _instruments;
-  const std::unordered_map<std::string, Instrument *> _instruments_by_name;
+  std::vector<std::shared_ptr<Account> > _accounts;
+  std::unordered_map<std::string, std::shared_ptr<Account> > _accounts_by_name;
+  std::vector<std::shared_ptr<Instrument> > _instruments;
+  const std::unordered_map<std::string, std::shared_ptr<Instrument> > _instruments_by_name;
 
   const roq::Strategy::subscriptions_t _subscriptions;
 
-  bool _instruments_ready = false;
-  bool _accounts_ready = false;
+  bool _all_instruments_ready = false;
+  bool _all_accounts_ready = false;
 
   std::unordered_set<Instrument *> _market_data_updated;
 };
