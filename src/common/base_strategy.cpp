@@ -179,7 +179,7 @@ void BaseStrategy::on(const roq::TradeSummaryEvent& event) {
 
 void BaseStrategy::on(const roq::DownloadBeginEvent& event) {
   const auto& download_begin = event.download_begin;
-  if (std::strlen(download_begin.account)) {
+  if (download_begin.account && std::strlen(download_begin.account)) {
     apply(
         download_begin.account,
         [&](Account& account) {
@@ -191,7 +191,7 @@ void BaseStrategy::on(const roq::DownloadBeginEvent& event) {
 
 void BaseStrategy::on(const roq::DownloadEndEvent& event) {
   const auto& download_end = event.download_end;
-  if (std::strlen(download_end.account)) {
+  if (download_end.account && std::strlen(download_end.account)) {
     apply(
         download_end.account,
         [&](Account& account) {
