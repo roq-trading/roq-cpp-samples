@@ -16,7 +16,6 @@ static std::vector<std::shared_ptr<Account> > create_accounts(
     const std::string& gateway,
     const Config& config) {
   std::vector<std::shared_ptr<Account> > result;
-  // HANS -- this is wrong -- need new config format
   for (auto i = 0; i < config.instruments.size(); ++i) {
     const auto& instrument = config.instruments[i];
     for (const auto& iter : instrument.accounts)
@@ -40,22 +39,23 @@ create_accounts_by_name(
 }
 static std::vector<std::shared_ptr<Instrument> > create_instruments(
     const Config& config,
-    std::vector<std::shared_ptr<Account> >& accounts) {
+    std::unordered_map<std::string, std::shared_ptr<Account> >& accounts_by_name) {
   std::vector<std::shared_ptr<Instrument> > result;
   for (auto i = 0; i < config.instruments.size(); ++i) {
     const auto& instrument = config.instruments[i];
     std::vector<std::shared_ptr<Position> > positions;
-    for (auto& account : accounts)
+    for (auto& iter : instrument.accounts) {
+      auto& account = accounts_by_name.at(iter.first);
       positions.emplace_back(
           account->get_position(
               instrument.exchange,
               instrument.symbol));
+    }
     result.emplace_back(
         std::make_shared<Instrument>(
             i,
             instrument.exchange,
             instrument.symbol,
-            instrument.risk_limit,
             instrument.tick_size,
             instrument.multiplier,
             std::move(positions)));
@@ -113,10 +113,9 @@ BaseStrategy::BaseStrategy(
     roq::Strategy::Dispatcher& dispatcher,
     const std::string& gateway,
     const Config& config)
-    : _gateway(dispatcher, gateway),
-      _accounts(create_accounts(dispatcher, gateway, config)),
+    : _accounts(create_accounts(dispatcher, gateway, config)),
       _accounts_by_name(create_accounts_by_name(_accounts)),
-      _instruments(create_instruments(config, _accounts)),
+      _instruments(create_instruments(config, _accounts_by_name)),
       _instruments_by_name(create_instruments_by_name(_instruments)),
       _subscriptions(create_subscriptions(gateway, _instruments)) {
   LOG(INFO) << "accounts=" << _accounts;
@@ -246,9 +245,11 @@ void BaseStrategy::on(const roq::OrderUpdateEvent& event) {
   apply(
       order_update.account,
       [&](Account& account) {
-          account.on(order_update);
-          if (!account.is_downloading())
-            LOG(INFO) << "account=" << account; });
+        account.on(order_update);
+        if (!account.is_downloading()) {
+          LOG(INFO) << "account=" << account;
+        }
+      });
 }
 
 void BaseStrategy::on(const roq::TradeUpdateEvent& event) {

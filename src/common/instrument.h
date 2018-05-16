@@ -25,14 +25,12 @@ class Instrument final {
       size_t index,
       const std::string& exchange,
       const std::string& symbol,
-      double risk_limit,
       double tick_size,
       double multiplier,
       std::vector<std::shared_ptr<Position> >&& positions);
 
   const std::string& get_exchange() const { return _exchange; }
   const std::string& get_symbol() const { return _symbol; }
-  double get_risk_limit() const { return _risk_limit; }
   bool can_trade() const { return _tradeable; }
   bool is_ready() const;
   double get_tick_size() const { return _market_data.tick_size; }
@@ -63,7 +61,6 @@ class Instrument final {
   const size_t _index;
   const std::string _exchange;
   const std::string _symbol;
-  const double _risk_limit;
   const bool _tradeable;
   MarketData _market_data;  // aggregator for MarketByPrice and TradeSummary
   bool _market_open = false;

@@ -2,23 +2,13 @@
 
 #include "common/config.h"
 
-  struct Instrument final {
-    std::string exchange;
-    std::string symbol;
-    typedef std::pair<double, double> position_t;
-    std::map<std::string, position_t> accounts;
-    double risk_limit;  // optional
-    double tick_size;  // optional
-    double multiplier;  // optional
-  };
-
 namespace examples {
 namespace common {
 
 namespace {
 std::ostream& operator<<(
     std::ostream& stream,
-    const std::map<std::string, std::pair<double, double> >& accounts) {
+    const std::map<std::string, Config::Instrument::Account>& accounts) {
   stream << "{";
   bool first = true;
   for (const auto& iter : accounts) {
@@ -26,8 +16,10 @@ std::ostream& operator<<(
       stream << ", ";
     first = false;
     stream << "\"" << iter.first << "\"={"
-      "long=" << iter.second.first << ", "
-      "short=" << iter.second.second <<
+      "long_limit=" << iter.second.long_limit << ", "
+      "short_limit=" << iter.second.short_limit << ", "
+      "long_start_of_day=" << iter.second.long_start_of_day << ", "
+      "short_start_of_day=" << iter.second.short_start_of_day <<
       "}";
   }
   return stream << "}";
@@ -38,10 +30,9 @@ std::ostream& operator<<(
   return stream << "{"
     "exchange=\"" << instrument.exchange << "\", "
     "symbol=\"" << instrument.symbol << "\", "
-    "accounts=" << instrument.accounts << ", "
-    "risk_limit=" << instrument.risk_limit << ", "
     "tick_size=" << instrument.tick_size << ", "
-    "multiplier=" << instrument.multiplier <<
+    "multiplier=" << instrument.multiplier << ", "
+    "accounts=" << instrument.accounts <<
     "}";
 }
 }  // namespace

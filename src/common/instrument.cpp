@@ -16,14 +16,12 @@ Instrument::Instrument(
     size_t index,
     const std::string& exchange,
     const std::string& symbol,
-    double risk_limit,
     double tick_size,
     double multiplier,
     std::vector<std::shared_ptr<Position> >&& positions)
     : _index(index),
       _exchange(exchange),
       _symbol(symbol),
-      _risk_limit(risk_limit),
       _tradeable(_positions.empty() == false),
       _market_data {
         .index = _index,
@@ -108,6 +106,7 @@ void Instrument::create_ioc(
     double quantity,
     double price) {
   // FIXME(thraneh): this can be done a lot more efficiently...
+  // first close anything left open from yesterday
   for (auto& position : _positions) {
     auto position_effect = position->get_effect(side, quantity);
     if (position_effect == roq::PositionEffect::Close) {
@@ -118,12 +117,11 @@ void Instrument::create_ioc(
           quantity,
           price,
           roq::TimeInForce::IOC,
-          roq::PositionEffect::Close,
-          "default",
-          *this);  // FIXME(thraneh): drop (see account.cpp)
+          position_effect);
       return;
     }
   }
+  // then open until position limit is hit
   for (auto& position : _positions) {
     auto position_effect = position->get_effect(side, quantity);
     if (position_effect == roq::PositionEffect::Open) {
@@ -134,13 +132,11 @@ void Instrument::create_ioc(
           quantity,
           price,
           roq::TimeInForce::IOC,
-          roq::PositionEffect::Open,
-          "default",
-          *this);  // FIXME(thraneh): drop (see account.cpp)
+          position_effect);
       return;
     }
   }
-  LOG(ERROR) << "Not possible to trade";  // FIXME(thraneh): use exception
+  LOG(WARNING) << "Not possible to trade";
 }
 
 std::ostream& Instrument::write(std::ostream& stream) const {

@@ -19,13 +19,17 @@ Position::Position(
     const std::string& exchange,
     const std::string& symbol,
     bool use_position_update,
+    double long_limit,
+    double short_limit,
     double long_start_of_day,
     double short_start_of_day)
     : _account(account),
       _exchange(exchange),
       _symbol(symbol),
       _use_position_update(use_position_update),
+      _long_limit(long_limit),
       _long_start_of_day(long_start_of_day),
+      _short_limit(short_limit),
       _short_start_of_day(short_start_of_day) {
   LOG_IF(FATAL, _long_start_of_day < 0.0) << "Unexpected";
   LOG_IF(FATAL, _short_start_of_day < 0.0) << "Unexpected";
@@ -61,16 +65,21 @@ double Position::get_net() const {
 roq::PositionEffect Position::get_effect(
     roq::Side side,
     double quantity) const {
-  // TODO(thraneh): use quantity !!!
   switch (side) {
-    case roq::Side::Buy:
+    case roq::Side::Buy: {
       if ((quantity + _short_closed - _short_start_of_day) < TOLERANCE)
         return roq::PositionEffect::Close;
+      if ((_short_limit - _short_opened - quantity) < TOLERANCE)
+        return roq::PositionEffect::Undefined;
       break;
-    case roq::Side::Sell:
+    }
+    case roq::Side::Sell: {
       if ((quantity + _long_closed - _long_start_of_day) < TOLERANCE)
         return roq::PositionEffect::Close;
+      if ((_long_limit - _long_opened - quantity) < TOLERANCE)
+        return roq::PositionEffect::Undefined;
       break;
+    }
     default:
       LOG(FATAL) << "Unexpected";  // user error
   }
@@ -114,7 +123,7 @@ void Position::on(const roq::PositionUpdate& position_update) {
 }
 
 void Position::on(const roq::TradeUpdate& trade_update) {
-  // HANS -- implement
+  // FIXME(thraneh): reconcile trade updates with order updates
 }
 
 void Position::on(const roq::OrderUpdate& order_update) {
@@ -156,11 +165,13 @@ void Position::on(const roq::OrderUpdate& order_update) {
 std::ostream& Position::write(std::ostream& stream) const {
   return stream << "{"
     "use_position_update=" << (_use_position_update ? "true" : "false") << ", "
+    "long_limit=" << _long_limit << ", "
     "long_last_order_id=" << _long_last_order_id << ", "
     "long_start_of_day=" << _long_start_of_day << ", "
     "long_closed=" << _long_closed << ", "
     "long_opened=" << _long_opened << ", "
     "long_last_trade_id=" << _long_last_trade_id << ", "
+    "short_limit=" << _short_limit << ", "
     "short_last_order_id=" << _short_last_order_id << ", "
     "short_start_of_day=" << _short_start_of_day << ", "
     "short_closed=" << _short_closed << ", "

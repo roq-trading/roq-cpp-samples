@@ -7,7 +7,6 @@ add_library(common STATIC
   base_strategy.cpp
   config.cpp
   config_variables.cpp
-  gateway.cpp
   instrument.cpp
   position.cpp
 )

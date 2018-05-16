@@ -15,11 +15,16 @@ struct Config {
   struct Instrument final {
     std::string exchange;
     std::string symbol;
-    typedef std::pair<double, double> position_t;
-    std::map<std::string, position_t> accounts;
-    double risk_limit;  // optional
     double tick_size;  // optional
     double multiplier;  // optional
+    typedef std::pair<double, double> position_t;
+    struct Account final {
+      double long_limit;
+      double short_limit;
+      double long_start_of_day;
+      double short_start_of_day;
+    };
+    std::map<std::string, Account> accounts;  // optional
   };
   std::vector<Instrument> instruments;
 };

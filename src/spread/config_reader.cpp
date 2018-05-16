@@ -23,19 +23,21 @@ const common::Config CONFIG = {
     {
       .exchange = "CFFEX",
       .symbol = "T1806",
+      .tick_size = 0.01,
+      .multiplier = 1.0,
       .accounts = {
-        { "A1", { NaN, NAN } },
+        { "A1", { 10.0, 10.0, NaN, NAN } },
       },
-      .risk_limit = 1.0
     },
     {
       .exchange = "CFFEX",
       .symbol = "TF1806",
+      .tick_size = 0.01,
+      .multiplier = 1.0,
       .accounts = {
-        { "A1", { NaN, NaN } },
-        { "B2", { NaN, NaN } },
+        { "A1", { 20.0, 20.0, NaN, NaN } },
+        { "B2", { 20.0, 20.0, NaN, NaN } },
       },
-      .risk_limit = 2.0
     },
   },
 };

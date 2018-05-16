@@ -7,8 +7,8 @@
 #include <unordered_set>
 #include <vector>
 
+#include "common/account.h"
 #include "common/config.h"
-#include "common/gateway.h"
 #include "common/instrument.h"
 
 namespace examples {
@@ -73,7 +73,6 @@ class BaseStrategy : public roq::Strategy {
       std::function<void(Account&)> function);
 
  private:
-  Gateway _gateway;
   std::vector<std::shared_ptr<Account> > _accounts;
   std::unordered_map<std::string, std::shared_ptr<Account> > _accounts_by_name;
   std::vector<std::shared_ptr<Instrument> > _instruments;

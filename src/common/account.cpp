@@ -19,13 +19,22 @@ static std::vector<std::shared_ptr<Position> > create_positions(
   std::vector<std::shared_ptr<Position> > result;
   for (auto i = 0; i < config.instruments.size(); ++i) {
     const auto& instrument = config.instruments[i];
+    // find long/short position limits
+    double long_limit = 0.0, short_limit = 0.0;
+    for (const auto& iter : instrument.accounts)
+      if (iter.first == account.get_name()) {
+        long_limit = iter.second.long_limit;
+        short_limit = iter.second.short_limit;
+        break;
+      }
     result.emplace_back(
       std::make_shared<Position>(
         account,
         instrument.exchange,
         instrument.symbol,
-        true,
-        // HANS -- need new config format to populate initial positions
+        true,  // not (yet) supporting start of day position config
+        long_limit,
+        short_limit,
         0.0,
         0.0));
   }
@@ -61,7 +70,7 @@ std::shared_ptr<Position> Account::get_position(
 }
 
 void Account::on(const roq::TimerEvent&) {
-  // HANS -- test timeout
+  // FIXME(thraneh): test request timeout
 }
 
 void Account::on(const roq::DownloadBegin& download_begin) {
@@ -142,8 +151,7 @@ uint32_t Account::create_order(
     double price,
     roq::TimeInForce time_in_force,
     roq::PositionEffect position_effect,
-    const std::string& order_template,
-    Instrument& instrument) {
+    const std::string& order_template) {
   if (!_order_manager_ready) {
     LOG(WARNING) << PREFIX "Order manager is not in the ready state";
     throw roq::NotReady();
@@ -165,7 +173,7 @@ uint32_t Account::create_order(
   };
   LOG(INFO) << PREFIX "create_order=" << create_order;
   _dispatcher.send(create_order, _gateway.c_str());
-  _live_orders[order_id] = &instrument;
+  _live_orders.insert(order_id);
   return order_id;
 }
 
@@ -210,30 +218,18 @@ void Account::cancel_order(uint32_t order_id) {
 
 void Account::on(const roq::CreateOrderAck& create_order_ack) {
   auto iter = _live_orders.find(create_order_ack.order_id);
-  /*
-  if (iter != _live_orders.end())
-    (*iter).second->on(event);
-  */
   if (create_order_ack.failure)
     _live_orders.erase(create_order_ack.order_id);
 }
 
 void Account::on(const roq::ModifyOrderAck& modify_order_ack) {
   auto iter = _live_orders.find(modify_order_ack.order_id);
-  /*
-  if (iter != _live_orders.end())
-    (*iter).second->on(event);
-  */
-  // there's nothing to do if a failure is being signaled...
+  // there's nothing to do if a failure is being signaled...?
 }
 
 void Account::on(const roq::CancelOrderAck& cancel_order_ack) {
   auto iter = _live_orders.find(cancel_order_ack.order_id);
-  /*
-  if (iter != _live_orders.end())
-    (*iter).second->on(event);
-  */
-  // there's nothing to do if a failure is being signaled...
+  // there's nothing to do if a failure is being signaled...?
 }
 
 bool Account::is_order_live(uint32_t order_id) const {

@@ -35,18 +35,20 @@ static ucl::Ucl read_config_file(const std::string& config_file,
   return result;
 }
 // Create accounts
-static std::map<std::string, std::pair<double, double> > create_accounts(
+static std::map<std::string, common::Config::Instrument::Account>
+create_accounts(
     const ucl::Ucl& setting) {
-  std::map<std::string, std::pair<double, double> > result;
+  std::map<std::string, common::Config::Instrument::Account> result;
   for (auto& iter : setting) {
     auto key = iter.key();
-    if (key.empty()) {
-      // list format (using position feed)
-      result.emplace(iter.string_value(), std::make_pair(NaN, NaN));
-    } else {
-      // TODO(thraneh): also read start positions (but what format?)
-      result.emplace(key, std::make_pair(NaN, NaN));
-    }
+    LOG_IF(FATAL, key.empty()) << "Expected a dictionary";
+    auto account = common::Config::Instrument::Account {
+      .long_limit = iter.lookup("long_limit").number_value(),
+      .short_limit = iter.lookup("short_limit").number_value(),
+      .long_start_of_day = NaN,
+      .short_start_of_day = NaN,
+    };
+    result.emplace(key, std::move(account));
   }
   return result;
 }
@@ -56,9 +58,9 @@ static common::Config::Instrument create_base_instrument(
   return common::Config::Instrument {
     .exchange   = setting.lookup("exchange").string_value(),
     .symbol     = setting.lookup("symbol").string_value(),
+    .tick_size  = setting.lookup("tick_size").number_value(),
+    .multiplier = setting.lookup("multiplier").number_value(),
     .accounts   = create_accounts(setting.lookup("accounts")),
-    .risk_limit = setting.lookup("risk_limit").number_value(),
-    .tick_size  = setting.lookup("tick_size").number_value()
   };
 }
 // Create base config.

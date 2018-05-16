@@ -6,6 +6,7 @@
 
 #include <string>
 #include <unordered_map>
+#include <unordered_set>
 #include <vector>
 
 #include "common/position.h"
@@ -14,8 +15,6 @@
 
 namespace examples {
 namespace common {
-
-class Instrument;
 
 class Account final {
  public:
@@ -51,8 +50,7 @@ class Account final {
       double price,
       roq::TimeInForce time_in_force,
       roq::PositionEffect position_effect,
-      const std::string& order_template,
-      Instrument& instrument);
+      const std::string& order_template = "default");
   void modify_order(
       uint32_t order_id,
       double quantity_change,
@@ -86,8 +84,8 @@ class Account final {
   bool _order_manager_ready = false;
   std::vector<std::shared_ptr<Position> > _positions;
   std::unordered_map<std::string, std::shared_ptr<Position> > _positions_by_symbol;
-  // FIXME(thraneh): drop instrument callback, add time-out check
-  std::unordered_map<uint32_t, Instrument *> _live_orders;
+  // FIXME(thraneh): add time-out check
+  std::unordered_set<uint32_t> _live_orders;
 };
 
 inline std::ostream& operator<<(
