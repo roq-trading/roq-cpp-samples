@@ -38,11 +38,11 @@ Position::Position(
 void Position::reset() {
   if (_use_position_update) {
     // long
-    _long_last_order_id = 0;
+    _long_last_order_local_id = 0;
     _long_start_of_day = 0.0;
     _long_last_trade_id = 0;
     // short
-    _short_last_order_id = 0;
+    _short_last_order_local_id = 0;
     _short_start_of_day = 0.0;
     _short_last_trade_id = 0;
   }
@@ -69,14 +69,14 @@ roq::PositionEffect Position::get_effect(
     case roq::Side::Buy: {
       if ((quantity + _short_closed - _short_start_of_day) < TOLERANCE)
         return roq::PositionEffect::Close;
-      if ((_short_limit - _short_opened - quantity) < TOLERANCE)
+      if ((_long_opened + quantity - _long_limit) > TOLERANCE)
         return roq::PositionEffect::Undefined;
       break;
     }
     case roq::Side::Sell: {
       if ((quantity + _long_closed - _long_start_of_day) < TOLERANCE)
         return roq::PositionEffect::Close;
-      if ((_long_limit - _long_opened - quantity) < TOLERANCE)
+      if ((_short_opened + quantity - _short_limit) > TOLERANCE)
         return roq::PositionEffect::Undefined;
       break;
     }
@@ -93,14 +93,17 @@ void Position::on(const roq::PositionUpdate& position_update) {
       "position_update=" << position_update;
     return;
   }
-  // positions are reported separately for long and short
-  if (_use_position_update == false)
+  // drop?
+  if (!_use_position_update) {
+    LOG(INFO) << "Dropping position update. (Not required).";
     return;
+  }
+  // positions are reported separately for long and short
   switch (position_update.side) {
     case roq::Side::Buy: {
       // check if reset() is being used as intended
       LOG_IF(FATAL, _long_start_of_day != 0.0) << "Unexpected";
-      _long_last_order_id = position_update.last_order_id;
+      _long_last_order_local_id = position_update.last_order_local_id;
       _long_last_trade_id = position_update.last_trade_id;
       _long_start_of_day = position_update.yesterday;
       _long_opened = position_update.position - position_update.yesterday;
@@ -109,7 +112,7 @@ void Position::on(const roq::PositionUpdate& position_update) {
     case roq::Side::Sell: {
       // check if reset() is being used as intended
       LOG_IF(FATAL, _short_start_of_day != 0.0) << "Unexpected";
-      _short_last_order_id = position_update.last_order_id;
+      _short_last_order_local_id = position_update.last_order_local_id;
       _short_last_trade_id = position_update.last_trade_id;
       _short_start_of_day = position_update.yesterday;
       _short_opened = position_update.position - position_update.yesterday;
@@ -131,26 +134,29 @@ void Position::on(const roq::OrderUpdate& order_update) {
   auto& previous = _traded_quantity[order_id];
   auto fill_quantity = std::max(0.0, order_update.traded_quantity - previous);
   previous = order_update.traded_quantity;
-  if (fill_quantity < TOLERANCE)
+  if (fill_quantity < TOLERANCE) {
+    LOG(INFO) << "No fill quantity, dropping order update";
     return;
+  }
   bool close = order_update.position_effect == roq::PositionEffect::Close;
+  auto order_local_id = order_update.order_local_id;
   switch (order_update.side) {
     case roq::Side::Buy: {
       if (close) {
-        if (_short_last_order_id < order_id)
+        if (_short_last_order_local_id < order_local_id)
           _short_closed += fill_quantity;
       } else {
-        if (_long_last_order_id < order_id)
+        if (_long_last_order_local_id < order_local_id)
           _long_opened += fill_quantity;
       }
       break;
     }
     case roq::Side::Sell: {
       if (close) {
-        if (_long_last_order_id < order_id)
+        if (_long_last_order_local_id < order_local_id)
           _long_closed += fill_quantity;
       } else {
-        if (_short_last_order_id < order_id)
+        if (_short_last_order_local_id < order_local_id)
           _short_opened += fill_quantity;
       }
       break;
@@ -166,13 +172,13 @@ std::ostream& Position::write(std::ostream& stream) const {
   return stream << "{"
     "use_position_update=" << (_use_position_update ? "true" : "false") << ", "
     "long_limit=" << _long_limit << ", "
-    "long_last_order_id=" << _long_last_order_id << ", "
+    "long_last_order_local_id=" << _long_last_order_local_id << ", "
     "long_start_of_day=" << _long_start_of_day << ", "
     "long_closed=" << _long_closed << ", "
     "long_opened=" << _long_opened << ", "
     "long_last_trade_id=" << _long_last_trade_id << ", "
     "short_limit=" << _short_limit << ", "
-    "short_last_order_id=" << _short_last_order_id << ", "
+    "short_last_order_local_id=" << _short_last_order_local_id << ", "
     "short_start_of_day=" << _short_start_of_day << ", "
     "short_closed=" << _short_closed << ", "
     "short_opened=" << _short_opened << ", "

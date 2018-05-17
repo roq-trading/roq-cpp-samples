@@ -136,7 +136,12 @@ void Instrument::create_ioc(
       return;
     }
   }
-  LOG(WARNING) << "Not possible to trade";
+  LOG(WARNING) << "Unable to trade. "
+    "All position limits have been exhausted {"
+    "side=" << side << ", "
+    "quantity=" << quantity << ", "
+    "price=" << price <<
+    "}";
 }
 
 std::ostream& Instrument::write(std::ostream& stream) const {

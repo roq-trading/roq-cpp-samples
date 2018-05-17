@@ -47,14 +47,14 @@ class Position final {
   const bool _use_position_update;
   // long
   const double _long_limit;
-  uint32_t _long_last_order_id = 0;
+  uint32_t _long_last_order_local_id = 0;
   double _long_start_of_day;
   double _long_closed = 0.0;
   double _long_opened = 0.0;
   uint32_t _long_last_trade_id = 0;
   // short
   const double _short_limit;
-  uint32_t _short_last_order_id = 0;
+  uint32_t _short_last_order_local_id = 0;
   double _short_start_of_day;
   double _short_closed = 0.0;
   double _short_opened = 0.0;

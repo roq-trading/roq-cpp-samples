@@ -5,7 +5,11 @@
 #include <roq/logging.h>
 #include <roq/stream.h>
 
+#include <gflags/gflags.h>
+
 #include <algorithm>
+
+DEFINE_bool(beep_on_trade, false, "New trade generates a beep.");
 
 namespace examples {
 namespace common {
@@ -257,7 +261,11 @@ void BaseStrategy::on(const roq::TradeUpdateEvent& event) {
   apply(
       trade_update.account,
       [&](Account& account) {
-          account.on(trade_update); });
+        account.on(trade_update);
+        if (FLAGS_beep_on_trade && !account.is_downloading()) {
+          putc('\a', stdout);
+        }
+      });
 }
 
 void BaseStrategy::on(const roq::OrderManagerStatusEvent& event) {
