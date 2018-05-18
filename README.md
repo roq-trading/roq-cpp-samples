@@ -141,6 +141,28 @@ Test if it works
 *Note! The environment variables will be lost if you use `conda install` again.
 If your environment variables have been replaced, simply run `source scripts.conda.sh` (without install)*.
 
+### Updating
+
+These are the steps needed to resync your conda environment
+
+	# get the latest conda package
+	conda update roq
+
+	# merge the latest samples code
+	git pull
+
+	# prepare the conda environment
+	source scripts/conda.sh install
+
+	# update git submodules
+	git submodule update --init --recursive
+
+	# configure the project
+	cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX=$CONDA_PREFIX
+
+	# compile
+	make -j4
+
 
 ### Ubuntu (system-wide build toolchain)
 
