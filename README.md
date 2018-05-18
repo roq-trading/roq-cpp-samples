@@ -151,8 +151,8 @@ These are the steps needed to resync your conda environment
 	# merge the latest samples code
 	git pull
 
-	# prepare the conda environment
-	source scripts/conda.sh install
+	# set CPPFLAGS, LDFLAGS and PKG_CONFIG_PATH
+	source scripts/conda.sh
 
 	# update git submodules
 	git submodule update --init --recursive

@@ -102,7 +102,8 @@ void Position::on(const roq::PositionUpdate& position_update) {
   switch (position_update.side) {
     case roq::Side::Buy: {
       // check if reset() is being used as intended
-      LOG_IF(FATAL, _long_start_of_day != 0.0) << "Unexpected";
+      if (_long_start_of_day != 0.0)
+        LOG(ERROR) << "Unexpected -- reset() not used correctly";
       _long_last_order_local_id = position_update.last_order_local_id;
       _long_last_trade_id = position_update.last_trade_id;
       _long_start_of_day = position_update.yesterday;
@@ -111,7 +112,8 @@ void Position::on(const roq::PositionUpdate& position_update) {
     }
     case roq::Side::Sell: {
       // check if reset() is being used as intended
-      LOG_IF(FATAL, _short_start_of_day != 0.0) << "Unexpected";
+      if (_short_start_of_day != 0.0)
+        LOG(ERROR) << "Unexpected -- reset() not used correctly";
       _short_last_order_local_id = position_update.last_order_local_id;
       _short_last_trade_id = position_update.last_trade_id;
       _short_start_of_day = position_update.yesterday;
