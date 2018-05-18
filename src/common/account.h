@@ -9,9 +9,8 @@
 #include <unordered_set>
 #include <vector>
 
+#include "common/config.h"
 #include "common/position.h"
-
-#include "simple/config.h"
 
 namespace examples {
 namespace common {
