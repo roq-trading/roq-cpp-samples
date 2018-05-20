@@ -17,6 +17,7 @@ namespace {
 // Constants
 const char *PREFIX_SIGNAL = "S";
 const char *PREFIX_CREATE_ORDER = "O";
+const char *PREFIX_SIM_ORDER_FILLED = "F";
 const char *DELIMITER = ",";
 const char *QUOTE = "\"";
 // Compute sign (stack overflow: 1903954)
@@ -40,6 +41,7 @@ Strategy::Strategy(
 }
 
 void Strategy::update(const common::MarketData& market_data) {
+  _simulator.update(market_data);
   const auto& best = market_data.depth[0];
   // Is it a proper two-sided market?
   if (best.bid_quantity == 0.0 && best.ask_quantity == 0.0)
@@ -69,24 +71,38 @@ void Strategy::update(const common::MarketData& market_data) {
   try {
     switch (sign_signal) {
       case 1:
-        if (FLAGS_write_csv)
-          write_order(
-              market_data.exchange_time,
-              roq::Side::Sell,
-              _quantity,
-              best.bid_price);
+        if (FLAGS_write_csv) {
+            write_order(
+                    market_data.exchange_time,
+                    roq::Side::Sell,
+                    _quantity,
+                    best.bid_price);
+            _simulator.match(
+                    market_data.symbol,
+                    roq::Side::Sell,
+                    _quantity,
+                    best.bid_price,
+                    write_order_fill);
+        }
         if (FLAGS_real_trading)
           at(0).sell_ioc(_quantity, best.bid_price);
         else
           LOG(WARNING) << "Trading is *not* enabled (use --real-trading)";
         break;
       case -1:
-        if (FLAGS_write_csv)
-          write_order(
-              market_data.exchange_time,
-              roq::Side::Buy,
-              _quantity,
-              best.ask_price);
+        if (FLAGS_write_csv) {
+            write_order(
+                    market_data.exchange_time,
+                    roq::Side::Buy,
+                    _quantity,
+                    best.ask_price);
+            _simulator.match(
+                    market_data.symbol,
+                    roq::Side::Buy,
+                    _quantity,
+                    best.ask_price,
+                    write_order_fill);
+        }
         if (FLAGS_real_trading)
           at(0).buy_ioc(_quantity, best.ask_price);
         else
@@ -169,6 +185,15 @@ void Strategy::write_order(
     quantity << DELIMITER <<
     price << DELIMITER <<
     std::endl;
+}
+
+void Strategy::write_order_fill(const char *symbol, roq::Side side, double quantity, double price) {
+  std::cout <<
+    PREFIX_SIM_ORDER_FILLED << DELIMITER <<
+    symbol << DELIMITER <<
+    side << DELIMITER <<
+    quantity << DELIMITER <<
+    price << std::endl;
 }
 
 }  // namespace simple
