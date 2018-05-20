@@ -22,7 +22,6 @@ Instrument::Instrument(
     : _index(index),
       _exchange(exchange),
       _symbol(symbol),
-      _tradeable(_positions.empty() == false),
       _market_data {
         .index = _index,
         .exchange = _exchange.c_str(),
@@ -30,7 +29,8 @@ Instrument::Instrument(
         .tick_size = tick_size,
         .multiplier = multiplier,
       },
-      _positions(std::move(positions)) {
+      _positions(std::move(positions)),
+      _tradeable(_positions.empty() == false) {
 }
 
 bool Instrument::is_ready() const {

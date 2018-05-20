@@ -61,11 +61,11 @@ class Instrument final {
   const size_t _index;
   const std::string _exchange;
   const std::string _symbol;
-  const bool _tradeable;
   MarketData _market_data;  // aggregator for MarketByPrice and TradeSummary
   bool _market_open = false;
   bool _market_data_ready = false;
   std::vector<std::shared_ptr<Position> > _positions;
+  const bool _tradeable;
 };
 
 inline std::ostream& operator<<(
