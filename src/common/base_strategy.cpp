@@ -333,8 +333,10 @@ bool BaseStrategy::apply(
     const std::string& account,
     std::function<void(Account&)> function) {
   auto iter = _accounts_by_name.find(account);
-  if (iter == _accounts_by_name.end())
+  if (iter == _accounts_by_name.end()) {
+    LOG(WARNING) << "Got update for unknown account=\"" << account << "\"";
     return false;
+  }
   function(*(*iter).second);
   return true;
 }
