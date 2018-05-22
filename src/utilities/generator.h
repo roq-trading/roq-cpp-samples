@@ -18,7 +18,7 @@ class Generator final : public roq::simulation::Generator {
   explicit Generator(const std::string& path);
   ~Generator();
   std::pair<bool, std::chrono::system_clock::time_point> fetch() override;
-  void dispatch(roq::Strategy& strategy) override;
+  void dispatch(roq::simulation::Generator::Dispatcher& dispatcher) override;
 
  private:
   CsvReader _csv_reader;

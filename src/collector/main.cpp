@@ -42,7 +42,7 @@ int main(int argc, char *argv[]) {
     generators.emplace_back(
         new examples::utilities::Generator(FLAGS_simulation_file));
 
-    roq::simulation::Controller<Collector>(
+    roq::simulation::Controller<Collector, roq::simulation::NoMatcher>(
         std::move(generators)).create_and_dispatch();
 
   } else {

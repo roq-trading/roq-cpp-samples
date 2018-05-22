@@ -62,12 +62,13 @@ int main(int argc, char *argv[]) {
     generators.emplace_back(
         new examples::utilities::Generator(FLAGS_simulation_file));
 
-    // TODO(thraneh): from matching engine
+    // Matching engine used for simulation.
+    typedef roq::simulation::SimpleMatcher matcher_t;
     std::string gateway("sim");
 
-    roq::simulation::Controller<Strategy>(
-        std::move(generators)).create_and_dispatch(
-            gateway, config);
+    roq::simulation::Controller<Strategy, matcher_t>(
+        std::move(generators),
+        gateway).create_and_dispatch(gateway, config);
   } else {
     // Mode: Trading.
 

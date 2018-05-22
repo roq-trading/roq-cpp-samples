@@ -34,7 +34,8 @@ std::pair<bool, std::chrono::system_clock::time_point> Generator::fetch() {
   return std::make_pair(true, _receive_time);
 }
 
-void Generator::dispatch(roq::Strategy& strategy) {
+void Generator::dispatch(
+    roq::simulation::Generator::Dispatcher& dispatcher) {
   auto symbol = _csv_reader.get_string(0);
   auto exchange_time = _csv_reader.get_time_point(1, TIME_FORMAT_FILE);
   auto receive_time = _csv_reader.get_time_point(2, TIME_FORMAT_FILE);
@@ -52,7 +53,7 @@ void Generator::dispatch(roq::Strategy& strategy) {
     .from_cache = false,
     .is_last = false,
   };
-  strategy.on(roq::BatchBeginEvent { .message_info = message_info});
+  dispatcher.on(roq::BatchBeginEvent { .message_info = message_info});
   roq::MarketByPrice market_by_price = {
     .exchange = EXCHANGE,
     .symbol = symbol.c_str(),
@@ -69,7 +70,7 @@ void Generator::dispatch(roq::Strategy& strategy) {
     layer.bid_quantity = _csv_reader.get_number(offset + 3);
   }
   VLOG(1) << market_by_price;
-  strategy.on(roq::MarketByPriceEvent {
+  dispatcher.on(roq::MarketByPriceEvent {
       .message_info = message_info,
       .market_by_price = market_by_price });
   roq::TradeSummary trade_summary = {
@@ -84,10 +85,10 @@ void Generator::dispatch(roq::Strategy& strategy) {
   };
   VLOG(1) << trade_summary;
   message_info.is_last = true;
-  strategy.on(roq::TradeSummaryEvent {
+  dispatcher.on(roq::TradeSummaryEvent {
       .message_info = message_info,
       .trade_summary = trade_summary });
-  strategy.on(roq::BatchEndEvent { .message_info = message_info });
+  dispatcher.on(roq::BatchEndEvent { .message_info = message_info });
 }
 
 }  // namespace utilities
