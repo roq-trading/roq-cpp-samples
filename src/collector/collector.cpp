@@ -29,6 +29,11 @@ const roq::Strategy::subscriptions_t& Collector::get_subscriptions() const {
   return subscriptions;
 }
 
+const std::vector<std::string>& Collector::get_accounts() const {
+  // empty means subscribe everything
+  static std::vector<std::string> accounts;
+  return accounts;
+}
 void Collector::on(const roq::BatchEndEvent&) {
   for (auto iter : _dirty)
     std::cout << *iter << std::endl;

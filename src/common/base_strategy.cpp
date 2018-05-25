@@ -83,6 +83,16 @@ static roq::Strategy::subscriptions_t create_subscriptions(
     tmp[instrument->get_exchange()].emplace_back(instrument->get_symbol());
   return result;
 }
+static std::vector<std::string> create_accounts(const Config& config) {
+  std::unordered_set<std::string> accounts;
+  for (const auto& instrument : config.instruments)
+    for (const auto& account : instrument.accounts)
+      accounts.emplace(account.first);
+  std::vector<std::string> result;
+  for (const auto& account : accounts)
+    result.emplace_back(account);
+  return result;
+}
 }  // namespace
 
 namespace {
@@ -121,7 +131,8 @@ BaseStrategy::BaseStrategy(
       _accounts_by_name(create_accounts_by_name(_accounts)),
       _instruments(create_instruments(config, _accounts_by_name)),
       _instruments_by_name(create_instruments_by_name(_instruments)),
-      _subscriptions(create_subscriptions(gateway, _instruments)) {
+      _subscriptions(create_subscriptions(gateway, _instruments)),
+      _accounts_2(create_accounts(config)) {
   LOG(INFO) << "accounts=" << _accounts;
   LOG(INFO) << "instruments=" << _instruments;
 }

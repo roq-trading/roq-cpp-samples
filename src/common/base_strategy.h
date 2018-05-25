@@ -37,6 +37,9 @@ class BaseStrategy : public roq::Strategy {
   const roq::Strategy::subscriptions_t& get_subscriptions() const override {
     return _subscriptions;
   }
+  const std::vector<std::string>& get_accounts() const override {
+    return _accounts_2;  // FIXME(thraneh): bad naming convention
+  }
   // api event handlers:
   // - timer
   void on(const roq::TimerEvent&) override;
@@ -79,6 +82,7 @@ class BaseStrategy : public roq::Strategy {
   const std::unordered_map<std::string, std::shared_ptr<Instrument> > _instruments_by_name;
 
   const roq::Strategy::subscriptions_t _subscriptions;
+  const std::vector<std::string> _accounts_2;
 
   bool _all_instruments_ready = false;
   bool _all_accounts_ready = false;
