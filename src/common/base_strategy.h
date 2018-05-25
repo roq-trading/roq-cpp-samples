@@ -34,11 +34,8 @@ class BaseStrategy : public roq::Strategy {
   virtual void update(const MarketData&) = 0;
 
  private:
-  const roq::Strategy::subscriptions_t& get_subscriptions() const override {
+  const roq::Subscriptions& get_subscriptions() const override {
     return _subscriptions;
-  }
-  const std::vector<std::string>& get_accounts() const override {
-    return _accounts_2;  // FIXME(thraneh): bad naming convention
   }
   // api event handlers:
   // - timer
@@ -81,8 +78,7 @@ class BaseStrategy : public roq::Strategy {
   std::vector<std::shared_ptr<Instrument> > _instruments;
   const std::unordered_map<std::string, std::shared_ptr<Instrument> > _instruments_by_name;
 
-  const roq::Strategy::subscriptions_t _subscriptions;
-  const std::vector<std::string> _accounts_2;
+  const roq::Subscriptions _subscriptions;
 
   bool _all_instruments_ready = false;
   bool _all_accounts_ready = false;
