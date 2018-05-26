@@ -64,6 +64,11 @@ int main(int argc, char *argv[]) {
     LOG(INFO) << config;
     LOG(INFO) << config.get_string("Instrument");
     LOG(INFO) << config.get_double("p18");
+
+    std::vector<std::string> factors = config.get_string_vector("factors");
+    for (auto& s : factors) {
+      LOG(INFO) << s;
+    }
   }
 
   if (FLAGS_strategy_group.empty() == false) {

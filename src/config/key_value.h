@@ -5,6 +5,7 @@
 #include <ucl++.h>
 
 #include <string>
+#include <vector>
 
 namespace examples {
 namespace config {
@@ -38,6 +39,9 @@ class KeyValue final {
   std::string get_string(
       const std::string& key,
       const std::string& default_value) const;
+
+  // string list
+  std::vector<std::string> get_string_vector(const std::string& key) const;
 
   std::ostream& write(std::ostream&) const;
 
