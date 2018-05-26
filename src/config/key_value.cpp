@@ -125,7 +125,8 @@ std::string KeyValue::get_string(const std::string& key) const {
   }
 }
 
-std::vector<std::string> KeyValue::get_string_vector(const std::string& key) const {
+std::vector<std::string> KeyValue::get_string_vector(
+        const std::string& key) const {
     std::vector<std::string> result;
 
     auto ucl = _ucl.lookup(key);
@@ -171,12 +172,14 @@ std::ostream& KeyValue::write(std::ostream& stream) const {
     stream << iter.key() << "=";
     switch (iter.type()) {
       case UCL_OBJECT:
-        LOG(FATAL) << "Nested objects not supported (key=\"" << iter.key() << "\"";
+        LOG(FATAL) << "Nested objects not supported (key=\"" << iter.key()
+                   << "\"";
         break;
       case UCL_ARRAY:
         stream << "[";
         for (size_t i = 0; i < iter.size(); i++) {
-            stream << iter.at(i).string_value() << ((i == iter.size() - 1) ? "" : " ");
+            stream << iter.at(i).string_value()
+                   << ((i == iter.size() - 1) ? "" : " ");
         }
         stream << "]";
         break;
@@ -193,9 +196,11 @@ std::ostream& KeyValue::write(std::ostream& stream) const {
         stream << (iter.bool_value() ? "true" : "false");
         break;
       case UCL_TIME:
-        LOG(FATAL) << "Time objects not supported (key=\"" << iter.key() << "\"";
+        LOG(FATAL) << "Time objects not supported (key=\"" << iter.key()
+                   << "\"";
       case UCL_USERDATA:
-        LOG(FATAL) << "Userdata objects not supported (key=\"" << iter.key() << "\"";
+        LOG(FATAL) << "Userdata objects not supported (key=\"" << iter.key()
+                   << "\"";
       case UCL_NULL:
         break;
     }

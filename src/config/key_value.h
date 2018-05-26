@@ -5,6 +5,7 @@
 #include <ucl++.h>
 
 #include <string>
+#include <vector>
 
 namespace examples {
 namespace config {
