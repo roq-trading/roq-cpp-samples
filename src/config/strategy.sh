@@ -7,4 +7,4 @@ else
 	PREFIX=
 fi
 
-$PREFIX ./example-config --strategy ~/gqstrats01IC.ini
+$PREFIX ./example-config --strategy example.conf

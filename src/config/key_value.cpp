@@ -125,6 +125,28 @@ std::string KeyValue::get_string(const std::string& key) const {
   }
 }
 
+std::vector<std::string> KeyValue::get_string_vector(const std::string& key) const {
+    std::vector<std::string> result;
+
+    auto ucl = _ucl.lookup(key);
+    switch (ucl.type()) {
+        case UCL_STRING:
+            result.emplace_back(ucl.string_value());
+            break;
+        case UCL_ARRAY:
+            for (size_t i = 0; i < ucl.size(); i++) {
+                result.emplace_back(ucl.at(i).string_value());
+            }
+            break;
+        case UCL_NULL:
+            throw std::runtime_error("Missing");
+        default:
+            throw std::runtime_error("Unexpected type");
+    }
+
+    return result;
+}
+
 std::string KeyValue::get_string(
     const std::string& key,
     const std::string& default_value) const {
@@ -152,7 +174,11 @@ std::ostream& KeyValue::write(std::ostream& stream) const {
         LOG(FATAL) << "Nested objects not supported (key=\"" << iter.key() << "\"";
         break;
       case UCL_ARRAY:
-        LOG(FATAL) << "Array objects not supported (key=\"" << iter.key() << "\"";
+        stream << "[";
+        for (size_t i = 0; i < iter.size(); i++) {
+            stream << iter.at(i).string_value() << ((i == iter.size() - 1) ? "" : " ");
+        }
+        stream << "]";
         break;
       case UCL_INT:
         stream << iter.int_value();
