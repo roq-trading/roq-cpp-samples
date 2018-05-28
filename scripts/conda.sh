@@ -11,7 +11,7 @@ if [ "$1" = "install" ]; then
 		cmake \
 		autoconf automake libtool \
 		git \
-		roq \
+		roq-api \
 		roq-oss-rapidjson
 fi
 
