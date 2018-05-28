@@ -4,6 +4,7 @@ project(utilities)
 
 add_library(utilities STATIC
   csv_reader.cpp
+  matcher.cpp
   generator.cpp
 )
 

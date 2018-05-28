@@ -9,6 +9,7 @@
 #include "simple/strategy.h"
 
 #include "utilities/generator.h"
+#include "utilities/matcher.h"
 
 
 DEFINE_string(config_file, "",
@@ -63,7 +64,7 @@ int main(int argc, char *argv[]) {
         new examples::utilities::Generator(FLAGS_simulation_file));
 
     // Matching engine used for simulation.
-    typedef roq::simulation::SimpleMatcher matcher_t;
+    typedef examples::utilities::Matcher matcher_t;
     std::string gateway("sim");
 
     // Create and dispatch.

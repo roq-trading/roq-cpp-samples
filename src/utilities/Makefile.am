@@ -12,4 +12,5 @@ libutilities_la_CPPFLAGS = \
 	$(SPDLOG_CFLAGS)
 libutilities_la_SOURCES = \
 	csv_reader.cpp \
+	matcher.cpp \
 	generator.cpp
