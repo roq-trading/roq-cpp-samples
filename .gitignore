@@ -42,6 +42,7 @@ src/reference/reference-strategy
 src/simple/example-simple
 src/spread/example-spread
 src/config/example-config
+src/config/config
 
 *.csv
 
