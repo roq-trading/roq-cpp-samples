@@ -35,6 +35,7 @@ int main(int argc, char *argv[]) {
 
   // Parse command-line options.
 
+  gflags::SetVersionString(ROQ_VERSION);
   gflags::ParseCommandLineFlags(&argc, &argv, true);
   gflags::ShutDownCommandLineFlags();
 
