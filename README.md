@@ -127,7 +127,7 @@ Clone this project (from github) and compile from source
 	git submodule update --init --recursive
 
 	# configure the project
-	cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX=$CONDA_PREFIX
+	cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX=$CONDA_PREFIX -DCMAKE_FIND_ROOT_PATH=$CONDA_PREFIX
 
 	# compile
 	make -j4
@@ -158,7 +158,7 @@ These are the steps needed to resync your conda environment
 	git submodule update --init --recursive
 
 	# configure the project
-	cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX=$CONDA_PREFIX
+	cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX=$CONDA_PREFIX -DCMAKE_FIND_ROOT_PATH=$CONDA_PREFIX
 
 	# compile
 	make -j4
