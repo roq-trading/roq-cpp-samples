@@ -1,1 +1,1 @@
-SUBDIRS = utilities common collector simple spread config
+SUBDIRS = utilities common collector simple spread
