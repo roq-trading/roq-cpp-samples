@@ -7,7 +7,7 @@ add_executable(example-simple
   config_reader.cpp
   main.cpp
   strategy.cpp
-)
+        simulator.cpp simulator.h)
 
 set_target_properties(example-simple PROPERTIES
   COMPILE_DEFINITIONS ROQ_SPDLOG

@@ -7,6 +7,7 @@
 #include <tuple>
 
 #include "simple/config.h"
+#include "simple/simulator.h"
 
 #include "common/base_strategy.h"
 
@@ -37,6 +38,12 @@ class Strategy final : public common::BaseStrategy {
       roq::Side side,
       double quantity,
       double price);
+  static void write_order_fill(
+          const char* symbol,
+          roq::Side side,
+          double quantity,
+          double price
+  );
 
  private:
   // Configuration.
@@ -45,6 +52,7 @@ class Strategy final : public common::BaseStrategy {
   const double _quantity;
   // State management.
   double _previous = std::numeric_limits<double>::quiet_NaN();
+  Simulator _simulator;
 };
 
 }  // namespace simple
