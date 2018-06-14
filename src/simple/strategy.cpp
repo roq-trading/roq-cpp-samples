@@ -17,6 +17,8 @@ namespace {
 // Constants
 const char *PREFIX_SIGNAL = "S";
 const char *PREFIX_CREATE_ORDER = "O";
+const char *PREFIX_UPDATE_ORDER = "U";
+const char *PREFIX_UPDATE_TRADE = "T";
 const char *DELIMITER = ",";
 const char *QUOTE = "\"";
 // Compute sign (stack overflow: 1903954)
@@ -75,10 +77,10 @@ void Strategy::update(const common::MarketData& market_data) {
               roq::Side::Sell,
               _quantity,
               best.bid_price);
-        if (FLAGS_real_trading)
-          at(0).sell_ioc(_quantity, best.bid_price);
-        else
-          LOG(WARNING) << "Trading is *not* enabled (use --real-trading)";
+        // if (FLAGS_real_trading)
+        at(0).sell_ioc(_quantity, best.bid_price);
+        // else
+        //  LOG(WARNING) << "Trading is *not* enabled (use --real-trading)";
         break;
       case -1:
         if (FLAGS_write_csv)
@@ -87,10 +89,10 @@ void Strategy::update(const common::MarketData& market_data) {
               roq::Side::Buy,
               _quantity,
               best.ask_price);
-        if (FLAGS_real_trading)
-          at(0).buy_ioc(_quantity, best.ask_price);
-        else
-          LOG(WARNING) << "Trading is *not* enabled (use --real-trading)";
+        // if (FLAGS_real_trading)
+        at(0).buy_ioc(_quantity, best.ask_price);
+        // else
+        //  LOG(WARNING) << "Trading is *not* enabled (use --real-trading)";
         break;
     }
   } catch (roq::Exception& e) {
@@ -169,6 +171,28 @@ void Strategy::write_order(
     quantity << DELIMITER <<
     price << DELIMITER <<
     std::endl;
+}
+
+void Strategy::on(const roq::OrderUpdateEvent& event) {
+  std::cout <<
+   PREFIX_UPDATE_ORDER << DELIMITER <<
+   event.order_update.order_status << DELIMITER <<
+   event.order_update.symbol << DELIMITER <<
+   event.order_update.side << DELIMITER <<
+   event.order_update.traded_quantity << DELIMITER <<
+   event.order_update.remaining_quantity <<
+   std::endl;
+}
+
+void Strategy::on(const roq::TradeUpdateEvent& event) {
+  std::cout <<
+   PREFIX_UPDATE_TRADE << DELIMITER <<
+   event.trade_update.symbol << DELIMITER <<
+   event.trade_update.side << DELIMITER <<
+   event.trade_update.quantity << DELIMITER <<
+   event.trade_update.price <<
+   std::endl;
+
 }
 
 }  // namespace simple

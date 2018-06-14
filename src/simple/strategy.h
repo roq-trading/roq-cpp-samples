@@ -38,6 +38,9 @@ class Strategy final : public common::BaseStrategy {
       double quantity,
       double price);
 
+  void on(const roq::OrderUpdateEvent& event) override;
+  void on(const roq::TradeUpdateEvent& event) override;
+
  private:
   // Configuration.
   const bool _weighted;
