@@ -4,6 +4,7 @@
 
 #include <roq/client.h>
 #include <roq/logging.h>
+#include <roq/stream.h>
 
 #include "simple/config_reader.h"
 #include "simple/strategy.h"
@@ -39,6 +40,9 @@ int main(int argc, char *argv[]) {
   gflags::SetVersionString(ROQ_VERSION);
   gflags::ParseCommandLineFlags(&argc, &argv, true);
   gflags::ShutDownCommandLineFlags();
+
+  // Initialize.
+  roq::stream::warm_cache();
 
   // Read configuration.
 

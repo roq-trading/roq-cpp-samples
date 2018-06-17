@@ -17,7 +17,6 @@ set_target_properties(common PROPERTIES
 
 target_include_directories(common PUBLIC
   ${ROQ_INCLUDE_DIR}
-  ${CCTZ_INCLUDE_DIR}
   ${CROSSGUID_INCLUDE_DIR}
   ${FLATBUFFERS_INCLUDE_DIR}
   ${GFLAGS_INCLUDE_DIR}

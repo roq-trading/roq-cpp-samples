@@ -3,9 +3,7 @@ check_PROGRAMS = samples-benchmark
 samples_benchmark_LDADD = \
 	$(top_builddir)/src/common/libcommon.la \
 	$(ROQ_LIBS) \
-	$(CCTZ_LIBS) \
 	$(CROSSGUID_LIBS) \
-	$(DOUBLE_CONVERSION_LIBS) \
 	$(FLATBUFFERS_LIBS) \
 	$(GFLAGS_LIBS) \
 	$(LIBEVENT_LIBS) \
@@ -19,7 +17,6 @@ samples_benchmark_CPPFLAGS = \
 	-DROQ_SPDLOG \
 	-I$(top_builddir)/src \
 	$(ROQ_CFLAGS) \
-	$(CCTZ_CFLAGS) \
 	$(CROSSGUID_CFLAGS) \
 	$(FLATBUFFERS_CFLAGS) \
 	$(GFLAGS_CFLAGS) \

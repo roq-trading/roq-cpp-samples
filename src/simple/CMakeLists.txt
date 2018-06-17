@@ -15,9 +15,7 @@ set_target_properties(example-simple PROPERTIES
 
 target_include_directories(example-simple PUBLIC
   ${ROQ_INCLUDE_DIR}
-  ${CCTZ_INCLUDE_DIR}
   ${CROSSGUID_INCLUDE_DIR}
-  ${DOUBLE_CONVERSION_INCLUDE_DIR}
   ${FLATBUFFERS_INCLUDE_DIR}
   ${GFLAGS_INCLUDE_DIR}
   ${LIBEVENT_INCLUDE_DIR}
@@ -29,9 +27,7 @@ target_include_directories(example-simple PUBLIC
 target_link_libraries(example-simple
   ${CMAKE_THREAD_LIBS_INIT}
   ${ROQ_LIBS}
-  ${CCTZ_LIBS}
   ${CROSSGUID_LIBS}
-  ${DOUBLE_CONVERSION_LIBS}
   ${FLATBUFFERS_LIBS}
   ${GFLAGS_LIBS}
   ${LIBEVENT_LIBS}

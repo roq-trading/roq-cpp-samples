@@ -2,8 +2,8 @@
 
 #include "collector/collector.h"
 
-#include <cctz/time_zone.h>
 #include <roq/logging.h>
+#include <roq/stream.h>
 
 #include <iostream>
 #include <limits>
@@ -16,10 +16,9 @@ const char *MISSING = "nan";
 const char *UPDATE_NAME = "USTP_L2";
 const char *UPDATE_TYPE = "1";
 const char *DELIMITER = ",";
-const char *TIME_FORMAT = "%E4Y-%m-%dT%H:%M:%E6S";
-const auto TIME_ZONE = cctz::utc_time_zone();
 std::ostream& operator<<(std::ostream& stream, roq::time_point_t time_point) {
-  return stream << cctz::format(TIME_FORMAT, time_point, TIME_ZONE);
+  return stream << roq::stream::details::TimePointStr<
+      decltype(time_point)>(time_point).c_str();
 }
 }  // namespace
 
