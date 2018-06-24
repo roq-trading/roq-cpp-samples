@@ -69,7 +69,7 @@ void Generator::dispatch(
     layer.bid_price = _csv_reader.get_number(offset + 2);
     layer.bid_quantity = _csv_reader.get_number(offset + 3);
   }
-  VLOG(1) << market_by_price;
+  VLOG(3) << market_by_price;
   dispatcher.on(roq::MarketByPriceEvent {
       .message_info = message_info,
       .market_by_price = market_by_price });
@@ -83,7 +83,7 @@ void Generator::dispatch(
     .exchange_time = exchange_time,
     .channel = L2_TOPIC_ID,
   };
-  VLOG(1) << trade_summary;
+  VLOG(3) << trade_summary;
   message_info.is_last = true;
   dispatcher.on(roq::TradeSummaryEvent {
       .message_info = message_info,

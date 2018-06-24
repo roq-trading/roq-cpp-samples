@@ -95,7 +95,7 @@ void Position::on(const roq::PositionUpdate& position_update) {
   }
   // drop?
   if (!_use_position_update) {
-    LOG(INFO) << "Dropping position update. (Not required).";
+    VLOG(2) << "Dropping position update. (Not required).";
     return;
   }
   // positions are reported separately for long and short
@@ -137,7 +137,7 @@ void Position::on(const roq::OrderUpdate& order_update) {
   auto fill_quantity = std::max(0.0, order_update.traded_quantity - previous);
   previous = order_update.traded_quantity;
   if (fill_quantity < TOLERANCE) {
-    LOG(INFO) << "No fill quantity, dropping order update";
+    VLOG(2) << "No fill quantity, dropping order update";
     return;
   }
   bool close = order_update.position_effect == roq::PositionEffect::Close;
