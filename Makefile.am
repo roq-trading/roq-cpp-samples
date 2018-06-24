@@ -1,10 +1,7 @@
 ACLOCAL_AMFLAGS = -I m4
 
 SUBDIRS = . src
-
-if ENABLE_BENCHMARK
-SUBDIRS += bench
-endif
+# SUBDIRS = . src test
 
 dist_doc_DATA = LICENSE README.md
 
@@ -14,4 +11,4 @@ pkgconfig_DATA = @PACKAGE@.pc
 .PHONY: lint
 
 lint:
-	cpplint --linelength=120 --recursive src/ bench/
+	cpplint --linelength=120 --recursive src/

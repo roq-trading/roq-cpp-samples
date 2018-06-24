@@ -16,6 +16,7 @@ AC_CONFIG_FILES([
  src/collector/Makefile
  src/simple/Makefile
  src/spread/Makefile
+ test/Makefile
 ])
 AC_CONFIG_FILES([roq-samples.pc])
 
@@ -42,13 +43,15 @@ ROQ_CHECK_RAPIDJSON
 
 PKG_CHECK_MODULES([ROQ], [roq])
 
+# ROQ_CHECK_GTEST([third_party/googletest])
+
 AC_ARG_ENABLE([benchmark],
 	      AS_HELP_STRING([--enable-benchmark], [Enable benchmark]),
 	      [],
 	      [enable_urls=no])
 
 AS_IF([test "x$enable_benchmark" = "xyes"],
-      [AC_CONFIG_FILES([bench/Makefile])])
+      [AC_CONFIG_FILES([src/benchmark/Makefile])])
 
 AS_IF(
   [test "x$enable_benchmark" = "xyes"],

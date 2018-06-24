@@ -1,6 +1,6 @@
-TESTS = samples-benchmark
-check_PROGRAMS = samples-benchmark
-samples_benchmark_LDADD = \
+TESTS = roq-samples-benchmark
+bin_PROGRAMS = roq-samples-benchmark
+roq_samples_benchmark_LDADD = \
 	$(top_builddir)/src/common/libcommon.la \
 	$(ROQ_LIBS) \
 	$(CROSSGUID_LIBS) \
@@ -12,9 +12,8 @@ samples_benchmark_LDADD = \
 	$(SPDLOG_LIBS)  \
 	$(BENCHMARK_LIBS)  \
 	-lpthread
-samples_benchmark_CFLAGS = -pthread
-samples_benchmark_CPPFLAGS = \
-	-DROQ_SPDLOG \
+roq_samples_benchmark_CFLAGS = -pthread
+roq_samples_benchmark_CPPFLAGS = \
 	-I$(top_builddir)/src \
 	$(ROQ_CFLAGS) \
 	$(CROSSGUID_CFLAGS) \
@@ -25,5 +24,5 @@ samples_benchmark_CPPFLAGS = \
 	$(LIBUNWIND_CFLAGS) \
 	$(SPDLOG_CFLAGS) \
 	$(BENCHMARK_CFLAGS)
-nodist_samples_benchmark_SOURCES = \
+nodist_roq_samples_benchmark_SOURCES = \
 	main.cpp

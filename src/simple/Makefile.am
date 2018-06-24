@@ -11,7 +11,6 @@ example_simple_LDFLAGS = \
 	$(LIBUNWIND_LIBS) \
 	$(SPDLOG_LIBS)
 example_simple_CPPFLAGS = \
-	-DROQ_SPDLOG \
 	-I$(top_srcdir)/src \
 	$(ROQ_CFLAGS) \
 	$(CROSSGUID_CFLAGS) \
