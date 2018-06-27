@@ -7,6 +7,6 @@ else
 	PREFIX=
 fi
 
-$PREFIX ./example-spread \
+$PREFIX ./roq-samples-spread \
 	--config-file spread.conf \
 	--gateways femas=test:1234@/var/tmp/femasapi.sock $@

@@ -6,6 +6,6 @@ else
 	PREFIX=
 fi
 
-$PREFIX ./example-spread \
+$PREFIX ./roq-samples-spread \
 	--config-file spread.conf \
 	--simulation-file ./USTP_Multi_20180223.csv

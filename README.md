@@ -136,7 +136,7 @@ Test if it works
 
 	# test simultion
 	cd src/collector
-	./example-collector --simulation-file test.csv
+	./roq-samples-collector --simulation-file test.csv
 
 *Note! The environment variables will be lost if you use `conda install` again.
 If your environment variables have been replaced, simply run `source scripts.conda.sh` (without install)*.

@@ -2,18 +2,18 @@ cmake_minimum_required(VERSION 3.0)
 
 project(simple)
 
-add_executable(example-simple
+add_executable(roq-samples-simple
   config.cpp
   config_reader.cpp
   main.cpp
   strategy.cpp
 )
 
-set_target_properties(example-simple PROPERTIES
+set_target_properties(roq-samples-simple PROPERTIES
   COMPILE_DEFINITIONS ROQ_SPDLOG
 )
 
-target_include_directories(example-simple PUBLIC
+target_include_directories(roq-samples-simple PUBLIC
   ${ROQ_INCLUDE_DIR}
   ${CROSSGUID_INCLUDE_DIR}
   ${FLATBUFFERS_INCLUDE_DIR}
@@ -24,7 +24,7 @@ target_include_directories(example-simple PUBLIC
   ${UCL_INCLUDE_DIR}
 )
 
-target_link_libraries(example-simple
+target_link_libraries(roq-samples-simple
   ${CMAKE_THREAD_LIBS_INIT}
   ${ROQ_LIBS}
   ${CROSSGUID_LIBS}

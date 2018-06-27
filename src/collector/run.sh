@@ -7,5 +7,5 @@ else
 	PREFIX=
 fi
 
-$PREFIX ./example-collector \
+$PREFIX ./roq-samples-collector \
 	--gateways femas=test:1234@/var/tmp/femasapi.sock $@

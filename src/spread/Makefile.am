@@ -1,5 +1,5 @@
-bin_PROGRAMS = example-spread
-example_spread_LDFLAGS = \
+bin_PROGRAMS = roq-samples-spread
+roq_samples_spread_LDFLAGS = \
 	$(top_builddir)/src/utilities/libutilities.la \
 	$(top_builddir)/src/common/libcommon.la \
 	$(ROQ_LIBS) \
@@ -10,7 +10,7 @@ example_spread_LDFLAGS = \
 	$(LIBUCL_LIBS) \
 	$(LIBUNWIND_LIBS) \
 	$(SPDLOG_LIBS)
-example_spread_CPPFLAGS = \
+roq_samples_spread_CPPFLAGS = \
 	-I$(top_srcdir)/src \
 	$(ROQ_CFLAGS) \
 	$(CROSSGUID_CFLAGS) \
@@ -20,14 +20,14 @@ example_spread_CPPFLAGS = \
 	$(LIBUCL_CFLAGS) \
 	$(LIBUNWIND_CFLAGS) \
 	$(SPDLOG_CFLAGS)
-example_spread_SOURCES = \
+roq_samples_spread_SOURCES = \
 	config.cpp \
 	config_reader.cpp \
 	strategy.cpp \
 	main.cpp
-EXTRA_example_spread_SOURCES = \
+EXTRA_roq_samples_spread_SOURCES = \
 	config.h \
 	config_reader.h \
 	strategy.h
-configdir=$(datadir)/roq/samples
+configdir=$(datadir)/roq/sampless
 config_DATA = spread.conf

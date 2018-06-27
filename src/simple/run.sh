@@ -7,6 +7,6 @@ else
 	PREFIX=
 fi
 
-$PREFIX ./example-simple \
+$PREFIX ./roq-samples-simple \
 	--config-file simple.conf \
 	--gateways femas=trader:secret@/var/tmp/femasapi.sock $@

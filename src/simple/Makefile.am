@@ -1,5 +1,5 @@
-bin_PROGRAMS = example-simple
-example_simple_LDFLAGS = \
+bin_PROGRAMS = roq-samples-simple
+roq_samples_simple_LDFLAGS = \
 	$(top_builddir)/src/utilities/libutilities.la \
 	$(top_builddir)/src/common/libcommon.la \
 	$(ROQ_LIBS) \
@@ -10,7 +10,7 @@ example_simple_LDFLAGS = \
 	$(LIBUCL_LIBS) \
 	$(LIBUNWIND_LIBS) \
 	$(SPDLOG_LIBS)
-example_simple_CPPFLAGS = \
+roq_samples_simple_CPPFLAGS = \
 	-I$(top_srcdir)/src \
 	$(ROQ_CFLAGS) \
 	$(CROSSGUID_CFLAGS) \
@@ -20,14 +20,14 @@ example_simple_CPPFLAGS = \
 	$(LIBUCL_CFLAGS) \
 	$(LIBUNWIND_CFLAGS) \
 	$(SPDLOG_CFLAGS)
-example_simple_SOURCES = \
+roq_samples_simple_SOURCES = \
 	config.cpp \
 	config_reader.cpp \
 	strategy.cpp \
 	main.cpp
-EXTRA_example_simple_SOURCES = \
+EXTRA_roq_samples_simple_SOURCES = \
 	config.h \
 	config_reader.h \
 	strategy.h
-configdir=$(datadir)/roq/samples
+configdir=$(datadir)/roq/sampless
 config_DATA = simple.conf

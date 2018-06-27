@@ -37,10 +37,9 @@ m4/
 
 *.con
 
-src/collector/example-collector
-src/reference/reference-strategy
-src/simple/example-simple
-src/spread/example-spread
+src/collector/roq-samples-collector
+src/simple/roq-samples-simple
+src/spread/roq-samples-spread
 src/benchmark/roq-samples-benchmark
 
 *.csv

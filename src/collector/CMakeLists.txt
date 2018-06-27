@@ -2,16 +2,16 @@ cmake_minimum_required(VERSION 3.0)
 
 project(collector)
 
-add_executable(example-collector
+add_executable(roq-samples-collector
   collector.cpp
   main.cpp
 )
 
-set_target_properties(example-collector PROPERTIES
+set_target_properties(roq-samples-collector PROPERTIES
   COMPILE_DEFINITIONS ROQ_SPDLOG
 )
 
-target_include_directories(example-collector PUBLIC
+target_include_directories(roq-samples-collector PUBLIC
   ${ROQ_INCLUDE_DIR}
   ${CROSSGUID_INCLUDE_DIR}
   ${FLATBUFFERS_INCLUDE_DIR}
@@ -21,7 +21,7 @@ target_include_directories(example-collector PUBLIC
   ${SPDLOG_INCLUDE_DIR}
 )
 
-target_link_libraries(example-collector
+target_link_libraries(roq-samples-collector
   ${CMAKE_THREAD_LIBS_INIT}
   ${ROQ_LIBS}
   ${CROSSGUID_LIBS}

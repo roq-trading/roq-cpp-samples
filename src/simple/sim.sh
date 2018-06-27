@@ -7,6 +7,6 @@ else
 	PREFIX=
 fi
 
-$PREFIX ./example-simple \
+$PREFIX ./roq-samples-simple \
 	--config-file simple.conf \
 	--simulation-file ./USTP_Multi_20180223.csv $@
