@@ -12,6 +12,10 @@ Strategy::Strategy(
     : common::BaseStrategy(dispatcher, gateway, config.config) {
 }
 
+void Strategy::update(std::chrono::system_clock::time_point now) {
+  // the timer callback is useful for e.g. unwinding positions
+}
+
 void Strategy::update(const common::MarketData& market_data) {
 }
 

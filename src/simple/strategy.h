@@ -21,6 +21,7 @@ class Strategy final : public common::BaseStrategy {
       const Config& config);
 
  protected:
+  void update(const std::chrono::system_clock::time_point now) override;
   void update(const common::MarketData& market_data) override;
 
  private:

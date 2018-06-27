@@ -39,6 +39,10 @@ Strategy::Strategy(
       _quantity(config.quantity) {
 }
 
+void Strategy::update(std::chrono::system_clock::time_point now) {
+  // the timer callback is useful for e.g. unwinding positions
+}
+
 void Strategy::update(const common::MarketData& market_data) {
   const auto& best = market_data.depth[0];
   // Is it a proper two-sided market?

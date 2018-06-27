@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include <chrono>
 #include <string>
 #include <unordered_map>
 #include <unordered_set>
@@ -31,6 +32,7 @@ class BaseStrategy : public roq::Strategy {
   bool is_ready() const;
 
  protected:
+  virtual void update(std::chrono::system_clock::time_point now) = 0;
   virtual void update(const MarketData&) = 0;
 
  private:

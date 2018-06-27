@@ -142,6 +142,8 @@ BaseStrategy::BaseStrategy(
 void BaseStrategy::on(const roq::TimerEvent& event) {
   for (auto& account : _accounts)
     account->on(event);
+  auto now = std::chrono::system_clock::now();
+  update(now);
 }
 
 // batch

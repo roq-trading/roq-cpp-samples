@@ -47,6 +47,7 @@ class BenchmarkStrategy final :
   }
 
  protected:
+  void update(std::chrono::system_clock::time_point now) override {}
   void update(const examples::common::MarketData& market_data) override {}
 };
 }  // namespace
