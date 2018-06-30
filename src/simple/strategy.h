@@ -39,11 +39,16 @@ class Strategy final : public common::BaseStrategy {
       double quantity,
       double price);
 
+  void on(const roq::OrderUpdateEvent& event) override;
+  void on(const roq::TradeUpdateEvent& event) override;
+  void on(const roq::TimerEvent&) override;
+
  private:
   // Configuration.
   const bool _weighted;
   const double _threshold;
   const double _quantity;
+  std::vector<SchedulerTimer> _timers;
   // State management.
   double _previous = std::numeric_limits<double>::quiet_NaN();
 };

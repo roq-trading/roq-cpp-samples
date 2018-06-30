@@ -17,6 +17,8 @@ namespace {
 // Constants
 const char *PREFIX_SIGNAL = "S";
 const char *PREFIX_CREATE_ORDER = "O";
+const char *PREFIX_UPDATE_ORDER = "U";
+const char *PREFIX_UPDATE_TRADE = "T";
 const char *DELIMITER = ",";
 const char *QUOTE = "\"";
 // Compute sign (stack overflow: 1903954)
@@ -36,7 +38,8 @@ Strategy::Strategy(
           config.config),
       _weighted(config.weighted),
       _threshold(config.threshold),
-      _quantity(config.quantity) {
+      _quantity(config.quantity),
+      _timers(config.timers) {
 }
 
 void Strategy::update(std::chrono::system_clock::time_point now) {
@@ -79,10 +82,10 @@ void Strategy::update(const common::MarketData& market_data) {
               roq::Side::Sell,
               _quantity,
               best.bid_price);
-        if (FLAGS_real_trading)
-          at(0).sell_ioc(_quantity, best.bid_price);
-        else
-          LOG(WARNING) << "Trading is *not* enabled (use --real-trading)";
+        // if (FLAGS_real_trading)
+        at(0).sell_ioc(_quantity, best.bid_price);
+        // else
+        //  LOG(WARNING) << "Trading is *not* enabled (use --real-trading)";
         break;
       case -1:
         if (FLAGS_write_csv)
@@ -91,10 +94,10 @@ void Strategy::update(const common::MarketData& market_data) {
               roq::Side::Buy,
               _quantity,
               best.ask_price);
-        if (FLAGS_real_trading)
-          at(0).buy_ioc(_quantity, best.ask_price);
-        else
-          LOG(WARNING) << "Trading is *not* enabled (use --real-trading)";
+        // if (FLAGS_real_trading)
+        at(0).buy_ioc(_quantity, best.ask_price);
+        // else
+        //  LOG(WARNING) << "Trading is *not* enabled (use --real-trading)";
         break;
     }
   } catch (roq::Exception& e) {
@@ -174,6 +177,43 @@ void Strategy::write_order(
     price << DELIMITER <<
     std::endl;
 }
+
+void Strategy::on(const roq::OrderUpdateEvent& event) {
+  std::cout <<
+   PREFIX_UPDATE_ORDER << DELIMITER <<
+   event.order_update.order_status << DELIMITER <<
+   event.order_update.symbol << DELIMITER <<
+   event.order_update.side << DELIMITER <<
+   event.order_update.traded_quantity << DELIMITER <<
+   event.order_update.remaining_quantity <<
+   std::endl;
+}
+
+void Strategy::on(const roq::TradeUpdateEvent& event) {
+  std::cout <<
+   PREFIX_UPDATE_TRADE << DELIMITER <<
+   event.trade_update.symbol << DELIMITER <<
+   event.trade_update.side << DELIMITER <<
+   event.trade_update.quantity << DELIMITER <<
+   event.trade_update.price <<
+   std::endl;
+   // Debug in sim mode
+   // on(roq::TimerEvent{});
+}
+
+void Strategy::on(const roq::TimerEvent&) {
+  std::cout << "Timer event" << std::endl;
+  const auto now = std::chrono::system_clock::now();
+
+  for (auto& timer : _timers) {
+    if (timer.enabled && timer.time <= now) {
+      // Execute it!
+      std::cout << "Executing" << timer.event << ", " << timer.arguments << std::endl;
+      // set enable is faster than erase.
+      timer.enabled = false;
+    }
+  }
+};
 
 }  // namespace simple
 }  // namespace examples

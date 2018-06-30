@@ -3,13 +3,14 @@
 #include "simple/config_reader.h"
 
 #include <ucl++.h>
-
+#include <cctz/time_zone.h>
 #include <roq/logging.h>
 
 #include <fstream>
 #include <limits>
 #include <map>
 #include <utility>
+#include <chrono>
 
 #include "common/config_variables.h"
 
@@ -72,6 +73,34 @@ static common::Config create_base_config(const ucl::Ucl& setting) {
         create_base_instrument(setting.at(i)));
   return result;
 }
+// Create timers config
+static std::vector<SchedulerTimer> create_timers_config(const ucl::Ucl& setting) {
+  std::vector<SchedulerTimer> timers;
+  LOG_IF(FATAL, setting.type() != UCL_ARRAY) << "Timers must be an array";
+
+  cctz::time_zone sh;
+  cctz::load_time_zone("Asia/Shanghai", &sh);
+
+  const auto now = std::chrono::system_clock::now();
+  const auto today = cctz::format("%Y-%m-%d", now, sh);
+
+  for (auto i = 0; i < setting.size(); ++i) {
+    std::chrono::system_clock::time_point tp;
+    auto timer_setting = setting.at(i);
+
+    std::string time = timer_setting.lookup("time").string_value();
+    const bool ok = cctz::parse("%Y-%m-%d %H:%M:%S", today + " " + time, sh, &tp);
+    LOG_IF(FATAL, !ok) << "Failed parsing time " << time;
+    auto timer = SchedulerTimer {
+      .event = timer_setting.lookup("event").string_value(),
+      .time = tp,
+      .arguments = timer_setting.lookup("arguments").int_value(),
+      .enabled = true
+    };
+    timers.emplace_back(std::move(timer));
+  }
+  return timers;
+}
 // Create config object from parsed config file.
 static Config create_config(const ucl::Ucl& setting) {
   Config result {
@@ -79,6 +108,7 @@ static Config create_config(const ucl::Ucl& setting) {
     .weighted  = setting.lookup("weighted").bool_value(),
     .threshold = setting.lookup("threshold").number_value(),
     .quantity  = static_cast<double>(setting.lookup("quantity").int_value()),
+    .timers =  create_timers_config(setting.lookup("scheduler")),
   };
   LOG(INFO) << "config=" << result;
   return result;
