@@ -5,6 +5,7 @@
 #include <roq/simulation.h>
 
 #include <string>
+#include <vector>
 
 namespace examples {
 namespace utilities {
@@ -26,7 +27,7 @@ class Matcher final : public roq::simulation::Matcher {
   void on(const roq::CancelOrder& cancel_order) override;
 
  private:
-   OrderBook _order_book;
+  OrderBook _order_book;
 };
 
 }  // namespace utilities

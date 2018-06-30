@@ -6,11 +6,12 @@
 #include <cctz/time_zone.h>
 #include <roq/logging.h>
 
+#include <chrono>
 #include <fstream>
 #include <limits>
 #include <map>
 #include <utility>
-#include <chrono>
+#include <vector>
 
 #include "common/config_variables.h"
 
@@ -94,7 +95,8 @@ static std::vector<SchedulerTimer> create_timers_config(const ucl::Ucl& setting)
     auto timer = SchedulerTimer {
       .event = timer_setting.lookup("event").string_value(),
       .time = tp,
-      .arguments = timer_setting.lookup("arguments").int_value(),
+      .arguments = static_cast<int>(
+          timer_setting.lookup("arguments").int_value()),
       .enabled = true
     };
     timers.emplace_back(std::move(timer));

@@ -191,14 +191,14 @@ void Strategy::on(const roq::OrderUpdateEvent& event) {
 
 void Strategy::on(const roq::TradeUpdateEvent& event) {
   std::cout <<
-   PREFIX_UPDATE_TRADE << DELIMITER <<
-   event.trade_update.symbol << DELIMITER <<
-   event.trade_update.side << DELIMITER <<
-   event.trade_update.quantity << DELIMITER <<
-   event.trade_update.price <<
-   std::endl;
-   // Debug in sim mode
-   // on(roq::TimerEvent{});
+    PREFIX_UPDATE_TRADE << DELIMITER <<
+    event.trade_update.symbol << DELIMITER <<
+    event.trade_update.side << DELIMITER <<
+    event.trade_update.quantity << DELIMITER <<
+    event.trade_update.price <<
+    std::endl;
+  // Debug in sim mode
+  // on(roq::TimerEvent{});
 }
 
 void Strategy::on(const roq::TimerEvent&) {
@@ -213,7 +213,7 @@ void Strategy::on(const roq::TimerEvent&) {
       timer.enabled = false;
     }
   }
-};
+}
 
 }  // namespace simple
 }  // namespace examples

@@ -5,6 +5,7 @@
 #include <limits>
 #include <string>
 #include <tuple>
+#include <vector>
 
 #include "simple/config.h"
 
