@@ -38,7 +38,8 @@ Strategy::Strategy(
           config.config),
       _weighted(config.weighted),
       _threshold(config.threshold),
-      _quantity(config.quantity) {
+      _quantity(config.quantity),
+      _timers(config.timers) {
 }
 
 void Strategy::update(const common::MarketData& market_data) {
@@ -192,8 +193,23 @@ void Strategy::on(const roq::TradeUpdateEvent& event) {
    event.trade_update.quantity << DELIMITER <<
    event.trade_update.price <<
    std::endl;
-
+   // Debug in sim mode
+   // on(roq::TimerEvent{});
 }
+
+void Strategy::on(const roq::TimerEvent&) {
+  std::cout << "Timer event" << std::endl;
+  const auto now = std::chrono::system_clock::now();
+
+  for (auto& timer : _timers) {
+    if (timer.enabled && timer.time <= now) {
+      // Execute it!
+      std::cout << "Executing" << timer.event << ", " << timer.arguments << std::endl;
+      // set enable is faster than erase.
+      timer.enabled = false;
+    }
+  }
+};
 
 }  // namespace simple
 }  // namespace examples
