@@ -1,5 +1,5 @@
 AC_INIT([roq-samples],
-        [0.1.7],
+        [0.1.8],
         [thraneh@gmail.com],
         [roq-samples])
 
