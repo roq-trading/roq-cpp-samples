@@ -5,6 +5,7 @@
 #include <roq/simulation.h>
 
 #include <string>
+#include <unordered_map>
 #include <vector>
 
 namespace examples {
@@ -28,6 +29,18 @@ class Matcher final : public roq::simulation::Matcher {
 
  private:
   OrderBook _order_book;
+  // TODO(thraneh): drop this work-around when moving to C++17
+  // SO18837857
+  struct EnumHash {
+    template <typename T>
+    std::size_t operator()(T t) const {
+      return static_cast<std::size_t>(t);
+    }
+  };
+  std::unordered_map<std::string,                   // account
+    std::unordered_map<std::string,                 // exchange
+      std::unordered_map<std::string,               // symbol
+        std::unordered_map<roq::Side, double, EnumHash> > > > _positions;
 };
 
 }  // namespace utilities

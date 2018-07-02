@@ -34,9 +34,33 @@ void Matcher::on(const roq::TradeSummaryEvent& event) {
 }
 
 void Matcher::on(const roq::CreateOrder& create_order) {
+  auto account = create_order.account;
+  auto order_id = create_order.order_id;
+  switch (create_order.side) {
+    case roq::Side::Buy:
+    case roq::Side::Sell:
+      break;
+    default: {
+      auto create_order_ack = roq::CreateOrderAck {
+        .account = account,
+        .order_id = order_id,
+        .failure = true,
+        .reason = "Invalid side",
+        .order_local_id = 0,
+        .order_external_id = "",
+      };
+      send(create_order_ack);
+      return;
+    }
+  }
+  auto exchange = create_order.exchange;
+  auto symbol = create_order.symbol;
+  auto side = create_order.side;
+  auto quantity = create_order.quantity;
+
   auto create_order_ack = roq::CreateOrderAck {
-    .account = create_order.account,
-    .order_id = create_order.order_id,
+    .account = account,
+    .order_id = order_id,
     .failure = false,
     .reason = "",
     .order_local_id = 0,
@@ -44,45 +68,56 @@ void Matcher::on(const roq::CreateOrder& create_order) {
   };
   send(create_order_ack);
 
-
   auto order_update = roq::OrderUpdate {
-          .account = create_order.account,
-          .order_id = create_order.order_id,
-          .exchange = create_order.exchange,
-          .symbol = create_order.symbol,
-          .order_status = roq::OrderStatus::Completed,
-          .side = create_order.side,
-          .remaining_quantity = 0.0,
-          .traded_quantity = create_order.quantity,
-          .position_effect = create_order.position_effect,
-          .order_template = create_order.order_template,
-          .insert_time = std::chrono::time_point_cast<roq::duration_t>(
-                  std::chrono::system_clock::time_point()),
-          .cancel_time = std::chrono::time_point_cast<roq::duration_t>(
-                  std::chrono::system_clock::time_point()),
-          .order_local_id = 0,
-          .order_external_id = "",
+    .account = account,
+    .order_id = order_id,
+    .exchange = exchange,
+    .symbol = symbol,
+    .order_status = roq::OrderStatus::Completed,
+    .side = side,
+    .remaining_quantity = 0.0,
+    .traded_quantity = quantity,
+    .position_effect = create_order.position_effect,
+    .order_template = create_order.order_template,
+    .insert_time = std::chrono::time_point_cast<roq::duration_t>(
+            std::chrono::system_clock::time_point()),
+    .cancel_time = std::chrono::time_point_cast<roq::duration_t>(
+            std::chrono::system_clock::time_point()),
+    .order_local_id = 0,
+    .order_external_id = "",
   };
 
   auto trade_update = roq::TradeUpdate {
-          .account = create_order.account,
-          .trade_id = create_order.order_id,
-          .order_id = create_order.order_id,
-          .exchange = create_order.exchange,
-          .symbol = create_order.symbol,
-          .side = create_order.side,
-          .quantity = 0.0,
-          .price = create_order.limit_price,
-          .position_effect = create_order.position_effect,
-          .order_template = create_order.order_template,
-          .trade_time = std::chrono::time_point_cast<roq::duration_t>(
-                  std::chrono::system_clock::time_point()),
-          .order_external_id = "",
-          .trade_external_id = "",
+    .account = account,
+    .trade_id = order_id,
+    .order_id = order_id,
+    .exchange = exchange,
+    .symbol = symbol,
+    .side = side,
+    .quantity = 0.0,
+    .price = create_order.limit_price,
+    .position_effect = create_order.position_effect,
+    .order_template = create_order.order_template,
+    .trade_time = std::chrono::time_point_cast<roq::duration_t>(
+            std::chrono::system_clock::time_point()),
+    .order_external_id = "",
+    .trade_external_id = "",
+  };
+
+  auto& position = _positions[account][exchange][symbol][side];
+
+  auto position_update = roq::PositionUpdate {
+      .account = account,
+      .exchange = exchange,
+      .symbol = symbol,
+      .side = side,
+      .position = position,
+      .yesterday = 0.0,
+      .last_order_local_id = order_id,
+      .last_trade_id = order_id,
   };
 
   const InstrumentOrderBook& order_book = _order_book[std::string(create_order.symbol)];
-  double quantity = create_order.quantity;
   double price = create_order.limit_price;
 
   if (create_order.side == roq::Side::Buy) {
@@ -99,6 +134,10 @@ void Matcher::on(const roq::CreateOrder& create_order) {
 
           trade_update.quantity = quantity;
           send(trade_update);
+
+          position += trade_update.quantity;
+          position_update.position = position;
+          send(position_update);
           break;
         } else {
           // layer does not have enough quantity
@@ -109,6 +148,10 @@ void Matcher::on(const roq::CreateOrder& create_order) {
 
           trade_update.quantity = layer.ask_quantity;
           send(trade_update);
+
+          position += trade_update.quantity;
+          position_update.position = position;
+          send(position_update);
         }
       } else {
         if (i == 0) {
@@ -134,6 +177,10 @@ void Matcher::on(const roq::CreateOrder& create_order) {
 
           trade_update.quantity = quantity;
           send(trade_update);
+
+          position += trade_update.quantity;
+          position_update.position = position;
+          send(position_update);
           break;
         } else {
           // layer does not have enough quantity
@@ -144,6 +191,10 @@ void Matcher::on(const roq::CreateOrder& create_order) {
 
           trade_update.quantity = layer.bid_quantity;
           send(trade_update);
+
+          position += trade_update.quantity;
+          position_update.position = position;
+          send(position_update);
         }
       } else {
         if (i == 0) {
