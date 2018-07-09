@@ -62,6 +62,7 @@ static std::vector<std::shared_ptr<Instrument> > create_instruments(
             instrument.symbol,
             instrument.tick_size,
             instrument.multiplier,
+            instrument.net_limit,
             std::move(positions)));
   }
   return result;

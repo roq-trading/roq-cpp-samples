@@ -8,6 +8,7 @@
 #include "common/account.h"
 
 #define PREFIX "[" << _symbol << "] "
+#define TOLERANCE 1.0e-8
 
 namespace examples {
 namespace common {
@@ -18,10 +19,12 @@ Instrument::Instrument(
     const std::string& symbol,
     double tick_size,
     double multiplier,
+    double net_limit,
     std::vector<std::shared_ptr<Position> >&& positions)
     : _index(index),
       _exchange(exchange),
       _symbol(symbol),
+      _net_limit(net_limit),
       _market_data {
         .index = _index,
         .exchange = _exchange.c_str(),
@@ -106,34 +109,39 @@ void Instrument::create_ioc(
     double quantity,
     double price) {
   // FIXME(thraneh): this can be done a lot more efficiently...
-  // first close anything left open from yesterday
-  for (auto& position : _positions) {
-    auto position_effect = position->get_effect(side, quantity);
-    if (position_effect == roq::PositionEffect::Close) {
-      position->get_account().create_order(
-          _exchange,
-          _symbol,
-          side,
-          quantity,
-          price,
-          roq::TimeInForce::IOC,
-          position_effect);
-      return;
+  // first check net limit
+  auto net = get_position();
+  auto delta = (side == roq::Side::Buy ? 1.0 : -1.0) * quantity;
+  if (std::fabs(net + delta) <= (_net_limit + TOLERANCE)) {
+    // then close anything left open from yesterday
+    for (auto& position : _positions) {
+      auto position_effect = position->get_effect(side, quantity);
+      if (position_effect == roq::PositionEffect::Close) {
+        position->get_account().create_order(
+            _exchange,
+            _symbol,
+            side,
+            quantity,
+            price,
+            roq::TimeInForce::IOC,
+            position_effect);
+        return;
+      }
     }
-  }
-  // then open until position limit is hit
-  for (auto& position : _positions) {
-    auto position_effect = position->get_effect(side, quantity);
-    if (position_effect == roq::PositionEffect::Open) {
-      position->get_account().create_order(
-          _exchange,
-          _symbol,
-          side,
-          quantity,
-          price,
-          roq::TimeInForce::IOC,
-          position_effect);
-      return;
+    // finally open until position limit is hit
+    for (auto& position : _positions) {
+      auto position_effect = position->get_effect(side, quantity);
+      if (position_effect == roq::PositionEffect::Open) {
+        position->get_account().create_order(
+            _exchange,
+            _symbol,
+            side,
+            quantity,
+            price,
+            roq::TimeInForce::IOC,
+            position_effect);
+        return;
+      }
     }
   }
   LOG(WARNING) << "Unable to trade. "

@@ -62,6 +62,7 @@ static common::Config::Instrument create_base_instrument(
     .symbol     = setting.lookup("symbol").string_value(),
     .tick_size  = setting.lookup("tick_size").number_value(),
     .multiplier = setting.lookup("multiplier").number_value(),
+    .net_limit  = setting.lookup("net_limit").number_value(),
     .accounts   = create_accounts(setting.lookup("accounts")),
   };
 }

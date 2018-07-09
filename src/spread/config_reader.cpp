@@ -25,6 +25,7 @@ const common::Config CONFIG = {
       .symbol = "T1806",
       .tick_size = 0.01,
       .multiplier = 1.0,
+      .net_limit = 10,
       .accounts = {
         { "A1", { 10.0, 10.0, NaN, NAN } },
       },
@@ -34,6 +35,7 @@ const common::Config CONFIG = {
       .symbol = "TF1806",
       .tick_size = 0.01,
       .multiplier = 1.0,
+      .net_limit = 10,
       .accounts = {
         { "A1", { 20.0, 20.0, NaN, NaN } },
         { "B2", { 20.0, 20.0, NaN, NaN } },

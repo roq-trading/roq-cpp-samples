@@ -17,7 +17,8 @@ struct Config {
     std::string symbol;
     double tick_size;  // optional
     double multiplier;  // optional
-    typedef std::pair<double, double> position_t;
+    //typedef std::pair<double, double> position_t;
+    double net_limit;
     struct Account final {
       double long_limit;
       double short_limit;

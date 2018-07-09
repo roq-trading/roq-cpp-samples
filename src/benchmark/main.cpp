@@ -173,6 +173,7 @@ class BenchmarkStrategyFixture : public ::benchmark::Fixture {
         .symbol = _symbol.c_str(),
         .tick_size = 0.1,
         .multiplier = 100.0,
+        .net_limit = 5,
         .accounts = {
           {
             _account.c_str(),
