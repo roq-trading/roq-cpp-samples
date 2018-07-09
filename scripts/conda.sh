@@ -11,8 +11,7 @@ if [ "$1" = "install" ]; then
 		cmake \
 		autoconf automake libtool \
 		git \
-		roq-api \
-		roq-oss-rapidjson
+		roq-api
 fi
 
 export LDFLAGS="$LDFLAGS -L$CONDA_PREFIX/lib"

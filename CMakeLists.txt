@@ -28,4 +28,10 @@ find_package(Spdlog REQUIRED)
 find_package(Ucl REQUIRED)
 find_package(Roq REQUIRED)
 
+option(BUILD_BENCHMARK "Enable benchmark" OFF)
+
+if(BUILD_BENCHMARK)
+find_package(Benchmark REQUIRED)
+endif(BUILD_BENCHMARK)
+
 add_subdirectory(src)
