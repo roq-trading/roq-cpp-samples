@@ -42,7 +42,7 @@ ROQ_CHECK_LIBUCL
 
 PKG_CHECK_MODULES([ROQ], [roq])
 
-# ROQ_CHECK_GTEST([third_party/googletest])
+ROQ_CHECK_GTEST([third_party/googletest])
 
 AC_ARG_ENABLE([benchmark],
 	      AS_HELP_STRING([--enable-benchmark], [Enable benchmark]),
