@@ -112,38 +112,46 @@ void Instrument::create_ioc(
   // first check net limit
   auto net = get_position();
   auto delta = (side == roq::Side::Buy ? 1.0 : -1.0) * quantity;
-  if (std::fabs(net + delta) <= (_net_limit + TOLERANCE)) {
-    // then close anything left open from yesterday
-    for (auto& position : _positions) {
-      auto position_effect = position->get_effect(side, quantity);
-      if (position_effect == roq::PositionEffect::Close) {
-        position->get_account().create_order(
-            _exchange,
-            _symbol,
-            side,
-            quantity,
-            price,
-            roq::TimeInForce::IOC,
-            position_effect);
-        return;
-      }
-    }
-    // finally open until position limit is hit
-    for (auto& position : _positions) {
-      auto position_effect = position->get_effect(side, quantity);
-      if (position_effect == roq::PositionEffect::Open) {
-        position->get_account().create_order(
-            _exchange,
-            _symbol,
-            side,
-            quantity,
-            price,
-            roq::TimeInForce::IOC,
-            position_effect);
-        return;
-      }
+  if (std::fabs(net + delta) > (_net_limit + TOLERANCE)) {
+    VLOG(1) << "Unable to trade. "
+      "Net position limits have been exhausted {"
+      "side=" << side << ", "
+      "quantity=" << quantity << ", "
+      "price=" << price <<
+      "}";
+    return;
+  }
+  // then close anything left open from yesterday
+  for (auto& position : _positions) {
+    auto position_effect = position->get_effect(side, quantity);
+    if (position_effect == roq::PositionEffect::Close) {
+      position->get_account().create_order(
+          _exchange,
+          _symbol,
+          side,
+          quantity,
+          price,
+          roq::TimeInForce::IOC,
+          position_effect);
+      return;
     }
   }
+  // finally open until position limit is hit
+  for (auto& position : _positions) {
+    auto position_effect = position->get_effect(side, quantity);
+    if (position_effect == roq::PositionEffect::Open) {
+      position->get_account().create_order(
+          _exchange,
+          _symbol,
+          side,
+          quantity,
+          price,
+          roq::TimeInForce::IOC,
+          position_effect);
+      return;
+    }
+  }
+  // warn in case account long/short limit is being tested and fails
   LOG(WARNING) << "Unable to trade. "
     "All position limits have been exhausted {"
     "side=" << side << ", "
