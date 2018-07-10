@@ -202,13 +202,10 @@ void Strategy::on(const roq::TradeUpdateEvent& event) {
 }
 
 void Strategy::on(const roq::TimerEvent&) {
-  std::cout << "Timer event" << std::endl;
   const auto now = std::chrono::system_clock::now();
 
   for (auto& timer : _timers) {
     if (timer.enabled && timer.time <= now) {
-      // Execute it!
-      std::cout << "Executing" << timer.event << ", " << timer.arguments << std::endl;
       // set enable is faster than erase.
       timer.enabled = false;
     }
