@@ -21,6 +21,7 @@ class Generator final : public roq::simulation::Generator {
   void dispatch(roq::simulation::Generator::Dispatcher& dispatcher) override;
 
  private:
+  const char *_time_format;
   CsvReader _csv_reader;
   std::chrono::system_clock::time_point _receive_time;
   uint64_t _message_id = 0;

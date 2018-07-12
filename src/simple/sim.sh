@@ -9,4 +9,4 @@ fi
 
 $PREFIX ./roq-samples-simple \
 	--config-file simple.conf \
-	--simulation-file ./USTP_Multi_20180223.csv $@
+	--simulation-file ./femasapi_2018-07-11.csv $@

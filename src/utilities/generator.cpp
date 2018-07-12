@@ -5,20 +5,29 @@
 #include <roq/logging.h>
 #include <roq/stream.h>
 
+#include <gflags/gflags.h>
+
 #include <limits>
 
 namespace examples {
 namespace utilities {
 
+DEFINE_bool(new_time_format, false, "Use new time format?");
+
 const size_t MAX_COLUMNS = 40;
-const char *TIME_FORMAT_FILE = "%Y%m%d %H:%M:%S";
+const char *TIME_FORMAT_FILE_OLD = "%Y%m%d %H:%M:%S";
+const char *TIME_FORMAT_FILE_NEW = "%Y-%m-%dT%H:%M:%S";
 
 const char *EXCHANGE = "CFFEX";
 const uint32_t L1_TOPIC_ID = 100;  // CFFEX L1
 const uint32_t L2_TOPIC_ID = 110;  // CFFEX L2
 
 Generator::Generator(const std::string& path)
-    : _csv_reader(path, MAX_COLUMNS) {}
+    : _time_format(
+        FLAGS_new_time_format ? TIME_FORMAT_FILE_NEW
+                              : TIME_FORMAT_FILE_OLD),
+      _csv_reader(path, MAX_COLUMNS) {
+}
 
 Generator::~Generator() {
   LOG(INFO) << "Processed " << _message_id << " message(s)";
@@ -28,7 +37,7 @@ std::pair<bool, std::chrono::system_clock::time_point> Generator::fetch() {
   if (!_csv_reader.fetch())
     return std::make_pair(false, std::chrono::system_clock::time_point());
   ++_message_id;
-  auto receive_time = _csv_reader.get_time_point(2, TIME_FORMAT_FILE);
+  auto receive_time = _csv_reader.get_time_point(2, _time_format);
   LOG_IF(FATAL, receive_time < _receive_time) << "Incorrect sequencing";
   _receive_time = receive_time;
   return std::make_pair(true, _receive_time);
@@ -37,8 +46,8 @@ std::pair<bool, std::chrono::system_clock::time_point> Generator::fetch() {
 void Generator::dispatch(
     roq::simulation::Generator::Dispatcher& dispatcher) {
   auto symbol = _csv_reader.get_string(0);
-  auto exchange_time = _csv_reader.get_time_point(1, TIME_FORMAT_FILE);
-  auto receive_time = _csv_reader.get_time_point(2, TIME_FORMAT_FILE);
+  auto exchange_time = _csv_reader.get_time_point(1, _time_format);
+  auto receive_time = _csv_reader.get_time_point(2, _time_format);
   auto type = _csv_reader.get_integer(_csv_reader.length() - 1);  // last column is indicator for L1/L2
   switch (type) {
     case 0: return;  // L1 (don't process, for now)
