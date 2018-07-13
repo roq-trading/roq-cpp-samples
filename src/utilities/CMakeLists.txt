@@ -6,6 +6,7 @@ add_library(utilities STATIC
   csv_reader.cpp
   matcher.cpp
   generator.cpp
+  time_schedule.cpp
 )
 
 set_target_properties(utilities PROPERTIES

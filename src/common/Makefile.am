@@ -1,4 +1,6 @@
 lib_LTLIBRARIES = libcommon.la
+libcommon_la_LDFLAGS = \
+	-static
 libcommon_la_CPPFLAGS = \
 	-I$(top_srcdir)/src \
 	$(ROQ_CFLAGS) \

@@ -2,6 +2,7 @@ bin_PROGRAMS = roq-samples-collector
 roq_samples_collector_LDFLAGS = \
 	$(top_builddir)/src/utilities/libutilities.la \
 	$(ROQ_LIBS) \
+	$(CCTZ_LIBS) \
 	$(CROSSGUID_LIBS) \
 	$(FLATBUFFERS_LIBS) \
 	$(GFLAGS_LIBS) \
@@ -11,6 +12,7 @@ roq_samples_collector_LDFLAGS = \
 roq_samples_collector_CPPFLAGS = \
 	-I$(top_srcdir)/src \
 	$(ROQ_CFLAGS) \
+	$(CCTZ_CFLAGS) \
 	$(CROSSGUID_CFLAGS) \
 	$(FLATBUFFERS_CFLAGS) \
 	$(GFLAGS_CFLAGS) \
