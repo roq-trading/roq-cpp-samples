@@ -168,6 +168,28 @@ void BaseStrategy::on(const roq::MarketDataStatusEvent& event) {
     instrument->on(market_data_status);
 }
 
+void BaseStrategy::on(const roq::SessionStatisticsEvent& event) {
+  const auto& session_statistics = event.session_statistics;
+  apply(
+      session_statistics.exchange,
+      session_statistics.symbol,
+      [&](Instrument& instrument) {
+        instrument.on(session_statistics);
+        _market_data_updated.insert(&instrument);
+      });
+}
+
+void BaseStrategy::on(const roq::DailyStatisticsEvent& event) {
+  const auto& daily_statistics = event.daily_statistics;
+  apply(
+      daily_statistics.exchange,
+      daily_statistics.symbol,
+      [&](Instrument& instrument) {
+        instrument.on(daily_statistics);
+        _market_data_updated.insert(&instrument);
+      });
+}
+
 void BaseStrategy::on(const roq::MarketByPriceEvent& event) {
   const auto& market_by_price = event.market_by_price;
   apply(

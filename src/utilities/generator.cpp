@@ -22,6 +22,8 @@ const char *EXCHANGE = "CFFEX";
 const uint32_t L1_TOPIC_ID = 100;  // CFFEX L1
 const uint32_t L2_TOPIC_ID = 110;  // CFFEX L2
 
+const double MISSING = 0.0;
+
 Generator::Generator(const std::string& path)
     : _time_format(
         FLAGS_new_time_format ? TIME_FORMAT_FILE_NEW
@@ -67,6 +69,8 @@ void Generator::dispatch(
     .exchange = EXCHANGE,
     .symbol = symbol.c_str(),
     .depth = {},
+    .total_bid_volume = MISSING,
+    .total_ask_volume = MISSING,
     .exchange_time = exchange_time,
     .channel = L2_TOPIC_ID,
   };
@@ -97,6 +101,8 @@ void Generator::dispatch(
   dispatcher.on(roq::TradeSummaryEvent {
       .message_info = message_info,
       .trade_summary = trade_summary });
+  // TODO(thraneh): SessionStatistics
+  // TODO(thraneh): DailyStatistics
   dispatcher.on(roq::BatchEndEvent { .message_info = message_info });
 }
 

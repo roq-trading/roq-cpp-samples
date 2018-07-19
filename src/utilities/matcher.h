@@ -21,6 +21,8 @@ class Matcher final : public roq::simulation::Matcher {
       const std::string& name);
   void on(const roq::BatchBeginEvent& event) override;
   void on(const roq::BatchEndEvent& event) override;
+  void on(const roq::SessionStatisticsEvent& event) override;
+  void on(const roq::DailyStatisticsEvent& event) override;
   void on(const roq::MarketByPriceEvent& event) override;
   void on(const roq::TradeSummaryEvent& event) override;
   void on(const roq::CreateOrder& create_order) override;

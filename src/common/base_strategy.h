@@ -49,6 +49,9 @@ class BaseStrategy : public roq::Strategy {
   void on(const roq::BatchEndEvent&) override;
   // - market data
   void on(const roq::MarketDataStatusEvent&) override;
+  // - session update
+  void on(const roq::SessionStatisticsEvent&) override;
+  void on(const roq::DailyStatisticsEvent&) override;
   // - market data update
   void on(const roq::MarketByPriceEvent&) override;
   void on(const roq::TradeSummaryEvent&) override;

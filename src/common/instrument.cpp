@@ -57,6 +57,12 @@ void Instrument::on(const roq::MarketDataStatus& market_data_status) {
   }
 }
 
+void Instrument::on(const roq::SessionStatistics& session_statistics) {
+}
+
+void Instrument::on(const roq::DailyStatistics& daily_statistics) {
+}
+
 void Instrument::on(const roq::MarketByPrice& market_by_price) {
   std::memcpy(
       _market_data.depth,

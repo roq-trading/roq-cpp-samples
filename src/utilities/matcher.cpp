@@ -24,6 +24,12 @@ void Matcher::on(const roq::BatchBeginEvent& event) {
 void Matcher::on(const roq::BatchEndEvent& event) {
 }
 
+void Matcher::on(const roq::SessionStatisticsEvent& event) {
+}
+
+void Matcher::on(const roq::DailyStatisticsEvent& event) {
+}
+
 void Matcher::on(const roq::MarketByPriceEvent& event) {
   const roq::MarketByPrice& market_data = event.market_by_price;
   _order_book[std::string(market_data.symbol)] =

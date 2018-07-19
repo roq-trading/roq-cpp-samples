@@ -40,6 +40,8 @@ class Instrument final {
   const MarketData& get_market_data() const { return _market_data; }
 
   void on(const roq::MarketDataStatus&);
+  void on(const roq::SessionStatistics&);
+  void on(const roq::DailyStatistics&);
   void on(const roq::MarketByPrice&);
   void on(const roq::TradeSummary&);
 

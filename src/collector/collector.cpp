@@ -33,6 +33,14 @@ void Collector::on(const roq::BatchEndEvent&) {
   _dirty.clear();
 }
 
+void Collector::on(const roq::SessionStatisticsEvent& event) {
+  get(event.session_statistics.symbol).update(event);
+}
+
+void Collector::on(const roq::DailyStatisticsEvent& event) {
+  get(event.daily_statistics.symbol).update(event);
+}
+
 void Collector::on(const roq::MarketByPriceEvent& event) {
   get(event.market_by_price.symbol).update(event);
 }
@@ -48,6 +56,27 @@ Collector::State& Collector::get(const std::string& symbol) {
   auto& result = (*iter).second;
   _dirty.insert(&result);
   return result;
+}
+
+void Collector::State::update(
+    const roq::SessionStatisticsEvent& event) {
+  exchange_time = event.session_statistics.exchange_time;
+  receive_time = event.message_info.client_receive_time;
+  pre_open_interest = event.session_statistics.pre_open_interest;
+  pre_settlement_price = event.session_statistics.pre_settlement_price;
+  pre_close_price = event.session_statistics.pre_close_price;
+  highest_traded_price = event.session_statistics.highest_traded_price;
+  lowest_traded_price = event.session_statistics.lowest_traded_price;
+  upper_limit_price = event.session_statistics.upper_limit_price;
+  lower_limit_price = event.session_statistics.lower_limit_price;
+}
+
+void Collector::State::update(
+    const roq::DailyStatisticsEvent& event) {
+  exchange_time = event.daily_statistics.exchange_time;
+  receive_time = event.message_info.client_receive_time;
+  open_interest = event.daily_statistics.open_interest;
+  open_price = event.daily_statistics.open_price;
 }
 
 void Collector::State::update(
@@ -96,17 +125,17 @@ std::ostream& operator<<(std::ostream& stream, Collector::State& state) {
     state.depth[4].ask_quantity << DELIMITER <<
     state.depth[4].bid_price << DELIMITER <<
     state.depth[4].bid_quantity << DELIMITER <<
-    MISSING << DELIMITER <<  // high price
+    state.highest_traded_price << DELIMITER <<
     state.price << DELIMITER <<
-    MISSING << DELIMITER <<  // low price
-    MISSING << DELIMITER <<  // lower limit price
-    MISSING << DELIMITER <<  // upper limit price
-    MISSING << DELIMITER <<  // low price
-    MISSING << DELIMITER <<  // open interest
-    MISSING << DELIMITER <<  // open price
-    MISSING << DELIMITER <<  // pre-close price
-    MISSING << DELIMITER <<  // pre-open price
-    MISSING << DELIMITER <<  // pre-settlement price
+    state.lowest_traded_price << DELIMITER <<
+    state.lower_limit_price << DELIMITER <<
+    state.upper_limit_price << DELIMITER <<
+    state.lowest_traded_price << DELIMITER <<  // TODO(thraneh): 2x ???
+    state.open_interest << DELIMITER <<
+    state.open_price << DELIMITER <<
+    state.pre_close_price << DELIMITER <<
+    state.pre_open_interest << DELIMITER <<
+    state.pre_settlement_price << DELIMITER <<
     state.turnover << DELIMITER <<
     state.volume << DELIMITER <<
     UPDATE_NAME << DELIMITER <<

@@ -21,6 +21,8 @@ class Collector final : public roq::Strategy {
   struct State final {
     explicit State(const std::string& symbol)
         : symbol(symbol) {}
+    void update(const roq::SessionStatisticsEvent&);
+    void update(const roq::DailyStatisticsEvent&);
     void update(const roq::MarketByPriceEvent&);
     void update(const roq::TradeSummaryEvent&);
     std::string symbol;
@@ -30,6 +32,15 @@ class Collector final : public roq::Strategy {
     double price = 0.0;
     double volume = 0.0;
     double turnover = 0.0;
+    double pre_open_interest = 0.0;
+    double pre_settlement_price = 0.0;
+    double pre_close_price = 0.0;
+    double highest_traded_price = 0.0;
+    double lowest_traded_price = 0.0;
+    double upper_limit_price = 0.0;
+    double lower_limit_price = 0.0;
+    double open_interest = 0.0;
+    double open_price = 0.0;
   };
 
  protected:
@@ -44,6 +55,8 @@ class Collector final : public roq::Strategy {
   void on(const roq::DownloadEndEvent&) override {}
   void on(const roq::ReferenceDataEvent&) override {}
   void on(const roq::MarketStatusEvent&) override {}
+  void on(const roq::SessionStatisticsEvent&) override;
+  void on(const roq::DailyStatisticsEvent&) override;
   void on(const roq::MarketByPriceEvent&) override;
   void on(const roq::TradeSummaryEvent&) override;
   void on(const roq::CreateOrderAckEvent&) override {}
