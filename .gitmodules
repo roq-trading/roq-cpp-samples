@@ -5,6 +5,8 @@
 [submodule "roq-cmake"]
 	path = cmake
 	url = https://github.com/roq-trading/roq-cmake
+	ignore = dirty
 [submodule "third_party/googletest"]
 	path = third_party/googletest
 	url = https://github.com/google/googletest
+	ignore = dirty
