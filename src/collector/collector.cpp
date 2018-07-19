@@ -127,10 +127,9 @@ std::ostream& operator<<(std::ostream& stream, Collector::State& state) {
     state.depth[4].bid_quantity << DELIMITER <<
     state.highest_traded_price << DELIMITER <<
     state.price << DELIMITER <<
-    state.lowest_traded_price << DELIMITER <<
     state.lower_limit_price << DELIMITER <<
     state.upper_limit_price << DELIMITER <<
-    state.lowest_traded_price << DELIMITER <<  // TODO(thraneh): 2x ???
+    state.lowest_traded_price << DELIMITER <<
     state.open_interest << DELIMITER <<
     state.open_price << DELIMITER <<
     state.pre_close_price << DELIMITER <<
