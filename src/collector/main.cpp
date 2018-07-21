@@ -2,8 +2,8 @@
 
 #include <gflags/gflags.h>
 
-#include <roq/client.h>
 #include <roq/simulation.h>
+#include <roq/strategy.h>
 #include <roq/logging.h>
 
 #include "collector/collector.h"
@@ -54,9 +54,9 @@ int main(int argc, char *argv[]) {
       std::exit(EXIT_FAILURE);
     }
 
-    auto gateways = roq::client::Gateways::create(FLAGS_gateways);
+    auto gateways = roq::strategy::Gateways::create(FLAGS_gateways);
 
-    roq::client::Controller<Collector>(
+    roq::strategy::Controller<Collector>(
         std::move(gateways)).create_and_dispatch();
   }
 

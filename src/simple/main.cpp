@@ -2,8 +2,8 @@
 
 #include <gflags/gflags.h>
 
-#include <roq/client.h>
 #include <roq/logging.h>
+#include <roq/strategy.h>
 #include <roq/stream.h>
 
 #include "simple/config_reader.h"
@@ -85,14 +85,14 @@ int main(int argc, char *argv[]) {
     }
 
     // Parse gateway connection-details.
-    auto gateways = roq::client::Gateways::create(FLAGS_gateways);
+    auto gateways = roq::strategy::Gateways::create(FLAGS_gateways);
 
     LOG_IF(FATAL, gateways.size() != 1) << "Expected exactly one gateway";
 
     // Strategy must know the name of the gateway to send requests to.
     const auto& gateway = (*gateways.begin()).first;
 
-    roq::client::Controller<Strategy>(
+    roq::strategy::Controller<Strategy>(
         std::move(gateways)).create_and_dispatch(
             gateway, config);
   }

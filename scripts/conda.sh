@@ -6,7 +6,7 @@
 
 if [ "$1" = "install" ]; then
 	conda install -y \
-		gcc_linux-64 \
+		gcc_linux-64 gxx_linux-64 \
 		pkgconfig \
 		cmake \
 		autoconf automake libtool \
