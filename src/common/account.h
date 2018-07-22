@@ -18,7 +18,7 @@ namespace common {
 class Account final {
  public:
   explicit Account(
-      roq::Strategy::Dispatcher& dispatcher,
+      roq::Client::Dispatcher& dispatcher,
       const std::string& gateway,
       const std::string& name,
       const Config& config);
@@ -75,7 +75,7 @@ class Account final {
   void operator=(const Account&) = delete;
 
  private:
-  roq::Strategy::Dispatcher& _dispatcher;
+  roq::Client::Dispatcher& _dispatcher;
   const std::string _gateway;
   const std::string _name;
   bool _download = false;

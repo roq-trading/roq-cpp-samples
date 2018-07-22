@@ -16,7 +16,7 @@ namespace common {
 
 namespace {
 static std::vector<std::shared_ptr<Account> > create_accounts(
-    roq::Strategy::Dispatcher& dispatcher,
+    roq::Client::Dispatcher& dispatcher,
     const std::string& gateway,
     const Config& config) {
   std::vector<std::shared_ptr<Account> > result;
@@ -124,7 +124,7 @@ std::ostream& operator<<(
 }
 }  // namespace
 BaseStrategy::BaseStrategy(
-    roq::Strategy::Dispatcher& dispatcher,
+    roq::Client::Dispatcher& dispatcher,
     const std::string& gateway,
     const Config& config)
     : _accounts(create_accounts(dispatcher, gateway, config)),

@@ -52,7 +52,7 @@ create_positions_by_symbol(
 }  // namespace
 
 Account::Account(
-    roq::Strategy::Dispatcher& dispatcher,
+    roq::Client::Dispatcher& dispatcher,
     const std::string& gateway,
     const std::string& name,
     const Config& config)

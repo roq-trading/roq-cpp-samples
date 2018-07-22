@@ -29,7 +29,7 @@ int sign(T value) {
 }  // namespace
 
 Strategy::Strategy(
-    roq::Strategy::Dispatcher& dispatcher,
+    roq::Client::Dispatcher& dispatcher,
     const std::string& gateway,
     const Config& config)
     : common::BaseStrategy(

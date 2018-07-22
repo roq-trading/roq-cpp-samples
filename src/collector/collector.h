@@ -13,9 +13,9 @@
 namespace examples {
 namespace collector {
 
-class Collector final : public roq::Strategy {
+class Collector final : public roq::Client {
  public:
-  explicit Collector(roq::Strategy::Dispatcher& dispatcher)
+  explicit Collector(roq::Client::Dispatcher& dispatcher)
       : _dispatcher(dispatcher) {}
 
   struct State final {
@@ -69,7 +69,7 @@ class Collector final : public roq::Strategy {
   State& get(const std::string& symbol);
 
  private:
-  roq::Strategy::Dispatcher& _dispatcher;
+  roq::Client::Dispatcher& _dispatcher;
   std::unordered_map<std::string, State> _cache;
   std::unordered_set<State*> _dirty;
 };

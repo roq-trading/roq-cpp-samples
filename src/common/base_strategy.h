@@ -15,10 +15,10 @@
 namespace examples {
 namespace common {
 
-class BaseStrategy : public roq::Strategy {
+class BaseStrategy : public roq::Client {
  public:
   explicit BaseStrategy(
-      roq::Strategy::Dispatcher& dispatcher,
+      roq::Client::Dispatcher& dispatcher,
       const std::string& gateway,
       const Config& config);
 

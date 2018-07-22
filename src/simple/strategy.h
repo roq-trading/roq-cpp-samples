@@ -17,7 +17,7 @@ namespace simple {
 class Strategy final : public common::BaseStrategy {
  public:
   Strategy(
-      roq::Strategy::Dispatcher& dispatcher,
+      roq::Client::Dispatcher& dispatcher,
       const std::string& gateway,
       const Config& config);
 

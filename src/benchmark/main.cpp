@@ -16,7 +16,7 @@ class LogManager {
     roq::logging::Logger::shutdown();
   }
 };
-class BenchmarkDispatcher final : public roq::Strategy::Dispatcher {
+class BenchmarkDispatcher final : public roq::Client::Dispatcher {
  public:
   void send(
       const roq::CreateOrder& create_order,
@@ -36,7 +36,7 @@ class BenchmarkStrategy final :
   public examples::common::BaseStrategy {
  public:
   BenchmarkStrategy(
-      roq::Strategy::Dispatcher& dispatcher,
+      roq::Client::Dispatcher& dispatcher,
       const std::string& gateway,
       const examples::common::Config& config)
       : examples::common::BaseStrategy(dispatcher, gateway, config) {
@@ -55,8 +55,8 @@ class BenchmarkStrategy final :
 class BenchmarkStrategyFixture : public ::benchmark::Fixture {
  public:
   void SetUp(const ::benchmark::State&) override {
-    auto& strategy = static_cast<roq::Strategy&>(_strategy);
-    const auto& subscriptions = strategy.get_subscriptions();
+    auto& client = static_cast<roq::Client&>(_client);
+    const auto& subscriptions = client.get_subscriptions();
     // download per gateway ...
     for (const auto& iter : subscriptions) {
       const auto& gateway = iter.first;
@@ -94,7 +94,7 @@ class BenchmarkStrategyFixture : public ::benchmark::Fixture {
       .message_info = message_info,
       .download_begin = download_begin
     };
-    static_cast<roq::Strategy&>(_strategy).on(event);
+    static_cast<roq::Client&>(_client).on(event);
   }
   void download_end_event(
       const std::string& gateway,
@@ -109,7 +109,7 @@ class BenchmarkStrategyFixture : public ::benchmark::Fixture {
       .message_info = message_info,
       .download_end = download_end
     };
-    static_cast<roq::Strategy&>(_strategy).on(event);
+    static_cast<roq::Client&>(_client).on(event);
   }
   void market_data_status(
       const std::string& gateway) {
@@ -123,7 +123,7 @@ class BenchmarkStrategyFixture : public ::benchmark::Fixture {
       .message_info = message_info,
       .market_data_status = market_data_status
     };
-    static_cast<roq::Strategy&>(_strategy).on(event);
+    static_cast<roq::Client&>(_client).on(event);
   }
   void order_manager_status(
       const std::string& gateway,
@@ -139,7 +139,7 @@ class BenchmarkStrategyFixture : public ::benchmark::Fixture {
       .message_info = message_info,
       .order_manager_status = order_manager_status
     };
-    static_cast<roq::Strategy&>(_strategy).on(event);
+    static_cast<roq::Client&>(_client).on(event);
   }
   void market_status(
       const std::string& gateway,
@@ -157,7 +157,7 @@ class BenchmarkStrategyFixture : public ::benchmark::Fixture {
       .message_info = message_info,
       .market_status = market_status
     };
-    static_cast<roq::Strategy&>(_strategy).on(event);
+    static_cast<roq::Client&>(_client).on(event);
   }
 
  protected:
@@ -188,7 +188,7 @@ class BenchmarkStrategyFixture : public ::benchmark::Fixture {
       },
     }
   };
-  BenchmarkStrategy _strategy = {
+  BenchmarkStrategy _client = {
     _dispatcher,
     _gateway,
     _config
@@ -198,7 +198,7 @@ class BenchmarkStrategyFixture : public ::benchmark::Fixture {
 BENCHMARK_DEFINE_F(BenchmarkStrategyFixture, BenchmarkStrategyTest)(
     benchmark::State& state) {
   for (auto _ : state) {
-    _strategy.test_create_order();
+    _client.test_create_order();
   }
 }
 BENCHMARK_REGISTER_F(BenchmarkStrategyFixture, BenchmarkStrategyTest);

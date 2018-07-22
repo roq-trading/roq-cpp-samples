@@ -6,7 +6,7 @@ namespace examples {
 namespace spread {
 
 Strategy::Strategy(
-    roq::Strategy::Dispatcher& dispatcher,
+    roq::Client::Dispatcher& dispatcher,
     const std::string& gateway,
     const Config& config)
     : common::BaseStrategy(dispatcher, gateway, config.config) {
