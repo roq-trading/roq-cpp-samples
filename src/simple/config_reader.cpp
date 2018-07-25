@@ -75,34 +75,13 @@ static common::Config create_base_config(const ucl::Ucl& setting) {
         create_base_instrument(setting.at(i)));
   return result;
 }
-// Create timers config
-static std::vector<SchedulerTimer> create_timers_config(const ucl::Ucl& setting) {
-  std::vector<SchedulerTimer> timers;
-  LOG_IF(FATAL, setting.type() != UCL_ARRAY) << "Timers must be an array";
-
-  cctz::time_zone sh;
-  cctz::load_time_zone("Asia/Shanghai", &sh);
-
-  const auto now = std::chrono::system_clock::now();
-  const auto today = cctz::format("%Y-%m-%d", now, sh);
-
-  for (auto i = 0; i < setting.size(); ++i) {
-    std::chrono::system_clock::time_point tp;
-    auto timer_setting = setting.at(i);
-
-    std::string time = timer_setting.lookup("time").string_value();
-    const bool ok = cctz::parse("%Y-%m-%d %H:%M:%S", today + " " + time, sh, &tp);
-    LOG_IF(FATAL, !ok) << "Failed parsing time " << time;
-    auto timer = SchedulerTimer {
-      .event = timer_setting.lookup("event").string_value(),
-      .time = tp,
-      .arguments = static_cast<int>(
-          timer_setting.lookup("arguments").int_value()),
-      .enabled = true
-    };
-    timers.emplace_back(std::move(timer));
-  }
-  return timers;
+// Create timer schedule.
+static std::vector<std::string> create_schedule(const ucl::Ucl& setting) {
+  std::vector<std::string> result;
+  LOG_IF(FATAL, setting.type() != UCL_ARRAY) << "Schedule must be an array";
+  for (auto i = 0; i < setting.size(); ++i)
+    result.push_back(setting.at(i).string_value());
+  return result;
 }
 // Create config object from parsed config file.
 static Config create_config(const ucl::Ucl& setting) {
@@ -111,7 +90,8 @@ static Config create_config(const ucl::Ucl& setting) {
     .weighted  = setting.lookup("weighted").bool_value(),
     .threshold = setting.lookup("threshold").number_value(),
     .quantity  = static_cast<double>(setting.lookup("quantity").int_value()),
-    .timers =  create_timers_config(setting.lookup("scheduler")),
+    .time_zone = setting.lookup("time_zone").string_value(),
+    .schedule =  create_schedule(setting.lookup("schedule")),
   };
   LOG(INFO) << "config=" << result;
   return result;

@@ -39,7 +39,7 @@ Strategy::Strategy(
       _weighted(config.weighted),
       _threshold(config.threshold),
       _quantity(config.quantity),
-      _timers(config.timers) {
+      _schedule(config.time_zone, config.schedule, "%H:%M:%S") {
 }
 
 void Strategy::update(std::chrono::system_clock::time_point now) {
@@ -82,10 +82,10 @@ void Strategy::update(const common::MarketData& market_data) {
               roq::Side::Sell,
               _quantity,
               best.bid_price);
-        // if (FLAGS_real_trading)
-        at(0).sell_ioc(_quantity, best.bid_price);
-        // else
-        //  LOG(WARNING) << "Trading is *not* enabled (use --real-trading)";
+        if (FLAGS_real_trading)
+          at(0).sell_ioc(_quantity, best.bid_price);
+        else
+          LOG(WARNING) << "Trading is *not* enabled (use --real-trading)";
         break;
       case -1:
         if (FLAGS_write_csv)
@@ -94,10 +94,10 @@ void Strategy::update(const common::MarketData& market_data) {
               roq::Side::Buy,
               _quantity,
               best.ask_price);
-        // if (FLAGS_real_trading)
-        at(0).buy_ioc(_quantity, best.ask_price);
-        // else
-        //  LOG(WARNING) << "Trading is *not* enabled (use --real-trading)";
+        if (FLAGS_real_trading)
+          at(0).buy_ioc(_quantity, best.ask_price);
+        else
+          LOG(WARNING) << "Trading is *not* enabled (use --real-trading)";
         break;
     }
   } catch (roq::Exception& e) {
@@ -197,18 +197,25 @@ void Strategy::on(const roq::TradeUpdateEvent& event) {
     event.trade_update.quantity << DELIMITER <<
     event.trade_update.price <<
     std::endl;
-  // Debug in sim mode
-  // on(roq::TimerEvent{});
 }
 
-void Strategy::on(const roq::TimerEvent&) {
-  const auto now = std::chrono::system_clock::now();
-
-  for (auto& timer : _timers) {
-    if (timer.enabled && timer.time <= now) {
-      // set enable is faster than erase.
-      timer.enabled = false;
-    }
+void Strategy::on(const roq::TimerEvent& event) {
+  // get schedule index
+  auto index = _schedule.get_index(std::chrono::system_clock::now());
+  // convert into enum (to make trading code more readable)
+  mode_t mode = Undefined;
+  if (index > 0)
+    mode = static_cast<mode_t>(((index - 1) % 3) + 1);
+  // on change: update and log
+  if (_mode != mode) {
+    _mode = mode;
+    const char *lookup[] = {
+      "Undefined",
+      "Trading",
+      "Landing",
+      "Flattening"
+    };
+    LOG(INFO) << "Mode=" << lookup[static_cast<size_t>(_mode)];
   }
 }
 

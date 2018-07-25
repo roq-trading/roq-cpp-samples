@@ -12,17 +12,13 @@ std::ostream& operator<<(std::ostream& stream, const Config& value) {
     "config=" << value.config << ", "
     "weighted=" << (value.weighted ? "true" : "false") << ", "
     "threshold=" << value.threshold << ", "
-    "quantity=" << value.quantity;
-
-  stream << "timers = [";
-  for (auto timer : value.timers) {
-    auto t = std::chrono::system_clock::to_time_t(timer.time);
-    stream << "{"
-              "event=" << timer.event << ", "
-              "time=" << std::put_time(std::localtime(&t), "%T") << ", "
-              "arguments=" << timer.arguments << ","
-              "enabled=" << (timer.enabled ? "true" : "false") <<
-              "},";
+    "quantity=" << value.quantity << ", "
+    "time_zone=\"" << value.time_zone << "\", "
+    "schedule=[";
+  auto first = true;
+  for (auto iter : value.schedule) {
+    stream << (first ? "\"" : ", \"") << iter << "\"";
+    first = false;
   }
   return stream << "]";
 }

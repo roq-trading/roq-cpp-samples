@@ -14,19 +14,13 @@
 namespace examples {
 namespace simple {
 
-struct SchedulerTimer final {
-    std::string event;
-    std::chrono::system_clock::time_point time;
-    int arguments;
-    bool enabled;
-};
-
 struct Config final {
   common::Config config;
   bool weighted;
   double threshold;
   double quantity;
-  std::vector<SchedulerTimer> timers;
+  std::string time_zone;
+  std::vector<std::string> schedule;
 };
 
 std::ostream& operator<<(std::ostream& stream, const Config& value);
