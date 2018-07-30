@@ -26,6 +26,8 @@ target_include_directories(roq-samples-simple PUBLIC
 )
 
 target_link_libraries(roq-samples-simple
+  common
+  utilities
   ${CMAKE_THREAD_LIBS_INIT}
   ${ROQ_LIBS}
   ${CCTZ_LIBS}
@@ -36,6 +38,4 @@ target_link_libraries(roq-samples-simple
   ${LIBUNWIND_LIBS}
   ${SPDLOG_LIBS}
   ${UCL_LIBS}
-  common
-  utilities
 )
