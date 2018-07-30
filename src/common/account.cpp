@@ -137,8 +137,11 @@ bool Account::apply(
     const std::string& symbol,
     std::function<void(Position&)> function) {
   auto iter = _positions_by_symbol.find(symbol);
-  if (iter == _positions_by_symbol.end())
+  if (iter == _positions_by_symbol.end()) {
+    LOG(WARNING) << "Got update for unknown "
+      "exchange=\"" << exchange << "\", symbol=\"" << symbol << "\"";
     return false;
+  }
   function(*(*iter).second);
   return true;
 }

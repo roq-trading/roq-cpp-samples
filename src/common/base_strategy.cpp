@@ -229,13 +229,16 @@ void BaseStrategy::on(const roq::DownloadBeginEvent& event) {
 void BaseStrategy::on(const roq::DownloadEndEvent& event) {
   const auto& download_end = event.download_end;
   if (download_end.account && std::strlen(download_end.account)) {
+    LOG(INFO) << "Account download completed:";
     apply(
         download_end.account,
         [&](Account& account) {
             account.on(download_end);
-            LOG(INFO) << "account=" << account; });
+            LOG(INFO) << "Account download completed: "
+              "account=" << account; });
   } else {
-    LOG(INFO) << "Reference data download completed";
+    LOG(INFO) << "Reference data download completed: "
+      "instruments=" << _instruments;
   }
 }
 
@@ -284,7 +287,9 @@ void BaseStrategy::on(const roq::OrderUpdateEvent& event) {
       order_update.account,
       [&](Account& account) {
         account.on(order_update);
-        if (!account.is_downloading()) {
+        if (account.is_downloading()) {
+          VLOG(2) << "account=" << account;
+        } else {
           LOG(INFO) << "account=" << account;
         }
       });

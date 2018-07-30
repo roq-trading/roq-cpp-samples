@@ -145,21 +145,41 @@ void Position::on(const roq::OrderUpdate& order_update) {
   switch (order_update.side) {
     case roq::Side::Buy: {
       if (close) {
-        if (_short_last_order_local_id < order_local_id)
+        if (_short_last_order_local_id < order_local_id) {
           _short_closed += fill_quantity;
+        } else {
+          VLOG(2) << "Repeat order update, "
+            "short_last_order_local_id=" << _short_last_order_local_id << ", "
+            "order_local_id=" << order_local_id;
+        }
       } else {
-        if (_long_last_order_local_id < order_local_id)
+        if (_long_last_order_local_id < order_local_id) {
           _long_opened += fill_quantity;
+        } else {
+          VLOG(2) << "Repeat order update, "
+            "long_last_order_local_id=" << _long_last_order_local_id << ", "
+            "order_local_id=" << order_local_id;
+        }
       }
       break;
     }
     case roq::Side::Sell: {
       if (close) {
-        if (_long_last_order_local_id < order_local_id)
+        if (_long_last_order_local_id < order_local_id) {
           _long_closed += fill_quantity;
+        } else {
+          VLOG(2) << "Repeat order update, "
+            "long_last_order_local_id=" << _long_last_order_local_id << ", "
+            "order_local_id=" << order_local_id;
+        }
       } else {
-        if (_short_last_order_local_id < order_local_id)
+        if (_short_last_order_local_id < order_local_id) {
           _short_opened += fill_quantity;
+        } else {
+          VLOG(2) << "Repeat order update, "
+            "short_last_order_local_id=" << _short_last_order_local_id << ", "
+            "order_local_id=" << order_local_id;
+        }
       }
       break;
     }

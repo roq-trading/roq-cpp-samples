@@ -171,6 +171,7 @@ std::ostream& Instrument::write(std::ostream& stream) const {
     "index=" << _index << ", "
     "exchange=" << _exchange << ", "
     "symbol=" << _symbol << ", "
+    "net_limit=" << _net_limit << ", "
     "tick_size=" << _market_data.tick_size << ", "
     "multiplier=" << _market_data.multiplier << ", "
     "market_open=" << (_market_open ? "true" : "false") <<
