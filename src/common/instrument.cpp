@@ -120,7 +120,7 @@ void Instrument::create_ioc(
   auto delta = (side == roq::Side::Buy ? 1.0 : -1.0) * quantity;
   if (std::fabs(net + delta) > (_net_limit + TOLERANCE)) {
     VLOG(1) << "Unable to trade. "
-      "Net position limits have been exhausted {"
+      "Net position limit has been exhausted {"
       "side=" << side << ", "
       "quantity=" << quantity << ", "
       "price=" << price <<
