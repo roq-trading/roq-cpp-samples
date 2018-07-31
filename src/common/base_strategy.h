@@ -36,38 +36,38 @@ class BaseStrategy : public roq::Client {
   virtual void update(const MarketData&) = 0;
 
  private:
-  const roq::Subscriptions& get_subscriptions() const override {
+  const roq::Subscriptions& get_subscriptions() const final override {
     return _subscriptions;
   }
   // api event handlers:
   // - timer
-  void on(const roq::TimerEvent&) override;
+  void on(const roq::TimerEvent&) final override;
   // - connection
-  void on(const roq::ConnectionStatusEvent&) override {}
+  void on(const roq::ConnectionStatusEvent&) final override {}
   // - batch
-  void on(const roq::BatchBeginEvent&) override;
-  void on(const roq::BatchEndEvent&) override;
+  void on(const roq::BatchBeginEvent&) final override;
+  void on(const roq::BatchEndEvent&) final override;
   // - market data
-  void on(const roq::MarketDataStatusEvent&) override;
+  void on(const roq::MarketDataStatusEvent&) final override;
   // - session update
-  void on(const roq::SessionStatisticsEvent&) override;
-  void on(const roq::DailyStatisticsEvent&) override;
+  void on(const roq::SessionStatisticsEvent&) final override;
+  void on(const roq::DailyStatisticsEvent&) final override;
   // - market data update
-  void on(const roq::MarketByPriceEvent&) override;
-  void on(const roq::TradeSummaryEvent&) override;
+  void on(const roq::MarketByPriceEvent&) final override;
+  void on(const roq::TradeSummaryEvent&) final override;
   // - order manager
-  void on(const roq::DownloadBeginEvent&) override;
-  void on(const roq::DownloadEndEvent&) override;
-  void on(const roq::ReferenceDataEvent&) override;
-  void on(const roq::MarketStatusEvent&) override;
-  void on(const roq::PositionUpdateEvent&) override;
-  void on(const roq::OrderUpdateEvent&) override;
-  void on(const roq::TradeUpdateEvent&) override;
-  void on(const roq::OrderManagerStatusEvent&) override;
+  void on(const roq::DownloadBeginEvent&) final override;
+  void on(const roq::DownloadEndEvent&) final override;
+  void on(const roq::ReferenceDataEvent&) final override;
+  void on(const roq::MarketStatusEvent&) final override;
+  void on(const roq::PositionUpdateEvent&) final override;
+  void on(const roq::OrderUpdateEvent&) final override;
+  void on(const roq::TradeUpdateEvent&) final override;
+  void on(const roq::OrderManagerStatusEvent&) final override;
   // - order manager response
-  void on(const roq::CreateOrderAckEvent&) override;
-  void on(const roq::ModifyOrderAckEvent&) override;
-  void on(const roq::CancelOrderAckEvent&) override;
+  void on(const roq::CreateOrderAckEvent&) final override;
+  void on(const roq::ModifyOrderAckEvent&) final override;
+  void on(const roq::CancelOrderAckEvent&) final override;
   // utilities
   bool apply(
       const std::string& exchange,

@@ -44,6 +44,22 @@ Strategy::Strategy(
 
 void Strategy::update(std::chrono::system_clock::time_point now) {
   // the timer callback is useful for e.g. unwinding positions
+  auto index = _schedule.get_index(now);
+  // convert into enum (to make trading code more readable)
+  mode_t mode = Undefined;
+  if (index > 0)
+    mode = static_cast<mode_t>(((index - 1) % 3) + 1);
+  // on change: update and log
+  if (_mode != mode) {
+    _mode = mode;
+    const char *lookup[] = {
+      "Undefined",
+      "Trading",
+      "Landing",
+      "Flattening"
+    };
+    LOG(INFO) << "Mode=" << lookup[static_cast<size_t>(_mode)];
+  }
 }
 
 void Strategy::update(const common::MarketData& market_data) {
@@ -176,47 +192,6 @@ void Strategy::write_order(
     quantity << DELIMITER <<
     price << DELIMITER <<
     std::endl;
-}
-
-void Strategy::on(const roq::OrderUpdateEvent& event) {
-  std::cout <<
-   PREFIX_UPDATE_ORDER << DELIMITER <<
-   event.order_update.order_status << DELIMITER <<
-   event.order_update.symbol << DELIMITER <<
-   event.order_update.side << DELIMITER <<
-   event.order_update.traded_quantity << DELIMITER <<
-   event.order_update.remaining_quantity <<
-   std::endl;
-}
-
-void Strategy::on(const roq::TradeUpdateEvent& event) {
-  std::cout <<
-    PREFIX_UPDATE_TRADE << DELIMITER <<
-    event.trade_update.symbol << DELIMITER <<
-    event.trade_update.side << DELIMITER <<
-    event.trade_update.quantity << DELIMITER <<
-    event.trade_update.price <<
-    std::endl;
-}
-
-void Strategy::on(const roq::TimerEvent& event) {
-  // get schedule index
-  auto index = _schedule.get_index(std::chrono::system_clock::now());
-  // convert into enum (to make trading code more readable)
-  mode_t mode = Undefined;
-  if (index > 0)
-    mode = static_cast<mode_t>(((index - 1) % 3) + 1);
-  // on change: update and log
-  if (_mode != mode) {
-    _mode = mode;
-    const char *lookup[] = {
-      "Undefined",
-      "Trading",
-      "Landing",
-      "Flattening"
-    };
-    LOG(INFO) << "Mode=" << lookup[static_cast<size_t>(_mode)];
-  }
 }
 
 }  // namespace simple
