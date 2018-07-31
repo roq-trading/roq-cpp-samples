@@ -363,7 +363,7 @@ bool BaseStrategy::apply(
     std::function<void(Instrument&)> function) {
   auto iter = _instruments_by_name.find(symbol);
   if (iter == _instruments_by_name.end()) {
-    LOG(WARNING) << "Got update for unknown "
+    VLOG(3) << "Got update for unknown "
       "exchange=\"" << exchange << "\", symbol=\"" << symbol << "\"";
     return false;
   }
