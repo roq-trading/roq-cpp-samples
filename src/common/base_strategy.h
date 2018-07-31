@@ -62,7 +62,7 @@ class BaseStrategy : public roq::Client {
   void on(const roq::MarketStatusEvent&) final override;
   void on(const roq::PositionUpdateEvent&) final override;
   void on(const roq::OrderUpdateEvent&) final override;
-  void on(const roq::TradeUpdateEvent&) final override;
+  void on(const roq::TradeUpdateEvent&) override;  // FIXME(thraneh): final
   void on(const roq::OrderManagerStatusEvent&) final override;
   // - order manager response
   void on(const roq::CreateOrderAckEvent&) final override;
