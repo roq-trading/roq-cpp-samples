@@ -293,6 +293,7 @@ void BaseStrategy::on(const roq::OrderUpdateEvent& event) {
           LOG(INFO) << "account=" << account;
         }
       });
+  update(order_update);
 }
 
 void BaseStrategy::on(const roq::TradeUpdateEvent& event) {
@@ -305,6 +306,7 @@ void BaseStrategy::on(const roq::TradeUpdateEvent& event) {
           putc('\a', stdout);
         }
       });
+  update(trade_update);
 }
 
 void BaseStrategy::on(const roq::OrderManagerStatusEvent& event) {
@@ -333,6 +335,7 @@ void BaseStrategy::on(const roq::CreateOrderAckEvent& event) {
       create_order_ack.account,
       [&](Account& account) {
           account.on(create_order_ack); });
+  update(create_order_ack);
 }
 
 void BaseStrategy::on(const roq::ModifyOrderAckEvent& event) {
