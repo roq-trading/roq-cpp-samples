@@ -100,11 +100,6 @@ void Account::on(const roq::PositionUpdate& position_update) {
 }
 
 void Account::on(const roq::OrderUpdate& order_update) {
-  apply(
-      order_update.exchange,
-      order_update.symbol,
-      [&](Position& position) {
-          position.on(order_update); });
 }
 
 void Account::on(const roq::TradeUpdate& trade_update) {
@@ -112,7 +107,7 @@ void Account::on(const roq::TradeUpdate& trade_update) {
       trade_update.exchange,
       trade_update.symbol,
       [&](Position& position) {
-          position.on(trade_update); });
+          position.on(trade_update, _download); });
 }
 
 void Account::on(const roq::OrderManagerStatus& order_manager_status) {

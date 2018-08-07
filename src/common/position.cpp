@@ -26,7 +26,6 @@ Position::Position(
     : _account(account),
       _exchange(exchange),
       _symbol(symbol),
-      _use_position_update(use_position_update),
       _long_limit(long_limit),
       _long_start_of_day(long_start_of_day),
       _short_limit(short_limit),
@@ -36,24 +35,18 @@ Position::Position(
 }
 
 void Position::reset() {
-  if (_use_position_update) {
-    // long
-    _long_last_order_local_id = 0;
-    _long_start_of_day = 0.0;
-    _long_last_trade_id = 0;
-    // short
-    _short_last_order_local_id = 0;
-    _short_start_of_day = 0.0;
-    _short_last_trade_id = 0;
-  }
   // long
+  _long_start_of_day = 0.0;
   _long_closed = 0.0;
   _long_opened = 0.0;
+  _long_last_trade_id = 0;
+  _long_max_trade_id = 0;
   // short
+  _short_start_of_day = 0.0;
   _short_closed = 0.0;
   _short_opened = 0.0;
-  // ...
-  _traded_quantity.clear();
+  _short_last_trade_id = 0;
+  _short_max_trade_id = 0;
 }
 
 double Position::get_net() const {
@@ -93,19 +86,14 @@ void Position::on(const roq::PositionUpdate& position_update) {
       "position_update=" << position_update;
     return;
   }
-  // drop?
-  if (!_use_position_update) {
-    VLOG(2) << "Dropping position update. (Not required).";
-    return;
-  }
   // positions are reported separately for long and short
   switch (position_update.side) {
     case roq::Side::Buy: {
       // check if reset() is being used as intended
       if (_long_start_of_day != 0.0)
         LOG(ERROR) << "Unexpected -- reset() not used correctly";
-      _long_last_order_local_id = position_update.last_order_local_id;
       _long_last_trade_id = position_update.last_trade_id;
+      _long_max_trade_id = _long_last_trade_id;
       _long_start_of_day = position_update.yesterday;
       _long_opened = position_update.position - position_update.yesterday;
       break;
@@ -114,8 +102,8 @@ void Position::on(const roq::PositionUpdate& position_update) {
       // check if reset() is being used as intended
       if (_short_start_of_day != 0.0)
         LOG(ERROR) << "Unexpected -- reset() not used correctly";
-      _short_last_order_local_id = position_update.last_order_local_id;
       _short_last_trade_id = position_update.last_trade_id;
+      _short_max_trade_id = _short_last_trade_id;  // inherit
       _short_start_of_day = position_update.yesterday;
       _short_opened = position_update.position - position_update.yesterday;
       break;
@@ -127,84 +115,62 @@ void Position::on(const roq::PositionUpdate& position_update) {
   }
 }
 
-void Position::on(const roq::TradeUpdate& trade_update) {
-  // FIXME(thraneh): reconcile trade updates with order updates
-}
-
-void Position::on(const roq::OrderUpdate& order_update) {
-  auto order_id = order_update.order_id;
-  auto& previous = _traded_quantity[order_id];
-  auto fill_quantity = std::max(0.0, order_update.traded_quantity - previous);
-  previous = order_update.traded_quantity;
-  if (fill_quantity < TOLERANCE) {
-    VLOG(2) << "No fill quantity, dropping order update";
-    return;
-  }
-  bool close = order_update.position_effect == roq::PositionEffect::Close;
-  auto order_local_id = order_update.order_local_id;
-  switch (order_update.side) {
+void Position::on(const roq::TradeUpdate& trade_update, bool download) {
+  auto trade_id = trade_update.trade_id;
+  bool close = trade_update.position_effect == roq::PositionEffect::Close;
+  // note!
+  // trades may arrive randomly during the download phase and
+  // expected to arrive sequentially during live trading
+  switch (trade_update.side) {
     case roq::Side::Buy: {
       if (close) {
-        if (_short_last_order_local_id < order_local_id) {
-          _short_closed += fill_quantity;
-        } else {
-          VLOG(2) << "Repeat order update, "
-            "short_last_order_local_id=" << _short_last_order_local_id << ", "
-            "order_local_id=" << order_local_id;
+        if ((download ? _short_last_trade_id : _short_max_trade_id) < trade_id) {
+          _short_closed += trade_update.quantity;
+          _short_max_trade_id = std::max(_short_max_trade_id, trade_id);
         }
       } else {
-        if (_long_last_order_local_id < order_local_id) {
-          _long_opened += fill_quantity;
-        } else {
-          VLOG(2) << "Repeat order update, "
-            "long_last_order_local_id=" << _long_last_order_local_id << ", "
-            "order_local_id=" << order_local_id;
+        if ((download ? _long_last_trade_id : _long_max_trade_id) < trade_id) {
+          _long_opened += trade_update.quantity;
+          _long_max_trade_id = std::max(_long_max_trade_id, trade_id);
         }
       }
       break;
     }
     case roq::Side::Sell: {
       if (close) {
-        if (_long_last_order_local_id < order_local_id) {
-          _long_closed += fill_quantity;
-        } else {
-          VLOG(2) << "Repeat order update, "
-            "long_last_order_local_id=" << _long_last_order_local_id << ", "
-            "order_local_id=" << order_local_id;
+        if ((download ? _long_last_trade_id : _long_max_trade_id) < trade_id) {
+          _long_closed += trade_update.quantity;
+          _long_max_trade_id = std::max(_long_max_trade_id, trade_id);
         }
       } else {
-        if (_short_last_order_local_id < order_local_id) {
-          _short_opened += fill_quantity;
-        } else {
-          VLOG(2) << "Repeat order update, "
-            "short_last_order_local_id=" << _short_last_order_local_id << ", "
-            "order_local_id=" << order_local_id;
+        if ((download ? _short_last_trade_id : _short_max_trade_id) < trade_id) {
+          _short_opened += trade_update.quantity;
+          _short_max_trade_id = std::max(_short_max_trade_id, trade_id);
         }
       }
       break;
     }
     default: {
       LOG(WARNING) << "Received unknown or undefined side for "
-        "order_update=" << order_update;
+        "trade_update=" << trade_update;
     }
   }
 }
 
 std::ostream& Position::write(std::ostream& stream) const {
   return stream << "{"
-    "use_position_update=" << (_use_position_update ? "true" : "false") << ", "
     "long_limit=" << _long_limit << ", "
-    "long_last_order_local_id=" << _long_last_order_local_id << ", "
     "long_start_of_day=" << _long_start_of_day << ", "
     "long_closed=" << _long_closed << ", "
     "long_opened=" << _long_opened << ", "
     "long_last_trade_id=" << _long_last_trade_id << ", "
+    "long_max_trade_id=" << _long_max_trade_id << ", "
     "short_limit=" << _short_limit << ", "
-    "short_last_order_local_id=" << _short_last_order_local_id << ", "
     "short_start_of_day=" << _short_start_of_day << ", "
     "short_closed=" << _short_closed << ", "
     "short_opened=" << _short_opened << ", "
-    "short_last_trade_id=" << _short_last_trade_id <<
+    "short_last_trade_id=" << _short_last_trade_id << ", "
+    "short_max_trade_id=" << _short_max_trade_id <<
     "}";
 }
 
