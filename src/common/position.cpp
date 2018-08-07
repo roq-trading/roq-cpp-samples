@@ -94,8 +94,8 @@ void Position::on(const roq::PositionUpdate& position_update) {
         LOG(ERROR) << "Unexpected -- reset() not used correctly";
       _long_last_trade_id = position_update.last_trade_id;
       _long_max_trade_id = _long_last_trade_id;
-      _long_start_of_day = position_update.yesterday;
-      _long_opened = position_update.position - position_update.yesterday;
+      _long_start_of_day = position_update.position_yesterday;
+      _long_opened = position_update.position - position_update.position_yesterday;
       break;
     }
     case roq::Side::Sell: {
@@ -104,8 +104,8 @@ void Position::on(const roq::PositionUpdate& position_update) {
         LOG(ERROR) << "Unexpected -- reset() not used correctly";
       _short_last_trade_id = position_update.last_trade_id;
       _short_max_trade_id = _short_last_trade_id;  // inherit
-      _short_start_of_day = position_update.yesterday;
-      _short_opened = position_update.position - position_update.yesterday;
+      _short_start_of_day = position_update.position_yesterday;
+      _short_opened = position_update.position - position_update.position_yesterday;
       break;
     }
     default: {

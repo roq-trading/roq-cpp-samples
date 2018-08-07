@@ -108,6 +108,8 @@ void Matcher::on(const roq::CreateOrder& create_order) {
             std::chrono::system_clock::time_point()),
     .order_external_id = "",
     .trade_external_id = "",
+    .position = 0.0,
+    .position_cost = 0.0,
   };
 
   auto& position = _positions[account][exchange][symbol][side];
@@ -118,8 +120,9 @@ void Matcher::on(const roq::CreateOrder& create_order) {
       .symbol = symbol,
       .side = side,
       .position = position,
-      .yesterday = 0.0,
-      .last_order_local_id = order_id,
+      .position_cost = 0.0,
+      .position_yesterday = 0.0,
+      .position_cost_yesterday = 0.0,
       .last_trade_id = order_id,
   };
 
