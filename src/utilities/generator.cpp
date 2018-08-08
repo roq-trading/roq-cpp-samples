@@ -58,10 +58,10 @@ void Generator::dispatch(
   }
   roq::MessageInfo message_info = {
     .source = "simulator",
+    .source_seqno = 0,
     .source_create_time = receive_time,
     .client_receive_time = receive_time,
     .routing_latency = std::chrono::microseconds(0),
-    .from_cache = false,
     .is_last = false,
   };
   dispatcher.on(roq::BatchBeginEvent { .message_info = message_info});

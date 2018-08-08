@@ -96,7 +96,7 @@ void Account::on(const roq::PositionUpdate& position_update) {
       position_update.exchange,
       position_update.symbol,
       [&](Position& position) {
-          position.on(position_update); });
+          position.on(position_update, _download); });
 }
 
 void Account::on(const roq::OrderUpdate& order_update) {

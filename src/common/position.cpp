@@ -79,7 +79,12 @@ roq::PositionEffect Position::get_effect(
   return roq::PositionEffect::Open;
 }
 
-void Position::on(const roq::PositionUpdate& position_update) {
+void Position::on(
+    const roq::PositionUpdate& position_update,
+    bool download) {
+  // (for now) we only refresh on download
+  if (!download)
+    return;
   // expecting positions to be reported by side (not net position)
   if (position_update.position < -0.0) {
     LOG(WARNING) << "Received negative position for "
@@ -115,7 +120,9 @@ void Position::on(const roq::PositionUpdate& position_update) {
   }
 }
 
-void Position::on(const roq::TradeUpdate& trade_update, bool download) {
+void Position::on(
+    const roq::TradeUpdate& trade_update,
+    bool download) {
   auto trade_id = trade_update.trade_id;
   bool close = trade_update.position_effect == roq::PositionEffect::Close;
   // note!

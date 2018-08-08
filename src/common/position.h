@@ -31,7 +31,7 @@ class Position final {
   void reset();
   double get_net() const;
   roq::PositionEffect get_effect(roq::Side side, double quantity) const;
-  void on(const roq::PositionUpdate& position_update);
+  void on(const roq::PositionUpdate& position_update, bool download);
   void on(const roq::TradeUpdate& trade_update, bool download);
   std::ostream& write(std::ostream& stream) const;
 
