@@ -169,7 +169,7 @@ uint32_t Account::create_order(
     .position_effect = position_effect,
     .order_template  = order_template.c_str(),
   };
-  LOG(INFO) << PREFIX "create_order=" << create_order;
+  VLOG(1) << PREFIX "create_order=" << create_order;
   _dispatcher.send(create_order, _gateway.c_str());
   _live_orders.insert(order_id);
   return order_id;
@@ -193,7 +193,7 @@ void Account::modify_order(
     .quantity_change = quantity_change,
     .limit_price     = limit_price,
   };
-  LOG(INFO) << PREFIX "modify_order=" << modify_order;
+  VLOG(1) << PREFIX "modify_order=" << modify_order;
   _dispatcher.send(modify_order, _gateway.c_str());
 }
 
@@ -210,7 +210,7 @@ void Account::cancel_order(uint32_t order_id) {
     .account  = _name.c_str(),
     .order_id = order_id,
   };
-  LOG(INFO) << PREFIX "cancel_order=" << cancel_order;
+  VLOG(1) << PREFIX "cancel_order=" << cancel_order;
   _dispatcher.send(cancel_order, _gateway.c_str());
 }
 
