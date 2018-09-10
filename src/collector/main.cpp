@@ -24,10 +24,13 @@ int main(int argc, char *argv[]) {
   roq::logging::Logger::initialize(true);
 
   // parse command-line options
-
+  gflags::SetUsageMessage("FemasAPI Collector delivered to you by Roq Trading");
   gflags::SetVersionString(ROQ_VERSION);
   gflags::ParseCommandLineFlags(&argc, &argv, true);
   gflags::ShutDownCommandLineFlags();
+
+  LOG(INFO) << gflags::ProgramInvocationShortName() << " "
+    "version=" << gflags::VersionString();
 
   // validate command-line options
 
@@ -37,6 +40,8 @@ int main(int argc, char *argv[]) {
     if (FLAGS_simulation_file.empty()) {
       LOG(ERROR) << "Missing parameter: --simulation-file";
       std::exit(EXIT_FAILURE);
+    } else {
+      LOG(INFO) << "  simulation_file=\"" << FLAGS_simulation_file << "\"";
     }
 
     std::list<std::unique_ptr<roq::simulation::Generator> > generators;
@@ -52,6 +57,8 @@ int main(int argc, char *argv[]) {
     if (FLAGS_simulation_file.empty() == false) {
       LOG(ERROR) << "Not possible to combine simulation with live trading.";
       std::exit(EXIT_FAILURE);
+    } else {
+      LOG(INFO) << "  gateways=\"" << FLAGS_gateways << "\"";
     }
 
     auto gateways = roq::client::Gateways::create(FLAGS_gateways);
