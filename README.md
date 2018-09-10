@@ -143,6 +143,11 @@ If your environment variables have been replaced, simply run `source scripts.con
 
 ### Updating
 
+Sometimes you may get away with simply doing this
+
+	# update all conda packages
+	conda update --all
+
 These are the steps needed to resync your conda environment
 
 	# get the latest conda package
