@@ -35,3 +35,7 @@ find_package(Benchmark REQUIRED)
 endif(BUILD_BENCHMARK)
 
 add_subdirectory(src)
+
+add_custom_target(update ALL
+  COMMAND conda update -y --all
+)
