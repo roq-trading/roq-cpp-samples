@@ -90,9 +90,9 @@ Please refer to the Conda documentation for further details on how to
 
 ### Basic Steps
 
-Download [Miniconda](https://conda.io/miniconda.html)
+Download the latest [Miniconda](https://conda.io/miniconda.html) installer
 
-	wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh
+	wget --content-disposition https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh
 
 Create the Conda environment
 
