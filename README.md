@@ -106,7 +106,7 @@ Create the Conda environment
 	cat > ~/miniconda3/.condarc << EOF
 	channels:
 	  - anaconda
-	  - http://roq-trading.com/dist/conda/unstable
+	  - https://roq-trading.com/conda/unstable
 	EOF
 
 Clone this project (from github) and compile from source
