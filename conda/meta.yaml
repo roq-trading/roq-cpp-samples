@@ -1,0 +1,38 @@
+{% set roq_build="0.2.2" %}
+{% set roq_api="0.2.2" %}
+{% set benchmark_api="1.4.1" %}
+{% set rapidjson_api="1.1.0" %}
+
+package:
+  name: roq-samples
+  version: {{ roq_build }}
+
+source:
+  git_url: https://github.com/roq-trading/roq-samples
+#  path: ..
+
+build:
+  number: 0
+  skip: True  # [win]
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+  host:
+    - roq-api >={{ roq_api }}
+    - roq-oss-benchmark >={{ benchmark_api }}
+    - roq-oss-rapidjson >={{ rapidjson_api }}
+  run:
+    - roq-api >={{ roq_api }}
+    - roq-oss-benchmark >={{ benchmark_api }}
+    - roq-oss-rapidjson >={{ rapidjson_api }}
+
+about:
+  home: https://github.com/roq-trading
+  dev_url: https://github.com/roq-trading
+  license: BSD-3-Clause
+  license_family: BSD
+  license_file: LICENSE
+  license_url: https://opensource.org/licenses/BSD-3-Clause
+  summary: How to use the trading API.
+  description: How to use the trading API.
