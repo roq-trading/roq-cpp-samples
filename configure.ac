@@ -1,7 +1,7 @@
-AC_REVISION([m4_esyscmd_s([git describe --always --dirty --tags])])
+AC_REVISION([m4_esyscmd_s([build-aux/git-version])])
 
 AC_INIT([roq-samples],
-        m4_esyscmd_s([git describe]),
+        m4_esyscmd_s([build-aux/git-version]),
         [thraneh@gmail.com],
         [roq-samples])
 
