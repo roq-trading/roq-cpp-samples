@@ -2,13 +2,10 @@ FROM continuumio/miniconda3
 
 MAINTAINER Hans Erik Thrane <info@roq-trading.com>
 
-ADD VERSION /version
+COPY pkgs/ /pkgs/
 
-RUN \
-  conda update --quiet --name base conda && \
-  conda config --add channels https://roq-trading.com/conda/unstable && \
-  conda install --quiet roq-samples=$(</version)
+RUN conda update --quiet --yes --name base conda && conda config --add channels file:///pkgs && conda install --quiet --yes roq-samples
 
-ENTRYPOINT [ "/opt/conda/bin/example-collector" ]
+ENTRYPOINT [ "/opt/conda/bin/roq-samples-collector" ]
 
 CMD [ "--help" ]
