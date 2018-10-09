@@ -117,14 +117,14 @@ Clone this project (from github) and compile from source
 	# change to the newly created directory
 	cd roq-samples
 
+	# update git submodules
+	git submodule update --init --recursive
+
 	# prepare the conda environment
 	# - install build and dev tools
 	# - install library dependencies
 	# - set CPPFLAGS, LDFLAGS and PKG_CONFIG_PATH
 	source scripts/conda.sh install
-
-	# update git submodules
-	git submodule update --init --recursive
 
 	# configure the project
 	cmake -DCMAKE_BUILD_TYPE=Debug
