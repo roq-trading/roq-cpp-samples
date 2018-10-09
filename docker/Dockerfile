@@ -4,7 +4,7 @@ MAINTAINER Hans Erik Thrane <info@roq-trading.com>
 
 COPY pkgs/ /pkgs/
 
-RUN conda update --quiet --yes --name base conda && conda config --add channels file:///pkgs && conda install --quiet --yes roq-samples
+RUN conda install --quiet --yes --override-channels --channel file:///pkgs --channel anaconda roq-samples
 
 ENTRYPOINT [ "/opt/conda/bin/roq-samples-collector" ]
 
