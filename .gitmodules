@@ -10,6 +10,3 @@
 	path = third_party/googletest
 	url = https://github.com/google/googletest
 	ignore = dirty
-[submodule "roq-scripts"]
-	path = scripts
-	url = https://github.com/roq-trading/roq-scripts
