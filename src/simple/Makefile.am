@@ -31,5 +31,5 @@ EXTRA_roq_samples_simple_SOURCES = \
 	config.h \
 	config_reader.h \
 	strategy.h
-configdir=$(datadir)/roq/sampless
+configdir=$(datadir)/roq/samples
 config_DATA = simple.conf
