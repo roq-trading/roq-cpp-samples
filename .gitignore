@@ -51,3 +51,8 @@ CMakeCache.txt
 CMakeFiles/
 *.cmake
 *.a
+
+doc/Doxyfile
+doc/html
+doc/xml
+doc/doxygen-build.stamp

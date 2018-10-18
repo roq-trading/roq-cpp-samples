@@ -1,6 +1,6 @@
 ACLOCAL_AMFLAGS = -I m4
 
-SUBDIRS = . src test
+SUBDIRS = . src test doc
 
 dist_doc_DATA = LICENSE README.md
 
