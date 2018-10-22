@@ -32,7 +32,7 @@ esac
 
 $PREFIX/bin/conda install --yes \
   --override-channels \
-  --channel anaconda \
+  --channel defaults \
   --channel https://roq-trading.com/conda/unstable \
   $PLATFORM_PACKAGES \
   autoconf \

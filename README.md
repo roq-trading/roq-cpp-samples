@@ -93,8 +93,7 @@ Please refer to the Conda documentation for further details on how to
 Download the latest [Miniconda](https://conda.io/miniconda.html) installer
 
 	# download the miniconda installer
-	wget --content-disposition \
-	    https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh
+	wget -N https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh
 
 Create the Conda environment
 
@@ -105,7 +104,7 @@ Create the Conda environment
 	# define conda channels
 	cat > ~/miniconda3/.condarc << EOF
 	channels:
-	  - anaconda
+	  - defaults
 	  - https://roq-trading.com/conda/unstable
 	EOF
 
