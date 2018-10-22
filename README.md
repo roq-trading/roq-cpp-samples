@@ -92,15 +92,15 @@ Please refer to the Conda documentation for further details on how to
 
 Download the latest [Miniconda](https://conda.io/miniconda.html) installer
 
-	wget --content-disposition https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh
+	# download the miniconda installer
+	wget --content-disposition \
+	    https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh
 
 Create the Conda environment
 
-	# install miniconda (to your home directory)
-	bash Miniconda3-latest-Linux-x86_64.sh -b
 
-	# activate miniconda
-	source ~/miniconda3/bin/activate
+	# install miniconda (to your home directory)
+	bash Miniconda3-latest-Linux-x86_64.sh -b -u -p ~/miniconda3
 
 	# define conda channels
 	cat > ~/miniconda3/.condarc << EOF
@@ -109,22 +109,31 @@ Create the Conda environment
 	  - https://roq-trading.com/conda/unstable
 	EOF
 
+	# install git
+	~/miniconda3/bin/conda install -y git
+
 Clone this project (from github) and compile from source
 
-	# clone roq-samples (this repo)
+	# clone from github
 	git clone https://github.com/roq-trading/roq-samples
 
 	# change to the newly created directory
 	cd roq-samples
 
-	# update git submodules
+	# update submodules
 	git submodule update --init --recursive
 
-	# prepare the conda environment
-	# - install build and dev tools
-	# - install library dependencies
-	# - set CPPFLAGS, LDFLAGS and PKG_CONFIG_PATH
-	source scripts/conda.sh install
+	# install the build toolchain
+	scripts/create_conda_env.sh
+
+	# activate your conda environment
+	source ~/miniconda3/bin/activate
+
+	# configure the project
+	cmake -DCMAKE_BUILD_TYPE=Debug
+
+	# compile
+	make -j4
 
 	# configure the project
 	cmake -DCMAKE_BUILD_TYPE=Debug
@@ -134,7 +143,7 @@ Clone this project (from github) and compile from source
 
 Test if it works
 
-	# test simultion
+	# test simulation
 	cd src/collector
 	./roq-samples-collector --simulation-file test.csv
 
