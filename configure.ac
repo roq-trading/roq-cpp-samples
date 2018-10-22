@@ -27,6 +27,7 @@ AC_CONFIG_FILES([roq-samples.pc])
 AM_INIT_AUTOMAKE([-Wall -Werror foreign subdir-objects])
 
 AM_PROG_AR
+LT_INIT
 AC_PROG_CXX
 AC_LANG([C++])
 AC_PROG_LIBTOOL
@@ -45,8 +46,6 @@ ROQ_CHECK_LIBEVENT
 ROQ_CHECK_LIBUCL
 
 PKG_CHECK_MODULES([ROQ], [roq])
-
-ROQ_CHECK_GTEST([third_party/googletest])
 
 AC_ARG_ENABLE([benchmark],
 	      AS_HELP_STRING([--enable-benchmark], [Enable benchmark]),
