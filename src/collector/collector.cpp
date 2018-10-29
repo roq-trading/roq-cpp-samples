@@ -27,6 +27,7 @@ Collector::Collector(
     const std::string& output_file)
     : _dispatcher(dispatcher) {
   if (!output_file.empty()) {
+    LOG(INFO) << "Using output file: " << output_file;
     _output_file.open(output_file, std::ios::out | std::ios::app);
     if (!_output_file.is_open()) {
       std::stringstream ss;
