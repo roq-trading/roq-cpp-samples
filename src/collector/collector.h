@@ -5,6 +5,7 @@
 #include <roq/api.h>
 
 #include <chrono>  // NOLINT
+#include <fstream>
 #include <string>
 #include <unordered_map>
 #include <unordered_set>
@@ -15,8 +16,10 @@ namespace collector {
 
 class Collector final : public roq::Client {
  public:
-  explicit Collector(roq::Client::Dispatcher& dispatcher)
-      : _dispatcher(dispatcher) {}
+  explicit Collector(
+      roq::Client::Dispatcher& dispatcher,
+      const std::string& output_file);
+  ~Collector();
 
   struct State final {
     explicit State(const std::string& symbol)
@@ -70,6 +73,8 @@ class Collector final : public roq::Client {
 
  private:
   roq::Client::Dispatcher& _dispatcher;
+  std::ofstream _output_file;
+  bool _use_output_file = false;
   std::unordered_map<std::string, State> _cache;
   std::unordered_set<State*> _dirty;
 };

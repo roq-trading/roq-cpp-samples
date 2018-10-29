@@ -17,6 +17,9 @@ DEFINE_string(gateways, "",
 DEFINE_string(simulation_file, "",
     "Simulation file (path)");
 
+DEFINE_string(output_file, "",
+    "Output file (path)");
+
 using namespace examples::collector;  // NOLINT
 
 int main(int argc, char *argv[]) {
@@ -49,7 +52,8 @@ int main(int argc, char *argv[]) {
         new examples::utilities::Generator(FLAGS_simulation_file));
 
     roq::simulation::Controller<Collector, roq::simulation::NoMatcher>(
-        std::move(generators)).create_and_dispatch();
+        std::move(generators)).create_and_dispatch(
+            FLAGS_output_file);
 
   } else {
     // mode: trading
@@ -64,7 +68,8 @@ int main(int argc, char *argv[]) {
     auto gateways = roq::client::Gateways::create(FLAGS_gateways);
 
     roq::client::Controller<Collector>(
-        std::move(gateways)).create_and_dispatch();
+        std::move(gateways)).create_and_dispatch(
+            FLAGS_output_file);
   }
 
   return EXIT_SUCCESS;

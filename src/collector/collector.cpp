@@ -22,14 +22,35 @@ std::ostream& operator<<(std::ostream& stream, roq::time_point_t time_point) {
 }
 }  // namespace
 
+Collector::Collector(
+    roq::Client::Dispatcher& dispatcher,
+    const std::string& output_file)
+    : _dispatcher(dispatcher) {
+  if (!output_file.empty()) {
+    _output_file.open(output_file, std::ios::out | std::ios::app);
+    if (!_output_file.is_open()) {
+      std::stringstream ss;
+      ss << "Unable to open file for writing: " << output_file;
+      throw std::runtime_error(ss.str());
+    }
+  }
+}
+
+Collector::~Collector() {
+  if (_output_file.is_open()) {
+    _output_file.close();
+  }
+}
+
 const roq::Subscriptions& Collector::get_subscriptions() const {
   static roq::Subscriptions result;
   return result;
 }
 
 void Collector::on(const roq::BatchEndEvent&) {
+  std::ostream& stream = _output_file.is_open() ? _output_file : std::cout;
   for (auto iter : _dirty)
-    std::cout << *iter << std::endl;
+    stream << *iter << std::endl;
   _dirty.clear();
 }
 
