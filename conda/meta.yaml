@@ -1,28 +1,29 @@
+{% set version = environ.get('GIT_DESCRIBE_TAG', '0.0.0') %}
+{% set number = environ.get('GIT_DESCRIBE_NUMBER', 0) %}
+
 package:
   name: roq-samples
-  version: {{ environ.get('GIT_DESCRIBE_TAG', '0.0.0') }}
+  version: {{ version }}
 
 source:
   path: ..
 
 build:
   skip: True  # [win]
-  number: {{ environ.get('GIT_DESCRIBE_NUMBER', 0) }}
+  number: {{ number }}
 
 requirements:
   build:
     - {{ compiler('cxx') }}
   host:
-    - roq-api
-    - roq-oss-benchmark
+    - roq-api =={{ version }}
     - roq-oss-rapidjson
   run:
-    - roq-api
-    - roq-oss-benchmark
+    - roq-api =={{ version }}
     - roq-oss-rapidjson
 
 about:
-  home: https://github.com/roq-trading
+  home: https://roq-trading.com
   dev_url: https://github.com/roq-trading
   license: BSD-3-Clause
   license_family: BSD
