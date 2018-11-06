@@ -1,4 +1,4 @@
-FROM continuumio/miniconda3
+FROM frolvlad/alpine-miniconda3
 MAINTAINER Hans Erik Thrane <info@roq-trading.com>
 
 COPY pkgs/ /pkgs/
