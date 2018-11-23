@@ -11,14 +11,13 @@ source:
 build:
   skip: True  # [win]
   number: {{ number }}
+  run_exports:
+    - roq-samples ={{ version }}
 
 requirements:
   build:
     - {{ compiler('cxx') }}
   host:
-    - roq-api =={{ version }}
-    - roq-oss-rapidjson
-  run:
     - roq-api =={{ version }}
     - roq-oss-rapidjson
 
