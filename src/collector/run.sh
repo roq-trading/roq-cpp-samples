@@ -8,4 +8,4 @@ else
 fi
 
 $PREFIX ./roq-samples-collector \
-	--gateways femas=test:1234@/var/tmp/femasapi.sock $@
+	--gateways femas=test:1234@/var/tmp/femas.sock $@
