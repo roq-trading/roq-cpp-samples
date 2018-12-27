@@ -1,6 +1,6 @@
 # Samples
 
-Copyright (c) 2017-2018, Hans Erik Thrane
+Copyright (c) 2017-2019, Hans Erik Thrane
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
