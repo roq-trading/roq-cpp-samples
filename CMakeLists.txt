@@ -1,6 +1,6 @@
-cmake_minimum_required(VERSION 3.0)
+cmake_minimum_required(VERSION 3.1)
 
-project(roq-samples)
+project(roq-samples2)
 
 set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
 
@@ -10,7 +10,7 @@ if(DEFINED ENV{CONDA_PREFIX})
 endif()
 
 project(${PACKAGE_NAME} CXX)
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 17)
 
 set(CMAKE_BUILD_WITH_INSTALL_RPATH TRUE)
 set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
@@ -18,26 +18,24 @@ set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
 include_directories("${CMAKE_CURRENT_SOURCE_DIR}/src")
 
 find_package(Threads REQUIRED)
-find_package(Cctz REQUIRED)
-find_package(Crossguid REQUIRED)
-find_package(Flatbuffers REQUIRED)
 find_package(Gflags REQUIRED)
-find_package(Libevent REQUIRED)
-find_package(Libunwind REQUIRED)
-find_package(Spdlog REQUIRED)
-find_package(Ucl REQUIRED)
-find_package(Roq REQUIRED)
+find_package(RoqApi REQUIRED)
+find_package(RoqClient REQUIRED)
 
 option(BUILD_BENCHMARK "Enable benchmark" OFF)
 
 if(BUILD_BENCHMARK)
-find_package(Benchmark REQUIRED)
+  find_package(Benchmark REQUIRED)
+  add_subdirectory(benchmark)
 endif(BUILD_BENCHMARK)
 
 add_subdirectory(src)
 
-add_subdirectory(third_party/googletest/googletest)
-enable_testing()
-include_directories(${gtest_SOURCE_DIR}/include ${gtest_SOURCE_DIR})
+option(BUILD_TEST "Enable test" ON)
 
-add_subdirectory(test)
+if(BUILD_TEST)
+  add_subdirectory(third_party/googletest/googletest)
+  enable_testing()
+  include_directories(${gtest_SOURCE_DIR}/include ${gtest_SOURCE_DIR})
+  add_subdirectory(test)
+endif(BUILD_TEST)

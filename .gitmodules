@@ -8,8 +8,5 @@
 	ignore = dirty
 [submodule "third_party/googletest"]
 	path = third_party/googletest
-	url = https://github.com/google/googletest
+	url = https://github.com/google/googletest.git
 	ignore = dirty
-[submodule "third_party/doxygen-bootstrapped"]
-	path = third_party/doxygen-bootstrapped
-	url = https://github.com/Velron/doxygen-bootstrapped

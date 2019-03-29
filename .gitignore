@@ -1,58 +1,41 @@
+# vim
 *.swp
 
-.dirstamp
+# autotools
 Makefile
 Makefile.in
 aclocal.m4
-ar-lib
-compile
-config.guess
-config.log
 config.status
-config.sub
 configure
-depcomp
-install-sh
+config.log
 libtool
-libtws_api.la
-ltmain.sh
-missing
-test-driver
-
-.deps/
-.libs/
 autom4te.cache/
 m4/
-
+build-aux/
+.deps/
+.libs/
 *.Plo
 *.la
 *.lo
-*.o
 
-*.pc
-*.tar.*
-
-*.log
-*.trs
-
-*.con
-
-src/collector/roq-samples-collector
-src/simple/roq-samples-simple
-src/spread/roq-samples-spread
-src/benchmark/roq-samples-benchmark
-test/roq-samples-test
-
-*.csv
-
-build/
-
+# cmake
+Makefile
 CMakeCache.txt
 CMakeFiles/
 *.cmake
-*.a
+lib/
 
-doc/Doxyfile
-doc/html
-doc/xml
-doc/doxygen-build.stamp
+# gtest
+*.log
+*.trs
+
+# build output
+*.o
+*.a
+*.so
+*.tar.*
+roq-samples.pc
+roq-samples-*
+
+# debug files
+*.sock

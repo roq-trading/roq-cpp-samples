@@ -13,68 +13,47 @@ AC_CONFIG_AUX_DIR([build-aux])
 AC_CONFIG_FILES([
  Makefile
  src/Makefile
- src/utilities/Makefile
- src/common/Makefile
- src/collector/Makefile
- src/simple/Makefile
- src/spread/Makefile
+ src/roq/Makefile
+ src/roq/samples/Makefile
+ src/roq/samples/collector/Makefile
+ src/roq/samples/common/Makefile
+ src/roq/samples/simple/Makefile
+ src/roq/samples/taker/Makefile
  test/Makefile
- doc/Makefile
- doc/Doxyfile
 ])
 AC_CONFIG_FILES([roq-samples.pc])
 
 AM_INIT_AUTOMAKE([-Wall -Werror foreign subdir-objects])
 
 AM_PROG_AR
-LT_INIT
+LT_INIT([disable-shared])
 AC_PROG_CXX
 AC_LANG([C++])
-AC_PROG_LIBTOOL
+
+AX_PTHREAD
 
 ROQ_CHECK_STDCXX
 
-AC_DISABLE_SHARED
-
-ROQ_CHECK_LIBUNWIND
-ROQ_CHECK_CROSSGUID
-ROQ_CHECK_SPDLOG
 ROQ_CHECK_GFLAGS
-ROQ_CHECK_CCTZ
-ROQ_CHECK_FLATBUFFERS
-ROQ_CHECK_LIBEVENT
-ROQ_CHECK_LIBUCL
 
-PKG_CHECK_MODULES([ROQ], [roq])
+PKG_CHECK_MODULES([ROQ_API], [roq-api])
+PKG_CHECK_MODULES([ROQ_CLIENT], [roq-client])
+
+ROQ_CHECK_GTEST([third_party/googletest])
 
 AC_ARG_ENABLE([benchmark],
 	      AS_HELP_STRING([--enable-benchmark], [Enable benchmark]),
 	      [],
-	      [enable_benchmark=no])
+	      [enable_urls=no])
 
 AS_IF([test "x$enable_benchmark" = "xyes"],
-      [AC_CONFIG_FILES([src/benchmark/Makefile])])
+      [AC_CONFIG_FILES([benchmark/Makefile])])
 
 AS_IF(
   [test "x$enable_benchmark" = "xyes"],
   [ROQ_CHECK_BENCHMARK])
 
 AM_CONDITIONAL([ENABLE_BENCHMARK],
-	       [test "x$enable_benchmark" = "xyes"])
-
-AC_ARG_ENABLE([doc],
-  [AS_HELP_STRING([--enable-doc], [Enable documentation])],,
-  [enable_doc=no])
-
-AS_IF([test "x$enable_doc" = "xyes"], [
-  AC_CHECK_PROG(HAVE_DOXYGEN, [doxygen], [yes], [no])
-  AC_CHECK_PROG(HAVE_DOT, [dot], [yes], [no])
-  ],[
-  HAVE_DOXYGEN=no
-  HAVE_DOT=no
-  ])
-
-AM_CONDITIONAL([ENABLE_DOC],
-	       [test "x$enable_doc" = "xyes"])
+	       [test "$enable_benchmark" = "yes"])
 
 AC_OUTPUT

@@ -13,7 +13,7 @@ source:
   path: ..
 
 build:
-  skip: True  # [win]
+  skip: True  # [win and osx]
   number: {{ number }}
   run_exports:
     - roq-samples >={{ version }},<{{ major }}.{{ minor + 1 }}
@@ -21,9 +21,11 @@ build:
 requirements:
   build:
     - {{ compiler('cxx') }}
+    - roq-client =={{ version }}
+    - roq-oss-benchmark
   host:
-    - roq-api =={{ version }}
-    - roq-oss-rapidjson
+    - roq-client =={{ version }}
+    - roq-oss-benchmark
 
 about:
   home: https://roq-trading.com
@@ -31,6 +33,4 @@ about:
   license: BSD-3-Clause
   license_family: BSD
   license_file: LICENSE
-  license_url: https://opensource.org/licenses/BSD-3-Clause
-  summary: How to use the trading API.
-  description: How to use the trading API.
+  summary: Roq Samples
