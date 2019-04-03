@@ -323,7 +323,7 @@ void Strategy::on(const CustomMessageEvent& event) {
   LOG(FATAL) << "Unexpected";
 }
 
-void Strategy::write_metrics(std::ostream& stream) {
+core::metrics::Writer& Strategy::write(core::metrics::Writer& writer) const {
   // Handler allowing you to export internal metrics.
   //
   // The application can optionally expose an end-point allowing

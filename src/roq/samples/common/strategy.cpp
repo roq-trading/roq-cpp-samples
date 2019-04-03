@@ -383,7 +383,7 @@ void Strategy::on(const CustomMessageEvent& event) {
   // another thread
 }
 
-void Strategy::write_metrics(std::ostream& stream) {
+core::metrics::Writer& Strategy::write(core::metrics::Writer& writer) const {
   // Here it's possible to write metrics using Prometheus'
   // exposition format.
   //

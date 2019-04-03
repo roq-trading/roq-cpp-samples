@@ -67,7 +67,7 @@ class Strategy : public client::Handler {
   void on(const CancelOrderAckEvent& event) final;
   void on(const CustomMessageEvent& event) final;
 
-  void write_metrics(std::ostream& stream) override;
+  core::metrics::Writer& write(core::metrics::Writer& writer) const override;
 
  private:
   client::Dispatcher& _dispatcher;
