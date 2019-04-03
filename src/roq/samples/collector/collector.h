@@ -40,8 +40,8 @@ class Collector final : public roq::client::Handler {
   void on(const roq::CancelOrderAckEvent& event) override {}
   void on(const roq::CustomMessageEvent& event) override {}
 
-  metrics::Writer& write(metrics::Writer& writer) const override {
-    return writer;
+  Metrics& write(Metrics& metrics) const override {
+    return metrics;
   }
 
  private:

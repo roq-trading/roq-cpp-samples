@@ -323,7 +323,7 @@ void Strategy::on(const CustomMessageEvent& event) {
   LOG(FATAL) << "Unexpected";
 }
 
-metrics::Writer& Strategy::write(metrics::Writer& writer) const {
+Metrics& Strategy::write(Metrics& metrics) const {
   // Handler allowing you to export internal metrics.
   //
   // The application can optionally expose an end-point allowing
@@ -338,6 +338,7 @@ metrics::Writer& Strategy::write(metrics::Writer& writer) const {
   //
   // Format:
   // https://github.com/prometheus/docs/blob/master/content/docs/instrumenting/exposition_formats.md
+  return metrics;
 }
 
 void Strategy::process_update(std::chrono::nanoseconds now) {

@@ -383,13 +383,14 @@ void Strategy::on(const CustomMessageEvent& event) {
   // another thread
 }
 
-metrics::Writer& Strategy::write(metrics::Writer& writer) const {
+Metrics& Strategy::write(Metrics& metrics) const {
   // Here it's possible to write metrics using Prometheus'
   // exposition format.
   //
   // Note!
   // This is called from another thread -- ensure you access
   // any recorded metrics using atomic variables.
+  return metrics;
 }
 
 }  // namespace common
