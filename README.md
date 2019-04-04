@@ -143,23 +143,27 @@ ROQ_v=1 ./simulate.sh
 
 ### Summary
 
-With the following steps you have achieved the following
+You have achieved the following
 
-* Created a (disposable) Conda environment.
+* Created a Conda environment.
 * Cloned the `roq-samples` project.
 * Installed relevant build tools.
 * Compiled the `roq-samples` project.
 * Run a simulation.
 
 > Compiled binaries are compatible with Conda packages.
-> You can use existing Conda packages without having to care
-> how those packages are built.
+> You can use existing Conda packages without having to
+> understand how to build those dependencies.
 > That's one of the benefits of using a package manager.
 
-It is easiest to fork the `roq-samples` project for your own
-project.
-Of course, the better approach is to understand the code and build
-configuration first, then create your own configuration from scratch.
+### Making your own project
+
+Easiest is to fork the `roq-samples` project and then modify
+as you see fit.
+
+The better approach is to understand the code and the build
+configuration.
+Then you should create your own configuration from scratch.
 
 ## Next steps
 
