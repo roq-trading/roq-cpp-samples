@@ -135,9 +135,7 @@ Use this script to update git submodules used by the project
 ### Build the Project
 
 ```bash
-mkdir build
-cd build
-cmake ..
+cmake .
 make -j4
 ```
 
