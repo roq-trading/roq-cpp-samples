@@ -166,20 +166,23 @@ configuration first, then create your own configuration from scratch.
 The different sub-projects are meant to demonstrate various concepts.
 
 The most trivial project is the
-[collector](https://github.com/roq-trading/roq-samples/src/roq/samples/collector).
+[collector](https://github.com/roq-trading/roq-samples/tree/master/src/roq/samples/collector).
 It subscribes to market data and writes anything it receives to the log.
 
-The [simple](https://github.com/roq-trading/roq-samples/src/roq/samples/simple)
+The [simple](https://github.com/roq-trading/roq-samples/tree/master/src/roq/samples/simple)
 project demonstrates the various event handlers.
 It also implements trivial patterns to manage e.g. monitoring for order action
 timeout.
 
-The [common](https://github.com/roq-trading/roq-samples/src/roq/samples/common)
+The [common](https://github.com/roq-trading/roq-samples/tree/master/src/roq/samples/common)
 project is a library meant to create a higher level interface to implement
 a trivial market taker application.
 
-The [taker](https://github.com/roq-trading/roq-samples/src/roq/samples/taker)
-project uses the common library to implement a trivial strategy.
+The [taker](https://github.com/roq-trading/roq-samples/tree/master/src/roq/samples/taker)
+project uses the common library to implement a trivial market taking strategy.
+
+The [maker](https://github.com/roq-trading/roq-samples/tree/master/src/roq/samples/maker)
+project uses the common library to implement a trivial market making strategy.
 
 * [Contact us](mailto:info@roq-trading.com)
 * [Roq Trading Solutions (website)](https://roq-trading.com)
