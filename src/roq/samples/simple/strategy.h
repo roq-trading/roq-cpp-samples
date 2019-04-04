@@ -50,7 +50,7 @@ class Strategy final : public client::Handler {
   void on(const CancelOrderAckEvent& event) override;
   void on(const CustomMessageEvent& event) override;
 
-  Metrics& write(Metrics& metrics) const override;
+  void write(Metrics& metrics) const override;
 
   void process_update(std::chrono::nanoseconds now);
 

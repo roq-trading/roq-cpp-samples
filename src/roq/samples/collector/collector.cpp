@@ -24,6 +24,7 @@ Collector::Collector(roq::client::Dispatcher& dispatcher)
 void Collector::on(const roq::MarketByPriceEvent& event) {
   LOG(INFO) << "MarketByPriceEvent=" << event;
 }
+
 }  // namespace collector
 }  // namespace samples
 }  // namespace roq
