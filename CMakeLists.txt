@@ -31,7 +31,7 @@ endif(BUILD_BENCHMARK)
 
 add_subdirectory(src)
 
-option(BUILD_TEST "Enable test" ON)
+option(BUILD_TEST "Enable test" OFF)
 
 if(BUILD_TEST)
   add_subdirectory(third_party/googletest/googletest)
