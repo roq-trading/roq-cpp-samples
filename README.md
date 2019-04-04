@@ -102,6 +102,7 @@ conda install -y git
 
 ```bash
 git clone https://github.com/roq-trading/roq-samples
+cd roq-samples
 ```
 
 ### Create a build environment
@@ -117,6 +118,11 @@ The project includes a `create_conda_env.sh` script which will
 ```
 
 If all goes well, you will be prompted to start or restart Conda.
+Instructions are written to your terminal, e.g.
+
+```bash
+conda deactivate && source ~/miniconda3/bin/activate
+```
 
 ### Update git submodules
 
@@ -125,6 +131,7 @@ Use this script to update git submodules used by the project
 ```bash
 ./git_init_submodules.sh
 ```
+
 ### Build the Project
 
 ```bash
