@@ -14,11 +14,15 @@ NAME="simple"
 # HISTORY="./history.csv"
 HISTORY="./history_2018-02-23.csv"
 
+EXCHANGE="CFFEX"
+ACCOUNTS="A1"
+SYMBOLS="IC1803"
+
 $PREFIX "$DIR/roq-samples-simple" \
 	--name "$NAME" \
 	--exchange "CFFEX" \
-	--accounts "A1" \
-	--symbols "IC1803" \
+	--accounts "$ACCOUNTS" \
+	--symbols "$SYMBOLS" \
 	--create-orders 1 \
 	--simulation \
 	--generator-type "csv-old" \
