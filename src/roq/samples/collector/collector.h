@@ -19,14 +19,14 @@ class Collector final : public roq::client::Handler {
   void on(const roq::StartEvent&) override {}
   void on(const roq::StopEvent&) override {}
   void on(const roq::TimerEvent&) override {}
-  void on(const roq::ConnectionStatusEvent&) override {}
-  void on(const roq::BatchBeginEvent&) override {}
-  void on(const roq::BatchEndEvent& event) override {}
+  void on(const roq::ConnectionStatusEvent&) override;
+  void on(const roq::BatchBeginEvent&) override;
+  void on(const roq::BatchEndEvent& event) override;
   void on(const roq::MarketDataStatusEvent& event) override {}
   void on(const roq::OrderManagerStatusEvent& event) override {}
-  void on(const roq::DownloadBeginEvent& event) override {}
-  void on(const roq::DownloadEndEvent& event) override {}
-  void on(const roq::ReferenceDataEvent& event) override {}
+  void on(const roq::DownloadBeginEvent& event) override;
+  void on(const roq::DownloadEndEvent& event) override;
+  void on(const roq::ReferenceDataEvent& event) override;
   void on(const roq::MarketStatusEvent& event) override {}
   void on(const roq::SessionStatisticsEvent& event) override {}
   void on(const roq::DailyStatisticsEvent& event) override {}
@@ -44,6 +44,7 @@ class Collector final : public roq::client::Handler {
 
  private:
   roq::client::Dispatcher& _dispatcher;
+  bool _download = false;
   uint32_t _order_id = 0;
 };
 
