@@ -20,7 +20,7 @@ SYMBOLS="IC1803"
 
 $PREFIX "$DIR/roq-samples-simple" \
 	--name "$NAME" \
-	--exchange "CFFEX" \
+	--exchange "$EXCHANGE" \
 	--accounts "$ACCOUNTS" \
 	--symbols "$SYMBOLS" \
 	--create-orders 1 \

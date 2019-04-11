@@ -53,6 +53,14 @@ void Collector::on(const roq::BatchBeginEvent&) {
 void Collector::on(const roq::BatchEndEvent& event) {
 }
 
+void Collector::on(const roq::MarketDataStatusEvent& event) {
+  LOG(INFO) << "MarketDataStatusEvent=" << event;
+}
+
+void Collector::on(const roq::OrderManagerStatusEvent& event) {
+  LOG(INFO) << "OrderManagerStatusEvent=" << event;
+}
+
 void Collector::on(const roq::DownloadBeginEvent& event) {
   LOG_IF(FATAL, std::strlen(event.download_begin.account) > 0) <<
     "Unexpected";

@@ -22,8 +22,8 @@ class Collector final : public roq::client::Handler {
   void on(const roq::ConnectionStatusEvent&) override;
   void on(const roq::BatchBeginEvent&) override;
   void on(const roq::BatchEndEvent& event) override;
-  void on(const roq::MarketDataStatusEvent& event) override {}
-  void on(const roq::OrderManagerStatusEvent& event) override {}
+  void on(const roq::MarketDataStatusEvent& event) override;
+  void on(const roq::OrderManagerStatusEvent& event) override;
   void on(const roq::DownloadBeginEvent& event) override;
   void on(const roq::DownloadEndEvent& event) override;
   void on(const roq::ReferenceDataEvent& event) override;
