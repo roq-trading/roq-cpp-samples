@@ -388,6 +388,8 @@ void Strategy::try_trade(
     LOG(WARNING) << "Order manager is *not* in a ready state";
   } catch (NotConnected&) {
     LOG(FATAL) << "Order manager is *not* connected";
+  } catch (std::exception& e) {
+    LOG(FATAL) << "Unexpected exception, what=\"" << e.what() << "\"";
   } catch (...) {
     LOG(FATAL) << "Unexpected";
   }

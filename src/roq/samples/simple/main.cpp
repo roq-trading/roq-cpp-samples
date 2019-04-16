@@ -21,7 +21,9 @@ DEFINE_uint32(order_timeout, 5000, "Order timeout (ms)");
 // simulation options
 DEFINE_bool(simulation, false, "Simulation");
 DEFINE_string(generator_type, "csv", "Generator type");
+DEFINE_string(generator_name, "CFFEX", "Generator name");
 DEFINE_string(matcher_type, "simple", "Matcher type");
+DEFINE_uint32(matcher_buffer_size, (64 + 1) * 4096, "Matcher buffer size");
 DEFINE_uint32(market_data_latency, 10, "Market data latency (ms)");
 DEFINE_uint32(order_manager_latency, 100, "Order manager latency (ms)");
 
@@ -80,21 +82,28 @@ class Application final : public roq::Application {
 
   template <typename T, typename... Args>
   void simulate(const T& connections, Args&&... args) {
+    using roq::client::detail::SimulationFactory;
     // parse options
     std::chrono::milliseconds market_data_latency {
       FLAGS_market_data_latency };
     std::chrono::milliseconds order_manager_latency {
         FLAGS_order_manager_latency };
     // create the event generator
-    using roq::client::detail::SimulationFactory;
     auto generator = SimulationFactory::create_generator(
         FLAGS_generator_type,
         connections);
-    // create and dispatch
-    roq::client::Simulation<Strategy>(
+    // create the matcher
+    auto matcher = SimulationFactory::create_matcher(
+        FLAGS_matcher_type,
+        FLAGS_generator_name,
         market_data_latency,
         order_manager_latency,
-        std::forward<Args>(args)...).dispatch(*generator);
+        FLAGS_matcher_buffer_size);
+    // create and dispatch
+    roq::client::Simulation<Strategy>(
+        *generator,
+        *matcher,
+        std::forward<Args>(args)...).dispatch();
   }
 
   template <typename T, typename... Args>
