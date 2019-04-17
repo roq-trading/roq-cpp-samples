@@ -267,6 +267,7 @@ void Strategy::on(const OrderUpdateEvent& event) {
   LOG_IF(WARNING, _order_timeout.count() == 0) << "Unexpected";
   // reset the timeout
   if (order_id == _order_id && _order_timeout.count() != 0) {
+    VLOG(1) << "Remove order timeout for order_id=" << order_id;
     _order_timeout = {};
   }
 }
@@ -291,7 +292,9 @@ void Strategy::on(const CreateOrderAckEvent& event) {
   // management will be incorrect if we continue
   // ... different order_id indicates out-of-sync updates (there should
   // only be one in-flight order creation request)
-  LOG_IF(FATAL, order_id != _order_id) << "Unexpected";
+  LOG_IF(FATAL, order_id != _order_id) << "Unexpected: "
+    "Received CreateOrderAck for order_id=" << order_id <<
+    ", expected order_id=" << _order_id;
   // ... timeout can only be reset by ack indicating failure
   LOG_IF(FATAL, _order_timeout.count() == 0) << "Unexpected";
   if (event.create_order_ack.failure) {
