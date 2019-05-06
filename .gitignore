@@ -39,3 +39,6 @@ roq-samples-*
 
 # debug files
 *.sock
+
+# jupyter
+.ipynb_checkpoints/
