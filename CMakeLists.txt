@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.1)
 
-project(roq-samples2)
+project(roq-samples)
 
 set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
 
