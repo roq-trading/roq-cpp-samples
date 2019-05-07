@@ -6,6 +6,7 @@
 
 #include "roq/samples/common/tokenizer.h"
 
+#include "roq/samples/simple/performance.h"
 #include "roq/samples/simple/strategy.h"
 
 // common options
@@ -99,10 +100,13 @@ class Application final : public roq::Application {
         market_data_latency,
         order_manager_latency,
         FLAGS_matcher_buffer_size);
-    // create and dispatch
+    // create the collector
+    Performance performance;
+    // create the strategy and dispatch
     roq::client::Simulation<Strategy>(
         *generator,
         *matcher,
+        performance,
         std::forward<Args>(args)...).dispatch();
   }
 
