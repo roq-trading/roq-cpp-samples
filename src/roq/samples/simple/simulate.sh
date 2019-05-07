@@ -11,8 +11,7 @@ fi
 
 NAME="simple"
 
-# HISTORY="./history.csv"
-HISTORY="./history_2018-02-23.csv"
+HISTORY="$CONDA_PREFIX/share/roq/data/USTP_Multi_20180223.csv"
 
 EXCHANGE="CFFEX"
 ACCOUNTS="A1"

@@ -42,7 +42,8 @@ $PREFIX/bin/conda install --yes \
   make \
   cmake \
   git \
-  roq-client
+  roq-client \
+  roq-data
 
 # Use Conda's environment-specific variables
 
