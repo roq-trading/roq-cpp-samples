@@ -4,6 +4,7 @@
 
 #include "roq/application.h"
 
+#include "roq/samples/taker/performance.h"
 #include "roq/samples/taker/strategy.h"
 
 DEFINE_bool(simulation, false, "Simulation");
@@ -64,10 +65,13 @@ class Application final : public roq::Application {
         market_data_latency,
         order_manager_latency,
         FLAGS_matcher_buffer_size);
-    // create and dispatch
+    // create the collector
+    Performance performance;
+    // create the strategy and dispatch
     roq::client::Simulation<Strategy>(
         *generator,
         *matcher,
+        performance,
         std::forward<Args>(args)...).dispatch();
   }
 
