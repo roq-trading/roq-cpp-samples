@@ -8,9 +8,11 @@ namespace roq {
 namespace samples {
 namespace taker {
 
-class Performance final : public Collector {
+class Performance final : public client::Collector {
  public:
   Performance() {
+  }
+  explicit Performance(std::chrono::nanoseconds period) {
   }
 
  protected:
@@ -38,6 +40,20 @@ class Performance final : public Collector {
   void on(const CancelOrderAckEvent& event) override;
 
   // void write(Metrics& metrics) const override;
+
+  bool column_type(const std::string& type) const override;
+  void extract(
+      const std::string& type,
+      const std::string& symbol,
+      std::vector<std::chrono::nanoseconds>& index,
+      std::vector<std::string>& columns,
+      std::vector<double>& data) const override;
+  void extract(
+      const std::string& type,
+      const std::string& symbol,
+      std::vector<std::chrono::nanoseconds>& index,
+      std::vector<double>& columns,
+      std::vector<double>& data) const override;
 };
 
 }  // namespace taker
