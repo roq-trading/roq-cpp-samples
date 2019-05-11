@@ -2,6 +2,10 @@
 
 #pragma once
 
+#include <chrono>
+#include <string>
+#include <vector>
+
 #include "roq/client.h"
 
 namespace roq {
@@ -43,14 +47,16 @@ class Performance final : public client::Collector {
 
   bool column_type(const std::string& type) const override;
   void extract(
-      const std::string& type,
+      const std::string& exchange,
       const std::string& symbol,
+      const std::string& type,
       std::vector<std::chrono::nanoseconds>& index,
       std::vector<std::string>& columns,
       std::vector<double>& data) const override;
   void extract(
-      const std::string& type,
+      const std::string& exchange,
       const std::string& symbol,
+      const std::string& type,
       std::vector<std::chrono::nanoseconds>& index,
       std::vector<double>& columns,
       std::vector<double>& data) const override;
