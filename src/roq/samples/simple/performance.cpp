@@ -79,26 +79,11 @@ void Performance::write(Metrics& metrics) const {
 }
 */
 
-bool Performance::column_type(const std::string& type) const {
-  return true;
-}
-
 void Performance::extract(
     const std::string& exchange,
     const std::string& symbol,
     const std::string& type,
-    std::vector<std::chrono::nanoseconds>& index,
-    std::vector<std::string>& columns,
-    std::vector<double>& data) const {
-}
-
-void Performance::extract(
-    const std::string& exchange,
-    const std::string& symbol,
-    const std::string& type,
-    std::vector<std::chrono::nanoseconds>& index,
-    std::vector<double>& columns,
-    std::vector<double>& data) const {
+    client::DataFrame::Handler& handler) const {
 }
 
 }  // namespace simple

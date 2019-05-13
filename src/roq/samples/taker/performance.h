@@ -45,21 +45,11 @@ class Performance final : public client::Collector {
 
   // void write(Metrics& metrics) const override;
 
-  bool column_type(const std::string& type) const override;
   void extract(
       const std::string& exchange,
       const std::string& symbol,
       const std::string& type,
-      std::vector<std::chrono::nanoseconds>& index,
-      std::vector<std::string>& columns,
-      std::vector<double>& data) const override;
-  void extract(
-      const std::string& exchange,
-      const std::string& symbol,
-      const std::string& type,
-      std::vector<std::chrono::nanoseconds>& index,
-      std::vector<double>& columns,
-      std::vector<double>& data) const override;
+      client::DataFrame::Handler& handler) const override;
 };
 
 }  // namespace taker
