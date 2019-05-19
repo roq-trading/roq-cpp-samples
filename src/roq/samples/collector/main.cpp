@@ -21,7 +21,7 @@ class Application final : public roq::Application {
     if (argc == 1)
       throw std::runtime_error("Expected arguments");
     std::vector<std::string> arguments(argv + 1, argv + argc);
-    roq::client::Trading(arguments).dispatch<Collector>();
+    roq::client::Trader(arguments).dispatch<Collector>();
     return EXIT_SUCCESS;
   }
 };
