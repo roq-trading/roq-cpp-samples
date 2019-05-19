@@ -68,19 +68,15 @@ class Application final : public roq::Application {
     // create the collector
     Performance performance;
     // create the strategy and dispatch
-    roq::client::Simulation<Strategy>(
-        *generator,
-        *matcher,
-        performance,
-        std::forward<Args>(args)...).dispatch();
+    roq::client::Simulation simulator(*generator, *matcher, performance);
+    simulator.dispatch<Strategy>(std::forward<Args>(args)...);
   }
 
   template <typename T, typename... Args>
   void trade(const T& arguments, Args&&... args) {
     // create and dispatch
-    roq::client::Trading<Strategy>(
-        arguments,
-        std::forward<Args>(args)...).dispatch();
+    roq::client::Trading trader(arguments);
+    trader.dispatch<Strategy>(std::forward<Args>(args)...);
   }
 };
 

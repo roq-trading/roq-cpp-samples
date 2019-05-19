@@ -46,9 +46,9 @@ class Performance final : public client::Collector {
   // void write(Metrics& metrics) const override;
 
   void extract(
+      const std::string& type,
       const std::string& exchange,
       const std::string& symbol,
-      const std::string& type,
       client::DataFrame::Handler& handler) const override;
 };
 

@@ -80,9 +80,9 @@ void Performance::write(Metrics& metrics) const {
 */
 
 void Performance::extract(
+    const std::string& type,
     const std::string& exchange,
     const std::string& symbol,
-    const std::string& type,
     client::DataFrame::Handler& handler) const {
 }
 
