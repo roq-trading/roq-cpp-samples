@@ -4,7 +4,6 @@
 
 #include "roq/application.h"
 
-#include "roq/samples/taker/performance.h"
 #include "roq/samples/taker/strategy.h"
 
 DEFINE_bool(simulation, false, "Simulation");
@@ -66,10 +65,12 @@ class Application final : public roq::Application {
         order_manager_latency,
         FLAGS_matcher_buffer_size);
     // create the collector
-    Performance performance;
+    auto collector = client::detail::SimulationFactory::create_collector(
+        std::chrono::milliseconds(1));
     // create the strategy and dispatch
-    roq::client::Simulator(*generator, *matcher, performance)
+    roq::client::Simulator(*generator, *matcher, *collector)
       .dispatch<Strategy>(std::forward<Args>(args)...);
+    // TODO(thraneh): command-line arguments to control collector output
   }
 
   template <typename T, typename... Args>
