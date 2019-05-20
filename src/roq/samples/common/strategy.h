@@ -43,8 +43,6 @@ class Strategy : public client::Handler {
   virtual void update(const MarketData&) = 0;
 
  protected:
-  void on(const StartEvent&) final;
-  void on(const StopEvent&) final;
   void on(const TimerEvent&) final;
   void on(const ConnectionStatusEvent&) final;
   void on(const BatchBeginEvent&) final;
@@ -65,9 +63,6 @@ class Strategy : public client::Handler {
   void on(const CreateOrderAckEvent& event) final;
   void on(const ModifyOrderAckEvent& event) final;
   void on(const CancelOrderAckEvent& event) final;
-  void on(const CustomMessageEvent& event) final;
-
-  void write(Metrics& metrics) const override;
 
  private:
   client::Dispatcher& _dispatcher;

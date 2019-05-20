@@ -9,6 +9,11 @@ namespace roq {
 namespace samples {
 namespace simple {
 
+// Constructor:
+// 
+// Note!
+// A dispatcher interface is required for the first argument.
+
 Strategy::Strategy(
     client::Dispatcher& dispatcher,
     const std::string& exchange,
@@ -25,6 +30,8 @@ Strategy::Strategy(
       _market_by_price(
           client::DepthBuilder::create(_depth, std::size(_depth))) {
 }
+
+// Event handlers:
 
 void Strategy::on(const StartEvent& event) {
   // This is a "hook" allowing you to safely start other threads.
@@ -343,6 +350,8 @@ void Strategy::write(Metrics& metrics) const {
   // https://github.com/prometheus/docs/blob/master/content/docs/instrumenting/exposition_formats.md
 }
 
+// Utility functions
+
 void Strategy::process_update(std::chrono::nanoseconds now) {
   VLOG(1) << "bid=" << _depth[0].bid_price << ", "
     "ask=" << _depth[0].ask_price;
@@ -369,6 +378,10 @@ void Strategy::try_trade(
     VLOG(1) << "Refusing to trade -- another order is already in-flight";
     return;
   }
+  // Important!
+  // A local order id is used to identify newly created orders.
+  // These local order id's must be sequentially increasing and never
+  // be re-used.
   auto order_id = ++_order_id;
   CreateOrder create_order {
     .account = _trade_account.c_str(),
@@ -383,6 +396,8 @@ void Strategy::try_trade(
     .position_effect = PositionEffect::UNDEFINED,
     .order_template = "FOK"
   };
+  // Even when we're keeping track of state, a request can still fail
+  // for various reasons.
   try {
     auto source = 0;
     _dispatcher.send(create_order, source);

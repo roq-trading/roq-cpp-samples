@@ -2,8 +2,8 @@
 
 #pragma once
 
+#include <atomic>
 #include <string>
-#include <vector>
 
 #include "roq/samples/common/strategy.h"
 
@@ -22,29 +22,24 @@ class Strategy final : public common::Strategy {
 
  protected:
   void update(std::chrono::nanoseconds now) final;
+
   void update(const CreateOrderAck&) final;
   void update(const OrderUpdate&) final;
   void update(const TradeUpdate&) final;
+
   void update(const common::MarketData&) final;
 
-  double compute(const Layer *depth, size_t length) const;
+  double compute_mid_price(const Layer *depth, size_t length) const;
 
-  void write_signal(
-      std::chrono::nanoseconds exchange_time,
-      const Layer& best,
-      double value,
-      double signal);
-  void write_order(
-      std::chrono::nanoseconds exchange_time,
-      Side side,
-      double quantity,
-      double price);
+  void write(Metrics& metrics) const final;
 
  private:
   const double _quantity = 1.0;  // FIXME(thraneh): from config
   const bool _weighted = false;
   const double _threshold = 1.0e-8;
-  double _previous = 0.0;
+  double _previous = 0.0;  // keep track of previous mid price
+  // Metrics:
+  std::atomic<double> _signal {};
 };
 
 }  // namespace taker

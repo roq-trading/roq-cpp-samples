@@ -23,9 +23,7 @@ DEFINE_string(
     "symbols, one or more comma-separated lists prefixed "
     "with exchange, e.g. \"CFFEX:IC1906,IF1906,IH1906;SHFE:AU1906\")");
 
-DEFINE_bool(write_csv, false, "Write CSV output?");
 DEFINE_bool(real_trading, false, "Real trading?");
-
 
 // from client
 DECLARE_string(name);
@@ -35,16 +33,11 @@ namespace samples {
 namespace taker {
 
 namespace {
-constexpr const char *PREFIX_SIGNAL = "S";
-constexpr const char *PREFIX_CREATE_ORDER = "O";
-constexpr const char *PREFIX_UPDATE_ORDER = "U";
-constexpr const char *PREFIX_UPDATE_TRADE = "T";
-constexpr const char *DELIMITER = ",";
-constexpr const char *QUOTE = "\"";
 template <typename T>
 int sign(T value) {
   return (T(0) < value) - (value < T(0));
 }
+constexpr double TOLERANCE = 1.0e-8;
 }  // namespace
 
 Strategy::Strategy(
@@ -67,18 +60,18 @@ void Strategy::update(const TradeUpdate& trade_update) {
 
 void Strategy::update(const common::MarketData& market_data) {
   const auto& best = market_data.depth[0];
-  // Is it a proper two-sided market?
-  if (best.bid_quantity == 0.0 && best.ask_quantity == 0.0)
+  // Safety check: is it a proper two-sided market?
+  if (std::fabs(best.bid_quantity) < TOLERANCE ||
+      std::fabs(best.ask_quantity) < TOLERANCE)
     return;
-  // Compute signal and compare to previous.
-  auto value = compute(
+  // Compute signal and compare to previous computation.
+  auto value = compute_mid_price(
       market_data.depth,
       std::size(market_data.depth));
   auto signal = value - _previous;
   _previous = value;
-  // Write signal to std::cout [csv].
-  if (FLAGS_write_csv)
-    write_signal(market_data.exchange_time, best, value, signal);
+  // Metrics are collected asynchronously: use atomics.
+  _signal.store(signal, std::memory_order_relaxed);
   // Only trade if the magnitude of the signal exceeds threshold
   if (std::fabs(signal) < _threshold || std::isnan(signal))
     return;
@@ -92,32 +85,23 @@ void Strategy::update(const common::MarketData& market_data) {
   if ((sign_signal * sign_position) < 0)
     return;
   // All pre-trade checks have now passed.
+  if (!FLAGS_real_trading) {
+    LOG(WARNING) << "Trading is *not* enabled (use --real-trading)";
+    return;
+  }
   try {
     switch (sign_signal) {
-      case 1:
-        if (FLAGS_write_csv)
-          write_order(
-              market_data.exchange_time,
-              Side::SELL,
-              _quantity,
-              best.bid_price);
-        if (FLAGS_real_trading)
-          at(0).sell_ioc(_quantity, best.bid_price);
-        else
-          LOG(WARNING) << "Trading is *not* enabled (use --real-trading)";
+      case 1: {
+        at(0).sell_ioc(_quantity, best.bid_price);
         break;
-      case -1:
-        if (FLAGS_write_csv)
-          write_order(
-              market_data.exchange_time,
-              Side::BUY,
-              _quantity,
-              best.ask_price);
-        if (FLAGS_real_trading)
-          at(0).buy_ioc(_quantity, best.ask_price);
-        else
-          LOG(WARNING) << "Trading is *not* enabled (use --real-trading)";
+      }
+      case -1: {
+        at(0).buy_ioc(_quantity, best.ask_price);
         break;
+      }
+      default: {
+        break;
+      }
     }
   } catch (RuntimeError& e) {
     // Possible reasons;
@@ -137,7 +121,9 @@ void Strategy::update(const common::MarketData& market_data) {
   }
 }
 
-double Strategy::compute(const Layer *depth, size_t length) const {
+double Strategy::compute_mid_price(
+    const Layer *depth,
+    size_t length) const {
   if (_weighted) {
     // Weighted mid price.
     // A real-life application should probably assign
@@ -158,41 +144,11 @@ double Strategy::compute(const Layer *depth, size_t length) const {
   }
 }
 
-// CSV output
-
-void Strategy::write_signal(
-    std::chrono::nanoseconds exchange_time,
-    const Layer& best,
-    double value,
-    double signal) {
-  auto msecs = exchange_time.count() / 1000;
-  std::cout <<
-    PREFIX_SIGNAL << DELIMITER <<
-    (msecs / 1000) << DELIMITER <<
-    (msecs % 1000) << DELIMITER <<
-    best.bid_price << DELIMITER <<
-    best.bid_quantity << DELIMITER <<
-    best.ask_price << DELIMITER <<
-    best.ask_quantity << DELIMITER <<
-    value << DELIMITER <<
-    signal <<
-    std::endl;
-}
-
-void Strategy::write_order(
-    std::chrono::nanoseconds exchange_time,
-    Side side,
-    double quantity,
-    double price) {
-  auto msecs = exchange_time.count() / 1000;
-  std::cout <<
-    PREFIX_CREATE_ORDER << DELIMITER <<
-    (msecs / 1000) << DELIMITER <<
-    (msecs % 1000) << DELIMITER <<
-    side << DELIMITER <<
-    quantity << DELIMITER <<
-    price << DELIMITER <<
-    std::endl;
+void Strategy::write(Metrics& metrics) const {
+  metrics
+    .write_type("strategy", "gauge")
+    .write_simple("strategy", "calc=signal", _signal)
+    .finish();
 }
 
 }  // namespace taker

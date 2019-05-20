@@ -125,14 +125,6 @@ Strategy::Strategy(
   _market_data_updated.resize(_instruments.size());
 }
 
-void Strategy::on(const StartEvent& event) {
-  // Here it's possible to start another thread
-}
-
-void Strategy::on(const StopEvent& event) {
-  // Here it's possible to stop another thread
-}
-
 void Strategy::on(const TimerEvent& event) {
   for (auto& account : _accounts)
     account.on(event);
@@ -376,20 +368,6 @@ void Strategy::on(const CancelOrderAckEvent& event) {
       cancel_order_ack.account,
       [&](Account& account) {
     account.on(cancel_order_ack); });
-}
-
-void Strategy::on(const CustomMessageEvent& event) {
-  // Here it's possible to receive queued messages from
-  // another thread
-}
-
-void Strategy::write(Metrics& metrics) const {
-  // Here it's possible to write metrics using Prometheus'
-  // exposition format.
-  //
-  // Note!
-  // This is called from another thread -- ensure you access
-  // any recorded metrics using atomic variables.
 }
 
 }  // namespace common
