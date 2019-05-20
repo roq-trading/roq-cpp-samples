@@ -13,6 +13,8 @@ DEFINE_string(matcher_type, "simple", "Matcher type");
 DEFINE_uint32(matcher_buffer_size, (64 + 1) * 4096, "Matcher buffer size");
 DEFINE_uint32(market_data_latency, 0, "Market data latency");
 DEFINE_uint32(order_manager_latency, 0, "Order manager latency");
+DEFINE_string(results_directory, "", "Results directory");
+DEFINE_string(results_format, "", "Results format (csv|json)");
 
 namespace {
 constexpr const char *DESCRIPTION = "Taker Strategy (Roq Samples)";
@@ -70,7 +72,8 @@ class Application final : public roq::Application {
     // create the strategy and dispatch
     roq::client::Simulator(*generator, *matcher, *collector)
       .dispatch<Strategy>(std::forward<Args>(args)...);
-    // TODO(thraneh): command-line arguments to control collector output
+    // export collector results
+    collector->write(FLAGS_results_directory, FLAGS_results_format);
   }
 
   template <typename T, typename... Args>
