@@ -58,11 +58,11 @@ static auto create_market_by_price(const char *symbol) {
     .snapshot = true,
     .exchange_time = {}
   };
-  for (auto i = 0; i < std::size(bid); ++i) {
+  for (size_t i = 0; i < std::size(bid); ++i) {
     bid[i].price = static_cast<double>(i * 4);
     bid[i].quantity = static_cast<double>(i * 4 + 1);
   }
-  for (auto i = 0; i < std::size(ask); ++i) {
+  for (size_t i = 0; i < std::size(ask); ++i) {
     ask[i].price = static_cast<double>(i * 4 + 2);
     ask[i].quantity = static_cast<double>(i * 4 + 3);
   }

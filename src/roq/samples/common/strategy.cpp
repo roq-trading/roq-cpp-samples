@@ -32,7 +32,7 @@ static auto create_instruments(
     const Config& config,
     const std::unordered_map<std::string, Account *>& accounts_by_name) {
   std::vector<Instrument> result;
-  for (auto i = 0; i < config.instruments.size(); ++i) {
+  for (size_t i = 0; i < config.instruments.size(); ++i) {
     const auto& instrument = config.instruments[i];
     std::vector<Position *> positions;
     for (auto& iter : instrument.accounts) {
@@ -160,7 +160,7 @@ void Strategy::on(const BatchBeginEvent& event) {
 
 void Strategy::on(const BatchEndEvent& event) {
   auto size = _market_data_updated.size();
-  for (auto i = 0; i < size; ++i) {
+  for (size_t i = 0; i < size; ++i) {
     if (_market_data_updated[i])
       update(_instruments[i].get_market_data());
   }

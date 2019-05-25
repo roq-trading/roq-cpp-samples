@@ -130,7 +130,7 @@ double Strategy::compute_mid_price(
     // importance (weighting) based on layer's distance
     // from best.
     double sum_1 = 0.0, sum_2 = 0.0;
-    for (auto i = 0; i < length; ++i) {
+    for (size_t i = 0; i < length; ++i) {
       const auto& layer = depth[i];
       sum_1 += layer.bid_price * layer.bid_quantity +
                layer.ask_price * layer.ask_quantity;

@@ -195,19 +195,18 @@ void Account::cancel_order(uint32_t order_id) {
 }
 
 void Account::on(const CreateOrderAck& create_order_ack) {
-  auto iter = _live_orders.find(create_order_ack.order_id);
-  if (create_order_ack.failure)
+  if (create_order_ack.failure) {
+    // the order was not accepted: we should remove it again
     _live_orders.erase(create_order_ack.order_id);
+  }
 }
 
 void Account::on(const ModifyOrderAck& modify_order_ack) {
-  auto iter = _live_orders.find(modify_order_ack.order_id);
   // there's not much to do here -- an order update should
   // arrive asynchronously with new order attributes
 }
 
 void Account::on(const CancelOrderAck& cancel_order_ack) {
-  auto iter = _live_orders.find(cancel_order_ack.order_id);
   // there's not much to do here -- an order update should
   // arrive asynchronously with new order attributes
 }
