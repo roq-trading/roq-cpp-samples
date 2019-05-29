@@ -27,5 +27,6 @@ $PREFIX "$DIR/roq-samples-simple" \
 	--generator-type "csv-old" \
 	--market-data-latency 10 \
 	--order-manager-latency 100 \
+	--results-directory "." \
 	"$HISTORY" \
 	$@

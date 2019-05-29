@@ -48,3 +48,6 @@ doc/Doxyfile
 doc/doxygen-build.stamp
 doc/html
 doc/xml
+
+# results
+*.csv
