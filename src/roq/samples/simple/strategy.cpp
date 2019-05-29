@@ -10,7 +10,7 @@ namespace samples {
 namespace simple {
 
 // Constructor:
-// 
+
 // Note!
 // A dispatcher interface is required for the first argument.
 

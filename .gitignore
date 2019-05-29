@@ -42,3 +42,9 @@ roq-samples-*
 
 # jupyter
 .ipynb_checkpoints/
+
+# doxygen
+doc/Doxyfile
+doc/doxygen-build.stamp
+doc/html
+doc/xml
