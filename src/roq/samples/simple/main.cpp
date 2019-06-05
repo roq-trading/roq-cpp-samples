@@ -102,7 +102,7 @@ class Application final : public roq::Application {
         order_manager_latency,
         FLAGS_matcher_buffer_size);
     // create the collector
-    auto collector = client::detail::SimulationFactory::create_collector(
+    auto collector = SimulationFactory::create_collector(
         std::chrono::milliseconds(1));
     // create the strategy and dispatch
     roq::client::Simulator(*generator, *matcher, *collector)
