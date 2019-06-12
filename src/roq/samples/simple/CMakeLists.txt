@@ -3,7 +3,6 @@ cmake_minimum_required(VERSION 3.0)
 project(simple)
 
 add_executable(roq-samples-simple
-  performance.cpp
   strategy.cpp
   main.cpp
 )

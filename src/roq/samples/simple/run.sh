@@ -11,9 +11,6 @@ fi
 
 NAME="simple"
 
-SERVER1="server-1"
-SERVER2="server-2"
-
 EXCHANGE="CFFEX"
 ACCOUNTS="A1"
 SYMBOLS="IC1803"
@@ -25,6 +22,4 @@ $PREFIX "$DIR/roq-samples-simple" \
 	--exchange "$EXCHANGE" \
 	--accounts "$ACCOUNTS" \
 	--symbols "$SYMBOLS" \
-	"$(realpath "$DIR/../$SERVER1.sock")" \
-	"$(realpath "$DIR/../$SERVER2.sock")" \
 	$@
