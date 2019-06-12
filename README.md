@@ -8,10 +8,10 @@ algorithmic trading strategies.
 
 Topics
 
-* Create a development environment.
-* Application design.
-* Handle asynchronous events.
-* Typical strategy patterns.
+* Create a development environment
+* Application design
+* Handle asynchronous events
+* Typical strategy patterns
 
 ## What is it?
 
@@ -22,33 +22,35 @@ A very naive implementation would follow this pattern
 
 1. Receive market data update
 2. Update model
-3. Send order creation request (when conditions are met)
+3. When conditions are met, send order creation request
 
-The reality is unfortunately much more complicated!
+The reality is unfortunately more complicated.
 
 These are some of the reasons why you have to be careful
 
 * Latest market data snapshot becomes stale if the gateway
   loses connection to the market data feed.
-  Client must ensure invalidation of market data if it
-  receives a disconnect event.
+  Client must ensure invalidation of market data (and model
+  results) if it receives a disconnect event from the gateway.
 * Several market data update events could arrive as a batch.
   Certain trading strategies, e.g. spread trading, will
   benefit from postponing the processing until the entire
   batch has been received.
 * Order action requests could get lost in transit.
-  It is important to monitor for request timeout and take
-  appropriate action if an ack has not been received.
+  It is important to monitor the age of a request and take
+  appropriate action if an ack has not been received within
+  a timeout period.
   There are no silver bullets: Appropriate action could
   be to simply resend the order action request.
   Or perhaps the right approach is to terminate the program
   and require human intervention.
-* Download must be completed before trading is allowed.
-  In particular, current positions and existing working orders
-  must be known to the trading strategy before it starts
-  sending new order action requests.
+  (It really depends on your use-case).
+* Download must have completed before trading is allowed.
+  In particular, accurate positions and working orders
+  must have been received before the trading strategy is
+  allowed to send new order action requests.
 
-The source code examples are heavily documented to help
+The source code samples has been documented to help
 you better understand the motivations and reasons for
 specific design patterns.
 
@@ -59,7 +61,7 @@ specific design patterns.
 
 > *This section will demonstrate how to install Miniconda*.
 
-A Conda environment allows you to install up-to-date binary packages
+A conda environment allows you to install up-to-date binary packages
 on your development box *without* requiring root access.
 
 ```bash
@@ -74,59 +76,67 @@ cat > ~/miniconda3/.condarc << EOF
 channels:
   - defaults
   - https://roq-trading.com/conda/unstable
+  - conda-forge
 EOF
 ```
 
 ### Activate Miniconda
 
-> *This section will demonstrate how to activate your Conda environment*.
+> *This section will demonstrate how to activate your conda environment*.
 
-This is how you activate your Conda environment
+This is how you activate your conda environment
 
 ```bash
 source ~/miniconda3/bin/activate
 ```
 
 > The following sections will assume you have *already* activated your
-Conda environment.
+> conda environment.
 
 ### Install git
 
-If `git` is not already install on your system
+> You don't need this step if a recent version of git is
+> available on your system.
 
 ```bash
 conda install -y git
 ```
 
-### Clone the project
+### Clone roq-samples
 
 ```bash
+# clone roq-samples
 git clone https://github.com/roq-trading/roq-samples
+
+# change into the new directory
 cd roq-samples
 ```
 
 ### Create a build environment
 
-The project includes a `create_conda_env.sh` script which will
+The project includes a `create_conda_env.sh` helper script which will
 
-* Install the compiler toolchain
-* Install Roq dependency packages
-* Configure the Conda environment
+* install the required compiler toolchain,
+* install required dependencies (conda packages), and
+* configure your conda environment
 
 ```bash
 ./create_conda_env.sh
 ```
 
-If all goes well, you will be prompted to start or restart Conda.
-Instructions are written to your terminal, e.g.
+If all goes well, you will be prompted to start or restart conda.
 
-```bash
-conda deactivate && source ~/miniconda3/bin/activate
-```
+> Instructions are written to the terminal so you can easily copy-paste.
+> For example, something like this:
+> 
+> ```
+> Please re-activate your conda environment now!
+> conda deactivate && source ~/miniconda3/bin/activate
+> ```
 
 ### Update git submodules
 
-Use this script to update git submodules used by the project
+Use the helper script to update git submodules used by the project
 
 ```bash
 ./git_init_submodules.sh
@@ -139,25 +149,72 @@ cmake .
 make -j4
 ```
 
-### Run a simulation
+### Run an in-process simulation
+
+> This script will write simulation results (csv files) to current directory.
 
 ```bash
-cd src/roq/samples/simple
-ROQ_v=1 ./simulate.sh
+src/roq/samples/simple/simulate.sh
 ```
+
+You can also increate the logging verbosity if you want to see more details
+
+```bash
+ROQ_v=1 src/roq/samples/simple/simulate.sh
+```
+
+### Install the simulator service
+
+> The `roq-data` package is not required: it provides a default dataset
+> useful for demonstrating the simulator.
+> It has probably already been installed by the `create\_conda\_env.sh`
+> helper script mentioned earlier.
+
+```bash
+conda install -y roq-simulator roq-data
+```
+
+#### Launch the simulator service
+
+```bash
+roq-simulator \
+  --name "simulator" \
+  --dispatcher-affinity 1 \
+  --simulator-affinity 2 \
+  --buffer-size 266240 \
+  --config-directory "$CONDA_PREFIX/share/roq/simulator" \
+  --config-file "master.conf" \
+  --listen "$HOME/simulator.sock" \
+  --metrics 1234 \
+  --generator-type "csv-old" \
+  "$CONDA_PREFIX/share/roq/data/USTP_Multi_20180223.csv"
+```
+
+#### Run the strategy against the simulator service
+
+> Remember to activate the conda environment.
+
+```bash
+src/roq/samples/simple/run.sh $HOME/simulator.sock
+```
+
+#### Run the strategy against a gateway
+
+Same as previous step only using the socket exposed by the gateway.
 
 ### Summary
 
-You have achieved the following
+You have managed to achieve the following
 
-* Created a Conda environment.
-* Cloned the `roq-samples` project.
-* Installed relevant build tools.
-* Compiled the `roq-samples` project.
-* Run a simulation.
+* Create a conda environment
+* Clone the `roq-samples` project
+* Install relevant build tools
+* Compile the `roq-samples` project
+* Run the strategy as an in-process simulation
+* Run the strategy against a simulator service
 
-> Compiled binaries are compatible with Conda packages.
-> You can use existing Conda packages without having to
+> Compiled binaries are compatible with conda packages.
+> You can use existing conda packages without having to
 > understand how to build those dependencies.
 > That's one of the benefits of using a package manager.
 
@@ -166,9 +223,9 @@ You have achieved the following
 Easiest is to fork the `roq-samples` project and then modify
 as you see fit.
 
-The better approach is to understand the code and the build
-configuration.
-Then you should create your own configuration from scratch.
+The better approach is to understand the build
+configuration and the code.
+You should then, from scratch, create your own build configuration.
 
 ## Next steps
 
