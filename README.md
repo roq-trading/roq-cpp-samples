@@ -27,6 +27,7 @@ A very naive implementation would follow this pattern
 The reality is unfortunately more complicated.
 
 These are some of the reasons why you have to be careful
+when deploying algorithmic trading strategies
 
 * Latest market data snapshot becomes stale if the gateway
   loses connection to the market data feed.
@@ -61,7 +62,7 @@ specific design patterns.
 
 > *This section will demonstrate how to install Miniconda*.
 
-A conda environment allows you to install up-to-date binary packages
+A Conda environment allows you to install up-to-date binary packages
 on your development box *without* requiring root access.
 
 ```bash
@@ -82,16 +83,16 @@ EOF
 
 ### Activate Miniconda
 
-> *This section will demonstrate how to activate your conda environment*.
+> *This section will demonstrate how to activate your Conda environment*.
 
-This is how you activate your conda environment
+This is how you activate your Conda environment
 
 ```bash
 source ~/miniconda3/bin/activate
 ```
 
 > The following sections will assume you have *already* activated your
-> conda environment.
+> Conda environment.
 
 ### Install git
 
@@ -117,20 +118,20 @@ cd roq-samples
 The project includes a `create_conda_env.sh` helper script which will
 
 * install the required compiler toolchain,
-* install required dependencies (conda packages), and
-* configure your conda environment
+* install required dependencies (Conda packages), and
+* configure your Conda environment
 
 ```bash
 ./create_conda_env.sh
 ```
 
-If all goes well, you will be prompted to start or restart conda.
+If all goes well, you will be prompted to start or restart Miniconda.
 
 > Instructions are written to the terminal so you can easily copy-paste.
 > For example, something like this:
 > 
 > ```
-> Please re-activate your conda environment now!
+> Please re-activate your Conda environment now!
 > conda deactivate && source ~/miniconda3/bin/activate
 > ```
 
@@ -145,7 +146,7 @@ Use the helper script to update git submodules used by the project
 ### Build the Project
 
 ```bash
-cmake .
+cmake -DCMAKE_BUILD_TYPE=Debug
 make -j4
 ```
 
@@ -167,7 +168,7 @@ ROQ_v=1 src/roq/samples/simple/simulate.sh
 
 > The `roq-data` package is not required: it provides a default dataset
 > useful for demonstrating the simulator.
-> It has probably already been installed by the `create\_conda\_env.sh`
+> It has probably already been installed by the `create_conda_env.sh`
 > helper script mentioned earlier.
 
 ```bash
@@ -192,7 +193,8 @@ roq-simulator \
 
 #### Run the strategy against the simulator service
 
-> Remember to activate the conda environment.
+> You probably want to run the next command from a new terminal.
+> Remember to activate your Conda environment.
 
 ```bash
 src/roq/samples/simple/run.sh $HOME/simulator.sock
@@ -206,15 +208,15 @@ Same as previous step only using the socket exposed by the gateway.
 
 You have managed to achieve the following
 
-* Create a conda environment
+* Create a Conda environment
 * Clone the `roq-samples` project
 * Install relevant build tools
 * Compile the `roq-samples` project
 * Run the strategy as an in-process simulation
 * Run the strategy against a simulator service
 
-> Compiled binaries are compatible with conda packages.
-> You can use existing conda packages without having to
+> Compiled binaries are compatible with Conda packages.
+> You can use existing Conda packages without having to
 > understand how to build those dependencies.
 > That's one of the benefits of using a package manager.
 
