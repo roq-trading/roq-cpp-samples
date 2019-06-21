@@ -99,7 +99,7 @@ void Account::on(const PositionUpdate& position_update) {
     position.on(position_update, _download); });
 }
 
-void Account::on(const OrderUpdate& order_update) {
+void Account::on(const OrderUpdate&) {
   // don't process -- prefer trade updates
   // TODO(thraneh): this is probably not universally true...
   // there was a reason why this wasn't prefered for CFFEX/Femas
@@ -201,12 +201,12 @@ void Account::on(const CreateOrderAck& create_order_ack) {
   }
 }
 
-void Account::on(const ModifyOrderAck& modify_order_ack) {
+void Account::on(const ModifyOrderAck&) {
   // there's not much to do here -- an order update should
   // arrive asynchronously with new order attributes
 }
 
-void Account::on(const CancelOrderAck& cancel_order_ack) {
+void Account::on(const CancelOrderAck&) {
   // there's not much to do here -- an order update should
   // arrive asynchronously with new order attributes
 }

@@ -19,8 +19,8 @@ Position::Position(
     Account& account,
     double long_limit,
     double short_limit,
-    double long_start_of_day,
-    double short_start_of_day)
+    double /*long_start_of_day*/,
+    double /*short_start_of_day*/)
     : _account(account),
       _long_limit(long_limit),
       _short_limit(short_limit) {

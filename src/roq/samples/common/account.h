@@ -35,7 +35,7 @@ class Account final : NonCopyable {
   }
 
   Position& get_position(
-      const std::string& exchange,
+      const std::string& /*exchange*/,
       const std::string& symbol) {
     return _positions.at(symbol);
   }

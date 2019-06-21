@@ -81,25 +81,17 @@ static auto create_trade_summary(const char *symbol) {
 }
 class Dispatcher final : public roq::client::Dispatcher {
  protected:
-  void send(
-      const roq::Subscribe& subscribe,
-      uint32_t source) override {
+  void send(const roq::Subscribe&, uint32_t) override {
   }
-  void send(
-      const roq::CreateOrder& create_order,
-      uint32_t source) override {
+  void send(const roq::CreateOrder&, uint32_t) override {
   }
-  void send(
-      const roq::ModifyOrder& modify_order,
-      uint32_t source) override {
+  void send(const roq::ModifyOrder&, uint32_t) override {
     throw std::runtime_error("Unexpected");
   }
-  void send(
-      const roq::CancelOrder& cancel_order,
-      uint32_t source) override {
+  void send(const roq::CancelOrder& , uint32_t ) override {
     throw std::runtime_error("Unexpected");
   }
-  void enqueue(const roq::CustomMessage& message) override {
+  void enqueue(const roq::CustomMessage&) override {
     throw std::runtime_error("Unexpected");
   }
 };
@@ -155,17 +147,25 @@ void BM_Strategy_Update(benchmark::State& state) {
       .accounts = { {
         "A1", {
           .long_limit = 10,
-          .short_limit = 10
+          .short_limit = 10,
+          .long_start_of_day = 0.0,
+          .short_start_of_day = 0.0,
         }
       } },
     }, {
       .exchange = "CFFEX",
       .symbol = "IF1906",
       .net_limit = 0,
+      .tick_size = 0.01,
+      .multiplier = 100.0,
+      .accounts = {}
     }, {
       .exchange = "CFFEX",
       .symbol = "IH1906",
       .net_limit = 0,
+      .tick_size = 0.01,
+      .multiplier = 100.0,
+      .accounts = {},
     } }
   };
   auto strategy = create_strategy(dispatcher, config);
@@ -233,17 +233,25 @@ void BM_Strategy_Index(benchmark::State& state) {
       .accounts = { {
         "A1", {
           .long_limit = 10,
-          .short_limit = 10
+          .short_limit = 10,
+          .long_start_of_day = 0.0,
+          .short_start_of_day = 0.0,
         }
       } },
     }, {
       .exchange = "CFFEX",
       .symbol = "IF1906",
       .net_limit = 0,
+      .tick_size = 0.01,
+      .multiplier = 100.0,
+      .accounts = {},
     }, {
       .exchange = "CFFEX",
       .symbol = "IH1906",
       .net_limit = 0,
+      .tick_size = 0.01,
+      .multiplier = 100.0,
+      .accounts = {},
     } }
   };
   auto strategy = create_strategy(dispatcher, config);
@@ -268,17 +276,25 @@ void BM_Strategy_CreateOrder(benchmark::State& state) {
       .accounts = { {
         "A1", {
           .long_limit = 10,
-          .short_limit = 10
+          .short_limit = 10,
+          .long_start_of_day = 0.0,
+          .short_start_of_day = 0.0,
         }
       } },
     }, {
       .exchange = "CFFEX",
       .symbol = "IF1906",
       .net_limit = 0,
+      .tick_size = 0.01,
+      .multiplier = 100.0,
+      .accounts = {},
     }, {
       .exchange = "CFFEX",
       .symbol = "IH1906",
       .net_limit = 0,
+      .tick_size = 0.01,
+      .multiplier = 100.0,
+      .accounts = {},
     } }
   };
   auto strategy = create_strategy(dispatcher, config);

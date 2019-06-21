@@ -46,16 +46,16 @@ Strategy::Strategy(
     : common::Strategy(dispatcher, config) {
 }
 
-void Strategy::update(std::chrono::nanoseconds now) {
+void Strategy::update(std::chrono::nanoseconds) {
 }
 
-void Strategy::update(const CreateOrderAck& create_order_ack) {
+void Strategy::update(const CreateOrderAck&) {
 }
 
-void Strategy::update(const OrderUpdate& order_update) {
+void Strategy::update(const OrderUpdate&) {
 }
 
-void Strategy::update(const TradeUpdate& trade_update) {
+void Strategy::update(const TradeUpdate&) {
 }
 
 void Strategy::update(const common::MarketData& market_data) {

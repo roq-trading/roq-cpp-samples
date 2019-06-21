@@ -28,7 +28,7 @@ static auto create_accounts(
   return result;
 }
 static auto create_instruments(
-    client::Dispatcher& dispatcher,
+    client::Dispatcher& /*dispatcher*/,
     const Config& config,
     const std::unordered_map<std::string, Account *>& accounts_by_name) {
   std::vector<Instrument> result;
@@ -151,14 +151,14 @@ void Strategy::on(const ConnectionStatusEvent& event) {
   }
 }
 
-void Strategy::on(const BatchBeginEvent& event) {
+void Strategy::on(const BatchBeginEvent&) {
   bool any = false;
   for (auto iter : _market_data_updated)
     any |= iter;
   LOG_IF(FATAL, any) << "Unexpected";
 }
 
-void Strategy::on(const BatchEndEvent& event) {
+void Strategy::on(const BatchEndEvent&) {
   auto size = _market_data_updated.size();
   for (size_t i = 0; i < size; ++i) {
     if (_market_data_updated[i])

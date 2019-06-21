@@ -36,7 +36,7 @@ class Strategy : public client::Handler {
   }
 
  protected:
-  virtual void update(std::chrono::nanoseconds now) {}
+  virtual void update(std::chrono::nanoseconds) {}
   virtual void update(const CreateOrderAck&) {}
   virtual void update(const OrderUpdate&) {}
   virtual void update(const TradeUpdate&) {}

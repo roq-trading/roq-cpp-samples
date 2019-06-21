@@ -33,13 +33,13 @@ Strategy::Strategy(
 
 // Event handlers:
 
-void Strategy::on(const StartEvent& event) {
+void Strategy::on(const StartEvent&) {
   // This is a "hook" allowing you to safely start other threads.
   //
   // A "back-door" which isn'really compatible with simulation.
 }
 
-void Strategy::on(const StopEvent& event) {
+void Strategy::on(const StopEvent&) {
   // This is a "hook" allowing you to safely stop other threads.
   //
   // A "back-door" which isn't compatible with simulation.
@@ -93,7 +93,7 @@ void Strategy::on(const ConnectionStatusEvent& event) {
   }
 }
 
-void Strategy::on(const BatchBeginEvent& event) {
+void Strategy::on(const BatchBeginEvent&) {
   // This event is always dispatched to mark the beginning of a
   // sequence of batched events.
 }
@@ -206,7 +206,7 @@ void Strategy::on(const DownloadEndEvent& event) {
   }
 }
 
-void Strategy::on(const ReferenceDataEvent& event) {
+void Strategy::on(const ReferenceDataEvent&) {
   // Reference data for a symbol, e.g. tick-size.
 }
 
@@ -227,11 +227,11 @@ void Strategy::on(const MarketStatusEvent& event) {
   }
 }
 
-void Strategy::on(const SessionStatisticsEvent& event) {
+void Strategy::on(const SessionStatisticsEvent&) {
   // Session statistics for a symbol, e.g. highest/lowest price.
 }
 
-void Strategy::on(const DailyStatisticsEvent& event) {
+void Strategy::on(const DailyStatisticsEvent&) {
   // Daily statistics for a symbol, e.g. open interest.
 }
 
@@ -241,11 +241,11 @@ void Strategy::on(const MarketByPriceEvent& event) {
   _dirty = true;
 }
 
-void Strategy::on(const TradeSummaryEvent& event) {
+void Strategy::on(const TradeSummaryEvent&) {
   // Trade summary for a symbol, e.g. last traded price and quantity.
 }
 
-void Strategy::on(const PositionUpdateEvent& event) {
+void Strategy::on(const PositionUpdateEvent&) {
   // Position update.
   //
   // Important!
@@ -279,7 +279,7 @@ void Strategy::on(const OrderUpdateEvent& event) {
   }
 }
 
-void Strategy::on(const TradeUpdateEvent& event) {
+void Strategy::on(const TradeUpdateEvent&) {
   // Trade update.
   //
   // Important!
@@ -311,7 +311,7 @@ void Strategy::on(const CreateOrderAckEvent& event) {
   }
 }
 
-void Strategy::on(const ModifyOrderAckEvent& event) {
+void Strategy::on(const ModifyOrderAckEvent&) {
   // Reponse to a ModifyOrder request.
   //
   // Note!
@@ -319,7 +319,7 @@ void Strategy::on(const ModifyOrderAckEvent& event) {
   LOG(FATAL) << "Unexpected";
 }
 
-void Strategy::on(const CancelOrderAckEvent& event) {
+void Strategy::on(const CancelOrderAckEvent&) {
   // Reponse to a CancelOrder request.
   //
   // Note!
@@ -327,13 +327,13 @@ void Strategy::on(const CancelOrderAckEvent& event) {
   LOG(FATAL) << "Unexpected";
 }
 
-void Strategy::on(const CustomMessageEvent& event) {
+void Strategy::on(const CustomMessageEvent&) {
   // This is a back-door allowing you to integrate, e.g.
   // third-party data feeds.
   LOG(FATAL) << "Unexpected";
 }
 
-void Strategy::write(Metrics& metrics) const {
+void Strategy::write(Metrics&) const {
   // Handler allowing you to export internal metrics.
   //
   // The application can optionally expose an end-point allowing
