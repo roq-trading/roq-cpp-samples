@@ -32,7 +32,7 @@ static auto create_session_statistics(const char *symbol) {
     .lowest_traded_price = 123.45,
     .upper_limit_price = 123.45,
     .lower_limit_price = 123.45,
-    .exchange_time = std::chrono::milliseconds(1234567890),
+    .exchange_time_utc = std::chrono::milliseconds(1234567890),
   };
 }
 static auto create_daily_statistics(const char *symbol) {
@@ -43,7 +43,7 @@ static auto create_daily_statistics(const char *symbol) {
     .settlement_price = 123.45,
     .close_price = 123.45,
     .open_interest = 123.45,
-    .exchange_time = std::chrono::milliseconds(1234567890),
+    .exchange_time_utc = std::chrono::milliseconds(1234567890),
   };
 }
 static auto create_market_by_price(const char *symbol) {
@@ -56,7 +56,7 @@ static auto create_market_by_price(const char *symbol) {
     .ask_length = std::size(ask),
     .ask = ask,
     .snapshot = true,
-    .exchange_time = {}
+    .exchange_time_utc = {}
   };
   for (size_t i = 0; i < std::size(bid); ++i) {
     bid[i].price = static_cast<double>(i * 4);
@@ -76,7 +76,7 @@ static auto create_trade_summary(const char *symbol) {
     .volume = 2345.67,
     .turnover = 1.4e10,
     .side = roq::Side::BUY,
-    .exchange_time = std::chrono::milliseconds(1234567890),
+    .exchange_time_utc = std::chrono::milliseconds(1234567890),
   };
 }
 class Dispatcher final : public roq::client::Dispatcher {

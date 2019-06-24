@@ -79,7 +79,7 @@ void Instrument::on(const DailyStatistics&) {
 
 void Instrument::on(const MarketByPrice& market_by_price) {
   _depth_builder->update(market_by_price, true);
-  _market_data.exchange_time = market_by_price.exchange_time;
+  _market_data.exchange_time = market_by_price.exchange_time_utc;
 }
 
 void Instrument::on(const TradeSummary& trade_summary) {
@@ -87,7 +87,7 @@ void Instrument::on(const TradeSummary& trade_summary) {
   _market_data.volume = trade_summary.volume;
   _market_data.turnover = trade_summary.turnover;
   _market_data.side = trade_summary.side;
-  _market_data.exchange_time = trade_summary.exchange_time;
+  _market_data.exchange_time = trade_summary.exchange_time_utc;
 }
 
 void Instrument::on(const ReferenceData& reference_data) {

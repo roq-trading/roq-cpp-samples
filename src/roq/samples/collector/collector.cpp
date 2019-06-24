@@ -50,7 +50,7 @@ void Collector::on(const roq::ConnectionStatusEvent& event) {
 void Collector::on(const roq::BatchBeginEvent&) {
 }
 
-void Collector::on(const roq::BatchEndEvent& event) {
+void Collector::on(const roq::BatchEndEvent&) {
 }
 
 void Collector::on(const roq::MarketDataStatusEvent& event) {
