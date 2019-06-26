@@ -21,8 +21,6 @@ build:
 requirements:
   build:
     - {{ compiler('cxx') }}
-    - roq-client =={{ version }}
-    - roq-oss-benchmark
   host:
     - roq-client =={{ version }}
     - roq-oss-benchmark
