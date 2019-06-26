@@ -161,6 +161,7 @@ void Strategy::on(const OrderManagerStatusEvent& event) {
 }
 
 void Strategy::on(const DownloadBeginEvent& event) {
+  VLOG(1) << "DownloadBeginEvent " << event;
   // This event marks the start of the download phase.
   //
   // Important!
@@ -174,11 +175,12 @@ void Strategy::on(const DownloadBeginEvent& event) {
     LOG(INFO) << "Downloading order manager data for "
       "account=\"" << account << "\" ...";
   } else {
-    LOG(FATAL) << "Unexpected -- account=\"" << account << "\"";
+    LOG(WARNING) << "Received unknown account=\"" << account << "\"";
   }
 }
 
 void Strategy::on(const DownloadEndEvent& event) {
+  VLOG(1) << "DownloadEndEvent " << event;
   // This event marks the end of the download phase.
   //
   // Note!
@@ -202,7 +204,7 @@ void Strategy::on(const DownloadEndEvent& event) {
     LOG(INFO) << "Order manager data download has completed for "
       "account=\"" << account << "\"";
   } else {
-    LOG(FATAL) << "Unexpected -- account=\"" << account << "\"";
+    LOG(WARNING) << "Received unknown account=\"" << account << "\"";
   }
 }
 

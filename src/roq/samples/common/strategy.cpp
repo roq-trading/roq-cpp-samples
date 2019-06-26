@@ -193,6 +193,7 @@ void Strategy::on(const OrderManagerStatusEvent& event) {
 }
 
 void Strategy::on(const DownloadBeginEvent& event) {
+  VLOG(1) << "DownloadBeginEvent " << event;
   const auto& download_begin = event.download_begin;
   if (download_begin.account && std::strlen(download_begin.account)) {
     apply(
@@ -206,6 +207,7 @@ void Strategy::on(const DownloadBeginEvent& event) {
 }
 
 void Strategy::on(const DownloadEndEvent& event) {
+  VLOG(1) << "DownloadEndEvent " << event;
   const auto& download_end = event.download_end;
   if (download_end.account && std::strlen(download_end.account)) {
     LOG(INFO) << "Account download completed:";

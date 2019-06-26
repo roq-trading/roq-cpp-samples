@@ -9,7 +9,7 @@ else
   PREFIX=
 fi
 
-NAME="simple"
+NAME="test"
 
 EXCHANGE="CFFEX"
 ACCOUNTS="A1"
