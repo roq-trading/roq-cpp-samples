@@ -1,10 +1,6 @@
 {% set version = environ.get('GIT_DESCRIBE_TAG', '0.0.0') %}
 {% set number = environ.get('GIT_DESCRIBE_NUMBER', 0) %}
 
-{% set components = version.split('.') %}
-{% set major = components[0] | int %}
-{% set minor = components[1] | int %}
-
 package:
   name: roq-samples
   version: {{ version }}
@@ -16,11 +12,16 @@ build:
   skip: True  # [win and osx]
   number: {{ number }}
   run_exports:
-    - roq-samples >={{ version }},<{{ major }}.{{ minor + 1 }}
+    - {{ pin_subpackage('roq-samples', max_pin='x.x') }}
 
 requirements:
   build:
     - {{ compiler('cxx') }}
+    - autoconf    # [unix]
+    - automake    # [unix]
+    - libtool     # [unix]
+    - pkg-config  # [unix]
+    - make
   host:
     - roq-client =={{ version }}
     - roq-oss-benchmark
