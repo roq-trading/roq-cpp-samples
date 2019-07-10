@@ -13,7 +13,7 @@ NAME="test"
 
 EXCHANGE="CFFEX"
 ACCOUNTS="A1"
-SYMBOLS="IC1803"
+SYMBOLS="T1803"
 
 $PREFIX "$DIR/roq-samples-simple" \
 	--name "$NAME" \
