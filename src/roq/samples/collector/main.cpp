@@ -17,11 +17,18 @@ class Application final : public roq::Application {
   using roq::Application::Application;
 
  protected:
+  class Config final : public client::Config {
+   protected:
+    void dispatch(Handler&) const override {
+      // HANS -- TODO(thraneh): subscribe all symbols
+    }
+  };
   int main(int argc, char **argv) override {
     if (argc == 1)
       throw std::runtime_error("Expected arguments");
+    Config config;
     std::vector<std::string> arguments(argv + 1, argv + argc);
-    roq::client::Trader(arguments).dispatch<Collector>();
+    roq::client::Trader(config, arguments).dispatch<Collector>();
     return EXIT_SUCCESS;
   }
 };

@@ -4,6 +4,8 @@
 
 #include "roq/application.h"
 
+#include "roq/samples/common/config.h"
+
 #include "roq/samples/taker/strategy.h"
 
 DEFINE_bool(simulation, false, "Simulation");
@@ -32,23 +34,65 @@ class Application final : public roq::Application {
   int main(int argc, char **argv) override {
     if (argc == 1)
       throw std::runtime_error("Expected arguments");
+    common::Config config {
+      .instruments = { {
+        .exchange = "CFFEX",
+        .symbol = "IC1906",
+        .net_limit = 1,
+        .tick_size = 0.01,
+        .multiplier = 100.0,
+        .accounts = { {
+          "A1", {
+            .long_limit = 10,
+            .short_limit = 10,
+            .long_start_of_day = 0.0,
+            .short_start_of_day = 0.0,
+          }
+        } },
+      }, {
+        .exchange = "CFFEX",
+        .symbol = "IF1906",
+        .net_limit = 0,
+        .tick_size = 0.01,
+        .multiplier = 100.0,
+        .accounts = {}
+      }, {
+        .exchange = "CFFEX",
+        .symbol = "IH1906",
+        .net_limit = 0,
+        .tick_size = 0.01,
+        .multiplier = 100.0,
+        .accounts = {},
+      } }
+    };
     std::vector<std::string> arguments(argv + 1, argv + argc);
-    common::Config config {};  // TODO(thraneh): parse config
-    create_and_dispatch(arguments, config);
+    create_and_dispatch(config, arguments);
     return EXIT_SUCCESS;
   }
 
   template <typename T, typename... Args>
-  void create_and_dispatch(const T& arguments, Args&&... args) {
+  void create_and_dispatch(
+      const common::Config& config,
+      const T& arguments,
+      Args&&... args) {
     if (FLAGS_simulation) {
-      simulate(arguments, std::forward<Args>(args)...);
+      simulate(
+          config,
+          arguments,
+          std::forward<Args>(args)...);
     } else {
-      trade(arguments, std::forward<Args>(args)...);
+      trade(
+          config,
+          arguments,
+          std::forward<Args>(args)...);
     }
   }
 
   template <typename T, typename... Args>
-  void simulate(const T& arguments, Args&&... args) {
+  void simulate(
+      const common::Config& config,
+      const T& arguments,
+      Args&&... args) {
     using roq::client::detail::SimulationFactory;
     // parse options
     std::chrono::milliseconds market_data_latency {
@@ -70,17 +114,24 @@ class Application final : public roq::Application {
     auto collector = client::detail::SimulationFactory::create_collector(
         std::chrono::milliseconds(1));
     // create the strategy and dispatch
-    roq::client::Simulator(*generator, *matcher, *collector)
-      .dispatch<Strategy>(std::forward<Args>(args)...);
+    roq::client::Simulator(config, *generator, *matcher, *collector)
+      .dispatch<Strategy>(
+          config,
+          std::forward<Args>(args)...);
     // export collector results
     collector->write(FLAGS_results_directory, FLAGS_results_format);
   }
 
   template <typename T, typename... Args>
-  void trade(const T& arguments, Args&&... args) {
+  void trade(
+      const common::Config& config,
+      const T& arguments,
+      Args&&... args) {
     // create and dispatch
-    roq::client::Trader(arguments)
-      .dispatch<Strategy>(std::forward<Args>(args)...);
+    roq::client::Trader(config, arguments)
+      .dispatch<Strategy>(
+          config,
+          std::forward<Args>(args)...);
   }
 };
 

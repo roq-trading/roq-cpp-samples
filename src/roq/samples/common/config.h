@@ -7,11 +7,13 @@
 #include <string>
 #include <vector>
 
+#include "roq/client.h"
+
 namespace roq {
 namespace samples {
 namespace common {
 
-struct Config {
+struct Config : public client::Config {
   struct Instrument final {
     std::string exchange;
     std::string symbol;
@@ -27,6 +29,12 @@ struct Config {
     std::map<std::string, Account> accounts;  // optional
   };
   std::vector<Instrument> instruments;
+
+  explicit Config(std::vector<Instrument>&& instruments) {
+    (*this).instruments = std::move(instruments);
+  }
+  
+  void dispatch(Handler&) const override;
 };
 
 }  // namespace common

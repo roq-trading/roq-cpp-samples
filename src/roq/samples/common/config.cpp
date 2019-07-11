@@ -2,6 +2,29 @@
 
 #include "roq/samples/common/config.h"
 
+namespace roq {
+namespace samples {
+namespace common {
+
+void Config::dispatch(Handler& handler) const {
+  for (auto& instrument : instruments) {
+    for (auto& [name, account] : instrument.accounts) {
+      handler.on(
+          roq::Account {
+            .id = 0,
+            .name = name,
+            .user = "",
+            .password = "",
+            .symbols = {},
+          });
+    }
+  }
+}
+
+}  // namespace common
+}  // namespace samples
+}  // namespace roq
+
 namespace {
 std::ostream& operator<<(
     std::ostream& stream,

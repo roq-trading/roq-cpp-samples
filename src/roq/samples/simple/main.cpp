@@ -42,6 +42,12 @@ class Application final : public roq::Application {
   using roq::Application::Application;
 
  protected:
+  class Config final : public client::Config {
+   protected:
+    void dispatch(Handler&) const override {
+      // HANS -- TODO(thraneh): account + symbol
+    }
+  };
   int main(int argc, char **argv) override {
     // arguments represent either
     // - simulation files, or
@@ -62,8 +68,11 @@ class Application final : public roq::Application {
     auto create_orders = FLAGS_create_orders != 0;
     // - order timeout
     std::chrono::milliseconds order_timeout { FLAGS_order_timeout };
+    // config
+    Config config;
     // create strategy + start event dispatcher
     create_and_dispatch(
+        config,
         connections,
         FLAGS_exchange,
         accounts,
@@ -74,16 +83,28 @@ class Application final : public roq::Application {
   }
 
   template <typename T, typename... Args>
-  void create_and_dispatch(const T& connections, Args&&... args) {
+  void create_and_dispatch(
+      const Config& config,
+      const T& connections,
+      Args&&... args) {
     if (FLAGS_simulation) {
-      simulate(connections, std::forward<Args>(args)...);
+      simulate(
+          config,
+          connections,
+          std::forward<Args>(args)...);
     } else {
-      trade(connections, std::forward<Args>(args)...);
+      trade(
+          config,
+          connections,
+          std::forward<Args>(args)...);
     }
   }
 
   template <typename T, typename... Args>
-  void simulate(const T& connections, Args&&... args) {
+  void simulate(
+      const Config& config,
+      const T& connections,
+      Args&&... args) {
     using roq::client::detail::SimulationFactory;
     // parse options
     std::chrono::milliseconds market_data_latency {
@@ -105,16 +126,19 @@ class Application final : public roq::Application {
     auto collector = SimulationFactory::create_collector(
         std::chrono::milliseconds(1));
     // create the strategy and dispatch
-    roq::client::Simulator(*generator, *matcher, *collector)
+    roq::client::Simulator(config, *generator, *matcher, *collector)
       .dispatch<Strategy>(std::forward<Args>(args)...);
     // export collector results
     collector->write(FLAGS_results_directory, FLAGS_results_format);
   }
 
   template <typename T, typename... Args>
-  void trade(const T& connections, Args&&... args) {
+  void trade(
+      const Config& config,
+      const T& connections,
+      Args&&... args) {
     // create and dispatch
-    roq::client::Trader(connections)
+    roq::client::Trader(config, connections)
       .dispatch<Strategy>(std::forward<Args>(args)...);
   }
 };
