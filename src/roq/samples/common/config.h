@@ -5,6 +5,7 @@
 #include <map>
 #include <ostream>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "roq/client.h"
@@ -33,7 +34,7 @@ struct Config : public client::Config {
   explicit Config(std::vector<Instrument>&& instruments) {
     (*this).instruments = std::move(instruments);
   }
-  
+
   void dispatch(Handler&) const override;
 };
 

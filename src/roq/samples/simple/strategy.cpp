@@ -9,6 +9,28 @@ namespace roq {
 namespace samples {
 namespace simple {
 
+// helper functions
+namespace {
+static std::string get_account(auto& accounts) {
+  if (std::size(accounts) != 1)
+    throw std::runtime_error("Expected exactly 1 account");
+  return *accounts.begin();
+}
+static std::string get_exchange(auto& symbols_by_exchange) {
+  if (std::size(symbols_by_exchange) != 1)
+    throw std::runtime_error("Expected exactly 1 exchange");
+  return (*symbols_by_exchange.begin()).first;
+}
+static std::string get_symbol(auto& symbols_by_exchange) {
+  if (std::size(symbols_by_exchange) != 1)
+    throw std::runtime_error("Expected exactly 1 exchange");
+  auto& symbols = (*symbols_by_exchange.begin()).second;
+  if (std::size(symbols) != 1)
+    throw std::runtime_error("Expected exactly 1 symbol");
+  return *symbols.begin();
+}
+}  // namespace
+
 // Constructor:
 
 // Note!
@@ -16,17 +38,13 @@ namespace simple {
 
 Strategy::Strategy(
     client::Dispatcher& dispatcher,
-    const std::string& exchange,
-    const std::vector<std::string_view>& accounts,
-    const std::vector<std::string_view>& symbols,
-    bool create_orders,
-    std::chrono::milliseconds create_order_timeout)
+    Config& config)
     : _dispatcher(dispatcher),
-      _exchange(exchange),
-      _trade_account(*accounts.begin()),
-      _trade_symbol(*symbols.begin()),
-      _create_orders(create_orders),
-      _create_order_timeout(create_order_timeout),
+      _exchange(get_exchange(config.get_symbols_by_exchange())),
+      _trade_account(get_account(config.get_accounts())),
+      _trade_symbol(get_symbol(config.get_symbols_by_exchange())),
+      _create_orders(config.create_orders()),
+      _create_order_timeout(config.get_order_timeout()),
       _market_by_price(
           client::DepthBuilder::create(_depth, std::size(_depth))) {
 }

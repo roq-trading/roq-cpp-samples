@@ -10,14 +10,15 @@ void Config::dispatch(Handler& handler) const {
   for (auto& instrument : instruments) {
     for (auto& [name, account] : instrument.accounts) {
       handler.on(
-          roq::Account {
-            .id = 0,
-            .name = name,
-            .user = "",
-            .password = "",
-            .symbols = {},
+          roq::client::Account {
+            .name_or_regex = name.c_str(),
           });
     }
+    handler.on(
+        roq::client::Symbol {
+          .exchange = instrument.exchange.c_str(),
+          .name_or_regex = instrument.symbol.c_str(),
+        });
   }
 }
 

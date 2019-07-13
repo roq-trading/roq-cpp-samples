@@ -35,9 +35,12 @@ struct Tokenizer final {
 inline auto tokenize(
     const std::string_view& line,
     const std::string_view& delimiters) {
-  std::vector<std::string_view> result;
-  Tokenizer::parse(line, delimiters, [&result](auto text, auto length) {
-      result.emplace_back(text, length);
+  std::vector<std::string> result;
+  Tokenizer::parse(
+      line,
+      delimiters,
+      [&result](auto text, auto length) {
+        result.emplace_back(text, length);
       });
   return result;
 }

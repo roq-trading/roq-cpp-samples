@@ -6,6 +6,7 @@
 
 #include "roq/samples/common/tokenizer.h"
 
+#include "roq/samples/simple/config.h"
 #include "roq/samples/simple/strategy.h"
 
 // common options
@@ -42,12 +43,6 @@ class Application final : public roq::Application {
   using roq::Application::Application;
 
  protected:
-  class Config final : public client::Config {
-   protected:
-    void dispatch(Handler&) const override {
-      // HANS -- TODO(thraneh): account + symbol
-    }
-  };
   int main(int argc, char **argv) override {
     // arguments represent either
     // - simulation files, or
@@ -55,30 +50,19 @@ class Application final : public roq::Application {
     if (argc == 1)
       throw std::runtime_error("Expected arguments");
     std::vector<std::string> connections(argv + 1, argv + argc);
-    // parse optios
-    // - accounts
-    auto accounts = roq::samples::common::tokenize(FLAGS_accounts, ",");
-    if (std::size(accounts) != 1)
-      throw std::runtime_error("Expected exactly 1 account");
-    // - symbols
-    auto symbols = roq::samples::common::tokenize(FLAGS_symbols, ",");
-    if (std::size(symbols) != 1)
-      throw std::runtime_error("Expected exactly 1 symbol");
-    // - create-orders flag
-    auto create_orders = FLAGS_create_orders != 0;
-    // - order timeout
-    std::chrono::milliseconds order_timeout { FLAGS_order_timeout };
-    // config
-    Config config;
+    // parse options
+    // - configuration
+    Config config(
+        FLAGS_accounts,
+        FLAGS_exchange,
+        FLAGS_symbols,
+        FLAGS_create_orders != 0,
+        std::chrono::milliseconds { FLAGS_order_timeout });
     // create strategy + start event dispatcher
     create_and_dispatch(
         config,
         connections,
-        FLAGS_exchange,
-        accounts,
-        symbols,
-        create_orders,
-        order_timeout);
+        config);
     return EXIT_SUCCESS;
   }
 

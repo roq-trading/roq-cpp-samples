@@ -9,6 +9,8 @@
 
 #include "roq/client.h"
 
+#include "roq/samples/simple/config.h"
+
 namespace roq {
 namespace samples {
 namespace simple {
@@ -19,11 +21,7 @@ class Strategy final : public client::Handler {
  public:
   Strategy(
       client::Dispatcher& dispatcher,
-      const std::string& exchange,
-      const std::vector<std::string_view>& accounts,
-      const std::vector<std::string_view>& symbols,
-      bool create_orders,
-      std::chrono::milliseconds order_timeout);
+      Config& config);
 
  protected:
   void on(const StartEvent&) override;

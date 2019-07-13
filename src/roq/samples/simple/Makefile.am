@@ -12,5 +12,6 @@ roq_samples_simple_CPPFLAGS = \
 	$(ROQ_CLIENT_CFLAGS) \
 	-I$(top_srcdir)/src
 roq_samples_simple_SOURCES = \
+	config.cpp \
 	strategy.cpp \
 	main.cpp
