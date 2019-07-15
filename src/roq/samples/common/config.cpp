@@ -2,6 +2,8 @@
 
 #include "roq/samples/common/config.h"
 
+#include "roq/stream.h"
+
 namespace roq {
 namespace samples {
 namespace common {
@@ -9,6 +11,7 @@ namespace common {
 void Config::dispatch(Handler& handler) const {
   for (auto& instrument : instruments) {
     for (auto& [name, account] : instrument.accounts) {
+      (void) account;  // SO 50176315 -- suppress "unused" warning
       handler.on(
           roq::client::Account {
             .name_or_regex = name.c_str(),
@@ -22,55 +25,30 @@ void Config::dispatch(Handler& handler) const {
   }
 }
 
-}  // namespace common
-}  // namespace samples
-}  // namespace roq
-
-namespace {
 std::ostream& operator<<(
     std::ostream& stream,
-    const std::map<
-        std::string,
-        roq::samples::common::Config::Instrument::Account>& accounts) {
-  stream << "{";
-  bool first = true;
-  for (const auto& iter : accounts) {
-    if (first == false)
-      stream << ", ";
-    first = false;
-    stream << "\"" << iter.first << "\"={"
-      "long_limit=" << iter.second.long_limit << ", "
-      "short_limit=" << iter.second.short_limit << ", "
-      "long_start_of_day=" << iter.second.long_start_of_day << ", "
-      "short_start_of_day=" << iter.second.short_start_of_day <<
+    const Config::Instrument::Account& account) {
+  return stream << "{"
+      "long_limit=" << account.long_limit << ", "
+      "short_limit=" << account.short_limit << ", "
+      "long_start_of_day=" << account.long_start_of_day << ", "
+      "short_start_of_day=" << account.short_start_of_day <<
       "}";
-  }
-  return stream << "}";
 }
+
 std::ostream& operator<<(
     std::ostream& stream,
-    const roq::samples::common::Config::Instrument& instrument) {
+    const Config::Instrument& instrument) {
   return stream << "{"
     "exchange=\"" << instrument.exchange << "\", "
     "symbol=\"" << instrument.symbol << "\", "
     "net_limit=" << instrument.net_limit << ", "
     "tick_size=" << instrument.tick_size << ", "
     "multiplier=" << instrument.multiplier << ", "
-    "accounts=" << instrument.accounts <<
+    "accounts=" << roq::join(instrument.accounts) <<
     "}";
 }
-}  // namespace
 
-std::ostream& operator<<(
-    std::ostream& stream,
-    const roq::samples::common::Config& config) {
-  stream << "[";
-  bool first = true;
-  for (const auto& iter : config.instruments) {
-    if (first == false)
-      stream << ", ";
-    first = false;
-    stream << iter;
-  }
-  return stream << "]";
-}
+}  // namespace common
+}  // namespace samples
+}  // namespace roq

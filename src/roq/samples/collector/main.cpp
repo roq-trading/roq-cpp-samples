@@ -3,6 +3,7 @@
 #include "roq/application.h"
 
 #include "roq/samples/collector/collector.h"
+#include "roq/samples/collector/config.h"
 
 namespace {
 constexpr const char *DESCRIPTION = "Collector (Roq Samples)";
@@ -17,12 +18,6 @@ class Application final : public roq::Application {
   using roq::Application::Application;
 
  protected:
-  class Config final : public client::Config {
-   protected:
-    void dispatch(Handler&) const override {
-      // HANS -- TODO(thraneh): subscribe all symbols
-    }
-  };
   int main(int argc, char **argv) override {
     if (argc == 1)
       throw std::runtime_error("Expected arguments");

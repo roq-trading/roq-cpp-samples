@@ -13,4 +13,5 @@ roq_samples_collector_CPPFLAGS = \
 	-I$(top_srcdir)/src
 roq_samples_collector_SOURCES = \
 	collector.cpp \
+	config.cpp \
 	main.cpp

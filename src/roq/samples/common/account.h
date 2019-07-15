@@ -88,12 +88,12 @@ class Account final : NonCopyable {
   std::unordered_map<std::string, Position> _positions;
 };
 
+inline std::ostream& operator<<(
+    std::ostream& stream,
+    const Account& account) {
+  return account.write(stream);
+}
+
 }  // namespace common
 }  // namespace samples
 }  // namespace roq
-
-inline std::ostream& operator<<(
-    std::ostream& stream,
-    const roq::samples::common::Account& account) {
-  return account.write(stream);
-}

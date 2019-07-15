@@ -220,18 +220,13 @@ void Account::update_max_order_id(uint32_t order_id) {
 }
 
 std::ostream& Account::write(std::ostream& stream) const {
-  stream << "{"
+  return stream << "{"
     "name=\"" << _name << "\", "
     "download=" << (_download ? "true" : "false") << ", "
     "max_order_id=" << _max_order_id << ", "
     "ready=" << (_order_manager_ready ? "true" : "false") << ", "
-    "positions={";
-  bool first = true;
-  for (const auto& iter : _positions) {
-    stream << (first ? "" : ", ") << iter.first << "=" << iter.second;
-    first = false;
-  }
-  return stream << "}}";
+    "positions=" << roq::join(_positions) <<
+    "}";
 }
 
 }  // namespace common

@@ -53,12 +53,12 @@ class Position final : NonCopyable {
   Directional _short;
 };
 
+inline std::ostream& operator<<(
+    std::ostream& stream,
+    const Position& position) {
+  return position.write(stream);
+}
+
 }  // namespace common
 }  // namespace samples
 }  // namespace roq
-
-inline std::ostream& operator<<(
-    std::ostream& stream,
-    const roq::samples::common::Position& position) {
-  return position.write(stream);
-}

@@ -38,10 +38,10 @@ struct Config : public client::Config {
   void dispatch(Handler&) const override;
 };
 
+std::ostream& operator<<(
+    std::ostream& stream,
+    const Config& config);
+
 }  // namespace common
 }  // namespace samples
 }  // namespace roq
-
-std::ostream& operator<<(
-    std::ostream& stream,
-    const roq::samples::common::Config& config);

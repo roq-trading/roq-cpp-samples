@@ -4,6 +4,7 @@ project(collector)
 
 add_executable(roq-samples-collector
   collector.cpp
+  config.cpp
   main.cpp
 )
 

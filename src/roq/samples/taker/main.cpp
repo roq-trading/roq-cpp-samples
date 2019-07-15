@@ -4,8 +4,7 @@
 
 #include "roq/application.h"
 
-#include "roq/samples/common/config.h"
-
+#include "roq/samples/taker/config.h"
 #include "roq/samples/taker/strategy.h"
 
 DEFINE_bool(simulation, false, "Simulation");
@@ -34,37 +33,7 @@ class Application final : public roq::Application {
   int main(int argc, char **argv) override {
     if (argc == 1)
       throw std::runtime_error("Expected arguments");
-    common::Config config {
-      .instruments = { {
-        .exchange = "CFFEX",
-        .symbol = "IC1906",
-        .net_limit = 1,
-        .tick_size = 0.01,
-        .multiplier = 100.0,
-        .accounts = { {
-          "A1", {
-            .long_limit = 10,
-            .short_limit = 10,
-            .long_start_of_day = 0.0,
-            .short_start_of_day = 0.0,
-          }
-        } },
-      }, {
-        .exchange = "CFFEX",
-        .symbol = "IF1906",
-        .net_limit = 0,
-        .tick_size = 0.01,
-        .multiplier = 100.0,
-        .accounts = {}
-      }, {
-        .exchange = "CFFEX",
-        .symbol = "IH1906",
-        .net_limit = 0,
-        .tick_size = 0.01,
-        .multiplier = 100.0,
-        .accounts = {},
-      } }
-    };
+    Config config;
     std::vector<std::string> arguments(argv + 1, argv + argc);
     create_and_dispatch(config, arguments);
     return EXIT_SUCCESS;
