@@ -10,7 +10,7 @@ void Config::dispatch(Handler& handler) const {
   handler.on(
       client::Symbol {
         .exchange = "CFFEX",
-        .name_or_regex = "*",
+        .regex = ".*",
       });
 }
 

@@ -14,13 +14,13 @@ void Config::dispatch(Handler& handler) const {
       (void) account;  // SO 50176315 -- suppress "unused" warning
       handler.on(
           roq::client::Account {
-            .name_or_regex = name.c_str(),
+            .regex = name.c_str(),
           });
     }
     handler.on(
         roq::client::Symbol {
           .exchange = instrument.exchange.c_str(),
-          .name_or_regex = instrument.symbol.c_str(),
+          .regex = instrument.symbol.c_str(),
         });
   }
 }

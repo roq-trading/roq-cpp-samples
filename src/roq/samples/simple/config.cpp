@@ -49,7 +49,7 @@ void Config::dispatch(Handler& handler) const {
   for (auto& account : _accounts) {
     handler.on(
         roq::client::Account {
-          .name_or_regex = account.c_str(),
+          .regex = account.c_str(),
         });
   }
   for (auto& [exchange, symbols] : _symbols_by_exchange) {
@@ -57,7 +57,7 @@ void Config::dispatch(Handler& handler) const {
       handler.on(
           roq::client::Symbol {
             .exchange = exchange.c_str(),
-            .name_or_regex = symbol.c_str(),
+            .regex = symbol.c_str(),
           });
     }
   }
