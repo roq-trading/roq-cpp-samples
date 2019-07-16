@@ -88,6 +88,7 @@ void Strategy::on(const ConnectionStatusEvent& event) {
     case ConnectionStatus::CONNECTED: {
       LOG(INFO) << "Connected to source=\"" << source << "\"";
       LOG(INFO) << "Subscribe account=\"" << _trade_account << "\", "
+        "exchange=\"" << _exchange << "\", "
         "symbol=\"" << _trade_symbol << "\"";
       // Here we must subscribe to accounts and symbols (per exchange)
       _dispatcher.send(

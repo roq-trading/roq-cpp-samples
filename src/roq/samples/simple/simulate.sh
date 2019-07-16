@@ -15,7 +15,7 @@ HISTORY="$CONDA_PREFIX/share/roq/data/USTP_Multi_20180223.csv"
 
 EXCHANGE="CFFEX"
 ACCOUNTS="A1"
-SYMBOLS="IC1803"
+SYMBOLS="T1803"
 
 $PREFIX "$DIR/roq-samples-simple" \
 	--name "$NAME" \
