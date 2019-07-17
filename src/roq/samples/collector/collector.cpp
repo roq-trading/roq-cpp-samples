@@ -34,7 +34,7 @@ void Collector::on(const roq::ConnectionStatusEvent& event) {
           Subscribe {
             .accounts = {},
             .symbols_by_exchange = { {
-                EXCHANGE, { "*" }
+                EXCHANGE, { ".*" }
               } }
           },
           event.source);
