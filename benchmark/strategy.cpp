@@ -81,14 +81,12 @@ static auto create_trade_summary(const char *symbol) {
 }
 class Dispatcher final : public roq::client::Dispatcher {
  protected:
-  void send(const roq::Subscribe&, uint32_t) override {
+  void send(const roq::CreateOrder&, uint8_t) override {
   }
-  void send(const roq::CreateOrder&, uint32_t) override {
-  }
-  void send(const roq::ModifyOrder&, uint32_t) override {
+  void send(const roq::ModifyOrder&, uint8_t) override {
     throw std::runtime_error("Unexpected");
   }
-  void send(const roq::CancelOrder& , uint32_t) override {
+  void send(const roq::CancelOrder& , uint8_t) override {
     throw std::runtime_error("Unexpected");
   }
   void enqueue(const roq::CustomMessage&) override {

@@ -17,10 +17,6 @@ namespace roq {
 namespace samples {
 namespace collector {
 
-namespace {
-static const char *EXCHANGE = "CFFEX";
-}  // namespace
-
 Collector::Collector(roq::client::Dispatcher& dispatcher)
     : _dispatcher(dispatcher) {
 }
@@ -30,14 +26,6 @@ void Collector::on(const roq::ConnectionStatusEvent& event) {
   switch (event.connection_status) {
     case ConnectionStatus::CONNECTED: {
       LOG(INFO) << "Connected to source=\"" << source << "\"";
-      _dispatcher.send(
-          Subscribe {
-            .accounts = {},
-            .symbols_by_exchange = { {
-                EXCHANGE, { ".*" }
-              } }
-          },
-          event.source);
       break;
     }
     case ConnectionStatus::DISCONNECTED: {

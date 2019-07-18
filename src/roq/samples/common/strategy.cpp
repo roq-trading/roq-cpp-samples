@@ -132,23 +132,7 @@ void Strategy::on(const TimerEvent& event) {
   // update(now);
 }
 
-void Strategy::on(const ConnectionStatusEvent& event) {
-  if (event.connection_status == ConnectionStatus::CONNECTED) {
-    _dispatcher.send(
-        Subscribe {
-          .accounts = {
-            "A123",
-          },
-          .symbols_by_exchange = {
-            {
-              "AA", {
-                "XXX",
-              }
-            },
-          }
-        },
-        event.source);
-  }
+void Strategy::on(const ConnectionStatusEvent&) {
 }
 
 void Strategy::on(const BatchBeginEvent&) {
