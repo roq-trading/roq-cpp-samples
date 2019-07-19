@@ -63,7 +63,7 @@ void Collector::on(const roq::DownloadEndEvent& event) {
     "Unexpected";
   LOG(INFO) << "Downloading from "
     "source=\"" << event.message_info.source_name << "\""
-    ") has completed!";
+    " has completed!";
   _download = false;
 }
 
