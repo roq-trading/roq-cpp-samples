@@ -2,7 +2,6 @@ bin_PROGRAMS = roq-samples-collector
 roq_samples_collector_LDADD = \
 	$(PTHREAD_LIBS) \
 	$(GFLAGS_LIBS) \
-	$(ROQ_CLIENT_LIBS) \
 	$(ROQ_API_LIBS) \
 	$(ROQ_CLIENT_LIBS)
 roq_samples_collector_CPPFLAGS = \
