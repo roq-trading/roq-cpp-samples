@@ -146,7 +146,7 @@ Use the helper script to update git submodules used by the project
 ### Build the Project
 
 ```bash
-cmake cmake -DCMAKE_AR="$AR" -DCMAKE_RANLIB="$RANLIB" -DCMAKE_NM="$NM" -DCMAKE_BUILD_TYPE=Debug
+cmake -DCMAKE_AR="$AR" -DCMAKE_RANLIB="$RANLIB" -DCMAKE_NM="$NM" -DCMAKE_BUILD_TYPE=Debug
 make -j4
 ```
 
