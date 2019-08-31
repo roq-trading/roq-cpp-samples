@@ -19,6 +19,8 @@ include_directories("${CMAKE_CURRENT_SOURCE_DIR}/src")
 
 find_package(Threads REQUIRED)
 find_package(Gflags REQUIRED)
+find_package(Libevent REQUIRED)
+find_package(Libunwind REQUIRED)
 find_package(RoqApi REQUIRED)
 find_package(RoqClient REQUIRED)
 

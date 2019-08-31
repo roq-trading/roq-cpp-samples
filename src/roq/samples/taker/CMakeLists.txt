@@ -9,6 +9,8 @@ add_executable(roq-samples-taker
 )
 
 target_include_directories(roq-samples-taker PUBLIC
+  ${LIBUNWIND_INCLUDE_DIR}
+  ${LIBEVENT_INCLUDE_DIR}
   ${GFLAGS_INCLUDE_DIR}
   ${ROQ_API_INCLUDE_DIR}
   ${ROQ_CLIENT_INCLUDE_DIR}
@@ -16,6 +18,8 @@ target_include_directories(roq-samples-taker PUBLIC
 
 target_link_libraries(roq-samples-taker
   ${CMAKE_THREAD_LIBS_INIT}
+  ${LIBUNWIND_LIBS}
+  ${LIBEVENT_LIBS}
   ${GFLAGS_LIBS}
   ${ROQ_API_LIBS}
   ${ROQ_CLIENT_LIBS}
