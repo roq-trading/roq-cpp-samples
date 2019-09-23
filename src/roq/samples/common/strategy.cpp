@@ -71,10 +71,10 @@ namespace {
 template <typename F>
 inline bool apply(
     std::unordered_map<std::string, Instrument *>& instruments_by_name,
-    const std::string& exchange,
-    const std::string& symbol,
+    const std::string_view& exchange,
+    const std::string_view& symbol,
     F function) {
-  auto iter = instruments_by_name.find(symbol);
+  auto iter = instruments_by_name.find(std::string(symbol));  // FIXME(thraneh): alloc
   if (iter == instruments_by_name.end()) {
     VLOG(3) << "Got update for unknown "
       "exchange=\"" << exchange << "\", symbol=\"" << symbol << "\"";
@@ -86,9 +86,9 @@ inline bool apply(
 template <typename F>
 inline bool apply(
     std::unordered_map<std::string, Account *>& accounts_by_name,
-    const std::string& account,
+    const std::string_view& account,
     F function) {
-  auto iter = accounts_by_name.find(account);
+  auto iter = accounts_by_name.find(std::string(account));  // FIXME(thraneh): alloc
   if (iter == accounts_by_name.end()) {
     LOG(WARNING) << "Got update for unknown "
       "account=\"" << account << "\"";
@@ -179,7 +179,7 @@ void Strategy::on(const OrderManagerStatusEvent& event) {
 void Strategy::on(const DownloadBeginEvent& event) {
   VLOG(1) << "DownloadBeginEvent " << event;
   const auto& download_begin = event.download_begin;
-  if (download_begin.account && std::strlen(download_begin.account)) {
+  if (!download_begin.account.empty()) {
     apply(
         _accounts_by_name,
         download_begin.account,
@@ -193,7 +193,7 @@ void Strategy::on(const DownloadBeginEvent& event) {
 void Strategy::on(const DownloadEndEvent& event) {
   VLOG(1) << "DownloadEndEvent " << event;
   const auto& download_end = event.download_end;
-  if (download_end.account && std::strlen(download_end.account)) {
+  if (!download_end.account.empty()) {
     LOG(INFO) << "Account download completed:";
     apply(
         _accounts_by_name,

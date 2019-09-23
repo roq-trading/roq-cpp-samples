@@ -176,7 +176,7 @@ void Strategy::on(const DownloadBeginEvent& event) {
   // dispatcher interface until *either* the download phase has
   // completed *or* a disconnect has been detected.
   auto account = event.download_begin.account;
-  if (std::strlen(account) == 0) {
+  if (account.empty()) {
     LOG(INFO) << "Downloading market data ...";
   } else if (_trade_account.compare(account) == 0) {
     LOG(INFO) << "Downloading order manager data for "
@@ -194,7 +194,7 @@ void Strategy::on(const DownloadEndEvent& event) {
   // You are again allowed to send requests to the dispatcher
   // interface.
   auto account = event.download_end.account;
-  if (std::strlen(account) == 0) {
+  if (account.empty()) {
     LOG(INFO) << "Market data download has completed";
   } else if (_trade_account.compare(account) == 0) {
     // Local order id's are required to *never* repeat.

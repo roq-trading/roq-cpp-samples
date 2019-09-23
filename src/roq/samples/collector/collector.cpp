@@ -50,8 +50,7 @@ void Collector::on(const roq::OrderManagerStatusEvent& event) {
 }
 
 void Collector::on(const roq::DownloadBeginEvent& event) {
-  LOG_IF(FATAL, std::strlen(event.download_begin.account) > 0) <<
-    "Unexpected";
+  LOG_IF(FATAL, !event.download_begin.account.empty()) << "Unexpected";
   LOG(INFO) << "Downloading from "
     "source=\"" << event.message_info.source_name << "\" "
     "...";
@@ -59,8 +58,7 @@ void Collector::on(const roq::DownloadBeginEvent& event) {
 }
 
 void Collector::on(const roq::DownloadEndEvent& event) {
-  LOG_IF(FATAL, std::strlen(event.download_end.account) > 0) <<
-    "Unexpected";
+  LOG_IF(FATAL, !event.download_end.account.empty()) << "Unexpected";
   LOG(INFO) << "Downloading from "
     "source=\"" << event.message_info.source_name << "\""
     " has completed!";

@@ -45,10 +45,10 @@ namespace {
 template <typename F>
 inline bool apply(
   std::unordered_map<std::string, Position>& positions,
-  const std::string& exchange,
-  const std::string& symbol,
+  const std::string_view& exchange,
+  const std::string_view& symbol,
   F function) {
-  auto iter = positions.find(symbol);
+  auto iter = positions.find(std::string(symbol));  // FIXME(thraneh): alloc
   if (iter == positions.end()) {
     LOG(WARNING) << "Got update for unknown "
     "exchange=\"" << exchange << "\", symbol=\"" << symbol << "\"";
