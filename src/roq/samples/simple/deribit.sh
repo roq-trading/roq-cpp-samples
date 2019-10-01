@@ -13,7 +13,7 @@ NAME="trader"
 
 EXCHANGE="DERIBIT"
 ACCOUNTS="A1"
-SYMBOLS="BTC-27SEP19"
+SYMBOLS="BTC-27DEC19"
 
 $PREFIX "$DIR/roq-samples-simple" \
 	--name "$NAME" \
