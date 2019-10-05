@@ -10,7 +10,7 @@ namespace common {
 
 class Account;
 
-class Position final : NonCopyable {
+class Position final {
  public:
   Position(
       Account& account,
@@ -18,6 +18,8 @@ class Position final : NonCopyable {
       double short_limit,
       double long_start_of_day,
       double short_start_of_day);
+
+  Position(Position&&) = default;
 
   inline Account& get_account() {
     return _account;
@@ -51,6 +53,10 @@ class Position final : NonCopyable {
   };
   Directional _long;
   Directional _short;
+
+ private:
+  Position(const Position&) = delete;
+  void operator=(const Position&) = delete;
 };
 
 inline std::ostream& operator<<(

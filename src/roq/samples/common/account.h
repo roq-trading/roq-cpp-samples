@@ -17,12 +17,14 @@ namespace roq {
 namespace samples {
 namespace common {
 
-class Account final : NonCopyable {
+class Account final {
  public:
   Account(
       client::Dispatcher& dispatcher,
       const std::string_view& name,
       const Config& config);
+
+  Account(Account&&) = default;
 
   inline const std::string& get_name() const {
     return _name;
@@ -86,6 +88,10 @@ class Account final : NonCopyable {
   bool _order_manager_ready = false;
   std::unordered_set<uint32_t> _live_orders;
   std::unordered_map<std::string, Position> _positions;
+
+ private:
+  Account(const Account&) = delete;
+  void operator=(const Account&) = delete;
 };
 
 inline std::ostream& operator<<(

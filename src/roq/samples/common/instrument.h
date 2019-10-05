@@ -16,7 +16,7 @@ namespace roq {
 namespace samples {
 namespace common {
 
-class Instrument final : NonCopyable {
+class Instrument final {
  public:
   Instrument(
       size_t index,
@@ -26,6 +26,8 @@ class Instrument final : NonCopyable {
       const double tick_size,
       const double multiplier,
       std::vector<Position *>&& positions);
+
+  Instrument(Instrument&&) = default;
 
   inline size_t index() const {
     return _index;
@@ -83,6 +85,10 @@ class Instrument final : NonCopyable {
   bool _market_data_ready = false;
   const bool _tradeable;
   std::vector<Position *> _positions;
+
+ private:
+  Instrument(const Instrument&) = delete;
+  void operator=(const Instrument&) = delete;
 };
 
 }  // namespace common
