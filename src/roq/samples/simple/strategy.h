@@ -24,29 +24,29 @@ class Strategy final : public client::Handler {
       Config& config);
 
  protected:
-  void on(const StartEvent&) override;
-  void on(const StopEvent&) override;
-  void on(const TimerEvent&) override;
-  void on(const ConnectionStatusEvent&) override;
-  void on(const BatchBeginEvent&) override;
-  void on(const BatchEndEvent& event) override;
-  void on(const MarketDataStatusEvent& event) override;
-  void on(const OrderManagerStatusEvent& event) override;
-  void on(const DownloadBeginEvent& event) override;
-  void on(const DownloadEndEvent& event) override;
-  void on(const ReferenceDataEvent& event) override;
-  void on(const MarketStatusEvent& event) override;
-  void on(const SessionStatisticsEvent& event) override;
-  void on(const DailyStatisticsEvent& event) override;
-  void on(const MarketByPriceEvent& event) override;
-  void on(const TradeSummaryEvent& event) override;
-  void on(const PositionUpdateEvent& event) override;
-  void on(const OrderUpdateEvent& event) override;
-  void on(const TradeUpdateEvent& event) override;
-  void on(const CreateOrderAckEvent& event) override;
-  void on(const ModifyOrderAckEvent& event) override;
-  void on(const CancelOrderAckEvent& event) override;
-  void on(const CustomMessageEvent& event) override;
+  void operator()(const StartEvent&) override;
+  void operator()(const StopEvent&) override;
+  void operator()(const TimerEvent&) override;
+  void operator()(const ConnectionStatusEvent&) override;
+  void operator()(const BatchBeginEvent&) override;
+  void operator()(const BatchEndEvent& event) override;
+  void operator()(const MarketDataStatusEvent& event) override;
+  void operator()(const OrderManagerStatusEvent& event) override;
+  void operator()(const DownloadBeginEvent& event) override;
+  void operator()(const DownloadEndEvent& event) override;
+  void operator()(const ReferenceDataEvent& event) override;
+  void operator()(const MarketStatusEvent& event) override;
+  void operator()(const SessionStatisticsEvent& event) override;
+  void operator()(const DailyStatisticsEvent& event) override;
+  void operator()(const MarketByPriceEvent& event) override;
+  void operator()(const TradeSummaryEvent& event) override;
+  void operator()(const PositionUpdateEvent& event) override;
+  void operator()(const OrderUpdateEvent& event) override;
+  void operator()(const TradeUpdateEvent& event) override;
+  void operator()(const CreateOrderAckEvent& event) override;
+  void operator()(const ModifyOrderAckEvent& event) override;
+  void operator()(const CancelOrderAckEvent& event) override;
+  void operator()(const CustomMessageEvent& event) override;
 
   void write(Metrics& metrics) const override;
 

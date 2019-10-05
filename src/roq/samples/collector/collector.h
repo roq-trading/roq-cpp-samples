@@ -16,15 +16,15 @@ class Collector final : public roq::client::Handler {
   explicit Collector(roq::client::Dispatcher& dispatcher);
 
  protected:
-  void on(const roq::ConnectionStatusEvent&) override;
-  void on(const roq::BatchBeginEvent&) override;
-  void on(const roq::BatchEndEvent& event) override;
-  void on(const roq::MarketDataStatusEvent& event) override;
-  void on(const roq::OrderManagerStatusEvent& event) override;
-  void on(const roq::DownloadBeginEvent& event) override;
-  void on(const roq::DownloadEndEvent& event) override;
-  void on(const roq::ReferenceDataEvent& event) override;
-  void on(const roq::MarketByPriceEvent& event) override;
+  void operator()(const roq::ConnectionStatusEvent&) override;
+  void operator()(const roq::BatchBeginEvent&) override;
+  void operator()(const roq::BatchEndEvent& event) override;
+  void operator()(const roq::MarketDataStatusEvent& event) override;
+  void operator()(const roq::OrderManagerStatusEvent& event) override;
+  void operator()(const roq::DownloadBeginEvent& event) override;
+  void operator()(const roq::DownloadEndEvent& event) override;
+  void operator()(const roq::ReferenceDataEvent& event) override;
+  void operator()(const roq::MarketByPriceEvent& event) override;
 
  private:
   roq::client::Dispatcher& _dispatcher;

@@ -43,26 +43,26 @@ class Strategy : public client::Handler {
   virtual void update(const MarketData&) = 0;
 
  protected:
-  void on(const TimerEvent&) final;
-  void on(const ConnectionStatusEvent&) final;
-  void on(const BatchBeginEvent&) final;
-  void on(const BatchEndEvent& event) final;
-  void on(const MarketDataStatusEvent& event) final;
-  void on(const OrderManagerStatusEvent& event) final;
-  void on(const DownloadBeginEvent& event) final;
-  void on(const DownloadEndEvent& event) final;
-  void on(const ReferenceDataEvent& event) final;
-  void on(const MarketStatusEvent& event) final;
-  void on(const SessionStatisticsEvent& event) final;
-  void on(const DailyStatisticsEvent& event) final;
-  void on(const MarketByPriceEvent& event) final;
-  void on(const TradeSummaryEvent& event) final;
-  void on(const PositionUpdateEvent& event) final;
-  void on(const OrderUpdateEvent& event) final;
-  void on(const TradeUpdateEvent& event) final;
-  void on(const CreateOrderAckEvent& event) final;
-  void on(const ModifyOrderAckEvent& event) final;
-  void on(const CancelOrderAckEvent& event) final;
+  void operator()(const TimerEvent&) final;
+  void operator()(const ConnectionStatusEvent&) final;
+  void operator()(const BatchBeginEvent&) final;
+  void operator()(const BatchEndEvent& event) final;
+  void operator()(const MarketDataStatusEvent& event) final;
+  void operator()(const OrderManagerStatusEvent& event) final;
+  void operator()(const DownloadBeginEvent& event) final;
+  void operator()(const DownloadEndEvent& event) final;
+  void operator()(const ReferenceDataEvent& event) final;
+  void operator()(const MarketStatusEvent& event) final;
+  void operator()(const SessionStatisticsEvent& event) final;
+  void operator()(const DailyStatisticsEvent& event) final;
+  void operator()(const MarketByPriceEvent& event) final;
+  void operator()(const TradeSummaryEvent& event) final;
+  void operator()(const PositionUpdateEvent& event) final;
+  void operator()(const OrderUpdateEvent& event) final;
+  void operator()(const TradeUpdateEvent& event) final;
+  void operator()(const CreateOrderAckEvent& event) final;
+  void operator()(const ModifyOrderAckEvent& event) final;
+  void operator()(const CancelOrderAckEvent& event) final;
 
  private:
   client::Dispatcher& _dispatcher;

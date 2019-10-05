@@ -125,24 +125,24 @@ Strategy::Strategy(
   _market_data_updated.resize(_instruments.size());
 }
 
-void Strategy::on(const TimerEvent& event) {
+void Strategy::operator()(const TimerEvent& event) {
   for (auto& account : _accounts)
     account.on(event);
   // auto now = ...?
   // update(now);
 }
 
-void Strategy::on(const ConnectionStatusEvent&) {
+void Strategy::operator()(const ConnectionStatusEvent&) {
 }
 
-void Strategy::on(const BatchBeginEvent&) {
+void Strategy::operator()(const BatchBeginEvent&) {
   bool any = false;
   for (auto iter : _market_data_updated)
     any |= iter;
   LOG_IF(FATAL, any) << "Unexpected";
 }
 
-void Strategy::on(const BatchEndEvent&) {
+void Strategy::operator()(const BatchEndEvent&) {
   auto size = _market_data_updated.size();
   for (size_t i = 0; i < size; ++i) {
     if (_market_data_updated[i])
@@ -151,13 +151,13 @@ void Strategy::on(const BatchEndEvent&) {
   _market_data_updated.assign(size, false);
 }
 
-void Strategy::on(const MarketDataStatusEvent& event) {
+void Strategy::operator()(const MarketDataStatusEvent& event) {
   const auto& market_data_status = event.market_data_status;
   for (auto& instrument : _instruments)
     instrument.on(market_data_status);
 }
 
-void Strategy::on(const OrderManagerStatusEvent& event) {
+void Strategy::operator()(const OrderManagerStatusEvent& event) {
   const auto& order_manager_status = event.order_manager_status;
   if (apply(
         _accounts_by_name,
@@ -176,7 +176,7 @@ void Strategy::on(const OrderManagerStatusEvent& event) {
   }
 }
 
-void Strategy::on(const DownloadBeginEvent& event) {
+void Strategy::operator()(const DownloadBeginEvent& event) {
   VLOG(1) << "DownloadBeginEvent " << event;
   const auto& download_begin = event.download_begin;
   if (!download_begin.account.empty()) {
@@ -190,7 +190,7 @@ void Strategy::on(const DownloadBeginEvent& event) {
   }
 }
 
-void Strategy::on(const DownloadEndEvent& event) {
+void Strategy::operator()(const DownloadEndEvent& event) {
   VLOG(1) << "DownloadEndEvent " << event;
   const auto& download_end = event.download_end;
   if (!download_end.account.empty()) {
@@ -213,7 +213,7 @@ void Strategy::on(const DownloadEndEvent& event) {
   }
 }
 
-void Strategy::on(const ReferenceDataEvent& event) {
+void Strategy::operator()(const ReferenceDataEvent& event) {
   const auto& reference_data = event.reference_data;
   apply(
       _instruments_by_name,
@@ -223,7 +223,7 @@ void Strategy::on(const ReferenceDataEvent& event) {
     instrument.on(reference_data); });
 }
 
-void Strategy::on(const MarketStatusEvent& event) {
+void Strategy::operator()(const MarketStatusEvent& event) {
   const auto& market_status = event.market_status;
   if (apply(
         _instruments_by_name,
@@ -244,7 +244,7 @@ void Strategy::on(const MarketStatusEvent& event) {
   }
 }
 
-void Strategy::on(const SessionStatisticsEvent& event) {
+void Strategy::operator()(const SessionStatisticsEvent& event) {
   const auto& session_statistics = event.session_statistics;
   apply(
       _instruments_by_name,
@@ -256,7 +256,7 @@ void Strategy::on(const SessionStatisticsEvent& event) {
   });
 }
 
-void Strategy::on(const DailyStatisticsEvent& event) {
+void Strategy::operator()(const DailyStatisticsEvent& event) {
   const auto& daily_statistics = event.daily_statistics;
   apply(
       _instruments_by_name,
@@ -268,7 +268,7 @@ void Strategy::on(const DailyStatisticsEvent& event) {
   });
 }
 
-void Strategy::on(const MarketByPriceEvent& event) {
+void Strategy::operator()(const MarketByPriceEvent& event) {
   const auto& market_by_price = event.market_by_price;
   apply(
       _instruments_by_name,
@@ -280,7 +280,7 @@ void Strategy::on(const MarketByPriceEvent& event) {
   });
 }
 
-void Strategy::on(const TradeSummaryEvent& event) {
+void Strategy::operator()(const TradeSummaryEvent& event) {
   const auto& trade_summary = event.trade_summary;
   apply(
       _instruments_by_name,
@@ -292,7 +292,7 @@ void Strategy::on(const TradeSummaryEvent& event) {
   });
 }
 
-void Strategy::on(const PositionUpdateEvent& event) {
+void Strategy::operator()(const PositionUpdateEvent& event) {
   const auto& position_update = event.position_update;
   apply(
       _accounts_by_name,
@@ -301,7 +301,7 @@ void Strategy::on(const PositionUpdateEvent& event) {
     account.on(position_update); });
 }
 
-void Strategy::on(const OrderUpdateEvent& event) {
+void Strategy::operator()(const OrderUpdateEvent& event) {
   const auto& order_update = event.order_update;
   apply(
       _accounts_by_name,
@@ -317,7 +317,7 @@ void Strategy::on(const OrderUpdateEvent& event) {
   update(order_update);
 }
 
-void Strategy::on(const TradeUpdateEvent& event) {
+void Strategy::operator()(const TradeUpdateEvent& event) {
   const auto& trade_update = event.trade_update;
   apply(
       _accounts_by_name,
@@ -328,7 +328,7 @@ void Strategy::on(const TradeUpdateEvent& event) {
   update(trade_update);
 }
 
-void Strategy::on(const CreateOrderAckEvent& event) {
+void Strategy::operator()(const CreateOrderAckEvent& event) {
   const auto& create_order_ack = event.create_order_ack;
   apply(
       _accounts_by_name,
@@ -338,7 +338,7 @@ void Strategy::on(const CreateOrderAckEvent& event) {
   update(create_order_ack);
 }
 
-void Strategy::on(const ModifyOrderAckEvent& event) {
+void Strategy::operator()(const ModifyOrderAckEvent& event) {
   const auto& modify_order_ack = event.modify_order_ack;
   apply(
       _accounts_by_name,
@@ -347,7 +347,7 @@ void Strategy::on(const ModifyOrderAckEvent& event) {
     account.on(modify_order_ack); });
 }
 
-void Strategy::on(const CancelOrderAckEvent& event) {
+void Strategy::operator()(const CancelOrderAckEvent& event) {
   const auto& cancel_order_ack = event.cancel_order_ack;
   apply(
       _accounts_by_name,

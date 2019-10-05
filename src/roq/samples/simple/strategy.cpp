@@ -51,19 +51,19 @@ Strategy::Strategy(
 
 // Event handlers:
 
-void Strategy::on(const StartEvent&) {
+void Strategy::operator()(const StartEvent&) {
   // This is a "hook" allowing you to safely start other threads.
   //
   // A "back-door" which isn'really compatible with simulation.
 }
 
-void Strategy::on(const StopEvent&) {
+void Strategy::operator()(const StopEvent&) {
   // This is a "hook" allowing you to safely stop other threads.
   //
   // A "back-door" which isn't compatible with simulation.
 }
 
-void Strategy::on(const TimerEvent& event) {
+void Strategy::operator()(const TimerEvent& event) {
   // Important!
   // You should *never* access the system clock.
   // Instead, use the timer event to learn about current time.
@@ -77,7 +77,7 @@ void Strategy::on(const TimerEvent& event) {
   _order_timeout = {};
 }
 
-void Strategy::on(const ConnectionStatusEvent& event) {
+void Strategy::operator()(const ConnectionStatusEvent& event) {
   // This event will be generated when the connection status changes.
   // You will receive the first event when a connection is successfully
   // established. Following events will happen when a disconnect has
@@ -100,12 +100,12 @@ void Strategy::on(const ConnectionStatusEvent& event) {
   }
 }
 
-void Strategy::on(const BatchBeginEvent&) {
+void Strategy::operator()(const BatchBeginEvent&) {
   // This event is always dispatched to mark the beginning of a
   // sequence of batched events.
 }
 
-void Strategy::on(const BatchEndEvent& event) {
+void Strategy::operator()(const BatchEndEvent& event) {
   // This event marks the end of a sequence of batched events.
   //
   // Not required, but a typical pattern is to defer processing until
@@ -116,7 +116,7 @@ void Strategy::on(const BatchEndEvent& event) {
   }
 }
 
-void Strategy::on(const MarketDataStatusEvent& event) {
+void Strategy::operator()(const MarketDataStatusEvent& event) {
   // This event is generated when the gateway has recorded
   // a changed connection status for the market data feed.
   //
@@ -140,7 +140,7 @@ void Strategy::on(const MarketDataStatusEvent& event) {
   }
 }
 
-void Strategy::on(const OrderManagerStatusEvent& event) {
+void Strategy::operator()(const OrderManagerStatusEvent& event) {
   // This event is generated when the gateway has recorded
   // a changed connection status for an order management connection.
   //
@@ -167,7 +167,7 @@ void Strategy::on(const OrderManagerStatusEvent& event) {
   }
 }
 
-void Strategy::on(const DownloadBeginEvent& event) {
+void Strategy::operator()(const DownloadBeginEvent& event) {
   VLOG(1) << "DownloadBeginEvent " << event;
   // This event marks the start of the download phase.
   //
@@ -186,7 +186,7 @@ void Strategy::on(const DownloadBeginEvent& event) {
   }
 }
 
-void Strategy::on(const DownloadEndEvent& event) {
+void Strategy::operator()(const DownloadEndEvent& event) {
   VLOG(1) << "DownloadEndEvent " << event;
   // This event marks the end of the download phase.
   //
@@ -215,11 +215,11 @@ void Strategy::on(const DownloadEndEvent& event) {
   }
 }
 
-void Strategy::on(const ReferenceDataEvent&) {
+void Strategy::operator()(const ReferenceDataEvent&) {
   // Reference data for a symbol, e.g. tick-size.
 }
 
-void Strategy::on(const MarketStatusEvent& event) {
+void Strategy::operator()(const MarketStatusEvent& event) {
   // Market status for a symbol, e.g. open for trading.
   switch (event.market_status.trading_status) {
     case TradingStatus::OPEN: {
@@ -236,25 +236,25 @@ void Strategy::on(const MarketStatusEvent& event) {
   }
 }
 
-void Strategy::on(const SessionStatisticsEvent&) {
+void Strategy::operator()(const SessionStatisticsEvent&) {
   // Session statistics for a symbol, e.g. highest/lowest price.
 }
 
-void Strategy::on(const DailyStatisticsEvent&) {
+void Strategy::operator()(const DailyStatisticsEvent&) {
   // Daily statistics for a symbol, e.g. open interest.
 }
 
-void Strategy::on(const MarketByPriceEvent& event) {
+void Strategy::operator()(const MarketByPriceEvent& event) {
   // Market by price update for a symbol.
   _market_by_price->update(event.market_by_price, true);
   _dirty = true;
 }
 
-void Strategy::on(const TradeSummaryEvent&) {
+void Strategy::operator()(const TradeSummaryEvent&) {
   // Trade summary for a symbol, e.g. last traded price and quantity.
 }
 
-void Strategy::on(const PositionUpdateEvent&) {
+void Strategy::operator()(const PositionUpdateEvent&) {
   // Position update.
   //
   // Important!
@@ -266,7 +266,7 @@ void Strategy::on(const PositionUpdateEvent&) {
   // Positions can be received by *all* strategies.
 }
 
-void Strategy::on(const OrderUpdateEvent& event) {
+void Strategy::operator()(const OrderUpdateEvent& event) {
   // Order update.
   //
   // Important!
@@ -288,7 +288,7 @@ void Strategy::on(const OrderUpdateEvent& event) {
   }
 }
 
-void Strategy::on(const TradeUpdateEvent&) {
+void Strategy::operator()(const TradeUpdateEvent&) {
   // Trade update.
   //
   // Important!
@@ -298,7 +298,7 @@ void Strategy::on(const TradeUpdateEvent&) {
   // safely trade on the same account(s).
 }
 
-void Strategy::on(const CreateOrderAckEvent& event) {
+void Strategy::operator()(const CreateOrderAckEvent& event) {
   // Reponse to a CreateOrder request.
   //
   // Note!
@@ -320,7 +320,7 @@ void Strategy::on(const CreateOrderAckEvent& event) {
   }
 }
 
-void Strategy::on(const ModifyOrderAckEvent&) {
+void Strategy::operator()(const ModifyOrderAckEvent&) {
   // Reponse to a ModifyOrder request.
   //
   // Note!
@@ -328,7 +328,7 @@ void Strategy::on(const ModifyOrderAckEvent&) {
   LOG(FATAL) << "Unexpected";
 }
 
-void Strategy::on(const CancelOrderAckEvent&) {
+void Strategy::operator()(const CancelOrderAckEvent&) {
   // Reponse to a CancelOrder request.
   //
   // Note!
@@ -336,7 +336,7 @@ void Strategy::on(const CancelOrderAckEvent&) {
   LOG(FATAL) << "Unexpected";
 }
 
-void Strategy::on(const CustomMessageEvent&) {
+void Strategy::operator()(const CustomMessageEvent&) {
   // This is a back-door allowing you to integrate, e.g.
   // third-party data feeds.
   LOG(FATAL) << "Unexpected";

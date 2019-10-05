@@ -106,7 +106,7 @@ class TestStrategy final : public roq::samples::common::Strategy {
 
   template <typename E>
   bool dispatch(const E& event) {
-    on(event);
+    (*this)(event);
     return true;
   }
 
