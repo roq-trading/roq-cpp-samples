@@ -11,14 +11,14 @@ fi
 
 NAME="trader"
 
-EXCHANGE="COINBASE-PRO"
+EXCHANGE="coinbase-pro"
 ACCOUNTS="A1"
 SYMBOLS="BTC-USD"
 
 $PREFIX "$DIR/roq-samples-simple" \
 	--name "$NAME" \
 	--dispatcher-affinity 0 \
-	--metrics "$(realpath "$DIR/${NAME}_metrics.sock")" \
+	--metrics "$(realpath "$DIR/coinbase-pro_metrics.sock")" \
 	--exchange "$EXCHANGE" \
 	--accounts "$ACCOUNTS" \
 	--symbols "$SYMBOLS" \
