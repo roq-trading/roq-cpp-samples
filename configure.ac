@@ -19,6 +19,7 @@ AC_CONFIG_FILES([
  src/roq/samples/common/Makefile
  src/roq/samples/simple/Makefile
  src/roq/samples/taker/Makefile
+ src/roq/samples/example-1/Makefile
  test/Makefile
 ])
 AC_CONFIG_FILES([roq-samples.pc])
