@@ -47,7 +47,7 @@ static auto create_daily_statistics(const char *symbol) {
   };
 }
 static auto create_market_by_price(const char *symbol) {
-  roq::MBPUpdate bid[5], ask[5];
+  static roq::MBPUpdate bid[5], ask[5];
   roq::MarketByPrice result {
     .exchange = "CFFEX",
     .symbol = symbol,
@@ -69,15 +69,21 @@ static auto create_market_by_price(const char *symbol) {
   return result;
 }
 static auto create_trade_summary(const char *symbol) {
-  return roq::TradeSummary {
+  static roq::Trade trade[5];
+  roq::TradeSummary result {
     .exchange = "CFFEX",
     .symbol = symbol,
-    .price = 123.45,
-    .volume = 2345.67,
-    .turnover = 1.4e10,
-    .side = roq::Side::BUY,
+    .trade_length = std::size(trade),
+    .trade = trade,
     .exchange_time_utc = std::chrono::milliseconds(1234567890),
   };
+  for (size_t i = 0; i < std::size(trade); ++i) {
+    trade[i].price = static_cast<double>(i * 4 + 2);
+    trade[i].quantity = static_cast<double>(i * 4 + 3);
+    trade[i].side = static_cast<roq::Side>(
+        i % static_cast<size_t>(roq::Side::MAX));
+  }
+  return result;
 }
 class Dispatcher final : public roq::client::Dispatcher {
  protected:
