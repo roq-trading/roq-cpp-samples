@@ -69,6 +69,10 @@ class Strategy final : public roq::client::Handler {
     LOG(INFO) << fmt::format(
         "reference_data={}", event);
   }
+  void operator()(const roq::MarketStatusEvent& event) override {
+    LOG(INFO) << fmt::format(
+        "market_status={}", event);
+  }
   void operator()(const roq::MarketByPriceEvent& event) override {
     LOG(INFO) << fmt::format(
         "market_by_price={}", event);

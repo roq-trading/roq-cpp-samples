@@ -8,3 +8,4 @@ add_subdirectory(simple)
 add_subdirectory(taker)
 
 add_subdirectory(example-1)
+add_subdirectory(example-2)
