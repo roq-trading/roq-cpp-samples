@@ -1,2 +1,1 @@
-SUBDIRS = common collector simple taker \
-	  example-1 example-2
+SUBDIRS = example-1 example-2

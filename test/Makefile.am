@@ -11,12 +11,10 @@ TESTS = roq-samples-test
 check_PROGRAMS = roq-samples-test
 roq_samples_test_LDADD = \
 	$(PTHREAD_CFLAGS) \
-	$(top_builddir)/src/roq/samples/common/libroq-samples-common.la \
 	libgtest.la
 roq_samples_test_CPPFLAGS = \
 	$(PTHREAD_CFLAGS) \
 	$(GTEST_CFLAGS) \
 	-I$(top_srcdir)/src
 nodist_roq_samples_test_SOURCES = \
-	tokenizer.cpp \
 	main.cpp

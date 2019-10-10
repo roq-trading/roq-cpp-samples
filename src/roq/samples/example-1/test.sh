@@ -9,17 +9,11 @@ else
   PREFIX=
 fi
 
-NAME="simple"
+NAME="trader"
 
-EXCHANGE="CFFEX"
-ACCOUNTS="A1"
-SYMBOLS="T1803"
-
-$PREFIX "$DIR/roq-samples-simple" \
+$PREFIX "$DIR/roq-samples-example-1" \
 	--name "$NAME" \
 	--dispatcher-affinity 0 \
-	--metrics "$(realpath "$DIR/${NAME}_metrics.sock")" \
-	--exchange "$EXCHANGE" \
-	--accounts "$ACCOUNTS" \
-	--symbols "$SYMBOLS" \
+	--metrics "$(realpath "$DIR/$NAME.sock")" \
+	--decode-buffer-size 262144 \
 	$@

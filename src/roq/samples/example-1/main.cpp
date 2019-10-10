@@ -6,6 +6,7 @@
 
 #include "roq/application.h"
 #include "roq/client.h"
+
 #include "roq/logging.h"
 #include "roq/format.h"
 
@@ -34,6 +35,7 @@ class Config final : public client::Config {
 
  private:
   Config(Config&&) = default;
+
   Config(const Config&) = delete;
   void operator=(const Config&) = delete;
 };
@@ -46,44 +48,36 @@ class Strategy final : public roq::client::Handler {
 
  protected:
   void operator()(const roq::ConnectionStatusEvent& event) override {
-    LOG(INFO) << fmt::format(
-        "connection_status={}", event);
+    LOG(INFO)("event={}", event);
   }
   void operator()(const roq::DownloadBeginEvent& event) override {
-    LOG(INFO) << fmt::format(
-        "download_begin={}", event);
+    LOG(INFO)("event={}", event);
   }
   void operator()(const roq::DownloadEndEvent& event) override {
-    LOG(INFO) << fmt::format(
-        "download_end={}", event);
+    LOG(INFO)("event={}", event);
   }
   void operator()(const roq::MarketDataStatusEvent& event) override {
-    LOG(INFO) << fmt::format(
-        "market_data_status={}", event);
+    LOG(INFO)("event={}", event);
   }
   void operator()(const roq::OrderManagerStatusEvent& event) override {
-    LOG(INFO) << fmt::format(
-        "order_manager_status={}", event);
+    LOG(INFO)("event={}", event);
   }
   void operator()(const roq::ReferenceDataEvent& event) override {
-    LOG(INFO) << fmt::format(
-        "reference_data={}", event);
+    LOG(INFO)("event={}", event);
   }
   void operator()(const roq::MarketStatusEvent& event) override {
-    LOG(INFO) << fmt::format(
-        "market_status={}", event);
+    LOG(INFO)("event={}", event);
   }
   void operator()(const roq::MarketByPriceEvent& event) override {
-    LOG(INFO) << fmt::format(
-        "market_by_price={}", event);
+    LOG(INFO)("event={}", event);
   }
   void operator()(const roq::TradeSummaryEvent& event) override {
-    LOG(INFO) << fmt::format(
-        "trade_summary={}", event);
+    LOG(INFO)("event={}", event);
   }
 
  private:
   Strategy(Strategy&&) = default;
+
   Strategy(const Strategy&) = delete;
   void operator=(const Strategy&) = delete;
 

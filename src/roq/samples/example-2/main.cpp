@@ -2,6 +2,8 @@
 
 #include <gflags/gflags.h>
 
+#include <cassert>
+
 #include <vector>
 
 #include "roq/application.h"
@@ -11,7 +13,7 @@
 
 namespace roq {
 namespace samples {
-namespace example_1 {
+namespace example_2 {
 
 namespace {
 constexpr double NaN = std::numeric_limits<double>::quiet_NaN();
@@ -109,7 +111,7 @@ class Instrument final {
 
   void operator()(const roq::MarketDataStatus& market_data_status) {
     if (update(_market_data_status, market_data_status.status)) {
-      LOG(INFO) << fmt::format(
+      LOG(INFO)(
           "[{}:{}] market_data_status={}",
           _exchange,
           _symbol,
@@ -118,14 +120,14 @@ class Instrument final {
   }
   void operator()(const roq::ReferenceData& reference_data) {
     if (update(_tick_size, reference_data.tick_size)) {
-      LOG(INFO) << fmt::format(
+      LOG(INFO)(
           "[{}:{}] tick_size={}",
           _exchange,
           _symbol,
           _tick_size);
     }
     if (update(_min_trade_vol, reference_data.min_trade_vol)) {
-      LOG(INFO) << fmt::format(
+      LOG(INFO)(
           "[{}:{}] min_trade_vol={}",
           _exchange,
           _symbol,
@@ -134,7 +136,7 @@ class Instrument final {
   }
   void operator()(const roq::MarketStatus& market_status) {
     if (update(_trading_status, market_status.trading_status)) {
-      LOG(INFO) << fmt::format(
+      LOG(INFO)(
           "[{}:{}] trading_status={}",
           _exchange,
           _symbol,
@@ -220,7 +222,7 @@ class Application final : public roq::Application {
   }
 };
 
-}  // namespace example_1
+}  // namespace example_2
 }  // namespace samples
 }  // namespace roq
 
@@ -229,7 +231,7 @@ constexpr const char *DESCRIPTION = "Example 1 (Roq Samples)";
 }  // namespace
 
 int main(int argc, char **argv) {
-  return roq::samples::example_1::Application(
+  return roq::samples::example_2::Application(
       argc,
       argv,
       DESCRIPTION).run();

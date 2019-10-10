@@ -15,10 +15,6 @@ AC_CONFIG_FILES([
  src/Makefile
  src/roq/Makefile
  src/roq/samples/Makefile
- src/roq/samples/collector/Makefile
- src/roq/samples/common/Makefile
- src/roq/samples/simple/Makefile
- src/roq/samples/taker/Makefile
  src/roq/samples/example-1/Makefile
  src/roq/samples/example-2/Makefile
  test/Makefile
