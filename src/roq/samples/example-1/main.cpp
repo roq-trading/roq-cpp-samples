@@ -26,12 +26,12 @@ class Config final : public client::Config {
     handler.on(
         client::Symbol {
           .exchange = "deribit",
-          .regex = "BTC-\\d{2}\\D{3}\\d{2}",  // BTC futures
+          .regex = "BTC-\\d{2}\\D{3}\\d{2}",  // e.g. "BTC-27DEC19"
         });
     handler.on(
         client::Symbol {
           .exchange = "coinbase-pro",
-          .regex = "BTC-.*",  // BTC pairs
+          .regex = "BTC-.*",  // e.g. "BTC-USD"
         });
   }
 
@@ -45,6 +45,8 @@ class Strategy final : public client::Handler {
   explicit Strategy(client::Dispatcher& dispatcher)
       : _dispatcher(dispatcher) {
   }
+
+  Strategy(Strategy&&) = default;
 
  protected:
   void operator()(const ConnectionStatusEvent& event) override {
@@ -76,8 +78,6 @@ class Strategy final : public client::Handler {
   }
 
  private:
-  Strategy(Strategy&&) = default;
-
   Strategy(const Strategy&) = delete;
   void operator=(const Strategy&) = delete;
 

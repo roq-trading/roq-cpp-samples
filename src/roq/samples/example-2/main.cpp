@@ -12,7 +12,8 @@
 #include "roq/logging.h"
 
 namespace {
-constexpr double NaN = std::numeric_limits<double>::quiet_NaN();
+constexpr auto NaN = std::numeric_limits<double>::quiet_NaN();
+constexpr auto MAX_DEPTH = size_t{2};
 }  // namespace
 
 // future
@@ -159,7 +160,12 @@ class Instrument final {
     }
   }
   void operator()(const MarketByPrice& market_by_price) {
-    // updated depth
+    // update depth
+    // note!
+    //   market by price only gives you the price and size *changes*.
+    //   you will most likely want to use the the price to look up
+    //   a relative position in the order book and modify the liquidity.
+    //   the depth builder can do that work for you.
     _depth_builder->update(market_by_price);
     LOG(INFO)("depth=[{}]", fmt::join(_depth, ", "));
 
@@ -190,7 +196,7 @@ class Instrument final {
   double _tick_size = NaN;
   double _min_trade_vol = NaN;
   TradingStatus _trading_status = TradingStatus::UNDEFINED;
-  std::array<Layer, 2> _depth;
+  std::array<Layer, MAX_DEPTH> _depth;
   std::unique_ptr<client::DepthBuilder> _depth_builder;
   double _mid_price = NaN;
   double _avg_price = NaN;
@@ -200,9 +206,15 @@ class Strategy final : public client::Handler {
  public:
   explicit Strategy(client::Dispatcher& dispatcher)
       : _dispatcher(dispatcher),
-        _future("deribit", "BTC-27DEC19"),
-        _cash("coinbase-pro", "BTC-USD") {
+        _future(
+            FLAGS_future_exchange,
+            FLAGS_future_symbol),
+        _cash(
+            FLAGS_cash_exchange,
+            FLAGS_cash_symbol) {
   }
+
+  Strategy(Strategy&&) = default;
 
  protected:
   void operator()(const ConnectionStatusEvent& event) override {
@@ -228,7 +240,6 @@ class Strategy final : public client::Handler {
   }
 
  private:
-  Strategy(Strategy&&) = default;
   Strategy(const Strategy&) = delete;
   void operator=(const Strategy&) = delete;
 
@@ -259,7 +270,7 @@ class Controller final : public Application {
 }  // namespace roq
 
 namespace {
-constexpr const char *DESCRIPTION = "Example 1 (Roq Samples)";
+constexpr const char *DESCRIPTION = "Example 2 (Roq Samples)";
 }  // namespace
 
 int main(int argc, char **argv) {
