@@ -4,19 +4,40 @@
 
 #include <cassert>
 
+#include <array>
 #include <vector>
 
 #include "roq/application.h"
 #include "roq/client.h"
 #include "roq/logging.h"
-#include "roq/format.h"
+
+namespace {
+constexpr double NaN = std::numeric_limits<double>::quiet_NaN();
+}  // namespace
+
+// future
+
+DEFINE_string(future_exchange, "deribit", "future exchange");
+DEFINE_string(future_symbol, "BTC-27DEC19", "future symbol");
+
+// cash
+
+DEFINE_string(cash_exchange, "coinbase-pro", "cash exchange");
+DEFINE_string(cash_symbol, "BTC-USD", "cash symbol");
+
+// model parameters
+
+DEFINE_double(alpha, 0.2,
+    "alpha used to compute exponential moving average");
+// reference:
+//   https://en.wikipedia.org/wiki/Moving_average#Exponential_moving_average
 
 namespace roq {
 namespace samples {
 namespace example_2 {
 
 namespace {
-constexpr double NaN = std::numeric_limits<double>::quiet_NaN();
+// utility function to help with updating cached values
 template <typename T>
 inline bool update(T& lhs, const T& rhs) {
   if (lhs == rhs)  // note! a bit too simplistic for T == double
@@ -30,23 +51,24 @@ class Config final : public client::Config {
  public:
   Config() {}
 
+  Config(Config&&) = default;
+
  protected:
   void dispatch(Handler& handler) const override {
     // callback for each subscription pattern
     handler.on(
         client::Symbol {
-          .exchange = "deribit",
-          .regex = "BTC-27DEC19",
+          .exchange = FLAGS_future_exchange,
+          .regex = FLAGS_future_symbol,
         });
     handler.on(
         client::Symbol {
-          .exchange = "coinbase-pro",
-          .regex = "BTC-USD",
+          .exchange = FLAGS_cash_exchange,
+          .regex = FLAGS_cash_symbol,
         });
   }
 
  private:
-  Config(Config&&) = default;
   Config(const Config&) = delete;
   void operator=(const Config&) = delete;
 };
@@ -57,7 +79,8 @@ class Instrument final {
       const std::string_view& exchange,
       const std::string_view& symbol)
       : _exchange(exchange),
-        _symbol(symbol) {
+        _symbol(symbol),
+        _depth_builder(client::DepthBuilder::create(_depth)) {
   }
 
   auto get_tick_size() const {
@@ -69,47 +92,39 @@ class Instrument final {
   auto is_market_open() const {
     return _trading_status == TradingStatus::OPEN;;
   }
-  auto get_best_bid_price() const {
-    return _best_bid_price;
-  }
-  auto get_best_ask() const {
-    return _best_ask_price;
-  }
-  auto get_last_trade_price() const {
-    return _last_trade_price;
-  }
 
-  void operator()(const roq::ConnectionStatus& connection_status) {
+  void operator()(const ConnectionStatus& connection_status) {
     switch (connection_status) {
       case ConnectionStatus::CONNECTED:
         break;
       case ConnectionStatus::DISCONNECTED:
+        // reset all cached state
         _download = false;
         _market_data_status = GatewayStatus::DISCONNECTED;
         _tick_size = NaN;
         _tick_size = NaN;
         _min_trade_vol = NaN;
         _trading_status = TradingStatus::UNDEFINED;
-        _best_bid_price = NaN;
-        _best_ask_price = NaN;
-        _last_trade_price = NaN;
+        _depth_builder->reset();
+        _mid_price = NaN;
+        _avg_price = NaN;
         break;
     }
   }
-  void operator()(const roq::DownloadBegin& download_begin) {
+  void operator()(const DownloadBegin& download_begin) {
     if (download_begin.account.empty() == false)
       return;
     assert(_download == false);
     _download = true;
   }
-  void operator()(const roq::DownloadEnd& download_end) {
+  void operator()(const DownloadEnd& download_end) {
     if (download_end.account.empty() == false)
       return;
     assert(_download == true);
     _download = false;
   }
 
-  void operator()(const roq::MarketDataStatus& market_data_status) {
+  void operator()(const MarketDataStatus& market_data_status) {
     if (update(_market_data_status, market_data_status.status)) {
       LOG(INFO)(
           "[{}:{}] market_data_status={}",
@@ -118,7 +133,7 @@ class Instrument final {
           _market_data_status);
     }
   }
-  void operator()(const roq::ReferenceData& reference_data) {
+  void operator()(const ReferenceData& reference_data) {
     if (update(_tick_size, reference_data.tick_size)) {
       LOG(INFO)(
           "[{}:{}] tick_size={}",
@@ -134,7 +149,7 @@ class Instrument final {
           _min_trade_vol);
     }
   }
-  void operator()(const roq::MarketStatus& market_status) {
+  void operator()(const MarketStatus& market_status) {
     if (update(_trading_status, market_status.trading_status)) {
       LOG(INFO)(
           "[{}:{}] trading_status={}",
@@ -143,9 +158,28 @@ class Instrument final {
           _trading_status);
     }
   }
-  void operator()(const roq::MarketByPrice& event) {
-  }
-  void operator()(const roq::TradeSummary& event) {
+  void operator()(const MarketByPrice& market_by_price) {
+    // updated depth
+    _depth_builder->update(market_by_price);
+    LOG(INFO)("depth=[{}]", fmt::join(_depth, ", "));
+
+    // compute (weighted) mid
+    double sum_1 = 0.0, sum_2 = 0.0;
+    for (auto iter : _depth) {
+      sum_1 += iter.bid_price * iter.bid_quantity +
+        iter.ask_price * iter.ask_quantity;
+      sum_2 += iter.bid_quantity + iter.ask_quantity;
+    }
+    _mid_price = sum_1 / sum_2;
+    LOG(INFO)("mid_price={}", _mid_price);
+
+    // update (exponential) moving average
+    if (std::isnan(_avg_price))
+      _avg_price = _mid_price;
+    else
+      _avg_price = FLAGS_alpha * _mid_price +
+        (1.0 - FLAGS_alpha) * _avg_price;
+    LOG(INFO)("avg_price={}", _avg_price);
   }
 
  private:
@@ -156,43 +190,41 @@ class Instrument final {
   double _tick_size = NaN;
   double _min_trade_vol = NaN;
   TradingStatus _trading_status = TradingStatus::UNDEFINED;
-  double _best_bid_price = NaN;
-  double _best_ask_price = NaN;
-  double _last_trade_price = NaN;
+  std::array<Layer, 2> _depth;
+  std::unique_ptr<client::DepthBuilder> _depth_builder;
+  double _mid_price = NaN;
+  double _avg_price = NaN;
 };
 
-class Strategy final : public roq::client::Handler {
+class Strategy final : public client::Handler {
  public:
-  explicit Strategy(roq::client::Dispatcher& dispatcher)
+  explicit Strategy(client::Dispatcher& dispatcher)
       : _dispatcher(dispatcher),
         _future("deribit", "BTC-27DEC19"),
         _cash("coinbase-pro", "BTC-USD") {
   }
 
  protected:
-  void operator()(const roq::ConnectionStatusEvent& event) override {
+  void operator()(const ConnectionStatusEvent& event) override {
     _future(event.connection_status);
   }
-  void operator()(const roq::DownloadBeginEvent& event) override {
+  void operator()(const DownloadBeginEvent& event) override {
     _future(event.download_begin);
   }
-  void operator()(const roq::DownloadEndEvent& event) override {
+  void operator()(const DownloadEndEvent& event) override {
     _future(event.download_end);
   }
-  void operator()(const roq::MarketDataStatusEvent& event) override {
+  void operator()(const MarketDataStatusEvent& event) override {
     _future(event.market_data_status);
   }
-  void operator()(const roq::ReferenceDataEvent& event) override {
+  void operator()(const ReferenceDataEvent& event) override {
     _future(event.reference_data);
   }
-  void operator()(const roq::MarketStatusEvent& event) override {
+  void operator()(const MarketStatusEvent& event) override {
     _future(event.market_status);
   }
-  void operator()(const roq::MarketByPriceEvent& event) override {
+  void operator()(const MarketByPriceEvent& event) override {
     _future(event.market_by_price);
-  }
-  void operator()(const roq::TradeSummaryEvent& event) override {
-    _future(event.trade_summary);
   }
 
  private:
@@ -201,15 +233,15 @@ class Strategy final : public roq::client::Handler {
   void operator=(const Strategy&) = delete;
 
  private:
-  roq::client::Dispatcher& _dispatcher;
+  client::Dispatcher& _dispatcher;
   Instrument _future;
   Instrument _cash;
 };
 
 
-class Application final : public roq::Application {
+class Controller final : public Application {
  public:
-  using roq::Application::Application;
+  using Application::Application;
 
  protected:
   int main(int argc, char **argv) override {
@@ -217,7 +249,7 @@ class Application final : public roq::Application {
       throw std::runtime_error("Expected arguments");
     Config config;
     std::vector<std::string> connections(argv + 1, argv + argc);
-    roq::client::Trader(config, connections).dispatch<Strategy>();
+    client::Trader(config, connections).dispatch<Strategy>();
     return EXIT_SUCCESS;
   }
 };
@@ -231,7 +263,7 @@ constexpr const char *DESCRIPTION = "Example 1 (Roq Samples)";
 }  // namespace
 
 int main(int argc, char **argv) {
-  return roq::samples::example_2::Application(
+  return roq::samples::example_2::Controller(
       argc,
       argv,
       DESCRIPTION).run();

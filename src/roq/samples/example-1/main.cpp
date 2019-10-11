@@ -18,6 +18,8 @@ class Config final : public client::Config {
  public:
   Config() {}
 
+  Config(Config&&) = default;
+
  protected:
   void dispatch(Handler& handler) const override {
     // callback for each subscription pattern
@@ -34,44 +36,42 @@ class Config final : public client::Config {
   }
 
  private:
-  Config(Config&&) = default;
-
   Config(const Config&) = delete;
   void operator=(const Config&) = delete;
 };
 
-class Strategy final : public roq::client::Handler {
+class Strategy final : public client::Handler {
  public:
-  explicit Strategy(roq::client::Dispatcher& dispatcher)
+  explicit Strategy(client::Dispatcher& dispatcher)
       : _dispatcher(dispatcher) {
   }
 
  protected:
-  void operator()(const roq::ConnectionStatusEvent& event) override {
+  void operator()(const ConnectionStatusEvent& event) override {
     LOG(INFO)("event={}", event);
   }
-  void operator()(const roq::DownloadBeginEvent& event) override {
+  void operator()(const DownloadBeginEvent& event) override {
     LOG(INFO)("event={}", event);
   }
-  void operator()(const roq::DownloadEndEvent& event) override {
+  void operator()(const DownloadEndEvent& event) override {
     LOG(INFO)("event={}", event);
   }
-  void operator()(const roq::MarketDataStatusEvent& event) override {
+  void operator()(const MarketDataStatusEvent& event) override {
     LOG(INFO)("event={}", event);
   }
-  void operator()(const roq::OrderManagerStatusEvent& event) override {
+  void operator()(const OrderManagerStatusEvent& event) override {
     LOG(INFO)("event={}", event);
   }
-  void operator()(const roq::ReferenceDataEvent& event) override {
+  void operator()(const ReferenceDataEvent& event) override {
     LOG(INFO)("event={}", event);
   }
-  void operator()(const roq::MarketStatusEvent& event) override {
+  void operator()(const MarketStatusEvent& event) override {
     LOG(INFO)("event={}", event);
   }
-  void operator()(const roq::MarketByPriceEvent& event) override {
+  void operator()(const MarketByPriceEvent& event) override {
     LOG(INFO)("event={}", event);
   }
-  void operator()(const roq::TradeSummaryEvent& event) override {
+  void operator()(const TradeSummaryEvent& event) override {
     LOG(INFO)("event={}", event);
   }
 
@@ -82,13 +82,13 @@ class Strategy final : public roq::client::Handler {
   void operator=(const Strategy&) = delete;
 
  private:
-  roq::client::Dispatcher& _dispatcher;
+  client::Dispatcher& _dispatcher;
 };
 
 
-class Application final : public roq::Application {
+class Controller final : public Application {
  public:
-  using roq::Application::Application;
+  using Application::Application;
 
  protected:
   int main(int argc, char **argv) override {
@@ -96,7 +96,7 @@ class Application final : public roq::Application {
       throw std::runtime_error("Expected arguments");
     Config config;
     std::vector<std::string> connections(argv + 1, argv + argc);
-    roq::client::Trader(config, connections).dispatch<Strategy>();
+    client::Trader(config, connections).dispatch<Strategy>();
     return EXIT_SUCCESS;
   }
 };
@@ -110,7 +110,7 @@ constexpr const char *DESCRIPTION = "Example 1 (Roq Samples)";
 }  // namespace
 
 int main(int argc, char **argv) {
-  return roq::samples::example_1::Application(
+  return roq::samples::example_1::Controller(
       argc,
       argv,
       DESCRIPTION).run();

@@ -1,21 +1,23 @@
 # Example 1
 
-## Goal
+## Objective
 
-* Demonstrate basic event processing
+* Demonstrate how to update a model
 
 ## What does it do?
 
-* Define regex patterns used for subscribing market data
-* Use the Trader interface to manage connections and event dispatching
-* Use the asynchronous logger to print relevant incoming events
+* Extends `example-1`
+* Cache instrument specific information (such as tick size) eventually
+  required for placing orders
+* Process MarketByPrice and maintain depth
+* Compute weighted average price and exponential moving average
 
 ## Requirements
 
 The example requires access to one or more market gateways running
 on the same host.
 
-> Note! *The simulator can also be used as a gateway*.
+> *The simulator can also be used as a gateway*.
 
 ## How to use
 
@@ -27,5 +29,8 @@ Further arguments are UNIX domain socket end-points for the gateways.
 Example:
 
 ```bash
-./roq-samples-example-1 --name test ~/deribit.sock ~/coinbase-pro.sock
+./roq-samples-example-2 --name test ~/deribit.sock ~/coinbase-pro.sock
 ```
+
+> *The paths used for the UNIX domain sockets obviously depend on how
+> you configure and launch your gateways*.
