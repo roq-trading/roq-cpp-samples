@@ -70,12 +70,12 @@ class Config final : public client::Config {
  protected:
   void dispatch(Handler& handler) const override {
     // callback for each subscription pattern
-    handler.on(
+    handler(
         client::Symbol {
           .exchange = FLAGS_future_exchange,
           .regex = FLAGS_future_symbol,
         });
-    handler.on(
+    handler(
         client::Symbol {
           .exchange = FLAGS_cash_exchange,
           .regex = FLAGS_cash_symbol,
