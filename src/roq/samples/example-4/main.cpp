@@ -11,55 +11,42 @@
 #include "roq/client.h"
 #include "roq/logging.h"
 
+namespace {
+constexpr auto NaN = std::numeric_limits<double>::quiet_NaN();
+constexpr auto MAX_DEPTH = size_t{2};
+}  // namespace
 
-// command-line options
+// future
 
-DEFINE_string(future_exchange,
-    "deribit",
-    "future exchange");
+DEFINE_string(future_exchange, "deribit", "future exchange");
+DEFINE_string(future_symbol, "BTC-27DEC19", "future symbol");
 
-DEFINE_string(future_symbol,
-    "BTC-27DEC19",
-    "future symbol");
+// cash
 
-DEFINE_string(cash_exchange,
-    "coinbase-pro",
-    "cash exchange");
+DEFINE_string(cash_exchange, "coinbase-pro", "cash exchange");
+DEFINE_string(cash_symbol, "BTC-USD", "cash symbol");
 
-DEFINE_string(cash_symbol,
-    "BTC-USD",
-    "cash symbol");
+// model parameters
 
-DEFINE_double(alpha,
-    double{0.2},
+DEFINE_double(alpha, 0.2,
     "alpha used to compute exponential moving average");
 // reference:
 //   https://en.wikipedia.org/wiki/Moving_average#Exponential_moving_average
 
 namespace roq {
 namespace samples {
-namespace example_2 {
-
-// constants
+namespace example_4 {
 
 namespace {
-constexpr auto NaN = std::numeric_limits<double>::quiet_NaN();
-constexpr auto MAX_DEPTH = size_t{2};
-}  // namespace
-
-// utilities
-
-namespace {
+// utility function to help with updating cached values
 template <typename T>
 inline bool update(T& lhs, const T& rhs) {
-  if (lhs == rhs)  // note! too simplistic for T == double
+  if (lhs == rhs)  // note! a bit too simplistic for T == double
     return false;
   lhs = rhs;
   return true;
 }
 }  // namespace
-
-// configuration
 
 class Config final : public client::Config {
  public:
@@ -86,8 +73,6 @@ class Config final : public client::Config {
   Config(const Config&) = delete;
   void operator=(const Config&) = delete;
 };
-
-// helper class caching instrument specific information
 
 class Instrument final {
  public:
@@ -182,13 +167,8 @@ class Instrument final {
     //   a relative position in the order book and modify the liquidity.
     //   the depth builder can do that work for you.
     _depth_builder->update(market_by_price);
-    VLOG(1)("depth=[{}]", fmt::join(_depth, ", "));
-    // now compute mid and average price
-    update_model();
-  }
+    LOG(INFO)("depth=[{}]", fmt::join(_depth, ", "));
 
- protected:
-  void update_model() {
     // compute (weighted) mid
     double sum_1 = 0.0, sum_2 = 0.0;
     for (auto iter : _depth) {
@@ -197,14 +177,15 @@ class Instrument final {
       sum_2 += iter.bid_quantity + iter.ask_quantity;
     }
     _mid_price = sum_1 / sum_2;
-    VLOG(1)("mid_price={}", _mid_price);
+    LOG(INFO)("mid_price={}", _mid_price);
+
     // update (exponential) moving average
     if (std::isnan(_avg_price))
       _avg_price = _mid_price;
     else
       _avg_price = FLAGS_alpha * _mid_price +
         (1.0 - FLAGS_alpha) * _avg_price;
-    VLOG(1)("avg_price={}", _avg_price);
+    LOG(INFO)("avg_price={}", _avg_price);
   }
 
  private:
@@ -220,8 +201,6 @@ class Instrument final {
   double _mid_price = NaN;
   double _avg_price = NaN;
 };
-
-// strategy implementation
 
 class Strategy final : public client::Handler {
  public:
@@ -270,7 +249,6 @@ class Strategy final : public client::Handler {
   Instrument _cash;
 };
 
-// application
 
 class Controller final : public Application {
  public:
@@ -278,10 +256,8 @@ class Controller final : public Application {
 
  protected:
   int main(int argc, char **argv) override {
-    if (argc == 2)
-      throw std::runtime_error(
-          "Expected exactly two arguments: "
-          "future exchange then cash exchange");
+    if (argc == 1)
+      throw std::runtime_error("Expected arguments");
     Config config;
     std::vector<std::string> connections(argv + 1, argv + argc);
     client::Trader(config, connections).dispatch<Strategy>();
@@ -289,16 +265,16 @@ class Controller final : public Application {
   }
 };
 
-}  // namespace example_2
+}  // namespace example_4
 }  // namespace samples
 }  // namespace roq
 
 namespace {
-constexpr const char *DESCRIPTION = "Example 2 (Roq Samples)";
+constexpr const char *DESCRIPTION = "Example 4 (Roq Samples)";
 }  // namespace
 
 int main(int argc, char **argv) {
-  return roq::samples::example_2::Controller(
+  return roq::samples::example_4::Controller(
       argc,
       argv,
       DESCRIPTION).run();

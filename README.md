@@ -29,29 +29,29 @@ The reality is unfortunately more complicated.
 These are some of the reasons why you have to be careful
 when deploying algorithmic trading strategies
 
-* Latest market data snapshot becomes stale if the gateway
-  loses connection to the market data feed.
-  Client must ensure invalidation of market data (and model
-  results) if it receives a disconnect event from the gateway.
+* Latest market data snapshot becomes stale if the market access
+  gateway loses connection to the market data feed.
+  * Client must ensure invalidation of market data (and model
+    results) if it receives a disconnect event from the gateway.
 * Several market data update events could arrive as a batch.
-  Certain trading strategies, e.g. spread trading, will
-  benefit from postponing the processing until the entire
-  batch has been received.
+  * Certain trading strategies, e.g. spread trading, will
+    benefit from postponing the processing until the entire
+    batch has been received.
 * Order action requests could get lost in transit.
-  It is important to monitor the age of a request and take
-  appropriate action if an ack has not been received within
-  a timeout period.
-  There are no silver bullets: Appropriate action could
-  be to simply resend the order action request.
-  Or perhaps the right approach is to terminate the program
-  and require human intervention.
-  (It really depends on your use-case).
-* Download must have completed before trading is allowed.
-  In particular, accurate positions and working orders
-  must have been received before the trading strategy is
-  allowed to send new order action requests.
+  * It is important to monitor the age of a request and take
+    appropriate action if an ack has not been received within
+    a timeout period.
+  * There are no silver bullets: Appropriate action could
+    be to simply resend the order action request.
+    Or perhaps the right approach is to terminate the program
+    and require human intervention.
+    (It really depends on your use-case).
+* Download must have completed before trading is resumed.
+  * Accurate positions and a current view of working orders
+    must have been received before a trading strategy can be
+    allowed to send new order action requests.
 
-The source code samples has been documented to help
+The different examples have been documented to help
 you better understand the motivations and reasons for
 specific design patterns.
 
@@ -83,7 +83,8 @@ EOF
 
 ### Activate Miniconda
 
-> *This section will demonstrate how to activate your Conda environment*.
+> *This section will demonstrate how to activate your Conda
+> environment*.
 
 This is how you activate your Conda environment
 
@@ -91,8 +92,8 @@ This is how you activate your Conda environment
 source ~/miniconda3/bin/activate
 ```
 
-> The following sections will assume you have *already* activated your
-> Conda environment.
+> The following sections will assume you have *already* activated
+> your Conda environment.
 
 ### Install git
 
@@ -127,9 +128,10 @@ The project includes a `create_conda_env.sh` helper script which will
 
 If all goes well, you will be prompted to start or restart Miniconda.
 
-> Instructions are written to the terminal so you can easily copy-paste.
+> Instructions are written to the terminal so you can easily copy
+> paste.
 > For example, something like this:
-> 
+>
 > ```
 > Please re-activate your Conda environment now!
 > conda deactivate && source ~/miniconda3/bin/activate
@@ -150,15 +152,22 @@ cmake -DCMAKE_AR="$AR" -DCMAKE_RANLIB="$RANLIB" -DCMAKE_NM="$NM" -DCMAKE_BUILD_T
 make -j4
 ```
 
+> It is quite important to include the additional cmake options.
+> Without, you could end up mixing the Conda compiler tools with
+> whatever tools already exist on your system.
+> Or cmake may not be able to find the tools at all.
+
 ### Run an in-process simulation
 
-> This script will write simulation results (csv files) to current directory.
+> This script will write simulation results (csv files) to current
+> directory.
 
 ```bash
 src/roq/samples/simple/simulate.sh
 ```
 
-You can also increate the logging verbosity if you want to see more details
+You can also increate the logging verbosity if you want to see more
+details
 
 ```bash
 ROQ_v=1 src/roq/samples/simple/simulate.sh
@@ -166,8 +175,8 @@ ROQ_v=1 src/roq/samples/simple/simulate.sh
 
 ### Install the simulator service
 
-> The `roq-data` package is not required: it provides a default dataset
-> useful for demonstrating the simulator.
+> The `roq-data` package is not required: it provides a default
+> dataset useful for demonstrating the simulator.
 > It has probably already been installed by the `create_conda_env.sh`
 > helper script mentioned earlier.
 
@@ -235,22 +244,25 @@ The different sub-projects are meant to demonstrate various concepts.
 
 The most trivial project is the
 [collector](https://github.com/roq-trading/roq-samples/tree/master/src/roq/samples/collector).
-It subscribes to market data and writes anything it receives to the log.
+It subscribes to market data and writes anything it receives to
+the log.
 
 The [simple](https://github.com/roq-trading/roq-samples/tree/master/src/roq/samples/simple)
 project demonstrates the various event handlers.
-It also implements trivial patterns to manage e.g. monitoring for order action
-timeout.
+It also implements trivial patterns to manage e.g. monitoring for
+order action timeout.
 
 The [common](https://github.com/roq-trading/roq-samples/tree/master/src/roq/samples/common)
-project is a library meant to create a higher level interface to implement
-a trivial market taker application.
+project is a library meant to create a higher level interface to
+implement a trivial market taker application.
 
 The [taker](https://github.com/roq-trading/roq-samples/tree/master/src/roq/samples/taker)
-project uses the common library to implement a trivial market taking strategy.
+project uses the common library to implement a trivial market taking
+strategy.
 
 The [maker](https://github.com/roq-trading/roq-samples/tree/master/src/roq/samples/maker)
-project uses the common library to implement a trivial market making strategy.
+project uses the common library to implement a trivial market making
+strategy.
 
 * [Contact us](mailto:info@roq-trading.com)
 * [Roq Trading Solutions (website)](https://roq-trading.com)
