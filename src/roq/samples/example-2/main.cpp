@@ -9,6 +9,7 @@
 
 #include "roq/application.h"
 #include "roq/client.h"
+#include "roq/event.h"
 #include "roq/logging.h"
 
 
@@ -64,7 +65,6 @@ inline bool update(T& lhs, const T& rhs) {
 class Config final : public client::Config {
  public:
   Config() {}
-
   Config(Config&&) = default;
 
  protected:
@@ -150,6 +150,8 @@ class Instrument final {
     }
   }
   void operator()(const ReferenceData& reference_data) {
+    assert(_exchange.compare(reference_data.exchange) == 0);
+    assert(_symbol.compare(reference_data.symbol) == 0);
     if (update(_tick_size, reference_data.tick_size)) {
       LOG(INFO)(
           "[{}:{}] tick_size={}",
@@ -166,6 +168,8 @@ class Instrument final {
     }
   }
   void operator()(const MarketStatus& market_status) {
+    assert(_exchange.compare(market_status.exchange) == 0);
+    assert(_symbol.compare(market_status.symbol) == 0);
     if (update(_trading_status, market_status.trading_status)) {
       LOG(INFO)(
           "[{}:{}] trading_status={}",
@@ -175,6 +179,8 @@ class Instrument final {
     }
   }
   void operator()(const MarketByPrice& market_by_price) {
+    assert(_exchange.compare(market_by_price.exchange) == 0);
+    assert(_symbol.compare(market_by_price.symbol) == 0);
     // update depth
     // note!
     //   market by price only gives you the price and size *changes*.
@@ -239,25 +245,49 @@ class Strategy final : public client::Handler {
 
  protected:
   void operator()(const ConnectionStatusEvent& event) override {
-    _future(event.connection_status);
+    switch (event.source) {
+      case 0:
+        _future(event.connection_status);
+        break;
+      case 1:
+        _cash(event.connection_status);
+        break;
+      default:
+        assert(false);  // should never happen
+    }
   }
   void operator()(const DownloadBeginEvent& event) override {
-    _future(event.download_begin);
+    update_instrument(event);
   }
   void operator()(const DownloadEndEvent& event) override {
-    _future(event.download_end);
+    update_instrument(event);
   }
   void operator()(const MarketDataStatusEvent& event) override {
-    _future(event.market_data_status);
+    update_instrument(event);
   }
   void operator()(const ReferenceDataEvent& event) override {
-    _future(event.reference_data);
+    update_instrument(event);
   }
   void operator()(const MarketStatusEvent& event) override {
-    _future(event.market_status);
+    update_instrument(event);
   }
   void operator()(const MarketByPriceEvent& event) override {
-    _future(event.market_by_price);
+    update_instrument(event);
+  }
+
+  // helper - dispatch event to instrument
+  template <typename T>
+  void update_instrument(const T& event) {
+    switch (event.message_info.source) {
+      case 0:
+        _future(event_value(event));
+        break;
+      case 1:
+        _cash(event_value(event));
+        break;
+      default:
+        assert(false);  // should never happen
+    }
   }
 
  private:

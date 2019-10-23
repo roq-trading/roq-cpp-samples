@@ -9,8 +9,8 @@ else
   PREFIX=
 fi
 
-NAME="example-1"
+NAME="example-2"
 
-$PREFIX "$DIR/roq-samples-example-1" \
+$PREFIX "$DIR/roq-samples-example-2" \
 	--name "$NAME" \
 	$@
