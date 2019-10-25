@@ -100,6 +100,10 @@ class Instrument final {
         _depth_builder(client::DepthBuilder::create(_depth)) {
   }
 
+  bool is_ready() const {
+    return _ready;
+  }
+
   auto get_tick_size() const {
     return _tick_size;
   }
@@ -108,12 +112,12 @@ class Instrument final {
     return _min_trade_vol;
   }
 
-  auto is_market_open() const {
-    return _trading_status == TradingStatus::OPEN;
+  auto get_multiplier() const {
+    return _multiplier;
   }
 
-  bool is_ready() const {
-    return _ready;
+  auto is_market_open() const {
+    return _trading_status == TradingStatus::OPEN;
   }
 
   void operator()(const ConnectionStatus& connection_status) {
@@ -130,6 +134,7 @@ class Instrument final {
         // nothing to do for this implementation
         break;
       case ConnectionStatus::DISCONNECTED:
+        // reset all cached state - await download upon reconnection
         reset();
         break;
     }
@@ -159,16 +164,6 @@ class Instrument final {
           _symbol,
         _download);
     check_ready();
-  }
-
-  void operator()(const MarketDataStatus& market_data_status) {
-    if (update(_market_data_status, market_data_status.status)) {
-      LOG(INFO)(
-          "[{}:{}] market_data_status={}",
-          _exchange,
-          _symbol,
-          _market_data_status);
-    }
   }
 
   void operator()(const ReferenceData& reference_data) {
@@ -209,6 +204,16 @@ class Instrument final {
           _exchange,
           _symbol,
           _trading_status);
+    }
+  }
+
+  void operator()(const MarketDataStatus& market_data_status) {
+    if (update(_market_data_status, market_data_status.status)) {
+      LOG(INFO)(
+          "[{}:{}] market_data_status={}",
+          _exchange,
+          _symbol,
+          _market_data_status);
     }
   }
 
@@ -343,6 +348,9 @@ class Strategy final : public client::Handler {
   }
   void operator()(const MarketByPriceEvent& event) override {
     dispatch(event);
+    if (_future.is_ready() && _cash.is_ready()) {
+      // TODO(thraneh): compute basis
+    }
   }
 
   // helper - dispatch event to the relevant instrument
