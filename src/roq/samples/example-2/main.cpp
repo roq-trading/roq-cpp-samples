@@ -220,6 +220,7 @@ class Instrument final {
   void operator()(const MarketByPrice& market_by_price) {
     assert(_exchange.compare(market_by_price.exchange) == 0);
     assert(_symbol.compare(market_by_price.symbol) == 0);
+    LOG_IF(INFO, _download)("MarketByPrice={}", market_by_price);
     // update depth
     // note!
     //   market by price only gives you *changes*.
