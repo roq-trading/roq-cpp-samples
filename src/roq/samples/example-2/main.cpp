@@ -193,6 +193,7 @@ class Instrument final {
           _multiplier);
       check_ready();
     }
+    _depth_builder->update(reference_data);
   }
 
   void operator()(const MarketStatus& market_status) {
