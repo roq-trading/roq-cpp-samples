@@ -46,6 +46,7 @@ namespace example_2 {
 namespace {
 constexpr auto NaN = std::numeric_limits<double>::quiet_NaN();
 constexpr auto MAX_DEPTH = size_t{2};
+constexpr auto TOLERANCE = double{1.0e-10};
 }  // namespace
 
 // utilities
@@ -102,42 +103,62 @@ class Instrument final {
   auto get_tick_size() const {
     return _tick_size;
   }
+
   auto get_min_trade_vol() const {
     return _min_trade_vol;
   }
+
   auto is_market_open() const {
-    return _trading_status == TradingStatus::OPEN;;
+    return _trading_status == TradingStatus::OPEN;
+  }
+
+  bool is_ready() const {
+    return _ready;
   }
 
   void operator()(const ConnectionStatus& connection_status) {
+    if (update(_connection_status, connection_status)) {
+      LOG(INFO)(
+          "[{}:{}] connection_status={}",
+          _exchange,
+          _symbol,
+          _connection_status);
+      check_ready();
+    }
     switch (connection_status) {
       case ConnectionStatus::CONNECTED:
+        // nothing to do for this implementation
         break;
       case ConnectionStatus::DISCONNECTED:
-        // reset all cached state
-        _download = false;
-        _market_data_status = GatewayStatus::DISCONNECTED;
-        _tick_size = NaN;
-        _tick_size = NaN;
-        _min_trade_vol = NaN;
-        _trading_status = TradingStatus::UNDEFINED;
-        _depth_builder->reset();
-        _mid_price = NaN;
-        _avg_price = NaN;
+        reset();
         break;
     }
   }
+
   void operator()(const DownloadBegin& download_begin) {
     if (download_begin.account.empty() == false)
       return;
     assert(_download == false);
     _download = true;
+    LOG(INFO)(
+        "[{}:{}] download={}",
+          _exchange,
+          _symbol,
+        _download);
+    check_ready();
   }
+
   void operator()(const DownloadEnd& download_end) {
     if (download_end.account.empty() == false)
       return;
     assert(_download == true);
     _download = false;
+    LOG(INFO)(
+        "[{}:{}] download={}",
+          _exchange,
+          _symbol,
+        _download);
+    check_ready();
   }
 
   void operator()(const MarketDataStatus& market_data_status) {
@@ -149,6 +170,7 @@ class Instrument final {
           _market_data_status);
     }
   }
+
   void operator()(const ReferenceData& reference_data) {
     assert(_exchange.compare(reference_data.exchange) == 0);
     assert(_symbol.compare(reference_data.symbol) == 0);
@@ -158,6 +180,7 @@ class Instrument final {
           _exchange,
           _symbol,
           _tick_size);
+      check_ready();
     }
     if (update(_min_trade_vol, reference_data.min_trade_vol)) {
       LOG(INFO)(
@@ -165,8 +188,18 @@ class Instrument final {
           _exchange,
           _symbol,
           _min_trade_vol);
+      check_ready();
+    }
+    if (update(_multiplier, reference_data.multiplier)) {
+      LOG(INFO)(
+          "[{}:{}] multiplier={}",
+          _exchange,
+          _symbol,
+          _multiplier);
+      check_ready();
     }
   }
+
   void operator()(const MarketStatus& market_status) {
     assert(_exchange.compare(market_status.exchange) == 0);
     assert(_symbol.compare(market_status.symbol) == 0);
@@ -178,19 +211,22 @@ class Instrument final {
           _trading_status);
     }
   }
+
   void operator()(const MarketByPrice& market_by_price) {
     assert(_exchange.compare(market_by_price.exchange) == 0);
     assert(_symbol.compare(market_by_price.symbol) == 0);
     // update depth
     // note!
-    //   market by price only gives you the price and size *changes*.
+    //   market by price only gives you *changes*.
     //   you will most likely want to use the the price to look up
-    //   a relative position in the order book and modify the liquidity.
-    //   the depth builder can do that work for you.
+    //   the relative position in an order book and then modify the
+    //   liquidity.
+    //   the depth builder helps you maintain a correct view of
+    //   the order book.
     _depth_builder->update(market_by_price);
     VLOG(1)("depth=[{}]", fmt::join(_depth, ", "));
-    // now compute mid and average price
-    update_model();
+    if (is_ready())
+      update_model();
   }
 
  protected:
@@ -213,18 +249,51 @@ class Instrument final {
     VLOG(1)("avg_price={}", _avg_price);
   }
 
+  void check_ready() {
+    auto before = _ready;
+    _ready =
+      _connection_status == ConnectionStatus::CONNECTED &&
+      _download == false &&
+      _tick_size > TOLERANCE &&
+      _min_trade_vol > TOLERANCE &&
+      _multiplier > TOLERANCE &&
+      _trading_status == TradingStatus::OPEN &&
+      _market_data_status == GatewayStatus::READY;
+    LOG_IF(INFO, _ready != before)(
+        "[{}:{}] ready={}",
+        _exchange,
+        _symbol,
+        _ready);
+  }
+
+  void reset() {
+    _connection_status = ConnectionStatus::DISCONNECTED;
+    _download = false;
+    _tick_size = NaN;
+    _min_trade_vol = NaN;
+    _trading_status = TradingStatus::UNDEFINED;
+    _market_data_status = GatewayStatus::DISCONNECTED;
+    _depth_builder->reset();
+    _mid_price = NaN;
+    _avg_price = NaN;
+    _ready = false;
+  }
+
  private:
   const std::string_view _exchange;
   const std::string_view _symbol;
+  ConnectionStatus _connection_status = ConnectionStatus::DISCONNECTED;
   bool _download = false;
-  GatewayStatus _market_data_status = GatewayStatus::DISCONNECTED;
   double _tick_size = NaN;
   double _min_trade_vol = NaN;
+  double _multiplier = NaN;
   TradingStatus _trading_status = TradingStatus::UNDEFINED;
+  GatewayStatus _market_data_status = GatewayStatus::DISCONNECTED;
   std::array<Layer, MAX_DEPTH> _depth;
   std::unique_ptr<client::DepthBuilder> _depth_builder;
   double _mid_price = NaN;
   double _avg_price = NaN;
+  bool _ready = false;
 };
 
 // strategy implementation
@@ -245,6 +314,7 @@ class Strategy final : public client::Handler {
 
  protected:
   void operator()(const ConnectionStatusEvent& event) override {
+    // TODO(thraneh): fix ConnectionStatusEvent
     switch (event.source) {
       case 0:
         _future(event.connection_status);
@@ -257,27 +327,27 @@ class Strategy final : public client::Handler {
     }
   }
   void operator()(const DownloadBeginEvent& event) override {
-    update_instrument(event);
+    dispatch(event);
   }
   void operator()(const DownloadEndEvent& event) override {
-    update_instrument(event);
+    dispatch(event);
   }
   void operator()(const MarketDataStatusEvent& event) override {
-    update_instrument(event);
+    dispatch(event);
   }
   void operator()(const ReferenceDataEvent& event) override {
-    update_instrument(event);
+    dispatch(event);
   }
   void operator()(const MarketStatusEvent& event) override {
-    update_instrument(event);
+    dispatch(event);
   }
   void operator()(const MarketByPriceEvent& event) override {
-    update_instrument(event);
+    dispatch(event);
   }
 
-  // helper - dispatch event to instrument
+  // helper - dispatch event to the relevant instrument
   template <typename T>
-  void update_instrument(const T& event) {
+  void dispatch(const T& event) {
     switch (event.message_info.source) {
       case 0:
         _future(event_value(event));

@@ -89,31 +89,69 @@ class Strategy final : public client::Handler {
   //   the ROQ_v environment variable defines the verbosity level
   //   for example, "export ROQ_v=1"
   void operator()(const ConnectionStatusEvent& event) override {
-    LOG(INFO)("event={}", event);
+    LOG(INFO)(
+        "[{}:{}] ConnectionStatus={}",
+        event.source,
+        event.source_name,
+        event.connection_status);
   }
   void operator()(const DownloadBeginEvent& event) override {
-    LOG(INFO)("event={}", event);
+    LOG(INFO)(
+        "[{}:{}] DownloadBegin={}",
+        event.message_info.source,
+        event.message_info.source_name,
+        event.download_begin);
   }
   void operator()(const DownloadEndEvent& event) override {
-    LOG(INFO)("event={}", event);
+    LOG(INFO)(
+        "[{}:{}] DownloadEnd={}",
+        event.message_info.source,
+        event.message_info.source_name,
+        event.download_end);
   }
   void operator()(const MarketDataStatusEvent& event) override {
-    LOG(INFO)("event={}", event);
+    LOG(INFO)(
+        "[{}:{}] MarketDataStatus={}",
+        event.message_info.source,
+        event.message_info.source_name,
+        event.market_data_status);
   }
   void operator()(const OrderManagerStatusEvent& event) override {
-    LOG(INFO)("event={}", event);
+    LOG(INFO)(
+        "[{}:{}] OrderManagerStatus={}",
+        event.message_info.source,
+        event.message_info.source_name,
+        event.order_manager_status);
   }
   void operator()(const ReferenceDataEvent& event) override {
-    LOG(INFO)("event={}", event);
+    LOG(INFO)(
+        "[{}:{}] ReferenceData={}",
+        event.message_info.source,
+        event.message_info.source_name,
+        event.reference_data);
   }
   void operator()(const MarketStatusEvent& event) override {
-    LOG(INFO)("event={}", event);
+    LOG(INFO)(
+        "[{}:{}] MarketStatus={}",
+        event.message_info.source,
+        event.message_info.source_name,
+        event.market_status);
   }
   void operator()(const MarketByPriceEvent& event) override {
-    VLOG(1)("event={}", event);  // see comment above
+    // only verbose logging, see comment above
+    VLOG(1)(
+        "[{}:{}] MarketByPrice={}",
+        event.message_info.source,
+        event.message_info.source_name,
+        event.market_by_price);
   }
   void operator()(const TradeSummaryEvent& event) override {
-    VLOG(1)("event={}", event);  // see comment above
+    // only verbose logging, see comment above
+    VLOG(1)(
+        "[{}:{}] TradeSummary={}",
+        event.message_info.source,
+        event.message_info.source_name,
+        event.trade_summary);
   }
 
  private:
