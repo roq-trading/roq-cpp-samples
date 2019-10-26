@@ -15,13 +15,13 @@
 
 // command-line options
 
-DEFINE_string(future_exchange,
+DEFINE_string(futures_exchange,
     "deribit",
-    "future exchange");
+    "futures exchange");
 
-DEFINE_string(future_symbol,
+DEFINE_string(futures_symbol,
     "BTC-27DEC19",
-    "future symbol");
+    "futures symbol");
 
 DEFINE_string(cash_exchange,
     "coinbase-pro",
@@ -75,8 +75,8 @@ class Config final : public client::Config {
     // callback for each subscription pattern
     handler(
         client::Symbol {
-          .exchange = FLAGS_future_exchange,
-          .regex = FLAGS_future_symbol,
+          .exchange = FLAGS_futures_exchange,
+          .regex = FLAGS_futures_symbol,
         });
     handler(
         client::Symbol {
@@ -152,7 +152,6 @@ class Instrument final {
           _exchange,
           _symbol,
         _download);
-    check_ready();
   }
 
   void operator()(const DownloadEnd& download_end) {
@@ -165,19 +164,22 @@ class Instrument final {
           _exchange,
           _symbol,
         _download);
+    // update the ready flag
     check_ready();
   }
 
   void operator()(const ReferenceData& reference_data) {
     assert(_exchange.compare(reference_data.exchange) == 0);
     assert(_symbol.compare(reference_data.symbol) == 0);
+    // update the depth builder 
+    _depth_builder->update(reference_data);
+    // update our cache
     if (update(_tick_size, reference_data.tick_size)) {
       LOG(INFO)(
           "[{}:{}] tick_size={}",
           _exchange,
           _symbol,
           _tick_size);
-      check_ready();
     }
     if (update(_min_trade_vol, reference_data.min_trade_vol)) {
       LOG(INFO)(
@@ -185,7 +187,6 @@ class Instrument final {
           _exchange,
           _symbol,
           _min_trade_vol);
-      check_ready();
     }
     if (update(_multiplier, reference_data.multiplier)) {
       LOG(INFO)(
@@ -193,14 +194,15 @@ class Instrument final {
           _exchange,
           _symbol,
           _multiplier);
-      check_ready();
     }
-    _depth_builder->update(reference_data);
+    // update the ready flag
+    check_ready();
   }
 
   void operator()(const MarketStatus& market_status) {
     assert(_exchange.compare(market_status.exchange) == 0);
     assert(_symbol.compare(market_status.symbol) == 0);
+    // update our cache
     if (update(_trading_status, market_status.trading_status)) {
       LOG(INFO)(
           "[{}:{}] trading_status={}",
@@ -208,9 +210,12 @@ class Instrument final {
           _symbol,
           _trading_status);
     }
+    // update the ready flag
+    check_ready();
   }
 
   void operator()(const MarketDataStatus& market_data_status) {
+    // update our cache
     if (update(_market_data_status, market_data_status.status)) {
       LOG(INFO)(
           "[{}:{}] market_data_status={}",
@@ -218,6 +223,8 @@ class Instrument final {
           _symbol,
           _market_data_status);
     }
+    // update the ready flag
+    check_ready();
   }
 
   void operator()(const MarketByPrice& market_by_price) {
@@ -324,9 +331,9 @@ class Strategy final : public client::Handler {
  public:
   explicit Strategy(client::Dispatcher& dispatcher)
       : _dispatcher(dispatcher),
-        _future(
-            FLAGS_future_exchange,
-            FLAGS_future_symbol),
+        _futures(
+            FLAGS_futures_exchange,
+            FLAGS_futures_symbol),
         _cash(
             FLAGS_cash_exchange,
             FLAGS_cash_symbol) {
@@ -339,7 +346,7 @@ class Strategy final : public client::Handler {
     // TODO(thraneh): fix ConnectionStatusEvent
     switch (event.source) {
       case 0:
-        _future(event.connection_status);
+        _futures(event.connection_status);
         break;
       case 1:
         _cash(event.connection_status);
@@ -365,7 +372,7 @@ class Strategy final : public client::Handler {
   }
   void operator()(const MarketByPriceEvent& event) override {
     dispatch(event);
-    if (_future.is_ready() && _cash.is_ready()) {
+    if (_futures.is_ready() && _cash.is_ready()) {
       // TODO(thraneh): compute basis
     }
   }
@@ -375,7 +382,7 @@ class Strategy final : public client::Handler {
   void dispatch(const T& event) {
     switch (event.message_info.source) {
       case 0:
-        _future(event_value(event));
+        _futures(event_value(event));
         break;
       case 1:
         _cash(event_value(event));
@@ -391,7 +398,7 @@ class Strategy final : public client::Handler {
 
  private:
   client::Dispatcher& _dispatcher;
-  Instrument _future;
+  Instrument _futures;
   Instrument _cash;
 };
 
@@ -406,7 +413,7 @@ class Controller final : public Application {
     if (argc == 2)
       throw std::runtime_error(
           "Expected exactly two arguments: "
-          "future exchange then cash exchange");
+          "futures exchange then cash exchange");
     Config config;
     std::vector<std::string> connections(argv + 1, argv + argc);
     client::Trader(config, connections).dispatch<Strategy>();
