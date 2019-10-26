@@ -45,8 +45,10 @@ namespace example_2 {
 
 namespace {
 constexpr auto NaN = std::numeric_limits<double>::quiet_NaN();
-constexpr auto MAX_DEPTH = size_t{2};
 constexpr auto TOLERANCE = double{1.0e-10};
+// order book depth
+//   we don't actually need 2 layers for this example
+constexpr auto MAX_DEPTH = size_t{2};
 }  // namespace
 
 // utilities
@@ -230,14 +232,22 @@ class Instrument final {
     //   liquidity.
     //   the depth builder helps you maintain a correct view of
     //   the order book.
-    _depth_builder->update(market_by_price);
-    VLOG(1)("depth=[{}]", fmt::join(_depth, ", "));
-    if (is_ready())
+    auto depth = _depth_builder->update(market_by_price);
+    VLOG(1)(
+        "[{}:{}] depth=[{}]",
+        _exchange,
+        _symbol,
+        fmt::join(_depth, ", "));
+    if (depth > 0 && is_ready())
       update_model();
   }
 
  protected:
   void update_model() {
+    // validate
+    auto spread = _depth[0].ask_price - _depth[0].bid_price;
+    LOG_IF(FATAL, spread < TOLERANCE)(
+        "No support for choice or inversion, probably something wrong?");
     // compute (weighted) mid
     double sum_1 = 0.0, sum_2 = 0.0;
     for (auto iter : _depth) {
@@ -246,14 +256,19 @@ class Instrument final {
       sum_2 += iter.bid_quantity + iter.ask_quantity;
     }
     _mid_price = sum_1 / sum_2;
-    VLOG(1)("mid_price={}", _mid_price);
     // update (exponential) moving average
     if (std::isnan(_avg_price))
       _avg_price = _mid_price;
     else
       _avg_price = FLAGS_alpha * _mid_price +
         (1.0 - FLAGS_alpha) * _avg_price;
-    VLOG(1)("avg_price={}", _avg_price);
+    // only verbose logging
+    VLOG(1)(
+        "[{}:{}] model={{mid_price={}, avg_price={}}}",
+        _exchange,
+        _symbol,
+        _mid_price,
+        _avg_price);
   }
 
   void check_ready() {
