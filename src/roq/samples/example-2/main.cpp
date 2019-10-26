@@ -343,17 +343,7 @@ class Strategy final : public client::Handler {
 
  protected:
   void operator()(const ConnectionStatusEvent& event) override {
-    // TODO(thraneh): fix ConnectionStatusEvent
-    switch (event.source) {
-      case 0:
-        _futures(event.connection_status);
-        break;
-      case 1:
-        _cash(event.connection_status);
-        break;
-      default:
-        assert(false);  // should never happen
-    }
+    dispatch(event);
   }
   void operator()(const DownloadBeginEvent& event) override {
     dispatch(event);

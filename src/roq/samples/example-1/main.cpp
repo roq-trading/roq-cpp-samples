@@ -91,8 +91,8 @@ class Strategy final : public client::Handler {
   void operator()(const ConnectionStatusEvent& event) override {
     LOG(INFO)(
         "[{}:{}] ConnectionStatus={}",
-        event.source,
-        event.source_name,
+        event.message_info.source,
+        event.message_info.source_name,
         event.connection_status);
   }
   void operator()(const DownloadBeginEvent& event) override {
