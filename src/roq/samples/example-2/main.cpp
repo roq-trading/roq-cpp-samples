@@ -12,7 +12,6 @@
 #include "roq/event.h"
 #include "roq/logging.h"
 
-
 // command-line options
 
 DEFINE_string(futures_exchange,
@@ -171,7 +170,7 @@ class Instrument final {
   void operator()(const ReferenceData& reference_data) {
     assert(_exchange.compare(reference_data.exchange) == 0);
     assert(_symbol.compare(reference_data.symbol) == 0);
-    // update the depth builder 
+    // update the depth builder
     _depth_builder->update(reference_data);
     // update our cache
     if (update(_tick_size, reference_data.tick_size)) {
@@ -251,10 +250,18 @@ class Instrument final {
 
  protected:
   void update_model() {
-    // validate
+    // one sided market?
+    if (std::fabs(_depth[0].bid_quantity) < TOLERANCE ||
+        std::fabs(_depth[0].ask_quantity) < TOLERANCE)
+      return;
+    // validate depth
     auto spread = _depth[0].ask_price - _depth[0].bid_price;
     LOG_IF(FATAL, spread < TOLERANCE)(
-        "No support for choice or inversion, probably something wrong?");
+        "[{}:{}] Probably something wrong: "
+        "choice or inversion detected. depth=[{}]",
+        _exchange,
+        _symbol,
+        fmt::join(_depth, ", "));
     // compute (weighted) mid
     double sum_1 = 0.0, sum_2 = 0.0;
     for (auto iter : _depth) {
