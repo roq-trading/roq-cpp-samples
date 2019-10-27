@@ -4,7 +4,9 @@
 
 #include <cassert>
 
+#include <algorithm>
 #include <array>
+#include <numeric>
 #include <vector>
 
 #include "roq/application.h"
@@ -14,35 +16,31 @@
 
 // command-line options
 
-DEFINE_string(futures_exchange,
+DEFINE_string(exchange,
     "deribit",
-    "futures exchange");
+    "exchange");
 
-DEFINE_string(futures_symbol,
+DEFINE_string(symbol,
     "BTC-27DEC19",
-    "futures symbol");
+    "symbol");
 
-DEFINE_string(futures_account,
+DEFINE_string(account,
     "A1",
-    "futures account");
+    "account");
 
-DEFINE_string(cash_exchange,
-    "coinbase-pro",
-    "cash exchange");
+DEFINE_uint32(sample_freq_secs,
+    uint32_t{1},
+    "sample frequency (seconds)");
 
-DEFINE_string(cash_symbol,
-    "BTC-USD",
-    "cash symbol");
-
-DEFINE_string(cash_account,
-    "A1",
-    "cash account");
-
-DEFINE_double(alpha,
-    double{0.2},
-    "alpha used to compute exponential moving average");
-// reference:
+DEFINE_double(ema_alpha,
+    double{0.33},
+    "alpha used to compute exponential moving average (0 < alpha <= 1)");
+// exponential moving average (ema) reference:
 //   https://en.wikipedia.org/wiki/Moving_average#Exponential_moving_average
+
+DEFINE_bool(enable_trading,
+    false,
+    "trading must explicitly be enabled!");
 
 namespace roq {
 namespace samples {
@@ -53,10 +51,12 @@ namespace example_3 {
 namespace {
 constexpr auto NaN = std::numeric_limits<double>::quiet_NaN();
 constexpr auto TOLERANCE = double{1.0e-10};
-// order book depth
-//   we don't actually need 2 layers for this example
-constexpr auto MAX_DEPTH = size_t{2};
+constexpr auto MAX_DEPTH = size_t{3};
 }  // namespace
+
+// convenience
+
+using Depth = std::array<Layer, MAX_DEPTH>;
 
 // utilities
 
@@ -79,24 +79,16 @@ class Config final : public client::Config {
 
  protected:
   void dispatch(Handler& handler) const override {
+    // accounts
     handler(
         client::Account {
-          .regex = FLAGS_futures_account,
+          .regex = FLAGS_account,
         });
-    handler(
-        client::Account {
-          .regex = FLAGS_cash_account,
-        });
-    // callback for each subscription pattern
+    // symbols
     handler(
         client::Symbol {
-          .exchange = FLAGS_futures_exchange,
-          .regex = FLAGS_futures_symbol,
-        });
-    handler(
-        client::Symbol {
-          .exchange = FLAGS_cash_exchange,
-          .regex = FLAGS_cash_symbol,
+          .exchange = FLAGS_exchange,
+          .regex = FLAGS_symbol,
         });
   }
 
@@ -119,19 +111,23 @@ class Instrument final {
         _depth_builder(client::DepthBuilder::create(_depth)) {
   }
 
+  operator const Depth&() const {
+    return _depth;
+  }
+
   bool is_ready() const {
     return _ready;
   }
 
-  auto get_tick_size() const {
+  auto tick_size() const {
     return _tick_size;
   }
 
-  auto get_min_trade_vol() const {
+  auto min_trade_vol() const {
     return _min_trade_vol;
   }
 
-  auto get_multiplier() const {
+  auto multiplier() const {
     return _multiplier;
   }
 
@@ -270,53 +266,16 @@ class Instrument final {
     //   liquidity.
     //   the depth builder helps you maintain a correct view of
     //   the order book.
-    auto depth = _depth_builder->update(market_by_price);
+    _depth_builder->update(market_by_price);
     VLOG(1)(
         "[{}:{}] depth=[{}]",
         _exchange,
         _symbol,
         fmt::join(_depth, ", "));
-    if (depth > 0 && is_ready())
-      update_model();
+    validate(_depth);
   }
 
  protected:
-  void update_model() {
-    // one sided market?
-    if (std::fabs(_depth[0].bid_quantity) < TOLERANCE ||
-        std::fabs(_depth[0].ask_quantity) < TOLERANCE)
-      return;
-    // validate depth
-    auto spread = _depth[0].ask_price - _depth[0].bid_price;
-    LOG_IF(FATAL, spread < TOLERANCE)(
-        "[{}:{}] Probably something wrong: "
-        "choice or inversion detected. depth=[{}]",
-        _exchange,
-        _symbol,
-        fmt::join(_depth, ", "));
-    // compute (weighted) mid
-    double sum_1 = 0.0, sum_2 = 0.0;
-    for (auto iter : _depth) {
-      sum_1 += iter.bid_price * iter.bid_quantity +
-        iter.ask_price * iter.ask_quantity;
-      sum_2 += iter.bid_quantity + iter.ask_quantity;
-    }
-    _mid_price = sum_1 / sum_2;
-    // update (exponential) moving average
-    if (std::isnan(_avg_price))
-      _avg_price = _mid_price;
-    else
-      _avg_price = FLAGS_alpha * _mid_price +
-        (1.0 - FLAGS_alpha) * _avg_price;
-    // only verbose logging
-    VLOG(1)(
-        "[{}:{}] model={{mid_price={}, avg_price={}}}",
-        _exchange,
-        _symbol,
-        _mid_price,
-        _avg_price);
-  }
-
   void check_ready() {
     auto before = _ready;
     _ready =
@@ -344,9 +303,20 @@ class Instrument final {
     _market_data_status = GatewayStatus::DISCONNECTED;
     _order_manager_status = GatewayStatus::DISCONNECTED;
     _depth_builder->reset();
-    _mid_price = NaN;
-    _avg_price = NaN;
     _ready = false;
+  }
+
+  void validate(const Depth& depth) {
+    if (std::fabs(depth[0].bid_quantity) < TOLERANCE ||
+        std::fabs(depth[0].ask_quantity) < TOLERANCE)
+      return;
+    auto spread = depth[0].ask_price - depth[0].bid_price;
+    LOG_IF(FATAL, spread < TOLERANCE)(
+        "[{}:{}] Probably something wrong: "
+        "choice or inversion detected. depth=[{}]",
+        _exchange,
+        _symbol,
+        fmt::join(depth, ", "));
   }
 
  private:
@@ -361,11 +331,154 @@ class Instrument final {
   TradingStatus _trading_status = TradingStatus::UNDEFINED;
   GatewayStatus _market_data_status = GatewayStatus::DISCONNECTED;
   GatewayStatus _order_manager_status = GatewayStatus::DISCONNECTED;
-  std::array<Layer, MAX_DEPTH> _depth;
+  Depth _depth;
   std::unique_ptr<client::DepthBuilder> _depth_builder;
-  double _mid_price = NaN;
-  double _avg_price = NaN;
   bool _ready = false;
+};
+
+// helper
+
+class EMA final {
+ public:
+  EMA(double alpha)
+      : _alpha(alpha) {
+  }
+
+  EMA(EMA&&) = default;
+
+  operator double() const {
+    return _value;
+  }
+
+  void reset() {
+    _value = NaN;
+  }
+
+  double update(double value) {
+    if (std::isnan(_value))
+      _value = value;
+    else
+      _value = _alpha * value + (1.0 - _alpha) * _value;
+    return _value;
+  }
+
+ private:
+  EMA(const EMA&) = delete;
+  void operator=(const EMA&) = delete;
+
+ private:
+  const double _alpha;
+  double _value = NaN;
+};
+
+// model implementation
+
+class Model final {
+ public:
+  Model()
+      : _bid_ema(FLAGS_ema_alpha),
+        _ask_ema(FLAGS_ema_alpha) {
+  }
+
+  Model(Model&&) = default;
+
+  void reset() {
+    _bid_ema.reset();
+    _ask_ema.reset();
+    _selling = false;
+    _buying = false;
+  }
+
+  Side update(const Depth& depth) {
+    if (validate(depth) == false)
+      return Side::UNDEFINED;
+    auto bid_fast = weighted_bid(depth);
+    auto bid_slow = _bid_ema.update(bid_fast);
+    auto ask_fast = weighted_ask(depth);
+    auto ask_slow = _ask_ema.update(ask_fast);
+
+    if (_selling) {
+      if (ask_fast > ask_slow) {
+        LOG(INFO)("DEBUG: BUY @ {}", depth[0].ask_price);
+        _selling = false;
+      }
+    } else {
+      if (ask_fast < bid_slow && ask_fast < ask_slow) {
+        LOG(INFO)("DEBUG: SELLING");
+        _selling = true;
+        _buying = false;
+      }
+    }
+
+    if (_buying) {
+      if (bid_fast > bid_slow) {
+        LOG(INFO)("DEBUG: SELL @ {}", depth[0].bid_price);
+        _buying = false;
+      }
+    } else {
+      if (bid_fast > ask_slow && bid_fast > bid_slow) {
+        LOG(INFO)("DEBUG: BUYING");
+        _buying = true;
+        _selling = false;
+      }
+    }
+
+    // can't be both
+    assert(2 != ((_selling ? 1 : 0) + (_buying ? 1 : 0)));
+
+    LOG(INFO)(
+        "model={{bid={} ask={} bid_fast={} ask_fast={} bid_slow={} ask_slow={} selling={} buying={}}}",
+        depth[0].bid_price,
+        depth[0].ask_price,
+        bid_fast,
+        ask_fast,
+        bid_slow,
+        ask_slow,
+        _selling,
+        _buying);
+
+    return Side::UNDEFINED;
+  }
+
+ protected:
+  bool validate(const Depth& depth) {  // require full depth
+    return std::accumulate(depth.begin(), depth.end(), true,
+        [](bool current, const Layer& layer) {
+          return current &&
+            std::fabs(layer.bid_quantity) > TOLERANCE &&
+            std::fabs(layer.ask_quantity) > TOLERANCE;
+        });
+  }
+
+  double weighted_bid(const Depth& depth) {
+    double sum_1 = 0.0, sum_2 = 0.0;
+    std::for_each(depth.begin(), depth.end(),
+        [&](const Layer& layer) {
+          sum_1 += layer.bid_quantity * layer.bid_price;
+          sum_2 += layer.bid_quantity;
+        });
+    return sum_1 / sum_2;
+  }
+
+  double weighted_ask(const Depth& depth) {
+    double sum_1 = 0.0, sum_2 = 0.0;
+    std::for_each(depth.begin(), depth.end(),
+        [&](const Layer& layer) {
+          sum_1 += layer.ask_quantity * layer.ask_price;
+          sum_2 += layer.ask_quantity;
+        });
+    return sum_1 / sum_2;
+  }
+
+ private:
+  Model(const Model&) = delete;
+  void operator=(const Model&) = delete;
+
+ private:
+  EMA _bid_ema;
+  EMA _ask_ema;
+  bool _selling = false;
+  bool _buying = false;
 };
 
 // strategy implementation
@@ -374,19 +487,35 @@ class Strategy final : public client::Handler {
  public:
   explicit Strategy(client::Dispatcher& dispatcher)
       : _dispatcher(dispatcher),
-        _futures(
-            FLAGS_futures_exchange,
-            FLAGS_futures_symbol,
-            FLAGS_futures_account),
-        _cash(
-            FLAGS_cash_exchange,
-            FLAGS_cash_symbol,
-            FLAGS_futures_account) {
+        _instrument(
+            FLAGS_exchange,
+            FLAGS_symbol,
+            FLAGS_account) {
   }
 
   Strategy(Strategy&&) = default;
 
  protected:
+  void operator()(const TimerEvent& event) override {
+    // note! using system clock (*not* the wall clock)
+    if (event.now < _next_sample)
+      return;
+    if (_next_sample.count())  // initialized?
+      update_model();
+    auto now = std::chrono::duration_cast<std::chrono::seconds>(
+        event.now);
+    _next_sample = now + std::chrono::seconds {
+      FLAGS_sample_freq_secs
+    };
+    if (_countdown && 0 == --_countdown) {
+      _dispatcher.send(
+          CancelOrder {
+            .account = FLAGS_account,
+            .order_id = ++_max_order_id,
+          },
+          uint8_t{0});
+    }
+  }
   void operator()(const ConnectionStatusEvent& event) override {
     dispatch(event);
   }
@@ -395,6 +524,11 @@ class Strategy final : public client::Handler {
   }
   void operator()(const DownloadEndEvent& event) override {
     dispatch(event);
+    if (update(_max_order_id, event.download_end.max_order_id)) {
+      LOG(INFO)(
+          "max_order_id={}",
+          _max_order_id);
+    }
   }
   void operator()(const MarketDataStatusEvent& event) override {
     dispatch(event);
@@ -410,23 +544,59 @@ class Strategy final : public client::Handler {
   }
   void operator()(const MarketByPriceEvent& event) override {
     dispatch(event);
-    if (_futures.is_ready() && _cash.is_ready()) {
-      // TODO(thraneh): compute basis
-    }
+  }
+  void operator()(const CreateOrderAckEvent& event) override {
+    LOG(INFO)("CreateOrderAck={}", event_value(event));
+  }
+  void operator()(const CancelOrderAckEvent& event) override {
+    LOG(INFO)("CancelOrderAck={}", event_value(event));
+  }
+  void operator()(const OrderUpdateEvent& event) override {
+    LOG(INFO)("OrderUpdate={}", event_value(event));
+    _countdown = 300;
+  }
+  void operator()(const TradeUpdateEvent& event) override {
+    LOG(INFO)("TradeUpdate={}", event_value(event));
   }
 
-  // helper - dispatch event to the relevant instrument
+  // helper - dispatch event to instrument
   template <typename T>
   void dispatch(const T& event) {
-    switch (event.message_info.source) {
-      case 0:
-        _futures(event_value(event));
-        break;
-      case 1:
-        _cash(event_value(event));
-        break;
-      default:
-        assert(false);  // should never happen
+    assert(event.message_info.source == uint8_t{0});
+    _instrument(event_value(event));
+  }
+
+  void update_model() {
+    if (_instrument.is_ready()) {
+      auto side = _model.update(_instrument);
+      // TODO(thraneh): trade
+      if (!_test) {
+        _test = true;
+        if (FLAGS_enable_trading) {
+          const auto& depth = static_cast<const Depth&>(_instrument);
+          auto price = depth[0].bid_price - _instrument.tick_size();
+          LOG(INFO)("market={} price={}", depth[0].bid_price, price);
+          _dispatcher.send(
+              CreateOrder {
+                .account = FLAGS_account,
+                .order_id = ++_max_order_id,
+                .exchange = FLAGS_exchange,
+                .symbol = FLAGS_symbol,
+                .side = Side::BUY,
+                .quantity = 1.0,
+                .order_type = OrderType::LIMIT,
+                .price = price,
+                .time_in_force = TimeInForce::GTC,
+                .position_effect = PositionEffect::UNDEFINED,
+                .order_template = std::string(),
+              },
+              uint8_t{0});
+        } else {
+          LOG(WARNING)("Trading not enabled");
+        }
+      }
+    } else {
+      _model.reset();
     }
   }
 
@@ -436,8 +606,13 @@ class Strategy final : public client::Handler {
 
  private:
   client::Dispatcher& _dispatcher;
-  Instrument _futures;
-  Instrument _cash;
+  Instrument _instrument;
+  uint32_t _max_order_id = 0;
+  Model _model;
+  std::chrono::nanoseconds _next_sample = {};
+
+  bool _test = false;
+  int _countdown = 0;
 };
 
 // application
@@ -448,10 +623,8 @@ class Controller final : public Application {
 
  protected:
   int main(int argc, char **argv) override {
-    if (argc == 2)
-      throw std::runtime_error(
-          "Expected exactly two arguments: "
-          "futures exchange then cash exchange");
+    if (argc == 1)
+      throw std::runtime_error("Expected exactly one argument");
     Config config;
     std::vector<std::string> connections(argv + 1, argv + argc);
     client::Trader(config, connections).dispatch<Strategy>();
