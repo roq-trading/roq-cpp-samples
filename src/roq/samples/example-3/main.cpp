@@ -42,6 +42,10 @@ DEFINE_bool(enable_trading,
     false,
     "trading must explicitly be enabled!");
 
+DEFINE_int32(tick_offset,
+    -1,
+    "offset against best bid (in ticks)");
+
 namespace roq {
 namespace samples {
 namespace example_3 {
@@ -508,12 +512,28 @@ class Strategy final : public client::Handler {
       FLAGS_sample_freq_secs
     };
     if (_countdown && 0 == --_countdown) {
-      _dispatcher.send(
-          CancelOrder {
-            .account = FLAGS_account,
-            .order_id = ++_max_order_id,
-          },
-          uint8_t{0});
+      switch (++_stage) {
+        case 1:
+          // 3x quantity and improves by 1 tick
+          _dispatcher.send(
+              ModifyOrder {
+                .account = FLAGS_account,
+                .order_id = _max_order_id,
+                .quantity = 3.0 * _instrument.min_trade_vol(),
+                .price = _price + _instrument.tick_size(),
+              },
+              uint8_t{0});
+          _countdown = 10;
+          break;
+        case 2:
+          _dispatcher.send(
+              CancelOrder {
+                .account = FLAGS_account,
+                .order_id = _max_order_id,
+              },
+              uint8_t{0});
+          break;
+      }
     }
   }
   void operator()(const ConnectionStatusEvent& event) override {
@@ -548,12 +568,15 @@ class Strategy final : public client::Handler {
   void operator()(const CreateOrderAckEvent& event) override {
     LOG(INFO)("CreateOrderAck={}", event_value(event));
   }
+  void operator()(const ModifyOrderAckEvent& event) override {
+    LOG(INFO)("ModifyOrderAck={}", event_value(event));
+  }
   void operator()(const CancelOrderAckEvent& event) override {
     LOG(INFO)("CancelOrderAck={}", event_value(event));
   }
   void operator()(const OrderUpdateEvent& event) override {
     LOG(INFO)("OrderUpdate={}", event_value(event));
-    _countdown = 300;
+    _countdown = 10;
   }
   void operator()(const TradeUpdateEvent& event) override {
     LOG(INFO)("TradeUpdate={}", event_value(event));
@@ -569,13 +592,14 @@ class Strategy final : public client::Handler {
   void update_model() {
     if (_instrument.is_ready()) {
       auto side = _model.update(_instrument);
-      // TODO(thraneh): trade
-      if (!_test) {
-        _test = true;
+
+      // DEBUG
+      if (!_latch) {
+        _latch = true;
         if (FLAGS_enable_trading) {
           const auto& depth = static_cast<const Depth&>(_instrument);
-          auto price = depth[0].bid_price - _instrument.tick_size();
-          LOG(INFO)("market={} price={}", depth[0].bid_price, price);
+          _price = depth[0].bid_price +
+            FLAGS_tick_offset * _instrument.tick_size();
           _dispatcher.send(
               CreateOrder {
                 .account = FLAGS_account,
@@ -583,9 +607,9 @@ class Strategy final : public client::Handler {
                 .exchange = FLAGS_exchange,
                 .symbol = FLAGS_symbol,
                 .side = Side::BUY,
-                .quantity = 1.0,
+                .quantity = _instrument.min_trade_vol(),
                 .order_type = OrderType::LIMIT,
-                .price = price,
+                .price = _price,
                 .time_in_force = TimeInForce::GTC,
                 .position_effect = PositionEffect::UNDEFINED,
                 .order_template = std::string(),
@@ -611,8 +635,10 @@ class Strategy final : public client::Handler {
   Model _model;
   std::chrono::nanoseconds _next_sample = {};
 
-  bool _test = false;
+  bool _latch = false;
+  int _stage = 0;
   int _countdown = 0;
+  double _price = 0.0;
 };
 
 // application
