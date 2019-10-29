@@ -253,6 +253,15 @@ class Instrument final {
     check_ready();
   }
 
+  void operator()(const PositionUpdate& position_update) {
+    assert(_account.compare(position_update.account) == 0);
+    LOG(INFO)(
+        "[{}:{}] position_update={}",
+        _exchange,
+        _symbol,
+        position_update);
+  }
+
   void operator()(const OrderManagerStatus& order_manager_status) {
     assert(_account.compare(order_manager_status.account) == 0);
     // update our cache
@@ -573,6 +582,9 @@ class Strategy final : public client::Handler {
     dispatch(event);
   }
   void operator()(const MarketByPriceEvent& event) override {
+    dispatch(event);
+  }
+  void operator()(const PositionUpdateEvent& event) override {
     dispatch(event);
   }
   void operator()(const CreateOrderAckEvent& event) override {
