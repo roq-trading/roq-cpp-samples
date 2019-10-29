@@ -43,8 +43,17 @@ DEFINE_bool(enable_trading,
     "trading must explicitly be enabled!");
 
 DEFINE_int32(tick_offset,
-    -1,
-    "offset against best bid (in ticks)");
+    int32_t{5},
+    "initial offset against best price (tick_size units)");
+
+DEFINE_uint32(volume_multiplier,
+    uint32_t{1},
+    "initial volument multiplier (min_trade_vol units)");
+
+DEFINE_uint32(wait_time_secs,
+    uint32_t{30},
+    "wait time before next test is initiated (seconds)");
+
 
 namespace roq {
 namespace samples {
@@ -519,11 +528,12 @@ class Strategy final : public client::Handler {
               ModifyOrder {
                 .account = FLAGS_account,
                 .order_id = _max_order_id,
-                .quantity = 3.0 * _instrument.min_trade_vol(),
+                .quantity = 3.0 *
+                  FLAGS_volume_multiplier * _instrument.min_trade_vol(),
                 .price = _price + _instrument.tick_size(),
               },
               uint8_t{0});
-          _countdown = 10;
+          _countdown = FLAGS_wait_time_secs;
           break;
         case 2:
           _dispatcher.send(
@@ -576,7 +586,7 @@ class Strategy final : public client::Handler {
   }
   void operator()(const OrderUpdateEvent& event) override {
     LOG(INFO)("OrderUpdate={}", event_value(event));
-    _countdown = 10;
+    _countdown = FLAGS_wait_time_secs;
   }
   void operator()(const TradeUpdateEvent& event) override {
     LOG(INFO)("TradeUpdate={}", event_value(event));
@@ -598,7 +608,7 @@ class Strategy final : public client::Handler {
         _latch = true;
         if (FLAGS_enable_trading) {
           const auto& depth = static_cast<const Depth&>(_instrument);
-          _price = depth[0].bid_price +
+          _price = depth[0].bid_price -
             FLAGS_tick_offset * _instrument.tick_size();
           _dispatcher.send(
               CreateOrder {
@@ -607,7 +617,8 @@ class Strategy final : public client::Handler {
                 .exchange = FLAGS_exchange,
                 .symbol = FLAGS_symbol,
                 .side = Side::BUY,
-                .quantity = _instrument.min_trade_vol(),
+                .quantity =
+                  FLAGS_volume_multiplier * _instrument.min_trade_vol(),
                 .order_type = OrderType::LIMIT,
                 .price = _price,
                 .time_in_force = TimeInForce::GTC,
