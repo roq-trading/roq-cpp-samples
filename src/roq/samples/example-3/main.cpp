@@ -587,6 +587,12 @@ class Strategy final : public client::Handler {
   void operator()(const PositionUpdateEvent& event) override {
     dispatch(event);
   }
+  void operator()(const RequestUpdateEvent& event) override {
+    LOG(INFO)("RequestUpdate={}", event_value(event));
+  }
+  void operator()(const FundsUpdateEvent& event) override {
+    LOG(INFO)("FundsUpdate={}", event_value(event));
+  }
   void operator()(const CreateOrderAckEvent& event) override {
     LOG(INFO)("CreateOrderAck={}", event_value(event));
   }
