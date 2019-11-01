@@ -22,11 +22,15 @@ DEFINE_string(exchange,
 
 DEFINE_string(symbol,
     "BTC-27DEC19",
-    "symbol");
+    "symbol (regex)");
 
 DEFINE_string(account,
     "A1",
     "account");
+
+DEFINE_string(currencies,
+    "BTC|USD",
+    "currencies (regex)");
 
 DEFINE_uint32(sample_freq_secs,
     uint32_t{1},
@@ -100,8 +104,13 @@ class Config final : public client::Config {
     // symbols
     handler(
         client::Symbol {
-          .exchange = FLAGS_exchange,
           .regex = FLAGS_symbol,
+          .exchange = FLAGS_exchange,
+        });
+    // currencies
+    handler(
+        client::Symbol {
+          .regex = FLAGS_currencies,
         });
   }
 
@@ -592,15 +601,6 @@ class Strategy final : public client::Handler {
   }
   void operator()(const FundsUpdateEvent& event) override {
     LOG(INFO)("FundsUpdate={}", event_value(event));
-  }
-  void operator()(const CreateOrderAckEvent& event) override {
-    LOG(INFO)("CreateOrderAck={}", event_value(event));
-  }
-  void operator()(const ModifyOrderAckEvent& event) override {
-    LOG(INFO)("ModifyOrderAck={}", event_value(event));
-  }
-  void operator()(const CancelOrderAckEvent& event) override {
-    LOG(INFO)("CancelOrderAck={}", event_value(event));
   }
   void operator()(const OrderUpdateEvent& event) override {
     LOG(INFO)("OrderUpdate={}", event_value(event));

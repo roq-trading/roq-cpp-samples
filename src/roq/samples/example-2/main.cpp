@@ -74,13 +74,13 @@ class Config final : public client::Config {
     // callback for each subscription pattern
     handler(
         client::Symbol {
-          .exchange = FLAGS_futures_exchange,
           .regex = FLAGS_futures_symbol,
+          .exchange = FLAGS_futures_exchange,
         });
     handler(
         client::Symbol {
-          .exchange = FLAGS_cash_exchange,
           .regex = FLAGS_cash_symbol,
+          .exchange = FLAGS_cash_exchange,
         });
   }
 

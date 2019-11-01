@@ -47,13 +47,13 @@ class Config final : public client::Config {
     // callback for each subscription pattern
     handler(
         client::Symbol {
-          .exchange = FLAGS_deribit_exchange,
           .regex = FLAGS_deribit_symbols,
+          .exchange = FLAGS_deribit_exchange,
         });
     handler(
         client::Symbol {
-          .exchange = FLAGS_coinbase_pro_exchange,
           .regex = FLAGS_coinbase_pro_symbols,
+          .exchange = FLAGS_coinbase_pro_exchange,
         });
   }
 
