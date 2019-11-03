@@ -167,6 +167,19 @@ class Instrument final {
     check_ready();
   }
 
+  void operator()(const MarketDataStatus& market_data_status) {
+    // update our cache
+    if (update(_market_data_status, market_data_status.status)) {
+      LOG(INFO)(
+          "[{}:{}] market_data_status={}",
+          _exchange,
+          _symbol,
+          _market_data_status);
+    }
+    // update the ready flag
+    check_ready();
+  }
+
   void operator()(const ReferenceData& reference_data) {
     assert(_exchange.compare(reference_data.exchange) == 0);
     assert(_symbol.compare(reference_data.symbol) == 0);
@@ -208,19 +221,6 @@ class Instrument final {
           _exchange,
           _symbol,
           _trading_status);
-    }
-    // update the ready flag
-    check_ready();
-  }
-
-  void operator()(const MarketDataStatus& market_data_status) {
-    // update our cache
-    if (update(_market_data_status, market_data_status.status)) {
-      LOG(INFO)(
-          "[{}:{}] market_data_status={}",
-          _exchange,
-          _symbol,
-          _market_data_status);
     }
     // update the ready flag
     check_ready();

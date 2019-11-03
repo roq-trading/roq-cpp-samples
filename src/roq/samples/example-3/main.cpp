@@ -203,6 +203,33 @@ class Instrument final {
     check_ready();
   }
 
+  void operator()(const MarketDataStatus& market_data_status) {
+    // update our cache
+    if (update(_market_data_status, market_data_status.status)) {
+      LOG(INFO)(
+          "[{}:{}] market_data_status={}",
+          _exchange,
+          _symbol,
+          _market_data_status);
+    }
+    // update the ready flag
+    check_ready();
+  }
+
+  void operator()(const OrderManagerStatus& order_manager_status) {
+    assert(_account.compare(order_manager_status.account) == 0);
+    // update our cache
+    if (update(_order_manager_status, order_manager_status.status)) {
+      LOG(INFO)(
+          "[{}:{}] market_data_status={}",
+          _exchange,
+          _symbol,
+          _market_data_status);
+    }
+    // update the ready flag
+    check_ready();
+  }
+
   void operator()(const ReferenceData& reference_data) {
     assert(_exchange.compare(reference_data.exchange) == 0);
     assert(_symbol.compare(reference_data.symbol) == 0);
@@ -249,42 +276,6 @@ class Instrument final {
     check_ready();
   }
 
-  void operator()(const MarketDataStatus& market_data_status) {
-    // update our cache
-    if (update(_market_data_status, market_data_status.status)) {
-      LOG(INFO)(
-          "[{}:{}] market_data_status={}",
-          _exchange,
-          _symbol,
-          _market_data_status);
-    }
-    // update the ready flag
-    check_ready();
-  }
-
-  void operator()(const PositionUpdate& position_update) {
-    assert(_account.compare(position_update.account) == 0);
-    LOG(INFO)(
-        "[{}:{}] position_update={}",
-        _exchange,
-        _symbol,
-        position_update);
-  }
-
-  void operator()(const OrderManagerStatus& order_manager_status) {
-    assert(_account.compare(order_manager_status.account) == 0);
-    // update our cache
-    if (update(_order_manager_status, order_manager_status.status)) {
-      LOG(INFO)(
-          "[{}:{}] market_data_status={}",
-          _exchange,
-          _symbol,
-          _market_data_status);
-    }
-    // update the ready flag
-    check_ready();
-  }
-
   void operator()(const MarketByPrice& market_by_price) {
     assert(_exchange.compare(market_by_price.exchange) == 0);
     assert(_symbol.compare(market_by_price.symbol) == 0);
@@ -304,6 +295,15 @@ class Instrument final {
         _symbol,
         fmt::join(_depth, ", "));
     validate(_depth);
+  }
+
+  void operator()(const PositionUpdate& position_update) {
+    assert(_account.compare(position_update.account) == 0);
+    LOG(INFO)(
+        "[{}:{}] position_update={}",
+        _exchange,
+        _symbol,
+        position_update);
   }
 
  protected:
@@ -593,14 +593,8 @@ class Strategy final : public client::Handler {
   void operator()(const MarketByPriceEvent& event) override {
     dispatch(event);
   }
-  void operator()(const PositionUpdateEvent& event) override {
-    dispatch(event);
-  }
-  void operator()(const RequestUpdateEvent& event) override {
-    LOG(INFO)("RequestUpdate={}", event_value(event));
-  }
-  void operator()(const FundsUpdateEvent& event) override {
-    LOG(INFO)("FundsUpdate={}", event_value(event));
+  void operator()(const OrderAckEvent& event) override {
+    LOG(INFO)("OrderAck={}", event_value(event));
   }
   void operator()(const OrderUpdateEvent& event) override {
     LOG(INFO)("OrderUpdate={}", event_value(event));
@@ -608,6 +602,12 @@ class Strategy final : public client::Handler {
   }
   void operator()(const TradeUpdateEvent& event) override {
     LOG(INFO)("TradeUpdate={}", event_value(event));
+  }
+  void operator()(const PositionUpdateEvent& event) override {
+    dispatch(event);
+  }
+  void operator()(const FundsUpdateEvent& event) override {
+    LOG(INFO)("FundsUpdate={}", event_value(event));
   }
 
   // helper - dispatch event to instrument
