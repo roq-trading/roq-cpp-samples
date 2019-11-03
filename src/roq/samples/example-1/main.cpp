@@ -187,7 +187,7 @@ class Controller final : public Application {
 }  // namespace roq
 
 namespace {
-constexpr const char *DESCRIPTION = "Example 1 (Roq Samples)";
+constexpr std::string_view DESCRIPTION = "Example 1 (Roq Samples)";
 }  // namespace
 
 int main(int argc, char **argv) {
