@@ -58,6 +58,9 @@ DEFINE_uint32(wait_time_secs,
     uint32_t{30},
     "wait time before next test is initiated (seconds)");
 
+DEFINE_bool(simulation,
+    false,
+    "requires an event-log");
 
 namespace roq {
 namespace samples {
@@ -457,7 +460,7 @@ class Model final {
     // can't be both
     assert(2 != ((_selling ? 1 : 0) + (_buying ? 1 : 0)));
 
-    LOG(INFO)(
+    VLOG(1)(
         "model={{bid={} ask={} bid_fast={} ask_fast={} bid_slow={} ask_slow={} selling={} buying={}}}",
         depth[0].bid_price,
         depth[0].ask_price,
@@ -682,7 +685,15 @@ class Controller final : public Application {
       throw std::runtime_error("Expected exactly one argument");
     Config config;
     std::vector<std::string> connections(argv + 1, argv + argc);
-    client::Trader(config, connections).dispatch<Strategy>();
+    if (FLAGS_simulation) {
+      // note! interface has not been finalised
+      auto generator =
+        client::detail::SimulationFactory::create_generator(
+            connections);
+      client::Simulator(config, *generator).dispatch<Strategy>();
+    } else {
+      client::Trader(config, connections).dispatch<Strategy>();
+    }
     return EXIT_SUCCESS;
   }
 };
