@@ -224,10 +224,10 @@ class Instrument final {
     // update our cache
     if (update(_order_manager_status, order_manager_status.status)) {
       LOG(INFO)(
-          "[{}:{}] market_data_status={}",
+          "[{}:{}] order_manager_status={}",
           _exchange,
           _symbol,
-          _market_data_status);
+          _order_manager_status);
     }
     // update the ready flag
     check_ready();
