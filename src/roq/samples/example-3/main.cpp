@@ -690,7 +690,16 @@ class Controller final : public Application {
       auto generator =
         client::detail::SimulationFactory::create_generator(
             connections);
-      client::Simulator(config, *generator).dispatch<Strategy>();
+        auto matcher = client::detail::SimulationFactory::create_matcher(
+            "simple",
+            "deribit",
+            std::chrono::milliseconds{1},
+            std::chrono::milliseconds{1},
+            (64 + 1) * 4096);
+        auto collector = client::detail::SimulationFactory::create_collector(
+            std::chrono::seconds{1});
+      client::Simulator(config, *generator, *matcher, *collector)
+        .dispatch<Strategy>();
     } else {
       client::Trader(config, connections).dispatch<Strategy>();
     }
