@@ -42,21 +42,13 @@ DEFINE_double(ema_alpha,
 // exponential moving average (ema) reference:
 //   https://en.wikipedia.org/wiki/Moving_average#Exponential_moving_average
 
+DEFINE_uint32(warmup,
+    uint32_t{120},
+    "warmup (number of samples before a signal is generated)");
+
 DEFINE_bool(enable_trading,
     false,
     "trading must explicitly be enabled!");
-
-DEFINE_int32(tick_offset,
-    int32_t{5},
-    "initial offset against best price (tick_size units)");
-
-DEFINE_uint32(volume_multiplier,
-    uint32_t{1},
-    "initial volument multiplier (min_trade_vol units)");
-
-DEFINE_uint32(wait_time_secs,
-    uint32_t{30},
-    "wait time before next test is initiated (seconds)");
 
 DEFINE_bool(simulation,
     false,
@@ -158,6 +150,31 @@ class Instrument final {
 
   auto is_market_open() const {
     return _trading_status == TradingStatus::OPEN;
+  }
+
+  auto best_bid() const {
+    return _depth[0].bid_price;
+  }
+
+  auto best_ask() const {
+    return _depth[0].ask_price;
+  }
+
+  auto position() const {
+    return (std::isnan(_long_position) ? double{0.0} : _long_position)
+      - (std::isnan(_short_position) ? double{0.0} : _short_position);
+  }
+
+  auto can_trade(Side side) const {
+    switch (side) {
+      case Side::BUY:
+        return position() <= TOLERANCE;
+      case Side::SELL:
+        return position() >= -TOLERANCE;
+      default:
+        assert(false);  // unexpected / why call this function at all?
+        return false;
+    }
   }
 
   void operator()(const ConnectionStatus& connection_status) {
@@ -300,6 +317,33 @@ class Instrument final {
     validate(_depth);
   }
 
+  void operator()(const OrderUpdate& order_update) {
+    // note!
+    //   the assumption is that there is never more than one working
+    //   order
+    if (_last_order_id != order_update.order_id) {
+      _last_order_id = order_update.order_id;
+      _last_traded_quantity = 0.0;
+    }
+    auto quantity = order_update.traded_quantity - _last_traded_quantity;
+    _last_traded_quantity = order_update.traded_quantity;
+    switch (order_update.side) {
+      case Side::BUY:
+        _long_position += quantity;
+        break;
+      case Side::SELL:
+        _short_position += quantity;
+        break;
+      default:
+        assert(false);  // unexpected
+    }
+    LOG(INFO)(
+        "[{}:{}] position={}",
+        _exchange,
+        _symbol,
+        position());
+  }
+
   void operator()(const PositionUpdate& position_update) {
     assert(_account.compare(position_update.account) == 0);
     LOG(INFO)(
@@ -307,6 +351,23 @@ class Instrument final {
         _exchange,
         _symbol,
         position_update);
+    assert(position_update.position >= -TOLERANCE);
+    if (_download) {
+      // note!
+      //   only update positions when downloading
+      //   at run-time we're better off maintaining own positions
+      //   since the position feed could be broken or very delayed
+      switch (position_update.side) {
+        case Side::BUY:
+          _long_position = position_update.position;
+          break;
+        case Side::SELL:
+          _short_position = position_update.position;
+          break;
+        default:
+          LOG(WARNING)("Unexpected side={}", position_update.side);
+      }
+    }
   }
 
  protected:
@@ -337,7 +398,11 @@ class Instrument final {
     _market_data_status = GatewayStatus::DISCONNECTED;
     _order_manager_status = GatewayStatus::DISCONNECTED;
     _depth_builder->reset();
+    _long_position = 0.0;
+    _short_position = 0.0;
     _ready = false;
+    _last_order_id = 0;
+    _last_traded_quantity = 0.0;
   }
 
   void validate(const Depth& depth) {
@@ -367,7 +432,11 @@ class Instrument final {
   GatewayStatus _order_manager_status = GatewayStatus::DISCONNECTED;
   Depth _depth;
   std::unique_ptr<client::DepthBuilder> _depth_builder;
+  double _long_position = 0.0;
+  double _short_position = 0.0;
   bool _ready = false;
+  uint32_t _last_order_id = 0;
+  double _last_traded_quantity = 0.0;
 };
 
 // helper
@@ -386,9 +455,15 @@ class EMA final {
 
   void reset() {
     _value = NaN;
+    _countdown = FLAGS_warmup;
+  }
+
+  bool is_ready() const {
+    return _countdown == 0;
   }
 
   double update(double value) {
+    _countdown = std::max<uint32_t>(1, _countdown) - uint32_t{1};
     if (std::isnan(_value))
       _value = value;
     else
@@ -403,6 +478,7 @@ class EMA final {
  private:
   const double _alpha;
   double _value = NaN;
+  uint32_t _countdown = FLAGS_warmup;
 };
 
 // model implementation
@@ -424,34 +500,41 @@ class Model final {
   }
 
   Side update(const Depth& depth) {
+    auto result = Side::UNDEFINED;
+
     if (validate(depth) == false)
-      return Side::UNDEFINED;
+      return result;
+
     auto bid_fast = weighted_bid(depth);
     auto bid_slow = _bid_ema.update(bid_fast);
     auto ask_fast = weighted_ask(depth);
     auto ask_slow = _ask_ema.update(ask_fast);
 
+    auto ready = _bid_ema.is_ready() && _ask_ema.is_ready();
+
     if (_selling) {
-      if (ask_fast > ask_slow) {
-        LOG(INFO)("DEBUG: BUY @ {}", depth[0].ask_price);
+      if (ready && ask_fast > ask_slow) {
+        LOG(INFO)("SIGNAL: BUY @ {}", depth[0].ask_price);
+        result = Side::BUY;
         _selling = false;
       }
     } else {
       if (ask_fast < bid_slow && ask_fast < ask_slow) {
-        LOG(INFO)("DEBUG: SELLING");
+        LOG(INFO)("DIRECTION: SELLING");
         _selling = true;
         _buying = false;
       }
     }
 
     if (_buying) {
-      if (bid_fast > bid_slow) {
-        LOG(INFO)("DEBUG: SELL @ {}", depth[0].bid_price);
+      if (ready && bid_fast > bid_slow) {
+        LOG(INFO)("SIGNAL: SELL @ {}", depth[0].bid_price);
+        result = Side::SELL;
         _buying = false;
       }
     } else {
       if (bid_fast > ask_slow && bid_fast > bid_slow) {
-        LOG(INFO)("DEBUG: BUYING");
+        LOG(INFO)("DIRECTION: BUYING");
         _buying = true;
         _selling = false;
       }
@@ -461,7 +544,16 @@ class Model final {
     assert(2 != ((_selling ? 1 : 0) + (_buying ? 1 : 0)));
 
     VLOG(1)(
-        "model={{bid={} ask={} bid_fast={} ask_fast={} bid_slow={} ask_slow={} selling={} buying={}}}",
+        "model={{"
+        "bid={} "
+        "ask={} "
+        "bid_fast={} "
+        "ask_fast={} "
+        "bid_slow={} "
+        "ask_slow={} "
+        "selling={} "
+        "buying={}"
+        "}}",
         depth[0].bid_price,
         depth[0].ask_price,
         bid_fast,
@@ -471,7 +563,7 @@ class Model final {
         _selling,
         _buying);
 
-    return Side::UNDEFINED;
+    return result;
   }
 
  protected:
@@ -541,31 +633,7 @@ class Strategy final : public client::Handler {
     _next_sample = now + std::chrono::seconds {
       FLAGS_sample_freq_secs
     };
-    if (_countdown && 0 == --_countdown) {
-      switch (++_stage) {
-        case 1:
-          // 3x quantity and improves by 1 tick
-          _dispatcher.send(
-              ModifyOrder {
-                .account = FLAGS_account,
-                .order_id = _max_order_id,
-                .quantity = 3.0 *
-                  FLAGS_volume_multiplier * _instrument.min_trade_vol(),
-                .price = _price + _instrument.tick_size(),
-              },
-              uint8_t{0});
-          _countdown = FLAGS_wait_time_secs;
-          break;
-        case 2:
-          _dispatcher.send(
-              CancelOrder {
-                .account = FLAGS_account,
-                .order_id = _max_order_id,
-              },
-              uint8_t{0});
-          break;
-      }
-    }
+    // possible extension: reset request timeout
   }
   void operator()(const ConnectionStatusEvent& event) override {
     dispatch(event);
@@ -598,10 +666,19 @@ class Strategy final : public client::Handler {
   }
   void operator()(const OrderAckEvent& event) override {
     LOG(INFO)("OrderAck={}", event_value(event));
+    auto& order_ack = event.order_ack;
+    if (is_complete(order_ack.status)) {
+      // possible extension: reset request timeout
+    }
   }
   void operator()(const OrderUpdateEvent& event) override {
     LOG(INFO)("OrderUpdate={}", event_value(event));
-    _countdown = FLAGS_wait_time_secs;
+    dispatch(event);  // update position
+    auto& order_update = event.order_update;
+    if (is_complete(order_update.status)) {
+      _working_order_id = 0;
+      _working_side = Side::UNDEFINED;
+    }
   }
   void operator()(const TradeUpdateEvent& event) override {
     LOG(INFO)("TradeUpdate={}", event_value(event));
@@ -623,37 +700,70 @@ class Strategy final : public client::Handler {
   void update_model() {
     if (_instrument.is_ready()) {
       auto side = _model.update(_instrument);
-
-      // DEBUG
-      if (!_latch) {
-        _latch = true;
-        if (FLAGS_enable_trading) {
-          const auto& depth = static_cast<const Depth&>(_instrument);
-          _price = depth[0].bid_price -
-            FLAGS_tick_offset * _instrument.tick_size();
-          _dispatcher.send(
-              CreateOrder {
-                .account = FLAGS_account,
-                .order_id = ++_max_order_id,
-                .exchange = FLAGS_exchange,
-                .symbol = FLAGS_symbol,
-                .side = Side::BUY,
-                .quantity =
-                  FLAGS_volume_multiplier * _instrument.min_trade_vol(),
-                .order_type = OrderType::LIMIT,
-                .price = _price,
-                .time_in_force = TimeInForce::GTC,
-                .position_effect = PositionEffect::UNDEFINED,
-                .order_template = std::string(),
-              },
-              uint8_t{0});
-        } else {
-          LOG(WARNING)("Trading not enabled");
-        }
+      switch (side) {
+        case Side::UNDEFINED:
+          // nothing to do
+          break;
+        case Side::BUY:
+          try_trade(side, _instrument.best_bid());
+          break;
+        case Side::SELL:
+          try_trade(side, _instrument.best_ask());
+          break;
       }
-    } else {
+    }
+    else {
       _model.reset();
     }
+  }
+
+  void try_trade(Side side, double price) {
+    if (FLAGS_enable_trading == false) {
+      LOG(WARNING)("Trading *NOT* enabled");
+      return;
+    }
+    // if buy:
+    //   if sell order outstanding
+    //     cancel old order
+    //   if position not long
+    //     send buy order
+    //
+    if (_working_order_id) {
+      LOG(INFO)("*** ANOTHER ORDER IS WORKING ***");
+      if (side != _working_side) {
+        LOG(INFO)("*** CANCEL WORKING ORDER ***");
+        _dispatcher.send(
+            CancelOrder {
+              .account = FLAGS_account,
+              .order_id = _working_order_id
+            },
+            uint8_t{0});
+      }
+      return;
+    }
+    if (_instrument.can_trade(side) == false) {
+      LOG(INFO)("*** CAN'T INCREASE POSITION ***");
+      return;
+    }
+    auto order_id = ++_max_order_id;
+    _dispatcher.send(
+        CreateOrder {
+          .account = FLAGS_account,
+          .order_id = order_id,
+          .exchange = FLAGS_exchange,
+          .symbol = FLAGS_symbol,
+          .side = side,
+          .quantity = _instrument.min_trade_vol(),
+          .order_type = OrderType::LIMIT,
+          .price = price,
+          .time_in_force = TimeInForce::GTC,
+          .position_effect = PositionEffect::UNDEFINED,
+          .order_template = std::string(),
+        },
+        uint8_t{0});
+    _working_order_id = order_id;
+    _working_side = side;
+    // possible extension: monitor for request timeout
   }
 
  private:
@@ -666,11 +776,8 @@ class Strategy final : public client::Handler {
   uint32_t _max_order_id = 0;
   Model _model;
   std::chrono::nanoseconds _next_sample = {};
-
-  bool _latch = false;
-  int _stage = 0;
-  int _countdown = 0;
-  double _price = 0.0;
+  uint32_t _working_order_id = 0;
+  Side _working_side = Side::UNDEFINED;
 };
 
 // application
@@ -692,10 +799,9 @@ class Controller final : public Application {
             connections);
         auto matcher = client::detail::SimulationFactory::create_matcher(
             "simple",
-            "deribit",
+            FLAGS_exchange,
             std::chrono::milliseconds{1},
-            std::chrono::milliseconds{1},
-            (64 + 1) * 4096);
+            std::chrono::milliseconds{1});
         auto collector = client::detail::SimulationFactory::create_collector(
             std::chrono::seconds{1});
       client::Simulator(config, *generator, *matcher, *collector)
