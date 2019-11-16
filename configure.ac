@@ -41,21 +41,21 @@ PKG_CHECK_MODULES([ROQ_CLIENT], [roq-client])
 
 ROQ_CHECK_GTEST([third_party/googletest])
 
-AC_ARG_ENABLE([doc],
-  [AS_HELP_STRING([--enable-doc], [Enable documentation])],,
-  [enable_doc=no])
+AC_ARG_ENABLE([doxygen],
+  [AS_HELP_STRING([--enable-doxygen], [Enable documentation])],,
+  [enable_doxygen=no])
 
-AS_IF([test "x$enable_doc" = "xyes"], [
+AS_IF([test "x$enable_doxygen" = "xyes"], [
   AC_CHECK_PROG(HAVE_DOXYGEN, [doxygen], [yes], [no])
   ],[
   HAVE_DOXYGEN=no
   ])
 
-AM_CONDITIONAL([ENABLE_DOC],
-  [test "x$enable_doc" = "xyes"])
+AM_CONDITIONAL([ENABLE_DOXYGEN],
+  [test "x$enable_doxygen" = "xyes"])
 
-AS_IF([test "x$enable_doc" = "xyes"],
-      [AC_CONFIG_FILES([doc/Makefile doc/Doxyfile])])
+AS_IF([test "x$enable_doxygen" = "xyes"],
+      [AC_CONFIG_FILES([doxygen/Makefile doxygen/Doxyfile])])
 
 AC_ARG_ENABLE([benchmark],
 	      AS_HELP_STRING([--enable-benchmark], [Enable benchmark]),
