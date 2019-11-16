@@ -9,13 +9,9 @@ export LDFLAGS="-L$PREFIX/lib $LDFLAGS"
 export PKG_CONFIG_PATH="$PREFIX/lib/pkgconfig"
 
 ./autogen.sh
-./configure --prefix=$PREFIX --enable-benchmark --enable-doc
+
+./configure --prefix=$PREFIX --enable-benchmark --enable-doxygen
+
 make -j${CPU_COUNT:-2}
-set -e
-make check || EXIT_CODE=$?
-set +e
-cat test/roq-*.log
-if [ "$EXIT_CODE" -ne 0 ]; then
-	exit $EXIT_CODE
-fi
+
 make install
