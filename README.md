@@ -167,7 +167,9 @@ Copy default configuration template
 cp $CONDA_PREFIX/share/roq/coinbase-pro/config.toml ./coinbase-pro.toml
 ```
 
-Edit and replace
+You must edit this file and update with your
+Coinbase Pro API credentials
+([link](https://public.sandbox.pro.coinbase.com/profile/api)).
 
 ```
 login = "YOUR_COINBASE_PRO_API_KEY_GOES_HERE"
