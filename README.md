@@ -125,7 +125,7 @@ conda install -y roq-deribit
 Make a copy of the default configuration template
 
 ```
-cp $CONDA_PREFIX/share/roq/deribit/config.toml .
+cp $CONDA_PREFIX/share/roq/deribit/config.toml ./deribit.toml
 ```
 
 You must edit this file and update with your
@@ -144,7 +144,7 @@ The gateway is started like this
 ```
 roq-deribit \
     --name "deribit" \
-    --config-file config.toml \
+    --config-file deribit.toml \
     --listen ~/deribit.sock
 ```
 
@@ -161,7 +161,7 @@ conda install -y roq-coinbase-pro
 Copy default configuration template
 
 ```
-cp $CONDA_PREFIX/share/roq/coinbase-pro/config.toml .
+cp $CONDA_PREFIX/share/roq/coinbase-pro/config.toml ./coinbase-pro.toml
 ```
 
 Edit and replace
@@ -177,7 +177,7 @@ Start
 ```
 roq-coinbase-pro \
     --name "coinbase-pro" \
-    --config-file config.toml \
+    --config-file coinbase-pro.toml \
     --listen ~/coinbase-pro.sock
 ```
 
