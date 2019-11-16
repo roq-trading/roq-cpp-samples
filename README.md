@@ -5,8 +5,8 @@
 
 ## Overview
 
-This project includes examples meant to demonstrate
-how to use the Roq [API](https://github.com/roq-trading/roq-api).
+This project demonstrates how to use the
+[Roq API](https://github.com/roq-trading/roq-api).
 
 * [Example 1](./src/roq/samples/example-1/README.md)
   demonstrates how to connect to a market gateway and
@@ -110,9 +110,11 @@ You can use this for historical simulations.
 
 ### Gateway
 
-*The gateway may require a license file.
+*A gateway may require a license file.
 Please [contact us](mailto:info@roq-trading.com)
 if you have any questions*.
+
+#### Deribit
 
 Download the Deribit gateway
 
@@ -145,6 +147,40 @@ roq-deribit \
     --config-file config.toml \
     --listen ~/deribit.sock
 ```
+
+#### Coinbase Pro
+
+Coinbase Pro is almost identical
+
+Install
+
+```
+conda install -y roq-coinbase-pro
+```
+
+Copy default configuration template
+
+```
+cp $CONDA_PREFIX/share/roq/coinbase-pro/config.toml .
+```
+
+Edit and replace
+
+```
+login = "YOUR_COINBASE_PRO_API_KEY_GOES_HERE"
+password = "YOUR_COINBASE_PRO_PASSPHRASE_GOES_HERE"
+secret = "YOUR_COINBASE_PRO_SECRET_GOES_HERE"
+```
+
+Start
+
+```
+roq-coinbase-pro \
+    --name "coinbase-pro" \
+    --config-file config.toml \
+    --listen ~/coinbase-pro.sock
+```
+
 
 ## Links
 
