@@ -9,16 +9,19 @@ This project demonstrates how to use the
 [Roq API](https://github.com/roq-trading/roq-api).
 
 * [Example 1](./src/roq/samples/example-1/README.md)
-  demonstrates how to connect to a market gateway and
-  subscribe to updates
+  * Connect to market gateway
+  * Subscribe using regex patterns
 * [Example 2](./src/roq/samples/example-1/README.md)
-  demonstrates how to deal with disconnects, process
-  incremental market data updates, maintain a market
-  depth view and update a simple model.
+  * Manage disconnect
+  * Process incremental market data update
+  * Maintain a market depth view
+  * Update a simple model
 * [Example 3](./src/roq/samples/example-1/README.md)
-  demonstrates how to maintain positions, place limit
-  orders, deal with order acks and order updates,
-  historical simulation and live trading.
+  * Maintain positions
+  * Place limit orders
+  * Deal with order acks and updates
+  * Historical simulation
+  * Live trading
 
 
 ## Conda
