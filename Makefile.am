@@ -1,5 +1,9 @@
 SUBDIRS = . src test
 
+if ENABLE_DOXYGEN
+SUBDIRS += doxygen
+endif
+
 if ENABLE_BENCHMARK
 SUBDIRS += benchmark
 endif
