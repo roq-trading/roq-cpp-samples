@@ -1,273 +1,152 @@
 # Roq Trading Solutions
 
-Solutions focused on development, testing and deployment of
-algorithmic trading strategies.
+*C++ HFT Toolkit for Algo Traders*.
 
 
 ## Overview
 
-Topics
+This project includes examples meant to demonstrate
+how to use the Roq [API](https://github.com/roq-trading/roq-api).
 
-* Create a development environment
-* Application design
-* Handle asynchronous events
-* Typical strategy patterns
-
-## What is it?
-
-Examples designed to demonstrate various concepts relating to
-the implementation of automated trading strategies.
-
-A very naive implementation would follow this pattern
-
-1. Receive market data update
-2. Update model
-3. When conditions are met, send order creation request
-
-The reality is unfortunately more complicated.
-
-These are some of the reasons why you have to be careful
-when deploying algorithmic trading strategies
-
-* Latest market data snapshot becomes stale if the market access
-  gateway loses connection to the market data feed.
-  * Client must ensure invalidation of market data (and model
-    results) if it receives a disconnect event from the gateway.
-* Several market data update events could arrive as a batch.
-  * Certain trading strategies, e.g. spread trading, will
-    benefit from postponing the processing until the entire
-    batch has been received.
-* Order action requests could get lost in transit.
-  * It is important to monitor the age of a request and take
-    appropriate action if an ack has not been received within
-    a timeout period.
-  * There are no silver bullets: Appropriate action could
-    be to simply resend the order action request.
-    Or perhaps the right approach is to terminate the program
-    and require human intervention.
-    (It really depends on your use-case).
-* Download must have completed before trading is resumed.
-  * Accurate positions and a current view of working orders
-    must have been received before a trading strategy can be
-    allowed to send new order action requests.
-
-The different examples have been documented to help
-you better understand the motivations and reasons for
-specific design patterns.
+* [Example 1](./src/roq/samples/example-1/README.md)
+  demonstrates how to connect to a market gateway and
+  subscribe to updates
+* [Example 2](./src/roq/samples/example-1/README.md)
+  demonstrates how to deal with disconnects, process
+  incremental market data updates, maintain a market
+  depth view and update a simple model.
+* [Example 3](./src/roq/samples/example-1/README.md)
+  demonstrates how to maintain positions, place limit
+  orders, deal with order acks and order updates,
+  historical simulation and live trading.
 
 
-## First steps
+## Conda
 
-### Install Miniconda
+Download the Miniconda Installer
 
-> *This section will demonstrate how to install Miniconda*.
-
-A Conda environment allows you to install up-to-date binary packages
-on your development box *without* requiring root access.
-
-```bash
-# download the miniconda installer
+```
 wget -N https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh
+```
 
-# install miniconda (to your home directory)
+Install Miniconda
+
+```
 bash Miniconda3-latest-Linux-x86_64.sh -b -u -p ~/miniconda3
+```
 
-# configure roq-trading as a default conda channel
+Add roq-trading as a channel
+
+```
 cat > ~/miniconda3/.condarc << EOF
 channels:
-  - defaults
   - https://roq-trading.com/conda/unstable
+  - defaults
   - conda-forge
 EOF
 ```
 
-### Activate Miniconda
+Activate Miniconda
 
-> *This section will demonstrate how to activate your Conda
-> environment*.
-
-This is how you activate your Conda environment
-
-```bash
+```
 source ~/miniconda3/bin/activate
 ```
 
-> The following sections will assume you have *already* activated
-> your Conda environment.
+Install dev tools
 
-### Install git
-
-> You don't need this step if a recent version of git is
-> available on your system.
-
-```bash
-conda install -y git
+```
+conda install -y git cmake gxx_linux-64 gdb_linux-64
 ```
 
-### Clone roq-samples
+## Build
 
-```bash
-# clone roq-samples
-git clone https://github.com/roq-trading/roq-samples
+Update git submodules
 
-# change into the new directory
-cd roq-samples
+```
+git submodule update --init --recursive
 ```
 
-### Create a build environment
+Install the Roq client library
 
-The project includes a `create_conda_env.sh` helper script which will
-
-* install the required compiler toolchain,
-* install required dependencies (Conda packages), and
-* configure your Conda environment
-
-```bash
-./create_conda_env.sh
+```
+conda install -y roq-client
 ```
 
-If all goes well, you will be prompted to start or restart Miniconda.
+Run CMake
 
-> Instructions are written to the terminal so you can easily copy
-> paste.
-> For example, something like this:
->
-> ```
-> Please re-activate your Conda environment now!
-> conda deactivate && source ~/miniconda3/bin/activate
-> ```
-
-### Update git submodules
-
-Use the helper script to update git submodules used by the project
-
-```bash
-./git_init_submodules.sh
+```
+cmake \
+    -DCMAKE_AR="$AR" \
+    -DCMAKE_RANLIB="$RANLIB" \
+    -DCMAKE_NM="$NM" \
+    -DCMAKE_BUILD_TYPE=Debug
 ```
 
-### Build the Project
+> Remove the CMakeCache.txt file, if you must
+> repeat any of the previous steps.
 
-```bash
-cmake -DCMAKE_AR="$AR" -DCMAKE_RANLIB="$RANLIB" -DCMAKE_NM="$NM" -DCMAKE_BUILD_TYPE=Debug
+Compile the project
+
+```
 make -j4
 ```
 
-> It is quite important to include the additional cmake options.
-> Without, you could end up mixing the Conda compiler tools with
-> whatever tools already exist on your system.
-> Or cmake may not be able to find the tools at all.
+## Dependencies
 
-### Run an in-process simulation
+### Data
 
-> This script will write simulation results (csv files) to current
-> directory.
+Download Roq sample data
 
-```bash
-src/roq/samples/simple/simulate.sh
+```
+conda install -y roq-data
 ```
 
-You can also increate the logging verbosity if you want to see more
-details
+This will install an "event log" to
+`$CONDA_PREFIX/share/roq/data/deribit.roq`.
+You can use this for historical simulations.
 
-```bash
-ROQ_v=1 src/roq/samples/simple/simulate.sh
+> Many thanks to Deribit for giving their permission
+> to distributing this small dataset.
+
+### Gateway
+
+*The gateway may require a license file.
+Please [contact us](mailto:info@roq-trading.com)
+if you have any questions*.
+
+Download the Deribit gateway
+
+```
+conda install -y roq-deribit
 ```
 
-### Install the simulator service
+Make a copy of the default configuration template
 
-> The `roq-data` package is not required: it provides a default
-> dataset useful for demonstrating the simulator.
-> It has probably already been installed by the `create_conda_env.sh`
-> helper script mentioned earlier.
-
-```bash
-conda install -y roq-simulator roq-data
+```
+cp $CONDA_PREFIX/share/roq/deribit/config.toml .
 ```
 
-#### Launch the simulator service
+You must edit this file and update with your
+Deribit API credentials
+([link](https://test.deribit.com/main#/account?scrollTo=api)).
 
-```bash
-roq-simulator \
-  --name "simulator" \
-  --dispatcher-affinity 1 \
-  --simulator-affinity 2 \
-  --buffer-size 266240 \
-  --config-directory "$CONDA_PREFIX/share/roq/simulator" \
-  --config-file "master.conf" \
-  --listen "$HOME/simulator.sock" \
-  --metrics 1234 \
-  --generator-type "csv-old" \
-  "$CONDA_PREFIX/share/roq/data/USTP_Multi_20180223.csv"
+You should look for these lines and replace
+
+```
+login = "YOUR_DERIBIT_LOGIN_GOES_HERE"
+secret = "YOUR_DERIBIT_SECRET_GOES_HERE"
 ```
 
-#### Run the strategy against the simulator service
+The gateway is started like this
 
-> You probably want to run the next command from a new terminal.
-> Remember to activate your Conda environment.
-
-```bash
-src/roq/samples/simple/run.sh $HOME/simulator.sock
+```
+roq-deribit \
+    --name "deribit" \
+    --config-file config.toml \
+    --listen ~/deribit.sock
 ```
 
-#### Run the strategy against a gateway
+## Links
 
-Same as previous step only using the socket exposed by the gateway.
-
-### Summary
-
-You have managed to achieve the following
-
-* Create a Conda environment
-* Clone the `roq-samples` project
-* Install relevant build tools
-* Compile the `roq-samples` project
-* Run the strategy as an in-process simulation
-* Run the strategy against a simulator service
-
-> Compiled binaries are compatible with Conda packages.
-> You can use existing Conda packages without having to
-> understand how to build those dependencies.
-> That's one of the benefits of using a package manager.
-
-### Making your own project
-
-Easiest is to fork the `roq-samples` project and then modify
-as you see fit.
-
-The better approach is to understand the build
-configuration and the code.
-You should then, from scratch, create your own build configuration.
-
-## Next steps
-
-The different sub-projects are meant to demonstrate various concepts.
-
-The most trivial project is the
-[collector](https://github.com/roq-trading/roq-samples/tree/master/src/roq/samples/collector).
-It subscribes to market data and writes anything it receives to
-the log.
-
-The [simple](https://github.com/roq-trading/roq-samples/tree/master/src/roq/samples/simple)
-project demonstrates the various event handlers.
-It also implements trivial patterns to manage e.g. monitoring for
-order action timeout.
-
-The [common](https://github.com/roq-trading/roq-samples/tree/master/src/roq/samples/common)
-project is a library meant to create a higher level interface to
-implement a trivial market taker application.
-
-The [taker](https://github.com/roq-trading/roq-samples/tree/master/src/roq/samples/taker)
-project uses the common library to implement a trivial market taking
-strategy.
-
-The [maker](https://github.com/roq-trading/roq-samples/tree/master/src/roq/samples/maker)
-project uses the common library to implement a trivial market making
-strategy.
-
+* [Documentation](https://roq-trading.com/docs)
 * [Contact us](mailto:info@roq-trading.com)
-* [Roq Trading Solutions (website)](https://roq-trading.com)
-* [Online documentation](https://roq-trading.com/docs)
-* [API](https://github.com/roq-trading/roq-api)
-* [Ansible playbook](https://github.com/roq-trading/roq-ansible)
-* [Grafana dashboards](https://github.com/roq-trading/roq-grafana)
-* [Vagrant development environments](https://github.com/roq-trading/roq-vagrant)

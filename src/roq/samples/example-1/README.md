@@ -15,8 +15,6 @@
 The example requires access to one or more market gateways running
 on the same host.
 
-> *The simulator can also be used as a gateway*.
-
 ## How to use
 
 The example requires the `name` option specifying the login name used
@@ -27,7 +25,9 @@ Further arguments are UNIX domain socket end-points for the gateways.
 Example:
 
 ```bash
-./roq-samples-example-1 --name test ~/deribit.sock ~/coinbase-pro.sock
+./roq-samples-example-1 --name "example-1" \
+    ~/deribit.sock \
+    ~/coinbase-pro.sock
 ```
 
 > The paths used for the UNIX domain sockets obviously depend on how
