@@ -1,12 +1,20 @@
 # Roq Trading Solutions
 
-*C++ HFT Toolkit for Algo Traders*.
+*A C++ HFT Toolkit for Algo Traders*.
+
+
+## What is it?
+
+A collection of examples meant to demonstrate
+features of the
+[Roq API](https://github.com/roq-trading/roq-api).
 
 
 ## Overview
 
-This project demonstrates how to use the
-[Roq API](https://github.com/roq-trading/roq-api).
+The examples will demonstrate the increasing levels
+of complexity required to implement a real, fully
+autonomous, trading strategy
 
 * [Example 1](./src/roq/samples/example-1/README.md)
   * Connect to market gateway
