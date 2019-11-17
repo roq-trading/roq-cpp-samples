@@ -1,6 +1,6 @@
 # Roq Trading Solutions
 
-*A C++ HFT Toolkit for Algo Traders*.
+*A C++ HFT Toolkit for Algo Traders*
 
 
 ## What is it?
