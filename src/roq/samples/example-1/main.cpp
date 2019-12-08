@@ -145,6 +145,14 @@ class Strategy final : public client::Handler {
         event.message_info.source_name,
         event.market_by_price);
   }
+  void operator()(const MarketByOrderEvent& event) override {
+    // only verbose logging, see comment above
+    VLOG(1)(
+        "[{}:{}] MarketByOrder={}",
+        event.message_info.source,
+        event.message_info.source_name,
+        event.market_by_order);
+  }
   void operator()(const TradeSummaryEvent& event) override {
     // only verbose logging, see comment above
     VLOG(1)(

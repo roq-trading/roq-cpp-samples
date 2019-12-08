@@ -248,6 +248,29 @@ class Instrument final {
       update_model();
   }
 
+  void operator()(const MarketByOrder& market_by_order) {
+    assert(_exchange.compare(market_by_order.exchange) == 0);
+    assert(_symbol.compare(market_by_order.symbol) == 0);
+    LOG_IF(INFO, _download)("MarketByOrder={}", market_by_order);
+    // update depth
+    // note!
+    //   market by order only gives you *changes*.
+    //   you will most likely want to use the the price and order_id
+    //   to look up the relative position in an order book and then
+    //   modify the liquidity.
+    //   the depth builder helps you maintain a correct view of
+    //   the order book.
+    auto depth = _depth_builder->update(market_by_order);
+    VLOG(1)(
+        "[{}:{}] depth=[{}]",
+        _exchange,
+        _symbol,
+        fmt::join(_depth, ", "));
+    if (depth > 0 && is_ready())
+      update_model();
+  }
+
+
  protected:
   void update_model() {
     // one sided market?
