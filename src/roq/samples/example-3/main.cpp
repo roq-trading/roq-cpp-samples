@@ -329,6 +329,7 @@ class Instrument final {
     //   modify the liquidity.
     //   the depth builder helps you maintain a correct view of
     //   the order book.
+    /*
     _depth_builder->update(market_by_order);
     VLOG(1)(
         "[{}:{}] depth=[{}]",
@@ -336,6 +337,7 @@ class Instrument final {
         _symbol,
         fmt::join(_depth, ", "));
     validate(_depth);
+    */
   }
 
   void operator()(const OrderUpdate& order_update) {
