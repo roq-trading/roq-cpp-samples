@@ -780,7 +780,7 @@ class Strategy final : public client::Handler {
           .price = price,
           .time_in_force = TimeInForce::GTC,
           .position_effect = PositionEffect::UNDEFINED,
-          .order_template = std::string(),
+          .order_template = "",
         },
         uint8_t{0});
     _working_order_id = order_id;
