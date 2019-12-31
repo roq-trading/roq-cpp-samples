@@ -40,7 +40,12 @@ namespace example_1 {
 class Config final : public client::Config {
  public:
   Config() {}
+
+  Config(const Config&) = delete;
   Config(Config&&) = default;
+
+  void operator=(const Config&) = delete;
+  void operator=(Config&&) = delete;
 
  protected:
   void dispatch(Handler& handler) const override {
@@ -56,10 +61,6 @@ class Config final : public client::Config {
           .exchange = FLAGS_coinbase_pro_exchange,
         });
   }
-
- private:
-  Config(const Config&) = delete;
-  void operator=(const Config&) = delete;
 };
 
 // client::Handler is the base class managing the life-time of
@@ -76,7 +77,11 @@ class Strategy final : public client::Handler {
       : _dispatcher(dispatcher) {
   }
 
+  Strategy(const Strategy&) = delete;
   Strategy(Strategy&&) = default;
+
+  void operator=(const Strategy&) = delete;
+  void operator=(Strategy&&) = delete;
 
  protected:
   // the following event handlers log every update as-is
@@ -161,10 +166,6 @@ class Strategy final : public client::Handler {
         event.message_info.source_name,
         event.trade_summary);
   }
-
- private:
-  Strategy(const Strategy&) = delete;
-  void operator=(const Strategy&) = delete;
 
  private:
   client::Dispatcher& _dispatcher;

@@ -67,7 +67,12 @@ inline bool update(T& lhs, const T& rhs) {
 class Config final : public client::Config {
  public:
   Config() {}
+
+  Config(const Config&) = delete;
   Config(Config&&) = default;
+
+  void operator=(const Config&) = delete;
+  void operator=(Config&&) = delete;
 
  protected:
   void dispatch(Handler& handler) const override {
@@ -83,10 +88,6 @@ class Config final : public client::Config {
           .exchange = FLAGS_cash_exchange,
         });
   }
-
- private:
-  Config(const Config&) = delete;
-  void operator=(const Config&) = delete;
 };
 
 // helper class caching instrument specific information
@@ -369,7 +370,11 @@ class Strategy final : public client::Handler {
             FLAGS_cash_symbol) {
   }
 
+  Strategy(const Strategy&) = delete;
   Strategy(Strategy&&) = default;
+
+  void operator=(const Strategy&) = delete;
+  void operator=(Strategy&&) = delete;
 
  protected:
   void operator()(const ConnectionStatusEvent& event) override {
@@ -411,10 +416,6 @@ class Strategy final : public client::Handler {
         assert(false);  // should never happen
     }
   }
-
- private:
-  Strategy(const Strategy&) = delete;
-  void operator=(const Strategy&) = delete;
 
  private:
   client::Dispatcher& _dispatcher;

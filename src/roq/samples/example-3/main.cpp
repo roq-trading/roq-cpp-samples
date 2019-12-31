@@ -87,7 +87,12 @@ inline bool update(T& lhs, const T& rhs) {
 class Config final : public client::Config {
  public:
   Config() {}
+
+  Config(const Config&) = delete;
   Config(Config&&) = default;
+
+  void operator=(const Config&) = delete;
+  void operator=(Config&&) = delete;
 
  protected:
   void dispatch(Handler& handler) const override {
@@ -108,10 +113,6 @@ class Config final : public client::Config {
           .regex = FLAGS_currencies,
         });
   }
-
- private:
-  Config(const Config&) = delete;
-  void operator=(const Config&) = delete;
 };
 
 // helper class caching instrument specific information
@@ -470,7 +471,11 @@ class EMA final {
       : _alpha(alpha) {
   }
 
+  EMA(const EMA&) = delete;
   EMA(EMA&&) = default;
+
+  void operator=(const EMA&) = delete;
+  void operator=(EMA&&) = delete;
 
   operator double() const {
     return _value;
@@ -495,10 +500,6 @@ class EMA final {
   }
 
  private:
-  EMA(const EMA&) = delete;
-  void operator=(const EMA&) = delete;
-
- private:
   const double _alpha;
   double _value = NaN;
   uint32_t _countdown = FLAGS_warmup;
@@ -513,7 +514,11 @@ class Model final {
         _ask_ema(FLAGS_ema_alpha) {
   }
 
+  Model(const Model&) = delete;
   Model(Model&&) = default;
+
+  void operator=(const Model&) = delete;
+  void operator=(Model&&) = delete;
 
   void reset() {
     _bid_ema.reset();
@@ -620,10 +625,6 @@ class Model final {
   }
 
  private:
-  Model(const Model&) = delete;
-  void operator=(const Model&) = delete;
-
- private:
   EMA _bid_ema;
   EMA _ask_ema;
   bool _selling = false;
@@ -642,7 +643,11 @@ class Strategy final : public client::Handler {
             FLAGS_account) {
   }
 
+  Strategy(const Strategy&) = delete;
   Strategy(Strategy&&) = default;
+
+  void operator=(const Strategy&) = delete;
+  void operator=(Strategy&&) = delete;
 
  protected:
   void operator()(const TimerEvent& event) override {
@@ -787,10 +792,6 @@ class Strategy final : public client::Handler {
     _working_side = side;
     // possible extension: monitor for request timeout
   }
-
- private:
-  Strategy(const Strategy&) = delete;
-  void operator=(const Strategy&) = delete;
 
  private:
   client::Dispatcher& _dispatcher;
