@@ -17,7 +17,7 @@ DEFINE_string(deribit_exchange,
     "name of the deribit exchange");
 
 DEFINE_string(deribit_symbols,
-    "BTC-\\d{2}\\D{3}\\d{2}",  // e.g. "BTC-27DEC19"
+    "BTC-\\d{2}\\D{3}\\d{2}",  // e.g. "BTC-27MAR20"
     "regex used to subscribe deribit symbols");
 
 DEFINE_string(coinbase_pro_exchange,

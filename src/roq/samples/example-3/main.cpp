@@ -21,7 +21,7 @@ DEFINE_string(exchange,
     "exchange");
 
 DEFINE_string(symbol,
-    "BTC-27DEC19",
+    "BTC-27MAR20",
     "symbol (regex)");
 
 DEFINE_string(account,
