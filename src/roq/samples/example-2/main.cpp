@@ -71,9 +71,6 @@ class Config final : public client::Config {
   Config(const Config&) = delete;
   Config(Config&&) = default;
 
-  void operator=(const Config&) = delete;
-  void operator=(Config&&) = delete;
-
  protected:
   void dispatch(Handler& handler) const override {
     // callback for each subscription pattern
@@ -372,9 +369,6 @@ class Strategy final : public client::Handler {
 
   Strategy(const Strategy&) = delete;
   Strategy(Strategy&&) = default;
-
-  void operator=(const Strategy&) = delete;
-  void operator=(Strategy&&) = delete;
 
  protected:
   void operator()(const ConnectionStatusEvent& event) override {
