@@ -96,7 +96,10 @@ class Instrument final {
       const std::string_view& symbol)
       : _exchange(exchange),
         _symbol(symbol),
-        _depth_builder(client::DepthBuilder::create(_depth)) {
+        _depth_builder(
+            client::DepthBuilder::create(
+                symbol,
+                _depth)) {
   }
 
   bool is_ready() const {

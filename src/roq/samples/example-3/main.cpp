@@ -123,7 +123,10 @@ class Instrument final {
       : _exchange(exchange),
         _symbol(symbol),
         _account(account),
-        _depth_builder(client::DepthBuilder::create(_depth)) {
+        _depth_builder(
+            client::DepthBuilder::create(
+                symbol,
+                _depth)) {
   }
 
   operator const Depth&() const {
