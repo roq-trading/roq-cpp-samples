@@ -125,7 +125,7 @@ class Instrument final {
   void operator()(const ConnectionStatus& connection_status) {
     if (update(_connection_status, connection_status)) {
       LOG(INFO)(
-          "[{}:{}] connection_status={}",
+          FMT_STRING("[{}:{}] connection_status={}"),
           _exchange,
           _symbol,
           _connection_status);
@@ -148,7 +148,7 @@ class Instrument final {
     assert(_download == false);
     _download = true;
     LOG(INFO)(
-        "[{}:{}] download={}",
+        FMT_STRING("[{}:{}] download={}"),
           _exchange,
           _symbol,
         _download);
@@ -160,7 +160,7 @@ class Instrument final {
     assert(_download == true);
     _download = false;
     LOG(INFO)(
-        "[{}:{}] download={}",
+        FMT_STRING("[{}:{}] download={}"),
           _exchange,
           _symbol,
         _download);
@@ -172,7 +172,7 @@ class Instrument final {
     // update our cache
     if (update(_market_data_status, market_data_status.status)) {
       LOG(INFO)(
-          "[{}:{}] market_data_status={}",
+          FMT_STRING("[{}:{}] market_data_status={}"),
           _exchange,
           _symbol,
           _market_data_status);
@@ -189,21 +189,21 @@ class Instrument final {
     // update our cache
     if (update(_tick_size, reference_data.tick_size)) {
       LOG(INFO)(
-          "[{}:{}] tick_size={}",
+          FMT_STRING("[{}:{}] tick_size={}"),
           _exchange,
           _symbol,
           _tick_size);
     }
     if (update(_min_trade_vol, reference_data.min_trade_vol)) {
       LOG(INFO)(
-          "[{}:{}] min_trade_vol={}",
+          FMT_STRING("[{}:{}] min_trade_vol={}"),
           _exchange,
           _symbol,
           _min_trade_vol);
     }
     if (update(_multiplier, reference_data.multiplier)) {
       LOG(INFO)(
-          "[{}:{}] multiplier={}",
+          FMT_STRING("[{}:{}] multiplier={}"),
           _exchange,
           _symbol,
           _multiplier);
@@ -218,7 +218,7 @@ class Instrument final {
     // update our cache
     if (update(_trading_status, market_status.trading_status)) {
       LOG(INFO)(
-          "[{}:{}] trading_status={}",
+          FMT_STRING("[{}:{}] trading_status={}"),
           _exchange,
           _symbol,
           _trading_status);
@@ -230,7 +230,9 @@ class Instrument final {
   void operator()(const MarketByPrice& market_by_price) {
     assert(_exchange.compare(market_by_price.exchange) == 0);
     assert(_symbol.compare(market_by_price.symbol) == 0);
-    LOG_IF(INFO, _download)("MarketByPrice={}", market_by_price);
+    LOG_IF(INFO, _download)(
+        FMT_STRING("MarketByPrice={}"),
+        market_by_price);
     // update depth
     // note!
     //   market by price only gives you *changes*.
@@ -241,7 +243,7 @@ class Instrument final {
     //   the order book.
     auto depth = _depth_builder->update(market_by_price);
     VLOG(1)(
-        "[{}:{}] depth=[{}]",
+        FMT_STRING("[{}:{}] depth=[{}]"),
         _exchange,
         _symbol,
         fmt::join(_depth, ", "));
@@ -252,7 +254,9 @@ class Instrument final {
   void operator()(const MarketByOrder& market_by_order) {
     assert(_exchange.compare(market_by_order.exchange) == 0);
     assert(_symbol.compare(market_by_order.symbol) == 0);
-    LOG_IF(INFO, _download)("MarketByOrder={}", market_by_order);
+    LOG_IF(INFO, _download)(
+        FMT_STRING("MarketByOrder={}"),
+        market_by_order);
     // update depth
     // note!
     //   market by order only gives you *changes*.
@@ -263,7 +267,7 @@ class Instrument final {
     //   the order book.
     auto depth = _depth_builder->update(market_by_order);
     VLOG(1)(
-        "[{}:{}] depth=[{}]",
+        FMT_STRING("[{}:{}] depth=[{}]"),
         _exchange,
         _symbol,
         fmt::join(_depth, ", "));
@@ -281,8 +285,9 @@ class Instrument final {
     // validate depth
     auto spread = _depth[0].ask_price - _depth[0].bid_price;
     LOG_IF(FATAL, spread < TOLERANCE)(
-        "[{}:{}] Probably something wrong: "
-        "choice or inversion detected. depth=[{}]",
+        FMT_STRING(
+          "[{}:{}] Probably something wrong: "
+          "choice or inversion detected. depth=[{}]"),
         _exchange,
         _symbol,
         fmt::join(_depth, ", "));
@@ -302,7 +307,7 @@ class Instrument final {
         (1.0 - FLAGS_alpha) * _avg_price;
     // only verbose logging
     VLOG(1)(
-        "[{}:{}] model={{mid_price={}, avg_price={}}}",
+        FMT_STRING("[{}:{}] model={{mid_price={}, avg_price={}}}"),
         _exchange,
         _symbol,
         _mid_price,
@@ -320,7 +325,7 @@ class Instrument final {
       _trading_status == TradingStatus::OPEN &&
       _market_data_status == GatewayStatus::READY;
     LOG_IF(INFO, _ready != before)(
-        "[{}:{}] ready={}",
+        FMT_STRING("[{}:{}] ready={}"),
         _exchange,
         _symbol,
         _ready);
