@@ -28,6 +28,7 @@ requirements:
 
 about:
   home: https://roq-trading.com
+  doc_url: https://roq-trading.com/docs
   dev_url: https://github.com/roq-trading
   license: BSD-3-Clause
   license_family: BSD
