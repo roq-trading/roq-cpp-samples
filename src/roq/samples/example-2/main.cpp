@@ -132,6 +132,9 @@ class Instrument final {
       check_ready();
     }
     switch (connection_status) {
+      case ConnectionStatus::UNDEFINED:
+        LOG(FATAL)("Unexpected");
+        break;
       case ConnectionStatus::CONNECTED:
         // nothing to do for this implementation
         break;
