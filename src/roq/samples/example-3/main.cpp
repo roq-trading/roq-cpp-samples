@@ -799,6 +799,9 @@ class Strategy final : public client::Handler {
           .price = price,
           .time_in_force = TimeInForce::GTC,
           .position_effect = PositionEffect::UNDEFINED,
+          .execution_instruction = ExecutionInstruction::UNDEFINED,
+          .stop_price = NaN,
+          .max_show_quantity = NaN,
           .order_template = "",
         },
         uint8_t{0});
