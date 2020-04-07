@@ -181,7 +181,7 @@ class Instrument final {
   void operator()(const ConnectionStatus& connection_status) {
     if (update(_connection_status, connection_status)) {
       LOG(INFO)(
-          FMT_STRING("[{}:{}] connection_status={}"),
+          FMT_STRING(R"([{}:{}] connection_status={})"),
           _exchange,
           _symbol,
           _connection_status);
@@ -207,7 +207,7 @@ class Instrument final {
     assert(_download == false);
     _download = true;
     LOG(INFO)(
-        FMT_STRING("[{}:{}] download={}"),
+        FMT_STRING(R"([{}:{}] download={})"),
           _exchange,
           _symbol,
         _download);
@@ -219,7 +219,7 @@ class Instrument final {
     assert(_download == true);
     _download = false;
     LOG(INFO)(
-        FMT_STRING("[{}:{}] download={}"),
+        FMT_STRING(R"([{}:{}] download={})"),
           _exchange,
           _symbol,
         _download);
@@ -231,7 +231,7 @@ class Instrument final {
     // update our cache
     if (update(_market_data_status, market_data_status.status)) {
       LOG(INFO)(
-          FMT_STRING("[{}:{}] market_data_status={}"),
+          FMT_STRING(R"([{}:{}] market_data_status={})"),
           _exchange,
           _symbol,
           _market_data_status);
@@ -245,7 +245,7 @@ class Instrument final {
     // update our cache
     if (update(_order_manager_status, order_manager_status.status)) {
       LOG(INFO)(
-          FMT_STRING("[{}:{}] order_manager_status={}"),
+          FMT_STRING(R"([{}:{}] order_manager_status={})"),
           _exchange,
           _symbol,
           _order_manager_status);
@@ -262,21 +262,21 @@ class Instrument final {
     // update our cache
     if (update(_tick_size, reference_data.tick_size)) {
       LOG(INFO)(
-          FMT_STRING("[{}:{}] tick_size={}"),
+          FMT_STRING(R"([{}:{}] tick_size={})"),
           _exchange,
           _symbol,
           _tick_size);
     }
     if (update(_min_trade_vol, reference_data.min_trade_vol)) {
       LOG(INFO)(
-          FMT_STRING("[{}:{}] min_trade_vol={}"),
+          FMT_STRING(R"([{}:{}] min_trade_vol={})"),
           _exchange,
           _symbol,
           _min_trade_vol);
     }
     if (update(_multiplier, reference_data.multiplier)) {
       LOG(INFO)(
-          FMT_STRING("[{}:{}] multiplier={}"),
+          FMT_STRING(R"([{}:{}] multiplier={})"),
           _exchange,
           _symbol,
           _multiplier);
@@ -291,7 +291,7 @@ class Instrument final {
     // update our cache
     if (update(_trading_status, market_status.trading_status)) {
       LOG(INFO)(
-          FMT_STRING("[{}:{}] trading_status={}"),
+          FMT_STRING(R"([{}:{}] trading_status={})"),
           _exchange,
           _symbol,
           _trading_status);
@@ -304,7 +304,7 @@ class Instrument final {
     assert(_exchange.compare(market_by_price.exchange) == 0);
     assert(_symbol.compare(market_by_price.symbol) == 0);
     LOG_IF(INFO, _download)(
-        FMT_STRING("MarketByPrice={}"),
+        FMT_STRING(R"(MarketByPrice={})"),
         market_by_price);
     // update depth
     // note!
@@ -316,7 +316,7 @@ class Instrument final {
     //   the order book.
     _depth_builder->update(market_by_price);
     VLOG(1)(
-        FMT_STRING("[{}:{}] depth=[{}]"),
+        FMT_STRING(R"([{}:{}] depth=[{}])"),
         _exchange,
         _symbol,
         fmt::join(_depth, ", "));
@@ -327,7 +327,7 @@ class Instrument final {
     assert(_exchange.compare(market_by_order.exchange) == 0);
     assert(_symbol.compare(market_by_order.symbol) == 0);
     LOG_IF(INFO, _download)(
-        FMT_STRING("MarketByOrder={}"),
+        FMT_STRING(R"(MarketByOrder={})"),
         market_by_order);
     // update depth
     // note!
@@ -340,7 +340,7 @@ class Instrument final {
     /*
     _depth_builder->update(market_by_order);
     VLOG(1)(
-        FMT_STRING("[{}:{}] depth=[{}]"),
+        FMT_STRING(R"([{}:{}] depth=[{}])"),
         _exchange,
         _symbol,
         fmt::join(_depth, ", "));
@@ -369,7 +369,7 @@ class Instrument final {
         assert(false);  // unexpected
     }
     LOG(INFO)(
-        FMT_STRING("[{}:{}] position={}"),
+        FMT_STRING(R"([{}:{}] position={})"),
         _exchange,
         _symbol,
         position());
@@ -378,7 +378,7 @@ class Instrument final {
   void operator()(const PositionUpdate& position_update) {
     assert(_account.compare(position_update.account) == 0);
     LOG(INFO)(
-        FMT_STRING("[{}:{}] position_update={}"),
+        FMT_STRING(R"([{}:{}] position_update={})"),
         _exchange,
         _symbol,
         position_update);
@@ -397,7 +397,7 @@ class Instrument final {
           break;
         default:
           LOG(WARNING)(
-              FMT_STRING("Unexpected side={}"),
+              FMT_STRING(R"(Unexpected side={})"),
               position_update.side);
       }
     }
@@ -416,7 +416,7 @@ class Instrument final {
       _market_data_status == GatewayStatus::READY &&
       _order_manager_status == GatewayStatus::READY;
     LOG_IF(INFO, _ready != before)(
-        FMT_STRING("[{}:{}] ready={}"),
+        FMT_STRING(R"([{}:{}] ready={})"),
         _exchange,
         _symbol,
         _ready);
@@ -445,8 +445,8 @@ class Instrument final {
     auto spread = depth[0].ask_price - depth[0].bid_price;
     LOG_IF(FATAL, spread < TOLERANCE)(
         FMT_STRING(
-          "[{}:{}] Probably something wrong: "
-          "choice or inversion detected. depth=[{}]"),
+          R"([{}:{}] Probably something wrong: )"
+          R"(choice or inversion detected. depth=[{}])"),
         _exchange,
         _symbol,
         fmt::join(depth, ", "));
@@ -547,7 +547,7 @@ class Model final {
     if (_selling) {
       if (ready && ask_fast > ask_slow) {
         LOG(INFO)(
-            FMT_STRING("SIGNAL: BUY @ {}"),
+            FMT_STRING(R"(SIGNAL: BUY @ {})"),
             depth[0].ask_price);
         result = Side::BUY;
         _selling = false;
@@ -563,7 +563,7 @@ class Model final {
     if (_buying) {
       if (ready && bid_fast > bid_slow) {
         LOG(INFO)(
-            FMT_STRING("SIGNAL: SELL @ {}"),
+            FMT_STRING(R"(SIGNAL: SELL @ {})"),
             depth[0].bid_price);
         result = Side::SELL;
         _buying = false;
@@ -581,16 +581,16 @@ class Model final {
 
     VLOG(1)(
         FMT_STRING(
-          "model={{"
-          "bid={} "
-          "ask={} "
-          "bid_fast={} "
-          "ask_fast={} "
-          "bid_slow={} "
-          "ask_slow={} "
-          "selling={} "
-          "buying={}"
-          "}}"),
+          R"(model={{)"
+          R"(bid={} )"
+          R"(ask={} )"
+          R"(bid_fast={} )"
+          R"(ask_fast={} )"
+          R"(bid_slow={} )"
+          R"(ask_slow={} )"
+          R"(selling={} )"
+          R"(buying={})"
+          R"(}})"),
         depth[0].bid_price,
         depth[0].ask_price,
         bid_fast,
@@ -679,7 +679,7 @@ class Strategy final : public client::Handler {
     dispatch(event);
     if (update(_max_order_id, event.download_end.max_order_id)) {
       LOG(INFO)(
-          FMT_STRING("max_order_id={}"),
+          FMT_STRING(R"(max_order_id={})"),
           _max_order_id);
     }
   }
@@ -700,7 +700,7 @@ class Strategy final : public client::Handler {
   }
   void operator()(const OrderAckEvent& event) override {
     LOG(INFO)(
-        FMT_STRING("OrderAck={}"),
+        FMT_STRING(R"(OrderAck={})"),
         event_value(event));
     auto& order_ack = event.order_ack;
     if (is_complete(order_ack.status)) {
@@ -709,7 +709,7 @@ class Strategy final : public client::Handler {
   }
   void operator()(const OrderUpdateEvent& event) override {
     LOG(INFO)(
-        FMT_STRING("OrderUpdate={}"),
+        FMT_STRING(R"(OrderUpdate={})"),
         event_value(event));
     dispatch(event);  // update position
     auto& order_update = event.order_update;
@@ -720,7 +720,7 @@ class Strategy final : public client::Handler {
   }
   void operator()(const TradeUpdateEvent& event) override {
     LOG(INFO)(
-        FMT_STRING("TradeUpdate={}"),
+        FMT_STRING(R"(TradeUpdate={})"),
         event_value(event));
   }
   void operator()(const PositionUpdateEvent& event) override {
@@ -728,7 +728,7 @@ class Strategy final : public client::Handler {
   }
   void operator()(const FundsUpdateEvent& event) override {
     LOG(INFO)(
-        FMT_STRING("FundsUpdate={}"),
+        FMT_STRING(R"(FundsUpdate={})"),
         event_value(event));
   }
 
