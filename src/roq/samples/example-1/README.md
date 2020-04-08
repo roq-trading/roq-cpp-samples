@@ -30,5 +30,9 @@ Example:
     ~/coinbase-pro.sock
 ```
 
-> The paths used for the UNIX domain sockets obviously depend on how
+> Verbose logging can be enabled by setting the `ROQ_v` environment
+> variable to a non-zero value, e.g. by prefixing your command line
+> with `ROQ_v=1`.
+
+> The paths used for the UNIX domain sockets will depend on how
 > you configure and launch your gateways.

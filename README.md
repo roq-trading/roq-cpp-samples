@@ -6,8 +6,9 @@
 ## What is it?
 
 A collection of examples meant to demonstrate
-features of the
-[Roq API](https://github.com/roq-trading/roq-api).
+some features of 
+`roq-client` and
+[`roq-api`](https://github.com/roq-trading/roq-api).
 
 
 ## Overview
@@ -32,6 +33,13 @@ autonomous, trading strategy
   * Live trading
 
 
+## Constraints
+
+* **Linux**
+  * RHEL, CentOS, Debian, Ubuntu
+* **C++17**
+  * Conda's GCC
+
 ## Conda
 
 Download the Miniconda Installer
@@ -51,7 +59,7 @@ Add roq-trading as a channel
 ```
 cat > ~/miniconda3/.condarc << EOF
 channels:
-  - https://roq-trading.com/conda/unstable
+  - https://roq-trading.com/conda/stable
   - defaults
   - conda-forge
 EOF
@@ -77,7 +85,7 @@ Update git submodules
 git submodule update --init --recursive
 ```
 
-Install the Roq client library
+Install `roq-client`
 
 ```
 conda install -y roq-client
@@ -125,7 +133,7 @@ You can use this for historical simulations.
 Please [contact us](mailto:info@roq-trading.com)
 if you have any questions*.
 
-#### Deribit
+#### [Deribit](https://roq-trading.com/docs/gateways/deribit/index.html)
 
 Download the Deribit gateway
 
@@ -159,7 +167,7 @@ roq-deribit \
     --listen ~/deribit.sock
 ```
 
-#### Coinbase Pro
+#### [Coinbase Pro](https://roq-trading.com/docs/gateways/deribit/index.html)
 
 Coinbase Pro is almost identical
 
