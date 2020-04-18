@@ -20,12 +20,12 @@ autonomous, trading strategy
 * [Example 1](./src/roq/samples/example-1/README.md)
   * Connect to market gateway
   * Subscribe using regex patterns
-* [Example 2](./src/roq/samples/example-1/README.md)
+* [Example 2](./src/roq/samples/example-2/README.md)
   * Manage disconnect
   * Process incremental market data update
   * Maintain a market depth view
   * Update a simple model
-* [Example 3](./src/roq/samples/example-1/README.md)
+* [Example 3](./src/roq/samples/example-3/README.md)
   * Maintain positions
   * Place limit orders
   * Deal with order acks and updates
