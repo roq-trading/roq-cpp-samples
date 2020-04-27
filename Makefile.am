@@ -8,7 +8,10 @@ if ENABLE_BENCHMARK
 SUBDIRS += benchmark
 endif
 
-dist_doc_DATA = LICENSE README.md
+dist_doc_DATA = \
+	CHANGELOG.md \
+	LICENSE \
+       	README.md
 
 ACLOCAL_AMFLAGS = -I m4
 
