@@ -9,7 +9,6 @@
 
 #include "roq/application.h"
 #include "roq/client.h"
-#include "roq/event.h"
 #include "roq/logging.h"
 
 // command-line options
@@ -97,7 +96,7 @@ class Instrument final {
       : _exchange(exchange),
         _symbol(symbol),
         _depth_builder(
-            client::DepthBuilder::create(
+            client::DepthBuilderFactory::create(
                 symbol,
                 _depth)) {
   }
@@ -382,7 +381,7 @@ class Strategy final : public client::Handler {
   Strategy(Strategy&&) = default;
 
  protected:
-  void operator()(const ConnectionStatusEvent& event) override {
+  void operator()(const client::ConnectionStatusEvent& event) override {
     dispatch(event);
   }
   void operator()(const DownloadBeginEvent& event) override {
@@ -412,10 +411,10 @@ class Strategy final : public client::Handler {
   void dispatch(const T& event) {
     switch (event.message_info.source) {
       case 0:
-        _futures(event_value(event));
+        _futures(event_value<T>(event));
         break;
       case 1:
-        _cash(event_value(event));
+        _cash(event_value<T>(event));
         break;
       default:
         assert(false);  // should never happen

@@ -87,7 +87,7 @@ class Strategy final : public client::Handler {
   // note!
   //   the ROQ_v environment variable defines the verbosity level
   //   for example, "export ROQ_v=1"
-  void operator()(const ConnectionStatusEvent& event) override {
+  void operator()(const client::ConnectionStatusEvent& event) override {
     LOG(INFO)(
         FMT_STRING(R"([{}:{}] ConnectionStatus={})"),
         event.message_info.source,

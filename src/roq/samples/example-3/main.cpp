@@ -11,7 +11,6 @@
 
 #include "roq/application.h"
 #include "roq/client.h"
-#include "roq/event.h"
 #include "roq/logging.h"
 
 // command-line options
@@ -124,7 +123,7 @@ class Instrument final {
         _symbol(symbol),
         _account(account),
         _depth_builder(
-            client::DepthBuilder::create(
+            client::DepthBuilderFactory::create(
                 symbol,
                 _depth)) {
   }
@@ -656,7 +655,7 @@ class Strategy final : public client::Handler {
   Strategy(Strategy&&) = default;
 
  protected:
-  void operator()(const TimerEvent& event) override {
+  void operator()(const client::TimerEvent& event) override {
     // note! using system clock (*not* the wall clock)
     if (event.now < _next_sample)
       return;
@@ -669,7 +668,7 @@ class Strategy final : public client::Handler {
     };
     // possible extension: reset request timeout
   }
-  void operator()(const ConnectionStatusEvent& event) override {
+  void operator()(const client::ConnectionStatusEvent& event) override {
     dispatch(event);
   }
   void operator()(const DownloadBeginEvent& event) override {
@@ -736,7 +735,7 @@ class Strategy final : public client::Handler {
   template <typename T>
   void dispatch(const T& event) {
     assert(event.message_info.source == uint8_t{0});
-    _instrument(event_value(event));
+    _instrument(event_value<T>(event));
   }
 
   void update_model() {
