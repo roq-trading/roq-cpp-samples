@@ -10,6 +10,7 @@ target_include_directories(roq-samples-example-3 PUBLIC
   ${LIBUNWIND_INCLUDE_DIR}
   ${LIBEVENT_INCLUDE_DIR}
   ${GFLAGS_INCLUDE_DIR}
+  ${ROQ_LOGGING_INCLUDE_DIR}
   ${ROQ_API_INCLUDE_DIR}
   ${ROQ_CLIENT_INCLUDE_DIR}
 )
@@ -19,6 +20,7 @@ target_link_libraries(roq-samples-example-3
   ${LIBUNWIND_LIBS}
   ${LIBEVENT_LIBS}
   ${GFLAGS_LIBS}
+  ${ROQ_LOGGING_LIBS}
   ${ROQ_API_LIBS}
   ${ROQ_CLIENT_LIBS}
 )

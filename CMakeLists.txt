@@ -21,6 +21,7 @@ find_package(Threads REQUIRED)
 find_package(Gflags REQUIRED)
 find_package(Libevent REQUIRED)
 find_package(Libunwind REQUIRED)
+find_package(RoqLogging REQUIRED)
 find_package(RoqApi REQUIRED)
 find_package(RoqClient REQUIRED)
 
