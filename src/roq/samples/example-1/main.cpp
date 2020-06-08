@@ -197,5 +197,6 @@ int main(int argc, char **argv) {
   return roq::samples::example_1::Controller(
       argc,
       argv,
-      DESCRIPTION).run();
+      DESCRIPTION,
+      ROQ_VERSION).run();
 }
