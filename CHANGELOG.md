@@ -4,6 +4,16 @@ All notable changes will be documented in this file.
 
 ## Head
 
+## 0.3.9 &ndash; 2020-06-09
+
+### Added
+
+* Linking to `roq-logging`
+
+### Removed
+
+* Linking to `roq-api` (now header-only)
+
 ## 0.3.8 &ndash; 2020-06-06
 
 ## 0.3.7 &ndash; 2020-05-27

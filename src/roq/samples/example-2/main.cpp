@@ -18,7 +18,7 @@ DEFINE_string(futures_exchange,
     "futures exchange");
 
 DEFINE_string(futures_symbol,
-    "BTC-27MAR20",
+    "BTC-PERPETUAL",
     "futures symbol");
 
 DEFINE_string(cash_exchange,
