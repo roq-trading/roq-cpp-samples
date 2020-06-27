@@ -381,25 +381,25 @@ class Strategy final : public client::Handler {
   Strategy(Strategy&&) = default;
 
  protected:
-  void operator()(const client::ConnectionStatusEvent& event) override {
+  void operator()(const Event<ConnectionStatus>& event) override {
     dispatch(event);
   }
-  void operator()(const DownloadBeginEvent& event) override {
+  void operator()(const Event<DownloadBegin>& event) override {
     dispatch(event);
   }
-  void operator()(const DownloadEndEvent& event) override {
+  void operator()(const Event<DownloadEnd>& event) override {
     dispatch(event);
   }
-  void operator()(const MarketDataStatusEvent& event) override {
+  void operator()(const Event<MarketDataStatus>& event) override {
     dispatch(event);
   }
-  void operator()(const ReferenceDataEvent& event) override {
+  void operator()(const Event<ReferenceData>& event) override {
     dispatch(event);
   }
-  void operator()(const MarketStatusEvent& event) override {
+  void operator()(const Event<MarketStatus>& event) override {
     dispatch(event);
   }
-  void operator()(const MarketByPriceUpdateEvent& event) override {
+  void operator()(const Event<MarketByPriceUpdate>& event) override {
     dispatch(event);
     if (_futures.is_ready() && _cash.is_ready()) {
       // TODO(thraneh): compute basis
@@ -411,10 +411,10 @@ class Strategy final : public client::Handler {
   void dispatch(const T& event) {
     switch (event.message_info.source) {
       case 0:
-        _futures(event_value<T>(event));
+        _futures(event.value);
         break;
       case 1:
-        _cash(event_value<T>(event));
+        _cash(event.value);
         break;
       default:
         assert(false);  // should never happen

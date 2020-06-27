@@ -668,74 +668,74 @@ class Strategy final : public client::Handler {
     };
     // possible extension: reset request timeout
   }
-  void operator()(const client::ConnectionStatusEvent& event) override {
+  void operator()(const Event<ConnectionStatus>& event) override {
     dispatch(event);
   }
-  void operator()(const DownloadBeginEvent& event) override {
+  void operator()(const Event<DownloadBegin>& event) override {
     dispatch(event);
   }
-  void operator()(const DownloadEndEvent& event) override {
+  void operator()(const Event<DownloadEnd>& event) override {
     dispatch(event);
-    if (update(_max_order_id, event.download_end.max_order_id)) {
+    if (update(_max_order_id, event.value.max_order_id)) {
       LOG(INFO)(
           FMT_STRING(R"(max_order_id={})"),
           _max_order_id);
     }
   }
-  void operator()(const MarketDataStatusEvent& event) override {
+  void operator()(const Event<MarketDataStatus>& event) override {
     dispatch(event);
   }
-  void operator()(const OrderManagerStatusEvent& event) override {
+  void operator()(const Event<OrderManagerStatus>& event) override {
     dispatch(event);
   }
-  void operator()(const ReferenceDataEvent& event) override {
+  void operator()(const Event<ReferenceData>& event) override {
     dispatch(event);
   }
-  void operator()(const MarketStatusEvent& event) override {
+  void operator()(const Event<MarketStatus>& event) override {
     dispatch(event);
   }
-  void operator()(const MarketByPriceUpdateEvent& event) override {
+  void operator()(const Event<MarketByPriceUpdate>& event) override {
     dispatch(event);
   }
-  void operator()(const OrderAckEvent& event) override {
+  void operator()(const Event<OrderAck>& event) override {
     LOG(INFO)(
         FMT_STRING(R"(OrderAck={})"),
-        event_value(event));
-    auto& order_ack = event.order_ack;
+        event.value);
+    auto& order_ack = event.value;
     if (is_complete(order_ack.status)) {
       // possible extension: reset request timeout
     }
   }
-  void operator()(const OrderUpdateEvent& event) override {
+  void operator()(const Event<OrderUpdate>& event) override {
     LOG(INFO)(
         FMT_STRING(R"(OrderUpdate={})"),
-        event_value(event));
+        event.value);
     dispatch(event);  // update position
-    auto& order_update = event.order_update;
+    auto& order_update = event.value;
     if (is_complete(order_update.status)) {
       _working_order_id = 0;
       _working_side = Side::UNDEFINED;
     }
   }
-  void operator()(const TradeUpdateEvent& event) override {
+  void operator()(const Event<TradeUpdate>& event) override {
     LOG(INFO)(
         FMT_STRING(R"(TradeUpdate={})"),
-        event_value(event));
+        event.value);
   }
-  void operator()(const PositionUpdateEvent& event) override {
+  void operator()(const Event<PositionUpdate>& event) override {
     dispatch(event);
   }
-  void operator()(const FundsUpdateEvent& event) override {
+  void operator()(const Event<FundsUpdate>& event) override {
     LOG(INFO)(
         FMT_STRING(R"(FundsUpdate={})"),
-        event_value(event));
+        event.value);
   }
 
   // helper - dispatch event to instrument
   template <typename T>
   void dispatch(const T& event) {
     assert(event.message_info.source == uint8_t{0});
-    _instrument(event_value<T>(event));
+    _instrument(event.value);
   }
 
   void update_model() {

@@ -87,78 +87,78 @@ class Strategy final : public client::Handler {
   // note!
   //   the ROQ_v environment variable defines the verbosity level
   //   for example, "export ROQ_v=1"
-  void operator()(const client::ConnectionStatusEvent& event) override {
+  void operator()(const Event<ConnectionStatus>& event) override {
     LOG(INFO)(
         FMT_STRING(R"([{}:{}] ConnectionStatus={})"),
         event.message_info.source,
         event.message_info.source_name,
-        event.connection_status);
+        event.value);
   }
-  void operator()(const DownloadBeginEvent& event) override {
+  void operator()(const Event<DownloadBegin>& event) override {
     LOG(INFO)(
         FMT_STRING(R"([{}:{}] DownloadBegin={})"),
         event.message_info.source,
         event.message_info.source_name,
-        event.download_begin);
+        event.value);
   }
-  void operator()(const DownloadEndEvent& event) override {
+  void operator()(const Event<DownloadEnd>& event) override {
     LOG(INFO)(
         FMT_STRING(R"([{}:{}] DownloadEnd={})"),
         event.message_info.source,
         event.message_info.source_name,
-        event.download_end);
+        event.value);
   }
-  void operator()(const MarketDataStatusEvent& event) override {
+  void operator()(const Event<MarketDataStatus>& event) override {
     LOG(INFO)(
         FMT_STRING(R"([{}:{}] MarketDataStatus={})"),
         event.message_info.source,
         event.message_info.source_name,
-        event.market_data_status);
+        event.value);
   }
-  void operator()(const OrderManagerStatusEvent& event) override {
+  void operator()(const Event<OrderManagerStatus>& event) override {
     LOG(INFO)(
         FMT_STRING(R"([{}:{}] OrderManagerStatus={})"),
         event.message_info.source,
         event.message_info.source_name,
-        event.order_manager_status);
+        event.value);
   }
-  void operator()(const ReferenceDataEvent& event) override {
+  void operator()(const Event<ReferenceData>& event) override {
     LOG(INFO)(
         FMT_STRING(R"([{}:{}] ReferenceData={})"),
         event.message_info.source,
         event.message_info.source_name,
-        event.reference_data);
+        event.value);
   }
-  void operator()(const MarketStatusEvent& event) override {
+  void operator()(const Event<MarketStatus>& event) override {
     LOG(INFO)(
         FMT_STRING(R"([{}:{}] MarketStatus={})"),
         event.message_info.source,
         event.message_info.source_name,
-        event.market_status);
+        event.value);
   }
-  void operator()(const MarketByPriceUpdateEvent& event) override {
+  void operator()(const Event<MarketByPriceUpdate>& event) override {
     // only verbose logging, see comment above
     VLOG(1)(
         FMT_STRING(R"([{}:{}] MarketByPriceUpdate={})"),
         event.message_info.source,
         event.message_info.source_name,
-        event.market_by_price_update);
+        event.value);
   }
-  void operator()(const MarketByOrderUpdateEvent& event) override {
+  void operator()(const Event<MarketByOrderUpdate>& event) override {
     // only verbose logging, see comment above
     VLOG(1)(
         FMT_STRING(R"([{}:{}] MarketByOrderUpdate={})"),
         event.message_info.source,
         event.message_info.source_name,
-        event.market_by_order_update);
+        event.value);
   }
-  void operator()(const TradeSummaryEvent& event) override {
+  void operator()(const Event<TradeSummary>& event) override {
     // only verbose logging, see comment above
     VLOG(1)(
         FMT_STRING(R"([{}:{}] TradeSummary={})"),
         event.message_info.source,
         event.message_info.source_name,
-        event.trade_summary);
+        event.value);
   }
 
  private:
