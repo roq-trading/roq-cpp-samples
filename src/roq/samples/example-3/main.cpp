@@ -299,12 +299,12 @@ class Instrument final {
     check_ready();
   }
 
-  void operator()(const MarketByPrice& market_by_price) {
-    assert(_exchange.compare(market_by_price.exchange) == 0);
-    assert(_symbol.compare(market_by_price.symbol) == 0);
+  void operator()(const MarketByPriceUpdate& market_by_price_update) {
+    assert(_exchange.compare(market_by_price_update.exchange) == 0);
+    assert(_symbol.compare(market_by_price_update.symbol) == 0);
     LOG_IF(INFO, _download)(
-        FMT_STRING(R"(MarketByPrice={})"),
-        market_by_price);
+        FMT_STRING(R"(MarketByPriceUpdate={})"),
+        market_by_price_update);
     // update depth
     // note!
     //   market by price only gives you *changes*.
@@ -313,7 +313,7 @@ class Instrument final {
     //   liquidity.
     //   the depth builder helps you maintain a correct view of
     //   the order book.
-    _depth_builder->update(market_by_price);
+    _depth_builder->update(market_by_price_update);
     VLOG(1)(
         FMT_STRING(R"([{}:{}] depth=[{}])"),
         _exchange,
@@ -322,12 +322,12 @@ class Instrument final {
     validate(_depth);
   }
 
-  void operator()(const MarketByOrder& market_by_order) {
-    assert(_exchange.compare(market_by_order.exchange) == 0);
-    assert(_symbol.compare(market_by_order.symbol) == 0);
+  void operator()(const MarketByOrderUpdate& market_by_order_update) {
+    assert(_exchange.compare(market_by_order_update.exchange) == 0);
+    assert(_symbol.compare(market_by_order_update.symbol) == 0);
     LOG_IF(INFO, _download)(
-        FMT_STRING(R"(MarketByOrder={})"),
-        market_by_order);
+        FMT_STRING(R"(MarketByOrderUpdate={})"),
+        market_by_order_update);
     // update depth
     // note!
     //   market by order only gives you *changes*.
@@ -337,7 +337,7 @@ class Instrument final {
     //   the depth builder helps you maintain a correct view of
     //   the order book.
     /*
-    _depth_builder->update(market_by_order);
+    _depth_builder->update(market_by_order_update);
     VLOG(1)(
         FMT_STRING(R"([{}:{}] depth=[{}])"),
         _exchange,
@@ -694,7 +694,7 @@ class Strategy final : public client::Handler {
   void operator()(const MarketStatusEvent& event) override {
     dispatch(event);
   }
-  void operator()(const MarketByPriceEvent& event) override {
+  void operator()(const MarketByPriceUpdateEvent& event) override {
     dispatch(event);
   }
   void operator()(const OrderAckEvent& event) override {

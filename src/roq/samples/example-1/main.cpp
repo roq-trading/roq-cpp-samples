@@ -136,21 +136,21 @@ class Strategy final : public client::Handler {
         event.message_info.source_name,
         event.market_status);
   }
-  void operator()(const MarketByPriceEvent& event) override {
+  void operator()(const MarketByPriceUpdateEvent& event) override {
     // only verbose logging, see comment above
     VLOG(1)(
-        FMT_STRING(R"([{}:{}] MarketByPrice={})"),
+        FMT_STRING(R"([{}:{}] MarketByPriceUpdate={})"),
         event.message_info.source,
         event.message_info.source_name,
-        event.market_by_price);
+        event.market_by_price_update);
   }
-  void operator()(const MarketByOrderEvent& event) override {
+  void operator()(const MarketByOrderUpdateEvent& event) override {
     // only verbose logging, see comment above
     VLOG(1)(
-        FMT_STRING(R"([{}:{}] MarketByOrder={})"),
+        FMT_STRING(R"([{}:{}] MarketByOrderUpdate={})"),
         event.message_info.source,
         event.message_info.source_name,
-        event.market_by_order);
+        event.market_by_order_update);
   }
   void operator()(const TradeSummaryEvent& event) override {
     // only verbose logging, see comment above
