@@ -177,8 +177,8 @@ class Instrument final {
     }
   }
 
-  void operator()(const ConnectionStatus& connection_status) {
-    if (update(_connection_status, connection_status)) {
+  void operator()(const Connection& connection) {
+    if (update(_connection_status, connection.status)) {
       LOG(INFO)(
           FMT_STRING(R"([{}:{}] connection_status={})"),
           _exchange,
@@ -186,7 +186,7 @@ class Instrument final {
           _connection_status);
       check_ready();
     }
-    switch (connection_status) {
+    switch (_connection_status) {
       case ConnectionStatus::UNDEFINED:
         LOG(FATAL)("Unexpected");
         break;
@@ -655,20 +655,20 @@ class Strategy final : public client::Handler {
   Strategy(Strategy&&) = default;
 
  protected:
-  void operator()(const client::TimerEvent& event) override {
+  void operator()(const Event<Timer>& event) override {
     // note! using system clock (*not* the wall clock)
-    if (event.now < _next_sample)
+    if (event.value.now < _next_sample)
       return;
     if (_next_sample.count())  // initialized?
       update_model();
     auto now = std::chrono::duration_cast<std::chrono::seconds>(
-        event.now);
+        event.value.now);
     _next_sample = now + std::chrono::seconds {
       FLAGS_sample_freq_secs
     };
     // possible extension: reset request timeout
   }
-  void operator()(const Event<ConnectionStatus>& event) override {
+  void operator()(const Event<Connection>& event) override {
     dispatch(event);
   }
   void operator()(const Event<DownloadBegin>& event) override {
@@ -832,17 +832,15 @@ class Controller final : public Application {
     Config config;
     std::vector<std::string> connections(argv + 1, argv + argc);
     if (FLAGS_simulation) {
-      // note! interface has not been finalised
-      auto generator =
-        client::detail::SimulationFactory::create_generator(
-            connections);
-        auto matcher = client::detail::SimulationFactory::create_matcher(
-            "simple",
-            FLAGS_exchange,
-            std::chrono::milliseconds{1},
-            std::chrono::milliseconds{1});
-        auto collector = client::detail::SimulationFactory::create_collector(
-            std::chrono::seconds{1});
+      auto generator = client::detail::SimulationFactory::create_generator(
+          connections);
+      auto matcher = client::detail::SimulationFactory::create_matcher(
+          "simple",
+          FLAGS_exchange,
+          std::chrono::milliseconds{1},
+          std::chrono::milliseconds{1});
+      auto collector = client::detail::SimulationFactory::create_collector(
+          std::chrono::seconds{1});
       client::Simulator(config, *generator, *matcher, *collector)
         .dispatch<Strategy>();
     } else {

@@ -121,8 +121,8 @@ class Instrument final {
     return _trading_status == TradingStatus::OPEN;
   }
 
-  void operator()(const ConnectionStatus& connection_status) {
-    if (update(_connection_status, connection_status)) {
+  void operator()(const Connection& connection) {
+    if (update(_connection_status, connection.status)) {
       LOG(INFO)(
           FMT_STRING(R"([{}:{}] connection_status={})"),
           _exchange,
@@ -130,7 +130,7 @@ class Instrument final {
           _connection_status);
       check_ready();
     }
-    switch (connection_status) {
+    switch (_connection_status) {
       case ConnectionStatus::UNDEFINED:
         LOG(FATAL)("Unexpected");
         break;
@@ -381,7 +381,7 @@ class Strategy final : public client::Handler {
   Strategy(Strategy&&) = default;
 
  protected:
-  void operator()(const Event<ConnectionStatus>& event) override {
+  void operator()(const Event<Connection>& event) override {
     dispatch(event);
   }
   void operator()(const Event<DownloadBegin>& event) override {
