@@ -4,6 +4,13 @@ All notable changes will be documented in this file.
 
 ## Head
 
+## 0.4.0 &ndash; 2020-06-30
+
+### Changed
+
+* New signature for all `Event` interfaces
+* Combined `{Daily|Session}Statistics` into `StatisticsUpdate`
+
 ## 0.3.9 &ndash; 2020-06-09
 
 ### Added
