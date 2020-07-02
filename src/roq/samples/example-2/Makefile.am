@@ -2,7 +2,6 @@ bin_PROGRAMS = roq-samples-example-2
 roq_samples_example_2_LDADD = \
 	$(PTHREAD_LIBS) \
 	$(ROQ_CLIENT_LIBS) \
-	$(ROQ_API_LIBS) \
 	$(ROQ_LOGGING_LIBS) \
 	$(FMT_LIBS) \
 	$(GFLAGS_LIBS)
