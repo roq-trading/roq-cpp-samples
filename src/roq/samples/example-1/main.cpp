@@ -89,49 +89,49 @@ class Strategy final : public client::Handler {
   //   for example, "export ROQ_v=1"
   void operator()(const Event<Connection>& event) override {
     LOG(INFO)(
-        FMT_STRING(R"([{}:{}] Connection={})"),
+        R"([{}:{}] Connection={})",
         event.message_info.source,
         event.message_info.source_name,
         event.value);
   }
   void operator()(const Event<DownloadBegin>& event) override {
     LOG(INFO)(
-        FMT_STRING(R"([{}:{}] DownloadBegin={})"),
+        R"([{}:{}] DownloadBegin={})",
         event.message_info.source,
         event.message_info.source_name,
         event.value);
   }
   void operator()(const Event<DownloadEnd>& event) override {
     LOG(INFO)(
-        FMT_STRING(R"([{}:{}] DownloadEnd={})"),
+        R"([{}:{}] DownloadEnd={})",
         event.message_info.source,
         event.message_info.source_name,
         event.value);
   }
   void operator()(const Event<MarketDataStatus>& event) override {
     LOG(INFO)(
-        FMT_STRING(R"([{}:{}] MarketDataStatus={})"),
+        R"([{}:{}] MarketDataStatus={})",
         event.message_info.source,
         event.message_info.source_name,
         event.value);
   }
   void operator()(const Event<OrderManagerStatus>& event) override {
     LOG(INFO)(
-        FMT_STRING(R"([{}:{}] OrderManagerStatus={})"),
+        R"([{}:{}] OrderManagerStatus={})",
         event.message_info.source,
         event.message_info.source_name,
         event.value);
   }
   void operator()(const Event<ReferenceData>& event) override {
     LOG(INFO)(
-        FMT_STRING(R"([{}:{}] ReferenceData={})"),
+        R"([{}:{}] ReferenceData={})",
         event.message_info.source,
         event.message_info.source_name,
         event.value);
   }
   void operator()(const Event<MarketStatus>& event) override {
     LOG(INFO)(
-        FMT_STRING(R"([{}:{}] MarketStatus={})"),
+        R"([{}:{}] MarketStatus={})",
         event.message_info.source,
         event.message_info.source_name,
         event.value);
@@ -139,7 +139,7 @@ class Strategy final : public client::Handler {
   void operator()(const Event<MarketByPriceUpdate>& event) override {
     // only verbose logging, see comment above
     VLOG(1)(
-        FMT_STRING(R"([{}:{}] MarketByPriceUpdate={})"),
+        R"([{}:{}] MarketByPriceUpdate={})",
         event.message_info.source,
         event.message_info.source_name,
         event.value);
@@ -147,7 +147,7 @@ class Strategy final : public client::Handler {
   void operator()(const Event<MarketByOrderUpdate>& event) override {
     // only verbose logging, see comment above
     VLOG(1)(
-        FMT_STRING(R"([{}:{}] MarketByOrderUpdate={})"),
+        R"([{}:{}] MarketByOrderUpdate={})",
         event.message_info.source,
         event.message_info.source_name,
         event.value);
@@ -155,7 +155,7 @@ class Strategy final : public client::Handler {
   void operator()(const Event<TradeSummary>& event) override {
     // only verbose logging, see comment above
     VLOG(1)(
-        FMT_STRING(R"([{}:{}] TradeSummary={})"),
+        R"([{}:{}] TradeSummary={})",
         event.message_info.source,
         event.message_info.source_name,
         event.value);
