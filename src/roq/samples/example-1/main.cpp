@@ -8,7 +8,6 @@
 #include "roq/client.h"
 
 #include "roq/logging.h"
-#include "roq/format.h"
 
 // command line options
 
