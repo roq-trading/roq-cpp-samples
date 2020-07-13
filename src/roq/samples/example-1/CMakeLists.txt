@@ -18,3 +18,5 @@ target_link_libraries("${TARGET_NAME}"
   fmt::fmt
   gflags
 )
+
+install(TARGETS ${TARGET_NAME})
