@@ -1,7 +1,11 @@
 # vim
+
 *.swp
+*.swo
+
 
 # autotools
+
 Makefile
 Makefile.in
 aclocal.m4
@@ -9,45 +13,35 @@ config.status
 configure
 config.log
 libtool
+
+.deps/
+.libs/
+
 autom4te.cache/
 m4/
 build-aux/
-.deps/
-.libs/
+
 *.Plo
 *.la
 *.lo
+*.o
+
+*.tar.*
+
 
 # cmake
-Makefile
+
 CMakeCache.txt
-CMakeFiles/
-*.cmake
-lib/
+
+build/
+
 
 # gtest
+
 *.log
 *.trs
 
-# build output
-*.o
-*.a
-*.so
-*.tar.*
-roq-samples.pc
-roq-samples-*
 
 # debug files
+
 *.sock
-
-# jupyter
-.ipynb_checkpoints/
-
-# doxygen
-doc/Doxyfile
-doc/doxygen-build.stamp
-doc/html
-doc/xml
-
-# results
-*.csv

@@ -1,21 +1,17 @@
-cmake_minimum_required(VERSION 3.0)
+set(TARGET_NAME "${PROJECT_NAME}-test")
 
-project(test)
-
-add_executable(roq-samples-test
+add_executable("${TARGET_NAME}"
   main.cpp
 )
 
-target_include_directories(roq-samples-test PUBLIC
-  ${ROQ_API_INCLUDE_DIR}
-  ${ROQ_CLIENT_INCLUDE_DIR}
+target_include_directories("${TARGET_NAME}" PUBLIC
+  ${ROQ_API_INCLUDE_DIRS}
+  ${ROQ_CLIENT_INCLUDE_DIRS}
 )
 
-target_link_libraries(roq-samples-test
-  ${CMAKE_THREAD_LIBS_INIT}
-  ${ROQ_API_LIBS}
-  ${ROQ_CLIENT_LIBS}
+target_link_libraries("${TARGET_NAME}"
+  ${ROQ_CLIENT_LIBRARIES}
   gtest_main
 )
 
-add_test (NAME roq-samples-test COMMAND roq-samples-test)
+add_test(NAME "${TARGET_NAME}" COMMAND "${TARGET_NAME}")

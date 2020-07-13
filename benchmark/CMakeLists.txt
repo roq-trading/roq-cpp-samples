@@ -1,18 +1,15 @@
-cmake_minimum_required(VERSION 3.0)
+set(TARGET_NAME "${PROJECT_NAME}-benchmark")
 
-project(benchmark)
-
-add_executable(roq-samples-benchmark
+add_executable("${TARGET_NAME}"
   main.cpp
 )
 
-target_include_directories(roq-samples-benchmark PUBLIC
-  ${ROQ_API_INCLUDE_DIR}
-  ${ROQ_CLIENT_INCLUDE_DIR}
+target_include_directories("${TARGET_NAME}" PUBLIC
+  ${ROQ_API_INCLUDE_DIRS}
+  ${ROQ_CLIENT_INCLUDE_DIRS}
 )
 
-target_link_libraries(roq-samples-benchmark
-  ${CMAKE_THREAD_LIBS_INIT}
-  ${ROQ_API_LIBS}
-  ${ROQ_CLIENT_LIBS}
+target_link_libraries("${TARGET_NAME}"
+  ${ROQ_CLIENT_LIBRARIES}
+  benchmark::benchmark
 )

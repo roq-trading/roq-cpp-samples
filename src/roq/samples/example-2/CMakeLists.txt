@@ -1,26 +1,20 @@
-cmake_minimum_required(VERSION 3.0)
+set(TARGET_NAME "${PROJECT_NAME}-example-2")
 
-project(example-2)
-
-add_executable(roq-samples-example-2
+add_executable("${TARGET_NAME}"
   main.cpp
 )
 
-target_include_directories(roq-samples-example-2 PUBLIC
-  ${LIBUNWIND_INCLUDE_DIR}
-  ${LIBEVENT_INCLUDE_DIR}
-  ${GFLAGS_INCLUDE_DIR}
-  ${ROQ_LOGGING_INCLUDE_DIR}
-  ${ROQ_API_INCLUDE_DIR}
-  ${ROQ_CLIENT_INCLUDE_DIR}
+target_include_directories("${TARGET_NAME}" PUBLIC
+  ${GFLAGS_INCLUDE_DIRS}
+  ${FMT_INCLUDE_DIRS}
+  ${ROQ_LOGGING_INCLUDE_DIRS}
+  ${ROQ_API_INCLUDE_DIRS}
+  ${ROQ_CLIENT_INCLUDE_DIRS}
 )
 
-target_link_libraries(roq-samples-example-2
-  ${CMAKE_THREAD_LIBS_INIT}
-  ${LIBUNWIND_LIBS}
-  ${LIBEVENT_LIBS}
-  ${GFLAGS_LIBS}
-  ${ROQ_LOGGING_LIBS}
-  ${ROQ_API_LIBS}
-  ${ROQ_CLIENT_LIBS}
+target_link_libraries("${TARGET_NAME}"
+  ${ROQ_CLIENT_LIBRARIES}
+  ${ROQ_LOGGING_LIBRARIES}
+  fmt::fmt
+  gflags
 )

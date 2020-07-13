@@ -1,44 +1,65 @@
-cmake_minimum_required(VERSION 3.1)
+cmake_minimum_required(VERSION 3.12)
+
+# cmake
+
+set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
+
+# project (note! no version)
 
 project(roq-samples)
 
-set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
+# conda
 
 if(DEFINED ENV{CONDA_PREFIX})
   set(CMAKE_INSTALL_PREFIX $ENV{CONDA_PREFIX})
   set(CMAKE_FIND_ROOT_PATH $ENV{CONDA_PREFIX})
 endif()
 
-project(${PACKAGE_NAME} CXX)
+# rpath
+
+set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
+
+# c++
+
 set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
 
-set(CMAKE_BUILD_WITH_INSTALL_RPATH TRUE)
-set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
+# dependencies
 
-include_directories("${CMAKE_CURRENT_SOURCE_DIR}/src")
-
-find_package(Threads REQUIRED)
-find_package(Gflags REQUIRED)
-find_package(Libevent REQUIRED)
-find_package(Libunwind REQUIRED)
-find_package(RoqLogging REQUIRED)
 find_package(RoqApi REQUIRED)
 find_package(RoqClient REQUIRED)
+find_package(RoqLogging REQUIRED)
+find_package(fmt REQUIRED)
+find_package(gflags REQUIRED)
 
-option(BUILD_BENCHMARK "Enable benchmark" OFF)
+# TODO(thraneh): when cmake is used for conda packaging
+# find_package(roq-api REQUIRED)
+# find_package(roq-client REQUIRED)
+# find_package(roq-logging REQUIRED)
 
-if(BUILD_BENCHMARK)
-  find_package(Benchmark REQUIRED)
-  add_subdirectory(benchmark)
-endif(BUILD_BENCHMARK)
+# sub-projects
 
-add_subdirectory(src)
+add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/src/roq/samples/example-1")
+add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/src/roq/samples/example-2")
+add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/src/roq/samples/example-3")
 
-option(BUILD_TEST "Enable test" OFF)
+# test
 
-if(BUILD_TEST)
-  add_subdirectory(third_party/googletest/googletest)
+option(ROQ_SAMPLES_TEST "Enable test" OFF)
+
+if(ROQ_SAMPLES_TEST)
+  include(GoogleTest)
+  add_subdirectory("${CMAKE_SOURCE_DIR}/third_party/googletest" EXCLUDE_FROM_ALL)
   enable_testing()
-  include_directories(${gtest_SOURCE_DIR}/include ${gtest_SOURCE_DIR})
-  add_subdirectory(test)
-endif(BUILD_TEST)
+  add_subdirectory("${CMAKE_SOURCE_DIR}/test")
+endif(ROQ_SAMPLES_TEST)
+
+# benchmark
+
+option(ROQ_SAMPLES_BENCHMARK "Enable benchmark" OFF)
+
+if(ROQ_SAMPLES_BENCHMARK)
+  find_package(benchmark REQUIRED)
+  add_subdirectory("${CMAKE_SOURCE_DIR}/benchmark")
+endif(ROQ_SAMPLES_BENCHMARK)
