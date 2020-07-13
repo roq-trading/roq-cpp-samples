@@ -46,18 +46,19 @@ add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/src/roq/samples/example-3")
 
 # test
 
-option(ROQ_SAMPLES_TEST "Enable test" OFF)
+if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
+  include(CTest)
+endif()
 
-if(ROQ_SAMPLES_TEST)
+if(BUILD_TESTING)
   include(GoogleTest)
   add_subdirectory("${CMAKE_SOURCE_DIR}/third_party/googletest" EXCLUDE_FROM_ALL)
-  enable_testing()
   add_subdirectory("${CMAKE_SOURCE_DIR}/test")
-endif(ROQ_SAMPLES_TEST)
+endif(BUILD_TESTING)
 
 # benchmark
 
-option(ROQ_SAMPLES_BENCHMARK "Enable benchmark" OFF)
+option(ROQ_SAMPLES_BENCHMARK "Enable benchmark" ON)
 
 if(ROQ_SAMPLES_BENCHMARK)
   find_package(benchmark REQUIRED)
