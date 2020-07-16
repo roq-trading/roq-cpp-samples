@@ -164,7 +164,7 @@ The gateway is started like this
 roq-deribit \
     --name "deribit" \
     --config-file deribit.toml \
-    --listen ~/deribit.sock
+    ---client-listen-address ~/deribit.sock
 ```
 
 #### [Coinbase Pro](https://roq-trading.com/docs/gateways/deribit/index.html)
@@ -199,7 +199,7 @@ Start
 roq-coinbase-pro \
     --name "coinbase-pro" \
     --config-file coinbase-pro.toml \
-    --listen ~/coinbase-pro.sock
+    ---client-listen-address ~/coinbase-pro.sock
 ```
 
 
