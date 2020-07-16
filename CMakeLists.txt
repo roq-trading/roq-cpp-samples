@@ -10,7 +10,7 @@ project(roq-samples)
 
 # conda
 
-if(DEFINED ENV{CONDA_PREFIX})
+if(DEFINED ENV{CONDA_PREFIX} AND NOT DEFINED ENV{CONDA_BUILD})
   set(CMAKE_INSTALL_PREFIX $ENV{CONDA_PREFIX})
   set(CMAKE_FIND_ROOT_PATH $ENV{CONDA_PREFIX})
 endif()
@@ -27,16 +27,11 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 # dependencies
 
-find_package(RoqApi REQUIRED)
-find_package(RoqClient REQUIRED)
-find_package(RoqLogging REQUIRED)
 find_package(fmt REQUIRED)
 find_package(gflags REQUIRED)
-
-# TODO(thraneh): when cmake is used for conda packaging
-# find_package(roq-api REQUIRED)
-# find_package(roq-client REQUIRED)
-# find_package(roq-logging REQUIRED)
+find_package(roq-api REQUIRED)
+find_package(roq-client REQUIRED)
+find_package(roq-logging REQUIRED)
 
 # sub-projects
 

@@ -4,13 +4,8 @@ add_executable("${TARGET_NAME}"
   main.cpp
 )
 
-target_include_directories("${TARGET_NAME}" PUBLIC
-  ${ROQ_API_INCLUDE_DIRS}
-  ${ROQ_CLIENT_INCLUDE_DIRS}
-)
-
 target_link_libraries("${TARGET_NAME}"
-  ${ROQ_CLIENT_LIBRARIES}
+  roq-client::roq-client
   gtest_main
 )
 
