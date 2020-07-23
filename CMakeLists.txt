@@ -1,11 +1,5 @@
 cmake_minimum_required(VERSION 3.12)
 
-# cmake
-
-set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
-
-# project (note! no version)
-
 project(roq-samples)
 
 # conda
@@ -53,9 +47,9 @@ endif(BUILD_TESTING)
 
 # benchmark
 
-option(ROQ_SAMPLES_BENCHMARK "Enable benchmark" ON)
+option(BUILD_BENCHMARK "Enable benchmark" ON)
 
-if(ROQ_SAMPLES_BENCHMARK)
+if(BUILD_BENCHMARK)
   find_package(benchmark REQUIRED)
   add_subdirectory("${CMAKE_SOURCE_DIR}/benchmark")
-endif(ROQ_SAMPLES_BENCHMARK)
+endif(BUILD_BENCHMARK)
