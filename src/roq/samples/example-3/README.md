@@ -15,8 +15,8 @@ generate a signal when the directional move reverts.
 
 ## Prerequisites
 
-Please refer to the top-level [README](../../../README.md) to install, configure
-and launch the required market gateways.
+Please refer [here](../../../../README.md#gateways-install-configure-run) to
+install, configure and run the required market gateways.
 
 
 ## Using
