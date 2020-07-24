@@ -76,10 +76,10 @@ make -j4
   * Live trading
 
 
-### Event Logs (install)
+### Simulation Data (install)
 
-Simulation requires you to either capture your own event logs (automatically
-done by the gateways) or use sample data
+Simulation requires you to either use your own event logs (automatically
+captured when you're running a gateway) or use sample data
 
 ```bash
 conda install -y --channel https://roq-trading.com/conda/stable \
@@ -150,7 +150,7 @@ secret = "YOUR_COINBASE_PRO_SECRET_GOES_HERE"
 
 Launch the gateway
 
-```
+```bash
 roq-coinbase-pro \
     --name "coinbase-pro" \
     --config-file coinbase-pro.toml \

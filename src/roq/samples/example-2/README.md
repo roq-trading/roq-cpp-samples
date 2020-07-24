@@ -1,27 +1,23 @@
 # Example 2
 
-## Objective
-
-* Demonstrate how to maintain state and update a simple model
-
-## What does it do?
+Demonstrates how to maintain state and update a simple model.
 
 * Extends `example-1`
 * Cache instrument specific information (such as tick size)
 * Process MarketByPrice and maintain a view of depth
 * Compute weighted average price and exponential moving average
 
-## Requirements
+## Prerequisites
 
-The example requires access to one or more market gateways running
-on the same host.
+Please refer to the top-level [README](../../../README.md) to install, configure
+and launch the required market gateways.
 
-## How to use
 
-Example:
+## Using
 
 ```bash
-./roq-samples-example-2 --name "example-2" \
+./roq-samples-example-2 \
+    --name "example-2" \
     ~/deribit.sock \
     ~/coinbase-pro.sock
 ```

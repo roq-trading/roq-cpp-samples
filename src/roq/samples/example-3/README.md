@@ -1,71 +1,57 @@
 # Example 3
 
-## Objective
-
-* Demonstrates how to place limit orders upon
-  model signal
-
-## What does it do?
+Demonstrates how to place limit orders based on model signal.
 
 * Extends `example-2`
-* Keeps track of order updates and maintain
-  long/short positions
-* Places limit orders, subject to position,
-  when the model generates signals
+* Keeps track of order updates and maintain long/short positions
+* Places limit orders, subject to position, when the model generates a signal
 
-The model tries to detect sharp moves (perhaps
-significant order flow) and will generate a signal
-when the directional move reverts.
+The model tries to detect sharp moves (perhaps significant order flow) and will
+generate a signal when the directional move reverts.
 
-> The model is very simplistic and the parameters
-> have not been optimized:
-> don't use this for any real trading!
+> The model is very simplistic and the parameters have not been optimized:
+> do **not** use this for any real trading!
 
 
-## Requirements
+## Prerequisites
 
-The example requires access to a market gateway
-running on the same host.
+Please refer to the top-level [README](../../../README.md) to install, configure
+and launch the required market gateways.
 
-## How to use
 
-Historical simulation (back-testing) is very useful
-to verify the performance of a trading strategy
+## Using
 
-For this example, make sure you have installed the
-Deribit sample dataset
+Historical simulation (back-testing) is very useful to verify the performance of
+a trading strategy
+
+For this example, make sure you have installed the `roq-data` conda package.
+
+Simulation is controlled by the `--simulation` flag
 
 ```bash
-conda install -y roq-data
-```
-
-For this example, simulation is triggered by
-providing the `--simulation` flag and a path
-to a captured event log
-
-```bash
-./roq-samples-example-3 --name "example-3" \
+./roq-samples-example-3 \
+    --name "example-3" \
     --simulation \
     $CONDA_PREFIX/share/roq/data/deribit.roq
 ```
 
-You can enable the placement of limit orders by
-adding the `--enable-trading` flag
+Placement of limit orders is controlled by the `--enable-trading` flag
 
 ```bash
-./roq-samples-example-3 --name "example-3" \
+./roq-samples-example-3 \
+    --name "example-3" \
     --simulation \
     $CONDA_PREFIX/share/roq/data/deribit.roq \
     --enable-trading
 ```
 
-Finally, connecting to a gateway is similar
-to previous examples
+Switching to live trading
 
 ```bash
-./roq-samples-example-3 --name "example-3" \
+./roq-samples-example-3 \
+    --name "example-3" \
     ~/deribit.sock
 ```
 
-Add the `--enable-trading` flag if you want
-orders to be sent to the market.
+Then add the `--enable-trading` flag if you really want orders to be placed on
+the market.
