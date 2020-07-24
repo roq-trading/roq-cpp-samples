@@ -56,7 +56,6 @@ option(BUILD_DOCS "Enable doxygen" OFF)
 if(BUILD_DOCS)
   find_package(Doxygen)
   add_subdirectory("${CMAKE_SOURCE_DIR}/doxygen")
-  # add_dependencies(${PROJECT_NAME} ${PROJECT_NAME}-doxygen)
 endif(BUILD_DOCS)
 
 # benchmark
