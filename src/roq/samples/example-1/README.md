@@ -125,8 +125,8 @@ I0724 16:14:38.176622 19897 service.cpp:39] The metrics service will *not* be st
 I0724 16:14:38.181753 19897 controller.cpp:108] Dispatching...
 I0724 16:14:38.181802 19897 controller.cpp:112] Starting event loop thread...
 I0724 16:14:38.182142 19898 controller.cpp:148] Event loop thread is now running
-I0724 16:14:39.182242 19898 session_manager.cpp:44] Connecting "unix:///home/thraneh/dev/roq-dev/roq-coinbase-pro/src/roq/coinbase/coinbase-pro-sandbox.sock"
-I0724 16:14:39.182332 19898 session_manager.cpp:44] Connecting "unix:///home/thraneh/dev/roq-dev/roq-deribit/src/roq/deribit/deribit-test.sock"
+I0724 16:14:39.182242 19898 session_manager.cpp:44] Connecting "unix:///home/thraneh/coinbase-pro.sock"
+I0724 16:14:39.182332 19898 session_manager.cpp:44] Connecting "unix:///home/thraneh/deribit.sock"
 I0724 16:14:39.182434 19898 session.cpp:38] Adding name="coinbase-pro" (user_id=3)
 I0724 16:14:39.182473 19897 pollster.cpp:403] Adding name="coinbase-pro" (user_id=3)
 I0724 16:14:39.182492 19897 main.cpp:90] [1:coinbase-pro] Connection={status=CONNECTED}
@@ -155,5 +155,5 @@ I0724 16:14:39.183456 19897 main.cpp:104] [0:deribit] DownloadEnd={account="", m
 
 Noteworthy observations
 
-* The download phase is per gateway and must be managed as such. In particular,
-  it is possible that multiple downloads can simultaneously be in progress.
+* Download is per gateway and must be managed as such. In particular, it is
+  possible that multiple downloads can simultaneously be in progress.
