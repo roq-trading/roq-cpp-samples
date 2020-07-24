@@ -19,6 +19,10 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
+# filesystem
+
+include(GNUInstallDirs)
+
 # dependencies
 
 find_package(fmt REQUIRED)
@@ -44,6 +48,16 @@ if(BUILD_TESTING)
   add_subdirectory("${CMAKE_SOURCE_DIR}/third_party/googletest" EXCLUDE_FROM_ALL)
   add_subdirectory("${CMAKE_SOURCE_DIR}/test")
 endif(BUILD_TESTING)
+
+# doxygen
+
+option(BUILD_DOCS "Enable doxygen" OFF)
+
+if(BUILD_DOCS)
+  find_package(Doxygen)
+  add_subdirectory("${CMAKE_SOURCE_DIR}/doxygen")
+  # add_dependencies(${PROJECT_NAME} ${PROJECT_NAME}-doxygen)
+endif(BUILD_DOCS)
 
 # benchmark
 
