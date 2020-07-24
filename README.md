@@ -1,21 +1,64 @@
-# Roq Trading Solutions
-
-*A C++ HFT Toolkit for Algo Traders*
+# roq-samples
 
 
-## What is it?
+A collection of samples meant to demonstrate some features of the Roq API.
 
-A collection of examples meant to demonstrate
-some features of 
-`roq-client` and
-[`roq-api`](https://github.com/roq-trading/roq-api).
+Direct third-party dependencies
+
+* [fmt](https://github.com/fmtlib/fmt) (MIT License)
+* [gflags](https://github.com/gflags/gflags) (BDS 3-Clause License)
 
 
-## Overview
+## Operating Systems
 
-The examples will demonstrate the increasing levels
-of complexity required to implement a real, fully
-autonomous, trading strategy
+* Linux
+
+
+## Prerequisites
+
+The library is designed to be compatible with the conda package manager.
+
+This is one way to create a conda environment and install the required
+packages
+
+```bash
+wget -N https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh
+
+bash Miniconda3-latest-Linux-x86_64.sh -b -u -p ~/miniconda3
+
+source ~/miniconda3/bin/activate
+
+conda install -y \
+    git \
+    cmake \
+    gxx_linux-64 \
+    gdb_linux-64
+
+conda install -y --channel https://roq-trading.com/conda/stable \
+    roq-api \
+    roq-logging \
+    roq-client
+```
+
+
+## Building
+
+```bash
+git submodule update --init --recursive
+
+cmake \
+    -DCMAKE_AR="$AR" \
+    -DCMAKE_RANLIB="$RANLIB" \
+    -DCMAKE_NM="$NM" \
+    -DCMAKE_BUILD_TYPE=Debug \
+    -DBUILD_TESTING=ON \
+    .
+
+make -j4
+```
+
+
+## Using
 
 * [Example 1](./src/roq/samples/example-1/README.md)
   * Connect to market gateway
@@ -33,134 +76,48 @@ autonomous, trading strategy
   * Live trading
 
 
-## Constraints
+### Event Logs (install)
 
-* **Linux**
-  * RHEL, CentOS, Debian, Ubuntu
-* **C++17**
-  * Conda's GCC
+Simulation requires you to either capture your own event logs (automatically
+done by the gateways) or use sample data
 
-## Conda
-
-Download the Miniconda Installer
-
-```
-wget -N https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh
+```bash
+conda install -y --channel https://roq-trading.com/conda/stable \
+    roq-data
 ```
 
-Install Miniconda
+Data can now be found in the `$CONDA_PREFIX/share/roq/data/` directory.
 
-```
-bash Miniconda3-latest-Linux-x86_64.sh -b -u -p ~/miniconda3
-```
 
-Add roq-trading as a channel
+### Gateways (install, configure, run)
 
-```
-cat > ~/miniconda3/.condarc << EOF
-channels:
-  - https://roq-trading.com/conda/stable
-  - defaults
-  - conda-forge
-EOF
-```
-
-Activate Miniconda
-
-```
-source ~/miniconda3/bin/activate
-```
-
-Install dev tools
-
-```
-conda install -y git cmake gxx_linux-64 gdb_linux-64
-```
-
-## Build
-
-Update git submodules
-
-```
-git submodule update --init --recursive
-```
-
-Install `roq-client`
-
-```
-conda install -y roq-client
-```
-
-Run CMake
-
-```
-cmake \
-    -DCMAKE_AR="$AR" \
-    -DCMAKE_RANLIB="$RANLIB" \
-    -DCMAKE_NM="$NM" \
-    -DCMAKE_BUILD_TYPE=Debug
-```
-
-> Remove the CMakeCache.txt file, if you must
-> repeat any of the previous steps.
-
-Compile the project
-
-```
-make -j4
-```
-
-## Dependencies
-
-### Data
-
-Download Roq sample data
-
-```
-conda install -y roq-data
-```
-
-This will install an "event log" to
-`$CONDA_PREFIX/share/roq/data/deribit.roq`.
-You can use this for historical simulations.
-
-> Many thanks to Deribit for giving their permission
-> to distributing this small dataset.
-
-### Gateway
-
-*A gateway may require a license file.
-Please [contact us](mailto:info@roq-trading.com)
-if you have any questions*.
 
 #### [Deribit](https://roq-trading.com/docs/gateways/deribit/index.html)
 
-Download the Deribit gateway
-
+```bash
+conda install -y --channel https://roq-trading.com/conda/stable \
+    roq-deribit
 ```
-conda install -y roq-deribit
-```
 
-Make a copy of the default configuration template
+It is easiest to start from a config file template
 
-```
+```bash
 cp $CONDA_PREFIX/share/roq/deribit/config.toml ./deribit.toml
 ```
 
-You must edit this file and update with your
-Deribit API credentials
+Edit this file and update with your Deribit API credentials
 ([link](https://test.deribit.com/main#/account?scrollTo=api)).
 
-You should look for these lines and replace
+You should look for these lines and replace as appropriate
 
-```
+```text
 login = "YOUR_DERIBIT_LOGIN_GOES_HERE"
 secret = "YOUR_DERIBIT_SECRET_GOES_HERE"
 ```
 
-The gateway is started like this
+Launch the gateway
 
-```
+```bash
 roq-deribit \
     --name "deribit" \
     --config-file deribit.toml \
@@ -169,31 +126,29 @@ roq-deribit \
 
 #### [Coinbase Pro](https://roq-trading.com/docs/gateways/deribit/index.html)
 
-Coinbase Pro is almost identical
-
-Install
-
-```
-conda install -y roq-coinbase-pro
+```bash
+conda install -y --channel https://roq-trading.com/conda/stable \
+    roq-coinbase-pro
 ```
 
-Copy default configuration template
+It is easiest to start from a config file template
 
-```
+```bash
 cp $CONDA_PREFIX/share/roq/coinbase-pro/config.toml ./coinbase-pro.toml
 ```
 
-You must edit this file and update with your
-Coinbase Pro API credentials
+Edit this file and update with your Coinbase Pro API credentials
 ([link](https://public.sandbox.pro.coinbase.com/profile/api)).
 
-```
+You should look for these lines and replace as appropriate
+
+```text
 login = "YOUR_COINBASE_PRO_API_KEY_GOES_HERE"
 password = "YOUR_COINBASE_PRO_PASSPHRASE_GOES_HERE"
 secret = "YOUR_COINBASE_PRO_SECRET_GOES_HERE"
 ```
 
-Start
+Launch the gateway
 
 ```
 roq-coinbase-pro \
@@ -201,7 +156,6 @@ roq-coinbase-pro \
     --config-file coinbase-pro.toml \
     ---client-listen-address ~/coinbase-pro.sock
 ```
-
 
 ## Links
 
