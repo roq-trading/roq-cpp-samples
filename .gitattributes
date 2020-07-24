@@ -1,2 +1,7 @@
-* linguist-vendored
+third_party/* linguist-vendored
+
+doxygen/Doxyfile.in linguist-vendored
+
 src/* linguist-vendored=false
+test/* linguist-vendored=false
+benchmark/* linguist-vendored=false
