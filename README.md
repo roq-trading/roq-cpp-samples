@@ -18,9 +18,6 @@ Direct third-party dependencies
 
 The project is designed to be compatible with the conda package manager.
 
-This is one way to create a conda environment and install the required
-packages
-
 ```bash
 wget -N https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh
 
@@ -147,6 +144,11 @@ roq-coinbase-pro \
     --config-file coinbase-pro.toml \
     ---client-listen-address ~/coinbase-pro.sock
 ```
+
+## License
+
+The project is released under the terms of the BSD 3-Clause license.
+
 
 ## Links
 
