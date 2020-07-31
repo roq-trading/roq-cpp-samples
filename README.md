@@ -109,7 +109,7 @@ Launch the gateway
 roq-deribit \
     --name "deribit" \
     --config-file deribit.toml \
-    ---client-listen-address ~/deribit.sock
+    --client-listen-address ~/deribit.sock
 ```
 
 #### [Coinbase Pro](https://roq-trading.com/docs/gateways/deribit/index.html)
@@ -142,7 +142,7 @@ Launch the gateway
 roq-coinbase-pro \
     --name "coinbase-pro" \
     --config-file coinbase-pro.toml \
-    ---client-listen-address ~/coinbase-pro.sock
+    --client-listen-address ~/coinbase-pro.sock
 ```
 
 ## License
