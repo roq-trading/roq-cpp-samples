@@ -108,7 +108,7 @@ Launch the gateway
 ```bash
 roq-deribit \
     --name "deribit" \
-    --config-file deribit.toml \
+    --config-file ~/deribit.toml \
     --client-listen-address ~/deribit.sock
 ```
 
@@ -141,7 +141,7 @@ Launch the gateway
 ```bash
 roq-coinbase-pro \
     --name "coinbase-pro" \
-    --config-file coinbase-pro.toml \
+    --config-file ~/coinbase-pro.toml \
     --client-listen-address ~/coinbase-pro.sock
 ```
 
