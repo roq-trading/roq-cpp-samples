@@ -700,7 +700,7 @@ class Strategy final : public client::Handler {
         R"(OrderAck={})",
         event.value);
     auto& order_ack = event.value;
-    if (is_complete(order_ack.status)) {
+    if (is_request_complete(order_ack.status)) {
       // possible extension: reset request timeout
     }
   }
@@ -710,7 +710,7 @@ class Strategy final : public client::Handler {
         event.value);
     dispatch(event);  // update position
     auto& order_update = event.value;
-    if (is_complete(order_update.status)) {
+    if (is_order_complete(order_update.status)) {
       _working_order_id = 0;
       _working_side = Side::UNDEFINED;
     }
