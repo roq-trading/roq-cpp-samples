@@ -5,7 +5,6 @@
 #include <cassert>
 
 #include <array>
-#include <vector>
 
 #include "roq/application.h"
 #include "roq/client.h"
@@ -433,15 +432,32 @@ class Controller final : public Application {
   using Application::Application;
 
  protected:
-  int main(int argc, char **argv) override {
-    if (argc == 2)
+  int main_helper(const roq::span<std::string_view>& args) {
+    assert(args.empty() == false);
+    if (args.size() == 1)
+      throw std::runtime_error("Expected arguments");
+    if (args.size() != 3)
       throw std::runtime_error(
           "Expected exactly two arguments: "
           "futures exchange then cash exchange");
     Config config;
-    std::vector<std::string> connections(argv + 1, argv + argc);
-    client::Trader(config, connections).dispatch<Strategy>();
+    // note!
+    //   gflags will have removed all flags and we're left with arguments
+    //   arguments should be a list of unix domain sockets
+    auto connections = args.subspan(1);
+    client::Trader(
+        config,
+        connections).dispatch<Strategy>();
     return EXIT_SUCCESS;
+  }
+
+  int main(int argc, char **argv) override {
+    // wrap arguments (prefer to not work with raw pointers)
+    std::vector<std::string_view> args;
+    args.reserve(argc);
+    for (int i = 0; i < argc; ++i)
+      args.emplace_back(argv[i]);
+    return main_helper(args);
   }
 };
 

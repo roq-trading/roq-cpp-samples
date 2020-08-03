@@ -7,7 +7,6 @@
 #include <algorithm>
 #include <array>
 #include <numeric>
-#include <vector>
 
 #include "roq/application.h"
 #include "roq/client.h"
@@ -824,11 +823,19 @@ class Controller final : public Application {
   using Application::Application;
 
  protected:
-  int main(int argc, char **argv) override {
-    if (argc == 1)
+  int main_helper(const roq::span<std::string_view>& args) {
+    assert(args.empty() == false);
+    if (args.size() == 1)
+      throw std::runtime_error("Expected arguments");
+    if (args.size() != 2)
       throw std::runtime_error("Expected exactly one argument");
     Config config;
-    std::vector<std::string> connections(argv + 1, argv + argc);
+    // note!
+    //   gflags will have removed all flags and we're left with arguments
+    //   arguments can be a list of either
+    //   * unix domain sockets (trading) or
+    //   * event logs (simulation)
+    auto connections = args.subspan(1);
     if (FLAGS_simulation) {
       auto generator = client::detail::SimulationFactory::create_generator(
           connections);
@@ -839,12 +846,26 @@ class Controller final : public Application {
           std::chrono::milliseconds{1});
       auto collector = client::detail::SimulationFactory::create_collector(
           std::chrono::seconds{1});
-      client::Simulator(config, *generator, *matcher, *collector)
-        .dispatch<Strategy>();
+      client::Simulator(
+          config,
+          *generator,
+          *matcher,
+          *collector).dispatch<Strategy>();
     } else {
-      client::Trader(config, connections).dispatch<Strategy>();
+      client::Trader(
+          config,
+          connections).dispatch<Strategy>();
     }
     return EXIT_SUCCESS;
+  }
+
+  int main(int argc, char **argv) override {
+    // wrap arguments (prefer to not work with raw pointers)
+    std::vector<std::string_view> args;
+    args.reserve(argc);
+    for (int i = 0; i < argc; ++i)
+      args.emplace_back(argv[i]);
+    return main_helper(args);
   }
 };
 
