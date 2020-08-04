@@ -837,21 +837,26 @@ class Controller final : public Application {
     //   * event logs (simulation)
     auto connections = args.subspan(1);
     if (FLAGS_simulation) {
-      auto generator = client::detail::SimulationFactory::create_generator(
-          connections);
+      // collector
+      auto snapshot_frequency = std::chrono::seconds{1};
+      auto collector = client::detail::SimulationFactory::create_collector(
+          snapshot_frequency);
+      // matcher
+      auto market_data_latency = std::chrono::milliseconds{1};
+      auto order_manager_latency = std::chrono::milliseconds{1};
       auto matcher = client::detail::SimulationFactory::create_matcher(
           "simple",
           FLAGS_exchange,
-          std::chrono::milliseconds{1},
-          std::chrono::milliseconds{1});
-      auto collector = client::detail::SimulationFactory::create_collector(
-          std::chrono::seconds{1});
+          market_data_latency,
+          order_manager_latency);
+      // simulator
       client::Simulator(
           config,
-          *generator,
-          *matcher,
-          *collector).dispatch<Strategy>();
+          connections,
+          *collector,
+          *matcher).dispatch<Strategy>();
     } else {
+      // trader
       client::Trader(
           config,
           connections).dispatch<Strategy>();

@@ -4,6 +4,10 @@ All notable changes will be documented in this file.
 
 ## Head
 
+### Changed
+
+* `example-3` using new simulator interface.
+
 ## 0.4.2 &ndash; 2020-07-27
 
 ### Removed
@@ -14,24 +18,24 @@ All notable changes will be documented in this file.
 
 ### Changed
 
-* CMake is now the default build system for all Roq solutions
+* CMake is now the default build system for all Roq solutions.
 
 ## 0.4.0 &ndash; 2020-06-30
 
 ### Changed
 
 * New signature for all `Event` interfaces
-* Combined `{Daily|Session}Statistics` into `StatisticsUpdate`
+* Combined `{Daily|Session}Statistics` into `StatisticsUpdate`.
 
 ## 0.3.9 &ndash; 2020-06-09
 
 ### Added
 
-* Linking to `roq-logging`
+* Linking to `roq-logging`.
 
 ### Removed
 
-* Linking to `roq-api` (now header-only)
+* Linking to `roq-api` (now header-only).
 
 ## 0.3.8 &ndash; 2020-06-06
 
