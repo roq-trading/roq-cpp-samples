@@ -160,5 +160,6 @@ The project is released under the terms of the BSD 3-Clause license.
 
 ## Links
 
-* [Documentation](https://roq-trading.com/docs)
+* [Roq GmbH](https://roq-trading.com/)
+* [Documentation](https://roq-trading.com/docs/)
 * [Contact us](mailto:info@roq-trading.com)
