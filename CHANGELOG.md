@@ -4,6 +4,8 @@ All notable changes will be documented in this file.
 
 ## Head
 
+## 0.4.3 &ndash; 2020-09-02
+
 ### Changed
 
 * `example-3` using new simulator interface.
