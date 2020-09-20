@@ -70,6 +70,8 @@ make -j4
   * Deal with order acks and updates
   * Historical simulation
   * Live trading
+* [Example 4](./src/roq/samples/example-4/README.md)
+  * Subscribe and nothing else
 
 
 ### Simulation Data (install)
