@@ -4,6 +4,12 @@ All notable changes will be documented in this file.
 
 ## Head
 
+## 0.4.4 &ndash; 2020-09-20
+
+### Added
+
+* `example-4` as a simple subscriber.
+
 ## 0.4.3 &ndash; 2020-09-02
 
 ### Changed
