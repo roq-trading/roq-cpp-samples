@@ -31,6 +31,10 @@ find_package(roq-api REQUIRED)
 find_package(roq-client REQUIRED)
 find_package(roq-logging REQUIRED)
 
+# include
+
+include_directories("${CMAKE_SOURCE_DIR}/src")
+
 # sub-projects
 
 add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/src/roq/samples/example-1")

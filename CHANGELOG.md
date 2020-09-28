@@ -6,6 +6,7 @@ All notable changes will be documented in this file.
 
 ### Changed
 
+* Refactored `example-3` for readability
 * Replaced `Application` with `Service`
 
 ## 0.4.4 &ndash; 2020-09-20
