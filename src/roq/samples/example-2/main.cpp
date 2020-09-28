@@ -6,9 +6,10 @@
 
 #include <array>
 
-#include "roq/application.h"
-#include "roq/client.h"
 #include "roq/logging.h"
+#include "roq/service.h"
+
+#include "roq/client.h"
 
 // command-line options
 
@@ -427,9 +428,9 @@ class Strategy final : public client::Handler {
 
 // application
 
-class Controller final : public Application {
+class Controller final : public Service {
  public:
-  using Application::Application;
+  using Service::Service;
 
  protected:
   int main_helper(const roq::span<std::string_view>& args) {

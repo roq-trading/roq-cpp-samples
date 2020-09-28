@@ -2,10 +2,10 @@
 
 #include <gflags/gflags.h>
 
-#include "roq/application.h"
-#include "roq/client.h"
-
 #include "roq/logging.h"
+#include "roq/service.h"
+
+#include "roq/client.h"
 
 DEFINE_string(exchange,
     "deribit",
@@ -121,9 +121,9 @@ class Strategy final : public client::Handler {
   client::Dispatcher& _dispatcher;
 };
 
-class Controller final : public Application {
+class Controller final : public Service {
  public:
-  using Application::Application;
+  using Service::Service;
 
  protected:
   int main_helper(const roq::span<std::string_view>& args) {
