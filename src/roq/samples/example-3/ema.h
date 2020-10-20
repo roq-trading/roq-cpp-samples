@@ -13,18 +13,14 @@ class EMA final {
  public:
   EMA(double alpha);
 
-  EMA(const EMA&) = delete;
-  EMA(EMA&&) = default;
+  EMA(const EMA &) = delete;
+  EMA(EMA &&) = default;
 
-  operator double() const {
-    return _value;
-  }
+  operator double() const { return _value; }
 
   void reset();
 
-  bool is_ready() const {
-    return _countdown == 0;
-  }
+  bool is_ready() const { return _countdown == 0; }
 
   double update(double value);
 

@@ -9,19 +9,18 @@
 
 // command line options
 
-DEFINE_string(deribit_exchange,
-    "deribit",
-    "name of the deribit exchange");
+DEFINE_string(deribit_exchange, "deribit", "name of the deribit exchange");
 
-DEFINE_string(deribit_symbols,
+DEFINE_string(
+    deribit_symbols,
     "BTC-\\d{2}\\D{3}\\d{2}",  // e.g. "BTC-27MAR20"
     "regex used to subscribe deribit symbols");
 
-DEFINE_string(coinbase_pro_exchange,
-    "coinbase-pro",
-    "name of the coinbase-pro exchange");
+DEFINE_string(
+    coinbase_pro_exchange, "coinbase-pro", "name of the coinbase-pro exchange");
 
-DEFINE_string(coinbase_pro_symbols,
+DEFINE_string(
+    coinbase_pro_symbols,
     "BTC-.*",  // e.g. "BTC-USD"
     "regex used to subscribe coinbase-pro symbols");
 
@@ -38,22 +37,20 @@ class Config final : public client::Config {
  public:
   Config() {}
 
-  Config(const Config&) = delete;
-  Config(Config&&) = default;
+  Config(const Config &) = delete;
+  Config(Config &&) = default;
 
  protected:
-  void dispatch(Handler& handler) const override {
+  void dispatch(Handler &handler) const override {
     // callback for each subscription pattern
-    handler(
-        client::Symbol {
-          .regex = FLAGS_deribit_symbols,
-          .exchange = FLAGS_deribit_exchange,
-        });
-    handler(
-        client::Symbol {
-          .regex = FLAGS_coinbase_pro_symbols,
-          .exchange = FLAGS_coinbase_pro_exchange,
-        });
+    handler(client::Symbol {
+        .regex = FLAGS_deribit_symbols,
+        .exchange = FLAGS_deribit_exchange,
+    });
+    handler(client::Symbol {
+        .regex = FLAGS_coinbase_pro_symbols,
+        .exchange = FLAGS_coinbase_pro_exchange,
+    });
   }
 };
 
@@ -67,12 +64,10 @@ class Config final : public client::Config {
 
 class Strategy final : public client::Handler {
  public:
-  explicit Strategy(client::Dispatcher& dispatcher)
-      : _dispatcher(dispatcher) {
-  }
+  explicit Strategy(client::Dispatcher &dispatcher) : _dispatcher(dispatcher) {}
 
-  Strategy(const Strategy&) = delete;
-  Strategy(Strategy&&) = default;
+  Strategy(const Strategy &) = delete;
+  Strategy(Strategy &&) = default;
 
  protected:
   // the following event handlers log every update as-is
@@ -84,82 +79,82 @@ class Strategy final : public client::Handler {
   // note!
   //   the ROQ_v environment variable defines the verbosity level
   //   for example, "export ROQ_v=1"
-  void operator()(const Event<Connection>& event) override {
-    LOG(INFO)(
-        R"([{}:{}] Connection={})",
-        event.message_info.source,
-        event.message_info.source_name,
-        event.value);
+  void operator()(const Event<Connection> &event) override {
+    LOG(INFO)
+    (R"([{}:{}] Connection={})",
+     event.message_info.source,
+     event.message_info.source_name,
+     event.value);
   }
-  void operator()(const Event<DownloadBegin>& event) override {
-    LOG(INFO)(
-        R"([{}:{}] DownloadBegin={})",
-        event.message_info.source,
-        event.message_info.source_name,
-        event.value);
+  void operator()(const Event<DownloadBegin> &event) override {
+    LOG(INFO)
+    (R"([{}:{}] DownloadBegin={})",
+     event.message_info.source,
+     event.message_info.source_name,
+     event.value);
   }
-  void operator()(const Event<DownloadEnd>& event) override {
-    LOG(INFO)(
-        R"([{}:{}] DownloadEnd={})",
-        event.message_info.source,
-        event.message_info.source_name,
-        event.value);
+  void operator()(const Event<DownloadEnd> &event) override {
+    LOG(INFO)
+    (R"([{}:{}] DownloadEnd={})",
+     event.message_info.source,
+     event.message_info.source_name,
+     event.value);
   }
-  void operator()(const Event<MarketDataStatus>& event) override {
-    LOG(INFO)(
-        R"([{}:{}] MarketDataStatus={})",
-        event.message_info.source,
-        event.message_info.source_name,
-        event.value);
+  void operator()(const Event<MarketDataStatus> &event) override {
+    LOG(INFO)
+    (R"([{}:{}] MarketDataStatus={})",
+     event.message_info.source,
+     event.message_info.source_name,
+     event.value);
   }
-  void operator()(const Event<OrderManagerStatus>& event) override {
-    LOG(INFO)(
-        R"([{}:{}] OrderManagerStatus={})",
-        event.message_info.source,
-        event.message_info.source_name,
-        event.value);
+  void operator()(const Event<OrderManagerStatus> &event) override {
+    LOG(INFO)
+    (R"([{}:{}] OrderManagerStatus={})",
+     event.message_info.source,
+     event.message_info.source_name,
+     event.value);
   }
-  void operator()(const Event<ReferenceData>& event) override {
-    LOG(INFO)(
-        R"([{}:{}] ReferenceData={})",
-        event.message_info.source,
-        event.message_info.source_name,
-        event.value);
+  void operator()(const Event<ReferenceData> &event) override {
+    LOG(INFO)
+    (R"([{}:{}] ReferenceData={})",
+     event.message_info.source,
+     event.message_info.source_name,
+     event.value);
   }
-  void operator()(const Event<MarketStatus>& event) override {
-    LOG(INFO)(
-        R"([{}:{}] MarketStatus={})",
-        event.message_info.source,
-        event.message_info.source_name,
-        event.value);
+  void operator()(const Event<MarketStatus> &event) override {
+    LOG(INFO)
+    (R"([{}:{}] MarketStatus={})",
+     event.message_info.source,
+     event.message_info.source_name,
+     event.value);
   }
-  void operator()(const Event<MarketByPriceUpdate>& event) override {
+  void operator()(const Event<MarketByPriceUpdate> &event) override {
     // only verbose logging, see comment above
-    VLOG(1)(
-        R"([{}:{}] MarketByPriceUpdate={})",
-        event.message_info.source,
-        event.message_info.source_name,
-        event.value);
+    VLOG(1)
+    (R"([{}:{}] MarketByPriceUpdate={})",
+     event.message_info.source,
+     event.message_info.source_name,
+     event.value);
   }
-  void operator()(const Event<MarketByOrderUpdate>& event) override {
+  void operator()(const Event<MarketByOrderUpdate> &event) override {
     // only verbose logging, see comment above
-    VLOG(1)(
-        R"([{}:{}] MarketByOrderUpdate={})",
-        event.message_info.source,
-        event.message_info.source_name,
-        event.value);
+    VLOG(1)
+    (R"([{}:{}] MarketByOrderUpdate={})",
+     event.message_info.source,
+     event.message_info.source_name,
+     event.value);
   }
-  void operator()(const Event<TradeSummary>& event) override {
+  void operator()(const Event<TradeSummary> &event) override {
     // only verbose logging, see comment above
-    VLOG(1)(
-        R"([{}:{}] TradeSummary={})",
-        event.message_info.source,
-        event.message_info.source_name,
-        event.value);
+    VLOG(1)
+    (R"([{}:{}] TradeSummary={})",
+     event.message_info.source,
+     event.message_info.source_name,
+     event.value);
   }
 
  private:
-  client::Dispatcher& _dispatcher;
+  client::Dispatcher &_dispatcher;
 };
 
 // Service is a base class used to initialize the environment
@@ -170,10 +165,9 @@ class Controller final : public Service {
   using Service::Service;
 
  protected:
-  int main_helper(const roq::span<std::string_view>& args) {
+  int main_helper(const roq::span<std::string_view> &args) {
     assert(args.empty() == false);
-    if (args.size() == 1)
-      throw std::runtime_error("Expected arguments");
+    if (args.size() == 1) throw std::runtime_error("Expected arguments");
     Config config;
     // note!
     //   gflags will have removed all flags and we're left with arguments
@@ -181,9 +175,7 @@ class Controller final : public Service {
     auto connections = args.subspan(1);
     // this strategy factory uses direct connectivity to one or more
     // market access gateways
-    client::Trader(
-        config,
-        connections).dispatch<Strategy>();
+    client::Trader(config, connections).dispatch<Strategy>();
     return EXIT_SUCCESS;
   }
 
@@ -191,8 +183,7 @@ class Controller final : public Service {
     // wrap arguments (prefer to not work with raw pointers)
     std::vector<std::string_view> args;
     args.reserve(argc);
-    for (int i = 0; i < argc; ++i)
-      args.emplace_back(argv[i]);
+    for (int i = 0; i < argc; ++i) args.emplace_back(argv[i]);
     return main_helper(args);
   }
 };
@@ -207,8 +198,6 @@ constexpr std::string_view DESCRIPTION = "Example 1 (Roq Samples)";
 
 int main(int argc, char **argv) {
   return roq::samples::example_1::Controller(
-      argc,
-      argv,
-      DESCRIPTION,
-      ROQ_VERSION).run();
+             argc, argv, DESCRIPTION, ROQ_VERSION)
+      .run();
 }

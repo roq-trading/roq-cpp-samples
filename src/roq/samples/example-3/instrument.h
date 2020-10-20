@@ -17,74 +17,58 @@ class Instrument final {
   using Depth = std::array<Layer, MAX_DEPTH>;
 
   Instrument(
-      const std::string_view& exchange,
-      const std::string_view& symbol,
-      const std::string_view& account);
+      const std::string_view &exchange,
+      const std::string_view &symbol,
+      const std::string_view &account);
 
-  operator const Depth&() const {
-    return _depth;
-  }
+  operator const Depth &() const { return _depth; }
 
-  bool is_ready() const {
-    return _ready;
-  }
+  bool is_ready() const { return _ready; }
 
-  auto tick_size() const {
-    return _tick_size;
-  }
+  auto tick_size() const { return _tick_size; }
 
-  auto min_trade_vol() const {
-    return _min_trade_vol;
-  }
+  auto min_trade_vol() const { return _min_trade_vol; }
 
-  auto multiplier() const {
-    return _multiplier;
-  }
+  auto multiplier() const { return _multiplier; }
 
-  auto is_market_open() const {
-    return _trading_status == TradingStatus::OPEN;
-  }
+  auto is_market_open() const { return _trading_status == TradingStatus::OPEN; }
 
-  auto best_bid() const {
-    return _depth[0].bid_price;
-  }
+  auto best_bid() const { return _depth[0].bid_price; }
 
-  auto best_ask() const {
-    return _depth[0].ask_price;
-  }
+  auto best_ask() const { return _depth[0].ask_price; }
 
   double position() const;
 
   bool can_trade(Side side) const;
 
-  void operator()(const Connection& connection);
+  void operator()(const Connection &connection);
 
-  void operator()(const DownloadBegin& download_begin);
+  void operator()(const DownloadBegin &download_begin);
 
-  void operator()(const DownloadEnd& download_end);
+  void operator()(const DownloadEnd &download_end);
 
-  void operator()(const MarketDataStatus& market_data_status);
+  void operator()(const MarketDataStatus &market_data_status);
 
-  void operator()(const OrderManagerStatus& order_manager_status);
+  void operator()(const OrderManagerStatus &order_manager_status);
 
-  void operator()(const ReferenceData& reference_data);
+  void operator()(const ReferenceData &reference_data);
 
-  void operator()(const MarketStatus& market_status);
+  void operator()(const MarketStatus &market_status);
 
-  void operator()(const MarketByPriceUpdate& market_by_price_update);
+  void operator()(const MarketByPriceUpdate &market_by_price_update);
 
-  void operator()(const MarketByOrderUpdate& market_by_order_update);
+  void operator()(const MarketByOrderUpdate &market_by_order_update);
 
-  void operator()(const OrderUpdate& order_update);
+  void operator()(const OrderUpdate &order_update);
 
-  void operator()(const PositionUpdate& position_update);
+  void operator()(const PositionUpdate &position_update);
 
  protected:
   void check_ready();
 
   void reset();
 
-  void validate(const Depth& depth);
+  void validate(const Depth &depth);
 
  private:
   const std::string_view _exchange;

@@ -15,7 +15,7 @@ class Controller final : public Service {
   using Service::Service;
 
  protected:
-  int main_helper(const roq::span<std::string_view>& args);
+  int main_helper(const roq::span<std::string_view> &args);
 
   int main(int argc, char **argv) override;
 };

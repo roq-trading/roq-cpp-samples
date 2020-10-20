@@ -7,7 +7,7 @@ namespace samples {
 namespace example_3 {
 
 template <typename T>
-inline bool update(T& lhs, const T& rhs) {
+inline bool update(T &lhs, const T &rhs) {
   if (lhs == rhs)  // note! too simplistic for T == double
     return false;
   lhs = rhs;

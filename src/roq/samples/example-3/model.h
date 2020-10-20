@@ -17,19 +17,19 @@ class Model final {
 
   Model();
 
-  Model(const Model&) = delete;
-  Model(Model&&) = default;
+  Model(const Model &) = delete;
+  Model(Model &&) = default;
 
   void reset();
 
-  Side update(const Depth& depth);
+  Side update(const Depth &depth);
 
  protected:
-  bool validate(const Depth& depth);
+  bool validate(const Depth &depth);
 
-  double weighted_bid(const Depth& depth);
+  double weighted_bid(const Depth &depth);
 
-  double weighted_ask(const Depth& depth);
+  double weighted_ask(const Depth &depth);
 
  private:
   EMA _bid_ema;

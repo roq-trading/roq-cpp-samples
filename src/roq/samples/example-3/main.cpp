@@ -10,8 +10,6 @@ constexpr std::string_view DESCRIPTION = "Example 3 (Roq Samples)";
 
 int main(int argc, char **argv) {
   return roq::samples::example_3::Controller(
-      argc,
-      argv,
-      DESCRIPTION,
-      ROQ_VERSION).run();
+             argc, argv, DESCRIPTION, ROQ_VERSION)
+      .run();
 }

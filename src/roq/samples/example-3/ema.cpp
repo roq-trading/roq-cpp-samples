@@ -11,8 +11,7 @@ namespace roq {
 namespace samples {
 namespace example_3 {
 
-EMA::EMA(double alpha)
-    : _alpha(alpha) {
+EMA::EMA(double alpha) : _alpha(alpha) {
 }
 
 void EMA::reset() {
@@ -20,9 +19,8 @@ void EMA::reset() {
   _countdown = FLAGS_warmup;
 }
 
-
 double EMA::update(double value) {
-  _countdown = std::max<uint32_t>(1, _countdown) - uint32_t{1};
+  _countdown = std::max<uint32_t>(1, _countdown) - uint32_t { 1 };
   if (std::isnan(_value))
     _value = value;
   else

@@ -15,21 +15,16 @@ namespace example_3 {
 constexpr double TOLERANCE = 1.0e-10;
 
 Instrument::Instrument(
-    const std::string_view& exchange,
-    const std::string_view& symbol,
-    const std::string_view& account)
-    : _exchange(exchange),
-      _symbol(symbol),
-      _account(account),
-      _depth_builder(
-          client::DepthBuilderFactory::create(
-              symbol,
-              _depth)) {
+    const std::string_view &exchange,
+    const std::string_view &symbol,
+    const std::string_view &account)
+    : _exchange(exchange), _symbol(symbol), _account(account),
+      _depth_builder(client::DepthBuilderFactory::create(symbol, _depth)) {
 }
 
 double Instrument::position() const {
-  return (std::isnan(_long_position) ? double{0.0} : _long_position)
-    - (std::isnan(_short_position) ? double{0.0} : _short_position);
+  return (std::isnan(_long_position) ? double { 0.0 } : _long_position) -
+         (std::isnan(_short_position) ? double { 0.0 } : _short_position);
 }
 
 bool Instrument::can_trade(Side side) const {
@@ -44,13 +39,10 @@ bool Instrument::can_trade(Side side) const {
   }
 }
 
-void Instrument::operator()(const Connection& connection) {
+void Instrument::operator()(const Connection &connection) {
   if (update(_connection_status, connection.status)) {
-    LOG(INFO)(
-        R"([{}:{}] connection_status={})",
-        _exchange,
-        _symbol,
-        _connection_status);
+    LOG(INFO)
+    (R"([{}:{}] connection_status={})", _exchange, _symbol, _connection_status);
     check_ready();
   }
   switch (_connection_status) {
@@ -67,111 +59,85 @@ void Instrument::operator()(const Connection& connection) {
   }
 }
 
-void Instrument::operator()(const DownloadBegin& download_begin) {
-  if (download_begin.account.empty() == false)
-    return;
+void Instrument::operator()(const DownloadBegin &download_begin) {
+  if (download_begin.account.empty() == false) return;
   assert(_download == false);
   _download = true;
-  LOG(INFO)(
-      R"([{}:{}] download={})",
-      _exchange,
-      _symbol,
-      _download);
+  LOG(INFO)(R"([{}:{}] download={})", _exchange, _symbol, _download);
 }
 
-void Instrument::operator()(const DownloadEnd& download_end) {
-  if (download_end.account.empty() == false)
-    return;
+void Instrument::operator()(const DownloadEnd &download_end) {
+  if (download_end.account.empty() == false) return;
   assert(_download == true);
   _download = false;
-  LOG(INFO)(
-      R"([{}:{}] download={})",
-      _exchange,
-      _symbol,
-      _download);
+  LOG(INFO)(R"([{}:{}] download={})", _exchange, _symbol, _download);
   // update the ready flag
   check_ready();
 }
 
-void Instrument::operator()(const MarketDataStatus& market_data_status) {
+void Instrument::operator()(const MarketDataStatus &market_data_status) {
   // update our cache
   if (update(_market_data_status, market_data_status.status)) {
-    LOG(INFO)(
-        R"([{}:{}] market_data_status={})",
-        _exchange,
-        _symbol,
-        _market_data_status);
+    LOG(INFO)
+    (R"([{}:{}] market_data_status={})",
+     _exchange,
+     _symbol,
+     _market_data_status);
   }
   // update the ready flag
   check_ready();
 }
 
-void Instrument::operator()(const OrderManagerStatus& order_manager_status) {
+void Instrument::operator()(const OrderManagerStatus &order_manager_status) {
   assert(_account.compare(order_manager_status.account) == 0);
   // update our cache
   if (update(_order_manager_status, order_manager_status.status)) {
-    LOG(INFO)(
-        R"([{}:{}] order_manager_status={})",
-        _exchange,
-        _symbol,
-        _order_manager_status);
+    LOG(INFO)
+    (R"([{}:{}] order_manager_status={})",
+     _exchange,
+     _symbol,
+     _order_manager_status);
   }
   // update the ready flag
   check_ready();
 }
 
-void Instrument::operator()(const ReferenceData& reference_data) {
+void Instrument::operator()(const ReferenceData &reference_data) {
   assert(_exchange.compare(reference_data.exchange) == 0);
   assert(_symbol.compare(reference_data.symbol) == 0);
   // update the depth builder
   _depth_builder->update(reference_data);
   // update our cache
   if (update(_tick_size, reference_data.tick_size)) {
-    LOG(INFO)(
-        R"([{}:{}] tick_size={})",
-        _exchange,
-        _symbol,
-        _tick_size);
+    LOG(INFO)(R"([{}:{}] tick_size={})", _exchange, _symbol, _tick_size);
   }
   if (update(_min_trade_vol, reference_data.min_trade_vol)) {
-    LOG(INFO)(
-        R"([{}:{}] min_trade_vol={})",
-        _exchange,
-        _symbol,
-        _min_trade_vol);
+    LOG(INFO)
+    (R"([{}:{}] min_trade_vol={})", _exchange, _symbol, _min_trade_vol);
   }
   if (update(_multiplier, reference_data.multiplier)) {
-    LOG(INFO)(
-        R"([{}:{}] multiplier={})",
-        _exchange,
-        _symbol,
-        _multiplier);
+    LOG(INFO)(R"([{}:{}] multiplier={})", _exchange, _symbol, _multiplier);
   }
   // update the ready flag
   check_ready();
 }
 
-void Instrument::operator()(const MarketStatus& market_status) {
+void Instrument::operator()(const MarketStatus &market_status) {
   assert(_exchange.compare(market_status.exchange) == 0);
   assert(_symbol.compare(market_status.symbol) == 0);
   // update our cache
   if (update(_trading_status, market_status.trading_status)) {
-    LOG(INFO)(
-        R"([{}:{}] trading_status={})",
-        _exchange,
-        _symbol,
-        _trading_status);
+    LOG(INFO)
+    (R"([{}:{}] trading_status={})", _exchange, _symbol, _trading_status);
   }
   // update the ready flag
   check_ready();
 }
 
-void Instrument::operator()(const MarketByPriceUpdate& market_by_price_update) {
+void Instrument::operator()(const MarketByPriceUpdate &market_by_price_update) {
   assert(_exchange.compare(market_by_price_update.exchange) == 0);
   assert(_symbol.compare(market_by_price_update.symbol) == 0);
-  LOG_IF(INFO, _download)(
-      R"(MarketByPriceUpdate={})",
-      market_by_price_update);
+  LOG_IF(INFO, _download)(R"(MarketByPriceUpdate={})", market_by_price_update);
   // update depth
   // note!
   //   market by price only gives you *changes*.
@@ -181,20 +147,14 @@ void Instrument::operator()(const MarketByPriceUpdate& market_by_price_update) {
   //   the depth builder helps you maintain a correct view of
   //   the order book.
   _depth_builder->update(market_by_price_update);
-  VLOG(1)(
-      R"([{}:{}] depth=[{}])",
-      _exchange,
-      _symbol,
-      fmt::join(_depth, ", "));
+  VLOG(1)(R"([{}:{}] depth=[{}])", _exchange, _symbol, fmt::join(_depth, ", "));
   validate(_depth);
 }
 
-void Instrument::operator()(const MarketByOrderUpdate& market_by_order_update) {
+void Instrument::operator()(const MarketByOrderUpdate &market_by_order_update) {
   assert(_exchange.compare(market_by_order_update.exchange) == 0);
   assert(_symbol.compare(market_by_order_update.symbol) == 0);
-  LOG_IF(INFO, _download)(
-      R"(MarketByOrderUpdate={})",
-      market_by_order_update);
+  LOG_IF(INFO, _download)(R"(MarketByOrderUpdate={})", market_by_order_update);
   // update depth
   // note!
   //   market by order only gives you *changes*.
@@ -214,7 +174,7 @@ void Instrument::operator()(const MarketByOrderUpdate& market_by_order_update) {
   */
 }
 
-void Instrument::operator()(const OrderUpdate& order_update) {
+void Instrument::operator()(const OrderUpdate &order_update) {
   // note!
   //   the assumption is that there is never more than one working
   //   order
@@ -234,20 +194,13 @@ void Instrument::operator()(const OrderUpdate& order_update) {
     default:
       assert(false);  // unexpected
   }
-  LOG(INFO)(
-      R"([{}:{}] position={})",
-      _exchange,
-      _symbol,
-      position());
+  LOG(INFO)(R"([{}:{}] position={})", _exchange, _symbol, position());
 }
 
-void Instrument::operator()(const PositionUpdate& position_update) {
+void Instrument::operator()(const PositionUpdate &position_update) {
   assert(_account.compare(position_update.account) == 0);
-  LOG(INFO)(
-      R"([{}:{}] position_update={})",
-      _exchange,
-      _symbol,
-      position_update);
+  LOG(INFO)
+  (R"([{}:{}] position_update={})", _exchange, _symbol, position_update);
   assert(position_update.position >= -TOLERANCE);
   if (_download) {
     // note!
@@ -262,29 +215,21 @@ void Instrument::operator()(const PositionUpdate& position_update) {
         _short_position = position_update.position;
         break;
       default:
-        LOG(WARNING)(
-            R"(Unexpected side={})",
-            position_update.side);
+        LOG(WARNING)(R"(Unexpected side={})", position_update.side);
     }
   }
 }
 
 void Instrument::check_ready() {
   auto before = _ready;
-  _ready =
-    _connection_status == ConnectionStatus::CONNECTED &&
-    _download == false &&
-    _tick_size > TOLERANCE &&
-    _min_trade_vol > TOLERANCE &&
-    _multiplier > TOLERANCE &&
-    _trading_status == TradingStatus::OPEN &&
-    _market_data_status == GatewayStatus::READY &&
-    _order_manager_status == GatewayStatus::READY;
-  LOG_IF(INFO, _ready != before)(
-      R"([{}:{}] ready={})",
-      _exchange,
-      _symbol,
-      _ready);
+  _ready = _connection_status == ConnectionStatus::CONNECTED &&
+           _download == false && _tick_size > TOLERANCE &&
+           _min_trade_vol > TOLERANCE && _multiplier > TOLERANCE &&
+           _trading_status == TradingStatus::OPEN &&
+           _market_data_status == GatewayStatus::READY &&
+           _order_manager_status == GatewayStatus::READY;
+  LOG_IF(INFO, _ready != before)
+  (R"([{}:{}] ready={})", _exchange, _symbol, _ready);
 }
 
 void Instrument::reset() {
@@ -303,17 +248,17 @@ void Instrument::reset() {
   _last_traded_quantity = 0.0;
 }
 
-void Instrument::validate(const Depth& depth) {
+void Instrument::validate(const Depth &depth) {
   if (std::fabs(depth[0].bid_quantity) < TOLERANCE ||
       std::fabs(depth[0].ask_quantity) < TOLERANCE)
     return;
   auto spread = depth[0].ask_price - depth[0].bid_price;
-  LOG_IF(FATAL, spread < TOLERANCE)(
-      R"([{}:{}] Probably something wrong: )"
-      R"(choice or inversion detected. depth=[{}])",
-      _exchange,
-      _symbol,
-      fmt::join(depth, ", "));
+  LOG_IF(FATAL, spread < TOLERANCE)
+  (R"([{}:{}] Probably something wrong: )"
+   R"(choice or inversion detected. depth=[{}])",
+   _exchange,
+   _symbol,
+   fmt::join(depth, ", "));
 }
 
 }  // namespace example_3
