@@ -68,6 +68,11 @@ doxygen/xml
 *.sock
 
 
+# cppcheck
+
+compile_commands.json
+
+
 # project specific
 
 roq-samples-benchmark
