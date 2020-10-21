@@ -1,9 +1,11 @@
 /* Copyright (c) 2017-2020, Hans Erik Thrane */
 
-#include "roq/samples/example-3/options.h"
+#pragma once
 
 #include <cstdint>
 #include <limits>
+
+#include "roq/samples/example-3/options.h"
 
 namespace roq {
 namespace samples {

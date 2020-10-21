@@ -1,5 +1,7 @@
 /* Copyright (c) 2017-2020, Hans Erik Thrane */
 
+#pragma once
+
 #include <gflags/gflags.h>
 
 DECLARE_string(exchange);

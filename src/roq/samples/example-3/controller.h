@@ -1,5 +1,7 @@
 /* Copyright (c) 2017-2020, Hans Erik Thrane */
 
+#pragma once
+
 #include <string_view>
 
 #include "roq/service.h"

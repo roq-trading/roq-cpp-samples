@@ -1,7 +1,10 @@
 /* Copyright (c) 2017-2020, Hans Erik Thrane */
 
+#pragma once
+
 #include <array>
 #include <limits>
+#include <memory>
 
 #include "roq/api.h"
 
