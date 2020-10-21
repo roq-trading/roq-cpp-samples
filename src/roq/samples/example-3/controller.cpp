@@ -30,12 +30,12 @@ int Controller::main_helper(const roq::span<std::string_view> &args) {
   auto connections = args.subspan(1);
   if (FLAGS_simulation) {
     // collector
-    auto snapshot_frequency = std::chrono::seconds { 1 };
+    auto snapshot_frequency = std::chrono::seconds{1};
     auto collector =
         client::detail::SimulationFactory::create_collector(snapshot_frequency);
     // matcher
-    auto market_data_latency = std::chrono::milliseconds { 1 };
-    auto order_manager_latency = std::chrono::milliseconds { 1 };
+    auto market_data_latency = std::chrono::milliseconds{1};
+    auto order_manager_latency = std::chrono::milliseconds{1};
     auto matcher = client::detail::SimulationFactory::create_matcher(
         "simple", FLAGS_exchange, market_data_latency, order_manager_latency);
     // simulator

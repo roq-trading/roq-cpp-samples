@@ -24,7 +24,7 @@ class Config final : public client::Config {
 
  protected:
   void dispatch(Handler &handler) const override {
-    handler(client::Symbol {
+    handler(client::Symbol{
         .regex = FLAGS_symbols,
         .exchange = FLAGS_exchange,
     });

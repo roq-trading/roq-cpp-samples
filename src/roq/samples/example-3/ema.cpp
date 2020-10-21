@@ -20,7 +20,7 @@ void EMA::reset() {
 }
 
 double EMA::update(double value) {
-  _countdown = std::max<uint32_t>(1, _countdown) - uint32_t { 1 };
+  _countdown = std::max<uint32_t>(1, _countdown) - uint32_t{1};
   if (std::isnan(_value))
     _value = value;
   else

@@ -24,7 +24,7 @@ void Strategy::operator()(const Event<Timer> &event) {
   if (_next_sample.count())  // initialized?
     update_model();
   auto now = std::chrono::duration_cast<std::chrono::seconds>(event.value.now);
-  _next_sample = now + std::chrono::seconds { FLAGS_sample_freq_secs };
+  _next_sample = now + std::chrono::seconds{FLAGS_sample_freq_secs};
   // possible extension: reset request timeout
 }
 
@@ -128,9 +128,8 @@ void Strategy::try_trade(Side side, double price) {
     if (side != _working_side) {
       LOG(INFO)("*** CANCEL WORKING ORDER ***");
       _dispatcher.send(
-          CancelOrder { .account = FLAGS_account,
-                        .order_id = _working_order_id },
-          uint8_t { 0 });
+          CancelOrder{.account = FLAGS_account, .order_id = _working_order_id},
+          uint8_t{0});
     }
     return;
   }
@@ -140,7 +139,7 @@ void Strategy::try_trade(Side side, double price) {
   }
   auto order_id = ++_max_order_id;
   _dispatcher.send(
-      CreateOrder {
+      CreateOrder{
           .account = FLAGS_account,
           .order_id = order_id,
           .exchange = FLAGS_exchange,
@@ -156,7 +155,7 @@ void Strategy::try_trade(Side side, double price) {
           .max_show_quantity = std::numeric_limits<double>::quiet_NaN(),
           .order_template = std::string_view(),
       },
-      uint8_t { 0 });
+      uint8_t{0});
   _working_order_id = order_id;
   _working_side = side;
   // possible extension: monitor for request timeout

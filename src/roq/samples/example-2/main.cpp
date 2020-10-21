@@ -22,7 +22,7 @@ DEFINE_string(cash_exchange, "coinbase-pro", "cash exchange");
 DEFINE_string(cash_symbol, "BTC-USD", "cash symbol");
 
 DEFINE_double(
-    alpha, double { 0.2 }, "alpha used to compute exponential moving average");
+    alpha, double{0.2}, "alpha used to compute exponential moving average");
 // reference:
 //   https://en.wikipedia.org/wiki/Moving_average#Exponential_moving_average
 
@@ -34,10 +34,10 @@ namespace example_2 {
 
 namespace {
 constexpr auto NaN = std::numeric_limits<double>::quiet_NaN();
-constexpr auto TOLERANCE = double { 1.0e-10 };
+constexpr auto TOLERANCE = double{1.0e-10};
 // order book depth
 //   we don't actually need 2 layers for this example
-constexpr auto MAX_DEPTH = size_t { 2 };
+constexpr auto MAX_DEPTH = size_t{2};
 }  // namespace
 
 // utilities
@@ -64,11 +64,11 @@ class Config final : public client::Config {
  protected:
   void dispatch(Handler &handler) const override {
     // callback for each subscription pattern
-    handler(client::Symbol {
+    handler(client::Symbol{
         .regex = FLAGS_futures_symbol,
         .exchange = FLAGS_futures_exchange,
     });
-    handler(client::Symbol {
+    handler(client::Symbol{
         .regex = FLAGS_cash_symbol,
         .exchange = FLAGS_cash_exchange,
     });

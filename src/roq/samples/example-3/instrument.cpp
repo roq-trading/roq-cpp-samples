@@ -23,8 +23,8 @@ Instrument::Instrument(
 }
 
 double Instrument::position() const {
-  return (std::isnan(_long_position) ? double { 0.0 } : _long_position) -
-         (std::isnan(_short_position) ? double { 0.0 } : _short_position);
+  return (std::isnan(_long_position) ? double{0.0} : _long_position) -
+         (std::isnan(_short_position) ? double{0.0} : _short_position);
 }
 
 bool Instrument::can_trade(Side side) const {

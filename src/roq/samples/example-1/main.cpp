@@ -43,11 +43,11 @@ class Config final : public client::Config {
  protected:
   void dispatch(Handler &handler) const override {
     // callback for each subscription pattern
-    handler(client::Symbol {
+    handler(client::Symbol{
         .regex = FLAGS_deribit_symbols,
         .exchange = FLAGS_deribit_exchange,
     });
-    handler(client::Symbol {
+    handler(client::Symbol{
         .regex = FLAGS_coinbase_pro_symbols,
         .exchange = FLAGS_coinbase_pro_exchange,
     });
