@@ -48,6 +48,8 @@ lib/
 
 build/
 
+compile_commands.json*
+
 
 # gtest
 
@@ -66,11 +68,6 @@ doxygen/xml
 # debug files
 
 *.sock
-
-
-# cppcheck
-
-compile_commands.json
 
 
 # project specific
