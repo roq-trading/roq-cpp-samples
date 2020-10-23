@@ -13,7 +13,7 @@ namespace example_3 {
 
 class EMA final {
  public:
-  EMA(double alpha);
+  explicit EMA(double alpha);
 
   EMA(const EMA &) = delete;
   EMA(EMA &&) = default;

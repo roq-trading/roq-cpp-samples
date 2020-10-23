@@ -85,14 +85,6 @@ class Instrument final {
 
   bool is_ready() const { return _ready; }
 
-  auto get_tick_size() const { return _tick_size; }
-
-  auto get_min_trade_vol() const { return _min_trade_vol; }
-
-  auto get_multiplier() const { return _multiplier; }
-
-  auto is_market_open() const { return _trading_status == TradingStatus::OPEN; }
-
   void operator()(const Connection &connection) {
     if (update(_connection_status, connection.status)) {
       LOG(INFO)
