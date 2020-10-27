@@ -38,7 +38,7 @@ class Strategy final : public client::Handler {
   template <typename T>
   void dispatch(const T &event) {
     assert(event.message_info.source == uint8_t{0});
-    _instrument(event.value);
+    instrument_(event.value);
   }
 
   void update_model();
@@ -46,13 +46,13 @@ class Strategy final : public client::Handler {
   void try_trade(Side side, double price);
 
  private:
-  client::Dispatcher &_dispatcher;
-  Instrument _instrument;
-  uint32_t _max_order_id = 0;
-  Model _model;
-  std::chrono::nanoseconds _next_sample = {};
-  uint32_t _working_order_id = 0;
-  Side _working_side = Side::UNDEFINED;
+  client::Dispatcher &dispatcher_;
+  Instrument instrument_;
+  uint32_t max_order_id_ = 0;
+  Model model_;
+  std::chrono::nanoseconds next_sample_ = {};
+  uint32_t working_order_id_ = 0;
+  Side working_side_ = Side::UNDEFINED;
 };
 
 }  // namespace example_3

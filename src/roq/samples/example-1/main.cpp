@@ -64,7 +64,7 @@ class Config final : public client::Config {
 
 class Strategy final : public client::Handler {
  public:
-  explicit Strategy(client::Dispatcher &dispatcher) : _dispatcher(dispatcher) {}
+  explicit Strategy(client::Dispatcher &dispatcher) : dispatcher_(dispatcher) {}
 
   Strategy(const Strategy &) = delete;
   Strategy(Strategy &&) = default;
@@ -154,7 +154,7 @@ class Strategy final : public client::Handler {
   }
 
  private:
-  client::Dispatcher &_dispatcher;
+  client::Dispatcher &dispatcher_;
 };
 
 // Service is a base class used to initialize the environment

@@ -24,21 +24,21 @@ class Instrument final {
       const std::string_view &symbol,
       const std::string_view &account);
 
-  operator const Depth &() const { return _depth; }
+  operator const Depth &() const { return depth_; }
 
-  bool is_ready() const { return _ready; }
+  bool is_ready() const { return ready_; }
 
-  auto tick_size() const { return _tick_size; }
+  auto tick_size() const { return tick_size_; }
 
-  auto min_trade_vol() const { return _min_trade_vol; }
+  auto min_trade_vol() const { return min_trade_vol_; }
 
-  auto multiplier() const { return _multiplier; }
+  auto multiplier() const { return multiplier_; }
 
-  auto is_market_open() const { return _trading_status == TradingStatus::OPEN; }
+  auto is_market_open() const { return trading_status_ == TradingStatus::OPEN; }
 
-  auto best_bid() const { return _depth[0].bid_price; }
+  auto best_bid() const { return depth_[0].bid_price; }
 
-  auto best_ask() const { return _depth[0].ask_price; }
+  auto best_ask() const { return depth_[0].ask_price; }
 
   double position() const;
 
@@ -67,31 +67,31 @@ class Instrument final {
   void operator()(const PositionUpdate &position_update);
 
  protected:
-  void check_ready();
+  void checkready_();
 
   void reset();
 
   void validate(const Depth &depth);
 
  private:
-  const std::string_view _exchange;
-  const std::string_view _symbol;
-  const std::string_view _account;
-  ConnectionStatus _connection_status = ConnectionStatus::DISCONNECTED;
-  bool _download = false;
-  double _tick_size = std::numeric_limits<double>::quiet_NaN();
-  double _min_trade_vol = std::numeric_limits<double>::quiet_NaN();
-  double _multiplier = std::numeric_limits<double>::quiet_NaN();
-  TradingStatus _trading_status = TradingStatus::UNDEFINED;
-  GatewayStatus _market_data_status = GatewayStatus::DISCONNECTED;
-  GatewayStatus _order_manager_status = GatewayStatus::DISCONNECTED;
-  Depth _depth;
-  std::unique_ptr<client::DepthBuilder> _depth_builder;
-  double _long_position = 0.0;
-  double _short_position = 0.0;
-  bool _ready = false;
-  uint32_t _last_order_id = 0;
-  double _last_traded_quantity = 0.0;
+  const std::string_view exchange_;
+  const std::string_view symbol_;
+  const std::string_view account_;
+  ConnectionStatus connection_status_ = ConnectionStatus::DISCONNECTED;
+  bool download_ = false;
+  double tick_size_ = std::numeric_limits<double>::quiet_NaN();
+  double min_trade_vol_ = std::numeric_limits<double>::quiet_NaN();
+  double multiplier_ = std::numeric_limits<double>::quiet_NaN();
+  TradingStatus trading_status_ = TradingStatus::UNDEFINED;
+  GatewayStatus market_data_status_ = GatewayStatus::DISCONNECTED;
+  GatewayStatus order_manager_status_ = GatewayStatus::DISCONNECTED;
+  Depth depth_;
+  std::unique_ptr<client::DepthBuilder> depth_builder_;
+  double long_position_ = 0.0;
+  double short_position_ = 0.0;
+  bool ready_ = false;
+  uint32_t last_order_id_ = 0;
+  double last_traded_quantity_ = 0.0;
 };
 
 }  // namespace example_3

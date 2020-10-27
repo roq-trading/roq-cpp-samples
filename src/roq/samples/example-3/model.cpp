@@ -12,14 +12,14 @@ namespace example_3 {
 
 constexpr double TOLERANCE = 1.0e-10;
 
-Model::Model() : _bid_ema(FLAGS_ema_alpha), _ask_ema(FLAGS_ema_alpha) {
+Model::Model() : bid_ema_(FLAGS_ema_alpha), ask_ema_(FLAGS_ema_alpha) {
 }
 
 void Model::reset() {
-  _bid_ema.reset();
-  _ask_ema.reset();
-  _selling = false;
-  _buying = false;
+  bid_ema_.reset();
+  ask_ema_.reset();
+  selling_ = false;
+  buying_ = false;
 }
 
 Side Model::update(const Depth &depth) {
@@ -28,42 +28,42 @@ Side Model::update(const Depth &depth) {
   if (validate(depth) == false) return result;
 
   auto bid_fast = weighted_bid(depth);
-  auto bid_slow = _bid_ema.update(bid_fast);
+  auto bid_slow = bid_ema_.update(bid_fast);
   auto ask_fast = weighted_ask(depth);
-  auto ask_slow = _ask_ema.update(ask_fast);
+  auto ask_slow = ask_ema_.update(ask_fast);
 
-  auto ready = _bid_ema.is_ready() && _ask_ema.is_ready();
+  auto ready = bid_ema_.is_ready() && ask_ema_.is_ready();
 
-  if (_selling) {
+  if (selling_) {
     if (ready && ask_fast > ask_slow) {
       LOG(INFO)(R"(SIGNAL: BUY @ {})", depth[0].ask_price);
       result = Side::BUY;
-      _selling = false;
+      selling_ = false;
     }
   } else {
     if (ask_fast < bid_slow && ask_fast < ask_slow) {
       LOG(INFO)("DIRECTION: SELLING");
-      _selling = true;
-      _buying = false;
+      selling_ = true;
+      buying_ = false;
     }
   }
 
-  if (_buying) {
+  if (buying_) {
     if (ready && bid_fast > bid_slow) {
       LOG(INFO)(R"(SIGNAL: SELL @ {})", depth[0].bid_price);
       result = Side::SELL;
-      _buying = false;
+      buying_ = false;
     }
   } else {
     if (bid_fast > ask_slow && bid_fast > bid_slow) {
       LOG(INFO)("DIRECTION: BUYING");
-      _buying = true;
-      _selling = false;
+      buying_ = true;
+      selling_ = false;
     }
   }
 
   // can't be both
-  assert(2 != ((_selling ? 1 : 0) + (_buying ? 1 : 0)));
+  assert(2 != ((selling_ ? 1 : 0) + (buying_ ? 1 : 0)));
 
   VLOG(1)
   (R"(model={{)"
@@ -82,8 +82,8 @@ Side Model::update(const Depth &depth) {
    ask_fast,
    bid_slow,
    ask_slow,
-   _selling,
-   _buying);
+   selling_,
+   buying_);
 
   return result;
 }

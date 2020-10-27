@@ -34,10 +34,10 @@ class Model final {
   double weighted_ask(const Depth &depth);
 
  private:
-  EMA _bid_ema;
-  EMA _ask_ema;
-  bool _selling = false;
-  bool _buying = false;
+  EMA bid_ema_;
+  EMA ask_ema_;
+  bool selling_ = false;
+  bool buying_ = false;
 };
 
 }  // namespace example_3

@@ -11,21 +11,21 @@ namespace roq {
 namespace samples {
 namespace example_3 {
 
-EMA::EMA(double alpha) : _alpha(alpha) {
+EMA::EMA(double alpha) : alpha_(alpha) {
 }
 
 void EMA::reset() {
-  _value = std::numeric_limits<double>::quiet_NaN();
-  _countdown = FLAGS_warmup;
+  value_ = std::numeric_limits<double>::quiet_NaN();
+  countdown_ = FLAGS_warmup;
 }
 
 double EMA::update(double value) {
-  _countdown = std::max<uint32_t>(1, _countdown) - uint32_t{1};
-  if (std::isnan(_value))
-    _value = value;
+  countdown_ = std::max<uint32_t>(1, countdown_) - uint32_t{1};
+  if (std::isnan(value_))
+    value_ = value;
   else
-    _value = _alpha * value + (1.0 - _alpha) * _value;
-  return _value;
+    value_ = alpha_ * value + (1.0 - alpha_) * value_;
+  return value_;
 }
 
 }  // namespace example_3

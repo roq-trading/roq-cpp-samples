@@ -18,18 +18,18 @@ class EMA final {
   EMA(const EMA &) = delete;
   EMA(EMA &&) = default;
 
-  operator double() const { return _value; }
+  operator double() const { return value_; }
 
   void reset();
 
-  bool is_ready() const { return _countdown == 0; }
+  bool is_ready() const { return countdown_ == 0; }
 
   double update(double value);
 
  private:
-  const double _alpha;
-  double _value = std::numeric_limits<double>::quiet_NaN();
-  uint32_t _countdown = FLAGS_warmup;
+  const double alpha_;
+  double value_ = std::numeric_limits<double>::quiet_NaN();
+  uint32_t countdown_ = FLAGS_warmup;
 };
 
 }  // namespace example_3
