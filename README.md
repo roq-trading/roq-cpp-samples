@@ -7,6 +7,10 @@ Samples demonstrating how to implement various features of algorithmic trading.
 
 * Linux
 
+*Note!*
+The Windows Subsystem for Linux (WSL) is **NOT** supported.
+Reason can be found [here](https://devblogs.microsoft.com/commandline/windowswsl-interop-with-af_unix/).
+
 
 ## Library/Package Dependencies
 
