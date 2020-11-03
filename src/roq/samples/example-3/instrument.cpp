@@ -29,10 +29,8 @@ double Instrument::position() const {
 
 bool Instrument::can_trade(Side side) const {
   switch (side) {
-    case Side::BUY:
-      return position() <= TOLERANCE;
-    case Side::SELL:
-      return position() >= -TOLERANCE;
+    case Side::BUY: return position() <= TOLERANCE;
+    case Side::SELL: return position() >= -TOLERANCE;
     default:
       assert(false);  // unexpected / why call this function at all?
       return false;
@@ -46,9 +44,7 @@ void Instrument::operator()(const Connection &connection) {
     checkready_();
   }
   switch (connection_status_) {
-    case ConnectionStatus::UNDEFINED:
-      LOG(FATAL)("Unexpected");
-      break;
+    case ConnectionStatus::UNDEFINED: LOG(FATAL)("Unexpected"); break;
     case ConnectionStatus::CONNECTED:
       // nothing to do for this implementation
       break;
@@ -185,14 +181,9 @@ void Instrument::operator()(const OrderUpdate &order_update) {
   auto quantity = order_update.traded_quantity - last_traded_quantity_;
   last_traded_quantity_ = order_update.traded_quantity;
   switch (order_update.side) {
-    case Side::BUY:
-      long_position_ += quantity;
-      break;
-    case Side::SELL:
-      short_position_ += quantity;
-      break;
-    default:
-      assert(false);  // unexpected
+    case Side::BUY: long_position_ += quantity; break;
+    case Side::SELL: short_position_ += quantity; break;
+    default: assert(false);  // unexpected
   }
   LOG(INFO)(R"([{}:{}] position={})", exchange_, symbol_, position());
 }
@@ -208,14 +199,9 @@ void Instrument::operator()(const PositionUpdate &position_update) {
     //   at run-time we're better off maintaining own positions
     //   since the position feed could be broken or very delayed
     switch (position_update.side) {
-      case Side::BUY:
-        long_position_ = position_update.position;
-        break;
-      case Side::SELL:
-        short_position_ = position_update.position;
-        break;
-      default:
-        LOG(WARNING)(R"(Unexpected side={})", position_update.side);
+      case Side::BUY: long_position_ = position_update.position; break;
+      case Side::SELL: short_position_ = position_update.position; break;
+      default: LOG(WARNING)(R"(Unexpected side={})", position_update.side);
     }
   }
 }
