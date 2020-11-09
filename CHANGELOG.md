@@ -4,6 +4,8 @@ All notable changes will be documented in this file.
 
 ## Head
 
+## 0.4.5 &ndash; 2020-11-09
+
 ### Changed
 
 * Refactored `example-3` for readability
