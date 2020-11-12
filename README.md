@@ -88,7 +88,7 @@ conda install -y --channel https://roq-trading.com/conda/stable \
     roq-data
 ```
 
-Data can now be found in the `$CONDA_PREFIX/share/roq/data/` directory.
+Data can now be found in the `$CONDA_PREFIX/share/roq-data/` directory.
 
 
 ### Gateways (install, configure, run)
@@ -104,7 +104,7 @@ conda install -y --channel https://roq-trading.com/conda/stable \
 It is easiest to start from a config file template
 
 ```bash
-cp $CONDA_PREFIX/share/roq/deribit/config.toml ~/deribit.toml
+cp $CONDA_PREFIX/share/roq-deribit/config.toml ~/deribit.toml
 ```
 
 Edit this file and update with your Deribit API credentials
@@ -136,7 +136,7 @@ conda install -y --channel https://roq-trading.com/conda/stable \
 It is easiest to start from a config file template
 
 ```bash
-cp $CONDA_PREFIX/share/roq/coinbase-pro/config.toml ~/coinbase-pro.toml
+cp $CONDA_PREFIX/share/roq-coinbase-pro/config.toml ~/coinbase-pro.toml
 ```
 
 Edit this file and update with your Coinbase Pro API credentials
