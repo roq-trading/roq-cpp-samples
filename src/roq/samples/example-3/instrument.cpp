@@ -192,16 +192,28 @@ void Instrument::operator()(const PositionUpdate &position_update) {
   assert(account_.compare(position_update.account) == 0);
   LOG(INFO)
   (R"([{}:{}] position_update={})", exchange_, symbol_, position_update);
-  assert(position_update.position >= -TOLERANCE);
   if (download_) {
     // note!
     //   only update positions when downloading
     //   at run-time we're better off maintaining own positions
     //   since the position feed could be broken or very delayed
     switch (position_update.side) {
-      case Side::BUY: long_position_ = position_update.position; break;
-      case Side::SELL: short_position_ = position_update.position; break;
-      default: LOG(WARNING)(R"(Unexpected side={})", position_update.side);
+      case Side::UNDEFINED: {
+        long_position_ = std::max(0.0, position_update.position);
+        short_position_ = std::max(0.0, -position_update.position);
+        break;
+      }
+      case Side::BUY: {
+        long_position_ = position_update.position;
+        break;
+      }
+      case Side::SELL: {
+        short_position_ = position_update.position;
+        break;
+      }
+      default: {
+        LOG(WARNING)(R"(Unexpected side={})", position_update.side);
+      }
     }
   }
 }
