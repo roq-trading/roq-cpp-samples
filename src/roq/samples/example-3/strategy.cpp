@@ -149,7 +149,7 @@ void Strategy::try_trade(Side side, double price) {
           .execution_instruction = ExecutionInstruction::UNDEFINED,
           .stop_price = std::numeric_limits<double>::quiet_NaN(),
           .max_show_quantity = std::numeric_limits<double>::quiet_NaN(),
-          .order_template = std::string_view(),
+          .order_template = {},
       },
       uint8_t{0});
   working_order_id_ = order_id;
