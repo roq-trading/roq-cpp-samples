@@ -4,10 +4,11 @@ All notable changes will be documented in this file.
 
 ## Head
 
+## 0.5.0 &ndash; 2020-12-04
+
 ### Changed
 
-* Position updates can include `Side::UNDEFINED` when reporting
-  net positions.
+* `PositionUpdate` can include `Side::UNDEFINED` to report net positions.
 
 ## 0.4.5 &ndash; 2020-11-09
 
