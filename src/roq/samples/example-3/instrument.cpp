@@ -2,6 +2,8 @@
 
 #include "roq/samples/example-3/instrument.h"
 
+#include <algorithm>
+
 #include "roq/logging.h"
 
 #include "roq/client.h"
