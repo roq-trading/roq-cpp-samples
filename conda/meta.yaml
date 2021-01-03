@@ -20,9 +20,9 @@ requirements:
     - cmake
     - make
   host:
+    - benchmark
+    - doxygen
     - roq-client =={{ version }}
-    - roq-oss-benchmark
-    - roq-oss-doxygen
 
 about:
   home: https://roq-trading.com
