@@ -31,11 +31,11 @@ Optional
 The project is designed to be compatible with the conda package manager.
 
 ```bash
-wget -N https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh
+wget -N https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-Linux-x86_64.sh
 
-bash Miniconda3-latest-Linux-x86_64.sh -b -u -p ~/miniconda3
+bash Miniforge3-Linux-x86_64.sh -b -u -p ~/conda
 
-source ~/miniconda3/bin/activate
+source ~/conda/bin/activate
 
 conda install -y \
     git \
