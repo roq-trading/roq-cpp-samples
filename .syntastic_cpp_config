@@ -1,4 +1,4 @@
 -std=c++17
--I../opt/conda/include
--Ithird_party/googletest/googletest/include
 -Isrc
+-Ithird_party/googletest/googletest/include
+-I../opt/conda/include
