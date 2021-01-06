@@ -107,14 +107,16 @@ class Instrument final {
   }
 
   void operator()(const DownloadBegin &download_begin) {
-    if (download_begin.account.empty() == false) return;
+    if (download_begin.account.empty() == false)
+      return;
     assert(download_ == false);
     download_ = true;
     LOG(INFO)(R"([{}:{}] download={})", exchange_, symbol_, download_);
   }
 
   void operator()(const DownloadEnd &download_end) {
-    if (download_end.account.empty() == false) return;
+    if (download_end.account.empty() == false)
+      return;
     assert(download_ == true);
     download_ = false;
     LOG(INFO)(R"([{}:{}] download={})", exchange_, symbol_, download_);
@@ -183,7 +185,8 @@ class Instrument final {
     auto depth = depth_builder_->update(market_by_price_update);
     VLOG(1)
     (R"([{}:{}] depth=[{}])", exchange_, symbol_, fmt::join(depth_, ", "));
-    if (depth > 0 && isready_()) update_model();
+    if (depth > 0 && isready_())
+      update_model();
   }
 
   void operator()(const MarketByOrderUpdate &market_by_order_update) {
@@ -202,7 +205,8 @@ class Instrument final {
     auto depth = depth_builder_->update(market_by_order_update);
     VLOG(1)
     (R"([{}:{}] depth=[{}])", exchange_, symbol_, fmt::join(depth_, ", "));
-    if (depth > 0 && isready_()) update_model();
+    if (depth > 0 && isready_())
+      update_model();
   }
 
  protected:
@@ -341,7 +345,8 @@ class Controller final : public Service {
  protected:
   int main_helper(const roq::span<std::string_view> &args) {
     assert(args.empty() == false);
-    if (args.size() == 1) throw std::runtime_error("Expected arguments");
+    if (args.size() == 1)
+      throw std::runtime_error("Expected arguments");
     if (args.size() != 3)
       throw std::runtime_error(
           "Expected exactly two arguments: "

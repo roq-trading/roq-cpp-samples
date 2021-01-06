@@ -58,14 +58,16 @@ void Instrument::operator()(const Connection &connection) {
 }
 
 void Instrument::operator()(const DownloadBegin &download_begin) {
-  if (download_begin.account.empty() == false) return;
+  if (download_begin.account.empty() == false)
+    return;
   assert(download_ == false);
   download_ = true;
   LOG(INFO)(R"([{}:{}] download={})", exchange_, symbol_, download_);
 }
 
 void Instrument::operator()(const DownloadEnd &download_end) {
-  if (download_end.account.empty() == false) return;
+  if (download_end.account.empty() == false)
+    return;
   assert(download_ == true);
   download_ = false;
   LOG(INFO)(R"([{}:{}] download={})", exchange_, symbol_, download_);

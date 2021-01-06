@@ -121,7 +121,8 @@ class Controller final : public Service {
  protected:
   int main_helper(const roq::span<std::string_view> &args) {
     assert(args.empty() == false);
-    if (args.size() == 1) throw std::runtime_error("Expected arguments");
+    if (args.size() == 1)
+      throw std::runtime_error("Expected arguments");
     Config config;
     auto connections = args.subspan(1);
     client::Trader(config, connections).dispatch<Strategy>();

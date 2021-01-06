@@ -20,7 +20,8 @@ Strategy::Strategy(client::Dispatcher &dispatcher)
 
 void Strategy::operator()(const Event<Timer> &event) {
   // note! using system clock (*not* the wall clock)
-  if (event.value.now < next_sample_) return;
+  if (event.value.now < next_sample_)
+    return;
   if (next_sample_.count())  // initialized?
     update_model();
   auto now = std::chrono::duration_cast<std::chrono::seconds>(event.value.now);
