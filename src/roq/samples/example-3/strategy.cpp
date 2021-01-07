@@ -101,8 +101,12 @@ void Strategy::update_model() {
       case Side::UNDEFINED:
         // nothing to do
         break;
-      case Side::BUY: try_trade(side, instrument_.best_bid()); break;
-      case Side::SELL: try_trade(side, instrument_.best_ask()); break;
+      case Side::BUY:
+        try_trade(side, instrument_.best_bid());
+        break;
+      case Side::SELL:
+        try_trade(side, instrument_.best_ask());
+        break;
     }
   } else {
     model_.reset();

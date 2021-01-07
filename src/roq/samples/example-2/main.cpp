@@ -95,7 +95,9 @@ class Instrument final {
       checkready_();
     }
     switch (connection_status_) {
-      case ConnectionStatus::UNDEFINED: LOG(FATAL)("Unexpected"); break;
+      case ConnectionStatus::UNDEFINED:
+        LOG(FATAL)("Unexpected");
+        break;
       case ConnectionStatus::CONNECTED:
         // nothing to do for this implementation
         break;
@@ -324,9 +326,14 @@ class Strategy final : public client::Handler {
   template <typename T>
   void dispatch(const T &event) {
     switch (event.message_info.source) {
-      case 0: futures_(event.value); break;
-      case 1: cash_(event.value); break;
-      default: assert(false);  // should never happen
+      case 0:
+        futures_(event.value);
+        break;
+      case 1:
+        cash_(event.value);
+        break;
+      default:
+        assert(false);  // should never happen
     }
   }
 
