@@ -2,6 +2,8 @@
 
 #include "roq/samples/example-3/config.h"
 
+#include <absl/flags/flag.h>
+
 #include "roq/samples/example-3/options.h"
 
 namespace roq {
@@ -11,16 +13,16 @@ namespace example_3 {
 void Config::dispatch(Handler &handler) const {
   // accounts
   handler(client::Account{
-      .regex = FLAGS_account,
+      .regex = absl::GetFlag(FLAGS_account),
   });
   // symbols
   handler(client::Symbol{
-      .regex = FLAGS_symbol,
-      .exchange = FLAGS_exchange,
+      .regex = absl::GetFlag(FLAGS_symbol),
+      .exchange = absl::GetFlag(FLAGS_exchange),
   });
   // currencies
   handler(client::Symbol{
-      .regex = FLAGS_currencies,
+      .regex = absl::GetFlag(FLAGS_currencies),
   });
 }
 

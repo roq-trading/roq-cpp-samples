@@ -2,22 +2,25 @@
 
 #pragma once
 
-#include <gflags/gflags.h>
+#include <absl/flags/declare.h>
 
-DECLARE_string(exchange);
+#include <cstdint>
+#include <string>
 
-DECLARE_string(symbol);
+ABSL_DECLARE_FLAG(std::string, exchange);
 
-DECLARE_string(account);
+ABSL_DECLARE_FLAG(std::string, symbol);
 
-DECLARE_string(currencies);
+ABSL_DECLARE_FLAG(std::string, account);
 
-DECLARE_uint32(sample_freq_secs);
+ABSL_DECLARE_FLAG(std::string, currencies);
 
-DECLARE_double(ema_alpha);
+ABSL_DECLARE_FLAG(uint32_t, sample_freq_secs);
 
-DECLARE_uint32(warmup);
+ABSL_DECLARE_FLAG(double, ema_alpha);
 
-DECLARE_bool(enable_trading);
+ABSL_DECLARE_FLAG(uint32_t, warmup);
 
-DECLARE_bool(simulation);
+ABSL_DECLARE_FLAG(bool, enable_trading);
+
+ABSL_DECLARE_FLAG(bool, simulation);

@@ -1,6 +1,6 @@
 /* Copyright (c) 2017-2020, Hans Erik Thrane */
 
-#include <gflags/gflags.h>
+#include <absl/flags/flag.h>
 
 #include "roq/logging.h"
 #include "roq/service.h"
@@ -9,17 +9,23 @@
 
 // command line options
 
-DEFINE_string(deribit_exchange, "deribit", "name of the deribit exchange");
+ABSL_FLAG(
+    std::string, deribit_exchange, "deribit", "name of the deribit exchange");
 
-DEFINE_string(
+ABSL_FLAG(
+    std::string,
     deribit_symbols,
     "BTC-\\d{2}\\D{3}\\d{2}",  // e.g. "BTC-27MAR20"
     "regex used to subscribe deribit symbols");
 
-DEFINE_string(
-    coinbase_pro_exchange, "coinbase-pro", "name of the coinbase-pro exchange");
+ABSL_FLAG(
+    std::string,
+    coinbase_pro_exchange,
+    "coinbase-pro",
+    "name of the coinbase-pro exchange");
 
-DEFINE_string(
+ABSL_FLAG(
+    std::string,
     coinbase_pro_symbols,
     "BTC-.*",  // e.g. "BTC-USD"
     "regex used to subscribe coinbase-pro symbols");
@@ -44,12 +50,12 @@ class Config final : public client::Config {
   void dispatch(Handler &handler) const override {
     // callback for each subscription pattern
     handler(client::Symbol{
-        .regex = FLAGS_deribit_symbols,
-        .exchange = FLAGS_deribit_exchange,
+        .regex = absl::GetFlag(FLAGS_deribit_symbols),
+        .exchange = absl::GetFlag(FLAGS_deribit_exchange),
     });
     handler(client::Symbol{
-        .regex = FLAGS_coinbase_pro_symbols,
-        .exchange = FLAGS_coinbase_pro_exchange,
+        .regex = absl::GetFlag(FLAGS_coinbase_pro_symbols),
+        .exchange = absl::GetFlag(FLAGS_coinbase_pro_exchange),
     });
   }
 };
@@ -171,7 +177,7 @@ class Controller final : public Service {
       throw std::runtime_error("Expected arguments");
     Config config;
     // note!
-    //   gflags will have removed all flags and we're left with arguments
+    //   absl::flags will have removed all flags and we're left with arguments
     //   arguments should be a list of unix domain sockets
     auto connections = args.subspan(1);
     // this strategy factory uses direct connectivity to one or more

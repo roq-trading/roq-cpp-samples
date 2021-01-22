@@ -29,7 +29,7 @@ class EMA final {
  private:
   const double alpha_;
   double value_ = std::numeric_limits<double>::quiet_NaN();
-  uint32_t countdown_ = FLAGS_warmup;
+  uint32_t countdown_;
 };
 
 }  // namespace example_3

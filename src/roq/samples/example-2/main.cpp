@@ -1,6 +1,6 @@
 /* Copyright (c) 2017-2020, Hans Erik Thrane */
 
-#include <gflags/gflags.h>
+#include <absl/flags/flag.h>
 
 #include <cassert>
 
@@ -13,16 +13,19 @@
 
 // command-line options
 
-DEFINE_string(futures_exchange, "deribit", "futures exchange");
+ABSL_FLAG(std::string, futures_exchange, "deribit", "futures exchange");
 
-DEFINE_string(futures_symbol, "BTC-PERPETUAL", "futures symbol");
+ABSL_FLAG(std::string, futures_symbol, "BTC-PERPETUAL", "futures symbol");
 
-DEFINE_string(cash_exchange, "coinbase-pro", "cash exchange");
+ABSL_FLAG(std::string, cash_exchange, "coinbase-pro", "cash exchange");
 
-DEFINE_string(cash_symbol, "BTC-USD", "cash symbol");
+ABSL_FLAG(std::string, cash_symbol, "BTC-USD", "cash symbol");
 
-DEFINE_double(
-    alpha, double{0.2}, "alpha used to compute exponential moving average");
+ABSL_FLAG(
+    double,
+    alpha,
+    double{0.2},
+    "alpha used to compute exponential moving average");
 // reference:
 //   https://en.wikipedia.org/wiki/Moving_average#Exponential_moving_average
 
@@ -65,12 +68,12 @@ class Config final : public client::Config {
   void dispatch(Handler &handler) const override {
     // callback for each subscription pattern
     handler(client::Symbol{
-        .regex = FLAGS_futures_symbol,
-        .exchange = FLAGS_futures_exchange,
+        .regex = absl::GetFlag(FLAGS_futures_symbol),
+        .exchange = absl::GetFlag(FLAGS_futures_exchange),
     });
     handler(client::Symbol{
-        .regex = FLAGS_cash_symbol,
-        .exchange = FLAGS_cash_exchange,
+        .regex = absl::GetFlag(FLAGS_cash_symbol),
+        .exchange = absl::GetFlag(FLAGS_cash_exchange),
     });
   }
 };
@@ -237,7 +240,8 @@ class Instrument final {
     if (std::isnan(avg_price_))
       avg_price_ = mid_price_;
     else
-      avg_price_ = FLAGS_alpha * mid_price_ + (1.0 - FLAGS_alpha) * avg_price_;
+      avg_price_ = absl::GetFlag(FLAGS_alpha) * mid_price_ +
+                   (1.0 - absl::GetFlag(FLAGS_alpha)) * avg_price_;
     // only verbose logging
     VLOG(1)
     (R"([{}:{}] model={{mid_price={}, avg_price={}}})",
@@ -293,9 +297,12 @@ class Instrument final {
 class Strategy final : public client::Handler {
  public:
   explicit Strategy(client::Dispatcher &dispatcher)
-      : dispatcher_(dispatcher),
-        futures_(FLAGS_futures_exchange, FLAGS_futures_symbol),
-        cash_(FLAGS_cash_exchange, FLAGS_cash_symbol) {}
+      : dispatcher_(dispatcher), futures_(
+                                     absl::GetFlag(FLAGS_futures_exchange),
+                                     absl::GetFlag(FLAGS_futures_symbol)),
+        cash_(
+            absl::GetFlag(FLAGS_cash_exchange),
+            absl::GetFlag(FLAGS_cash_symbol)) {}
 
   Strategy(const Strategy &) = delete;
   Strategy(Strategy &&) = default;
@@ -360,7 +367,7 @@ class Controller final : public Service {
           "futures exchange then cash exchange");
     Config config;
     // note!
-    //   gflags will have removed all flags and we're left with arguments
+    //   absl::flags will have removed all flags and we're left with arguments
     //   arguments should be a list of unix domain sockets
     auto connections = args.subspan(1);
     client::Trader(config, connections).dispatch<Strategy>();

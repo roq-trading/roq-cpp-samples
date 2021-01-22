@@ -4,6 +4,10 @@ All notable changes will be documented in this file.
 
 ## Head
 
+### Changed
+
+* Now using `absl::flags` (instead of gflags)
+
 ## 0.5.0 &ndash; 2020-12-04
 
 ### Changed

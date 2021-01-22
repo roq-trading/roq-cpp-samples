@@ -2,6 +2,8 @@
 
 #include "roq/samples/example-3/controller.h"
 
+#include <absl/flags/flag.h>
+
 #include <cassert>
 #include <chrono>
 #include <vector>
@@ -24,12 +26,12 @@ int Controller::main_helper(const roq::span<std::string_view> &args) {
     throw std::runtime_error("Expected exactly one argument");
   Config config;
   // note!
-  //   gflags will have removed all flags and we're left with arguments
+  //   absl::flags will have removed all flags and we're left with arguments
   //   arguments can be a list of either
   //   * unix domain sockets (trading) or
   //   * event logs (simulation)
   auto connections = args.subspan(1);
-  if (FLAGS_simulation) {
+  if (absl::GetFlag(FLAGS_simulation)) {
     // collector
     auto snapshot_frequency = std::chrono::seconds{1};
     auto collector =
@@ -38,7 +40,10 @@ int Controller::main_helper(const roq::span<std::string_view> &args) {
     auto market_data_latency = std::chrono::milliseconds{1};
     auto order_manager_latency = std::chrono::milliseconds{1};
     auto matcher = client::detail::SimulationFactory::create_matcher(
-        "simple", FLAGS_exchange, market_data_latency, order_manager_latency);
+        "simple",
+        absl::GetFlag(FLAGS_exchange),
+        market_data_latency,
+        order_manager_latency);
     // simulator
     client::Simulator(config, connections, *collector, *matcher)
         .dispatch<Strategy>();

@@ -2,6 +2,8 @@
 
 #include "roq/samples/example-3/ema.h"
 
+#include <absl/flags/flag.h>
+
 #include <algorithm>
 #include <cmath>
 
@@ -11,12 +13,13 @@ namespace roq {
 namespace samples {
 namespace example_3 {
 
-EMA::EMA(double alpha) : alpha_(alpha) {
+EMA::EMA(double alpha)
+    : alpha_(alpha), countdown_(absl::GetFlag(FLAGS_warmup)) {
 }
 
 void EMA::reset() {
   value_ = std::numeric_limits<double>::quiet_NaN();
-  countdown_ = FLAGS_warmup;
+  countdown_ = absl::GetFlag(FLAGS_warmup);
 }
 
 double EMA::update(double value) {
