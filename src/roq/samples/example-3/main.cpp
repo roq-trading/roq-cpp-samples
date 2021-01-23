@@ -5,7 +5,7 @@
 #include "roq/samples/example-3/controller.h"
 
 namespace {
-constexpr std::string_view DESCRIPTION = "Example 3 (Roq Samples)";
+static const auto DESCRIPTION = "Example 3 (Roq Samples)";
 }  // namespace
 
 int main(int argc, char **argv) {
