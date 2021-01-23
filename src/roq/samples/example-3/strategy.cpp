@@ -2,13 +2,11 @@
 
 #include "roq/samples/example-3/strategy.h"
 
-#include <absl/flags/flag.h>
-
 #include <limits>
 
 #include "roq/logging.h"
 
-#include "roq/samples/example-3/options.h"
+#include "roq/samples/example-3/flags.h"
 #include "roq/samples/example-3/utilities.h"
 
 namespace roq {
@@ -16,10 +14,8 @@ namespace samples {
 namespace example_3 {
 
 Strategy::Strategy(client::Dispatcher &dispatcher)
-    : dispatcher_(dispatcher), instrument_(
-                                   absl::GetFlag(FLAGS_exchange),
-                                   absl::GetFlag(FLAGS_symbol),
-                                   absl::GetFlag(FLAGS_account)) {
+    : dispatcher_(dispatcher),
+      instrument_(Flags::exchange(), Flags::symbol(), Flags::account()) {
 }
 
 void Strategy::operator()(const Event<Timer> &event) {
@@ -29,8 +25,7 @@ void Strategy::operator()(const Event<Timer> &event) {
   if (next_sample_.count())  // initialized?
     update_model();
   auto now = std::chrono::duration_cast<std::chrono::seconds>(event.value.now);
-  next_sample_ =
-      now + std::chrono::seconds{absl::GetFlag(FLAGS_sample_freq_secs)};
+  next_sample_ = now + std::chrono::seconds{Flags::sample_freq_secs()};
   // possible extension: reset request timeout
 }
 
@@ -119,7 +114,7 @@ void Strategy::update_model() {
 }
 
 void Strategy::try_trade(Side side, double price) {
-  if (absl::GetFlag(FLAGS_enable_trading) == false) {
+  if (Flags::enable_trading() == false) {
     LOG(WARNING)("Trading *NOT* enabled");
     return;
   }
@@ -135,7 +130,7 @@ void Strategy::try_trade(Side side, double price) {
       LOG(INFO)("*** CANCEL WORKING ORDER ***");
       dispatcher_.send(
           CancelOrder{
-              .account = absl::GetFlag(FLAGS_account),
+              .account = Flags::account(),
               .order_id = working_order_id_,
           },
           uint8_t{0});
@@ -149,10 +144,10 @@ void Strategy::try_trade(Side side, double price) {
   auto order_id = ++max_order_id_;
   dispatcher_.send(
       CreateOrder{
-          .account = absl::GetFlag(FLAGS_account),
+          .account = Flags::account(),
           .order_id = order_id,
-          .exchange = absl::GetFlag(FLAGS_exchange),
-          .symbol = absl::GetFlag(FLAGS_symbol),
+          .exchange = Flags::exchange(),
+          .symbol = Flags::symbol(),
           .side = side,
           .quantity = instrument_.min_trade_vol(),
           .order_type = OrderType::LIMIT,

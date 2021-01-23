@@ -2,11 +2,11 @@
 
 #include "roq/samples/example-3/model.h"
 
-#include <absl/flags/flag.h>
-
 #include <numeric>
 
 #include "roq/logging.h"
+
+#include "roq/samples/example-3/flags.h"
 
 namespace roq {
 namespace samples {
@@ -14,9 +14,7 @@ namespace example_3 {
 
 constexpr double TOLERANCE = 1.0e-10;
 
-Model::Model()
-    : bid_ema_(absl::GetFlag(FLAGS_ema_alpha)),
-      ask_ema_(absl::GetFlag(FLAGS_ema_alpha)) {
+Model::Model() : bid_ema_(Flags::ema_alpha()), ask_ema_(Flags::ema_alpha()) {
 }
 
 void Model::reset() {

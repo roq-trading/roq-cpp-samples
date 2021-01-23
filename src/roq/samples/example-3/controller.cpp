@@ -2,8 +2,6 @@
 
 #include "roq/samples/example-3/controller.h"
 
-#include <absl/flags/flag.h>
-
 #include <cassert>
 #include <chrono>
 #include <vector>
@@ -11,7 +9,7 @@
 #include "roq/client.h"
 
 #include "roq/samples/example-3/config.h"
-#include "roq/samples/example-3/options.h"
+#include "roq/samples/example-3/flags.h"
 #include "roq/samples/example-3/strategy.h"
 
 namespace roq {
@@ -31,7 +29,7 @@ int Controller::main_helper(const roq::span<std::string_view> &args) {
   //   * unix domain sockets (trading) or
   //   * event logs (simulation)
   auto connections = args.subspan(1);
-  if (absl::GetFlag(FLAGS_simulation)) {
+  if (Flags::simulation()) {
     // collector
     auto snapshot_frequency = std::chrono::seconds{1};
     auto collector =
@@ -41,7 +39,7 @@ int Controller::main_helper(const roq::span<std::string_view> &args) {
     auto order_manager_latency = std::chrono::milliseconds{1};
     auto matcher = client::detail::SimulationFactory::create_matcher(
         "simple",
-        absl::GetFlag(FLAGS_exchange),
+        Flags::exchange(),
         market_data_latency,
         order_manager_latency);
     // simulator

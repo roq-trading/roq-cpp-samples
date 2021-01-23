@@ -1,15 +1,11 @@
 /* Copyright (c) 2017-2020, Hans Erik Thrane */
 
-#include <absl/flags/flag.h>
-
 #include "roq/logging.h"
 #include "roq/service.h"
 
 #include "roq/client.h"
 
-ABSL_FLAG(std::string, exchange, "deribit", "exchange name");
-
-ABSL_FLAG(std::string, symbols, ".*", "regex used to subscribe symbols");
+#include "roq/samples/example-4/flags.h"
 
 namespace roq {
 namespace samples {
@@ -25,8 +21,8 @@ class Config final : public client::Config {
  protected:
   void dispatch(Handler &handler) const override {
     handler(client::Symbol{
-        .regex = absl::GetFlag(FLAGS_symbols),
-        .exchange = absl::GetFlag(FLAGS_exchange),
+        .regex = Flags::symbols(),
+        .exchange = Flags::exchange(),
     });
   }
 };

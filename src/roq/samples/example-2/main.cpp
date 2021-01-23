@@ -1,7 +1,5 @@
 /* Copyright (c) 2017-2020, Hans Erik Thrane */
 
-#include <absl/flags/flag.h>
-
 #include <cassert>
 
 #include <array>
@@ -11,23 +9,7 @@
 
 #include "roq/client.h"
 
-// command-line options
-
-ABSL_FLAG(std::string, futures_exchange, "deribit", "futures exchange");
-
-ABSL_FLAG(std::string, futures_symbol, "BTC-PERPETUAL", "futures symbol");
-
-ABSL_FLAG(std::string, cash_exchange, "coinbase-pro", "cash exchange");
-
-ABSL_FLAG(std::string, cash_symbol, "BTC-USD", "cash symbol");
-
-ABSL_FLAG(
-    double,
-    alpha,
-    double{0.2},
-    "alpha used to compute exponential moving average");
-// reference:
-//   https://en.wikipedia.org/wiki/Moving_average#Exponential_moving_average
+#include "roq/samples/example-2/flags.h"
 
 namespace roq {
 namespace samples {
@@ -68,12 +50,12 @@ class Config final : public client::Config {
   void dispatch(Handler &handler) const override {
     // callback for each subscription pattern
     handler(client::Symbol{
-        .regex = absl::GetFlag(FLAGS_futures_symbol),
-        .exchange = absl::GetFlag(FLAGS_futures_exchange),
+        .regex = Flags::futures_symbol(),
+        .exchange = Flags::futures_exchange(),
     });
     handler(client::Symbol{
-        .regex = absl::GetFlag(FLAGS_cash_symbol),
-        .exchange = absl::GetFlag(FLAGS_cash_exchange),
+        .regex = Flags::cash_symbol(),
+        .exchange = Flags::cash_exchange(),
     });
   }
 };
@@ -240,8 +222,8 @@ class Instrument final {
     if (std::isnan(avg_price_))
       avg_price_ = mid_price_;
     else
-      avg_price_ = absl::GetFlag(FLAGS_alpha) * mid_price_ +
-                   (1.0 - absl::GetFlag(FLAGS_alpha)) * avg_price_;
+      avg_price_ =
+          Flags::alpha() * mid_price_ + (1.0 - Flags::alpha()) * avg_price_;
     // only verbose logging
     VLOG(1)
     (R"([{}:{}] model={{mid_price={}, avg_price={}}})",
@@ -297,12 +279,9 @@ class Instrument final {
 class Strategy final : public client::Handler {
  public:
   explicit Strategy(client::Dispatcher &dispatcher)
-      : dispatcher_(dispatcher), futures_(
-                                     absl::GetFlag(FLAGS_futures_exchange),
-                                     absl::GetFlag(FLAGS_futures_symbol)),
-        cash_(
-            absl::GetFlag(FLAGS_cash_exchange),
-            absl::GetFlag(FLAGS_cash_symbol)) {}
+      : dispatcher_(dispatcher),
+        futures_(Flags::futures_exchange(), Flags::futures_symbol()),
+        cash_(Flags::cash_exchange(), Flags::cash_symbol()) {}
 
   Strategy(const Strategy &) = delete;
   Strategy(Strategy &&) = default;
