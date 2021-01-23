@@ -7,11 +7,12 @@
 
 namespace roq {
 namespace samples {
-namespace example_2 {
+namespace example_1 {
 
-// application
+// Service is a base class used to initialize the environment
+// it is not required, only for your convenience
 
-class Controller final : public Service {
+class Application final : public Service {
  public:
   using Service::Service;
 
@@ -20,6 +21,6 @@ class Controller final : public Service {
   int main(int argc, char **argv) override;
 };
 
-}  // namespace example_2
+}  // namespace example_1
 }  // namespace samples
 }  // namespace roq

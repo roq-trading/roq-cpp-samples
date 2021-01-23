@@ -12,7 +12,7 @@ namespace roq {
 namespace samples {
 namespace example_3 {
 
-class Controller final : public Service {
+class Application final : public Service {
  public:
   using Service::Service;
 

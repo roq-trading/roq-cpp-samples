@@ -1,6 +1,6 @@
 /* Copyright (c) 2017-2021, Hans Erik Thrane */
 
-#include "roq/samples/example-3/controller.h"
+#include "roq/samples/example-3/application.h"
 
 #include <cassert>
 #include <chrono>
@@ -16,7 +16,7 @@ namespace roq {
 namespace samples {
 namespace example_3 {
 
-int Controller::main_helper(const roq::span<std::string_view> &args) {
+int Application::main_helper(const roq::span<std::string_view> &args) {
   assert(args.empty() == false);
   if (args.size() == 1)
     throw std::runtime_error("Expected arguments");
@@ -52,7 +52,7 @@ int Controller::main_helper(const roq::span<std::string_view> &args) {
   return EXIT_SUCCESS;
 }
 
-int Controller::main(int argc, char **argv) {
+int Application::main(int argc, char **argv) {
   // wrap arguments (prefer to not work with raw pointers)
   std::vector<std::string_view> args;
   args.reserve(argc);

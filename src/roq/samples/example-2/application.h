@@ -7,9 +7,11 @@
 
 namespace roq {
 namespace samples {
-namespace example_4 {
+namespace example_2 {
 
-class Controller final : public Service {
+// application
+
+class Application final : public Service {
  public:
   using Service::Service;
 
@@ -18,6 +20,6 @@ class Controller final : public Service {
   int main(int argc, char **argv) override;
 };
 
-}  // namespace example_4
+}  // namespace example_2
 }  // namespace samples
 }  // namespace roq

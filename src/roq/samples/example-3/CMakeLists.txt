@@ -2,8 +2,8 @@ set(TARGET_NAME "${PROJECT_NAME}-example-3")
 
 add_executable(
   "${TARGET_NAME}"
+  application.cpp
   config.cpp
-  controller.cpp
   ema.cpp
   flags.cpp
   instrument.cpp
