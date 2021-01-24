@@ -28,8 +28,7 @@ namespace roq {
 namespace samples {
 namespace example_2 {
 
-Instrument::Instrument(
-    const std::string_view &exchange, const std::string_view &symbol)
+Instrument::Instrument(const std::string_view &exchange, const std::string_view &symbol)
     : exchange_(exchange), symbol_(symbol),
       depth_builder_(client::DepthBuilderFactory::create(symbol, depth_)) {
 }
@@ -76,10 +75,7 @@ void Instrument::operator()(const MarketDataStatus &market_data_status) {
   // update our cache
   if (update(market_data_status_, market_data_status.status)) {
     LOG(INFO)
-    (R"([{}:{}] market_data_status={})",
-     exchange_,
-     symbol_,
-     market_data_status_);
+    (R"([{}:{}] market_data_status={})", exchange_, symbol_, market_data_status_);
   }
   // update the ready flag
   checkready_();
@@ -173,8 +169,7 @@ void Instrument::update_model() {
   // compute (weighted) mid
   double sum_1 = 0.0, sum_2 = 0.0;
   for (auto iter : depth_) {
-    sum_1 +=
-        iter.bid_price * iter.bid_quantity + iter.ask_price * iter.ask_quantity;
+    sum_1 += iter.bid_price * iter.bid_quantity + iter.ask_price * iter.ask_quantity;
     sum_2 += iter.bid_quantity + iter.ask_quantity;
   }
   mid_price_ = sum_1 / sum_2;
@@ -182,24 +177,17 @@ void Instrument::update_model() {
   if (std::isnan(avg_price_))
     avg_price_ = mid_price_;
   else
-    avg_price_ =
-        Flags::alpha() * mid_price_ + (1.0 - Flags::alpha()) * avg_price_;
+    avg_price_ = Flags::alpha() * mid_price_ + (1.0 - Flags::alpha()) * avg_price_;
   // only verbose logging
   VLOG(1)
-  (R"([{}:{}] model={{mid_price={}, avg_price={}}})",
-   exchange_,
-   symbol_,
-   mid_price_,
-   avg_price_);
+  (R"([{}:{}] model={{mid_price={}, avg_price={}}})", exchange_, symbol_, mid_price_, avg_price_);
 }
 
 void Instrument::checkready_() {
   auto before = ready_;
-  ready_ = connection_status_ == ConnectionStatus::CONNECTED &&
-           download_ == false && tick_size_ > TOLERANCE &&
-           min_trade_vol_ > TOLERANCE && multiplier_ > TOLERANCE &&
-           trading_status_ == TradingStatus::OPEN &&
-           market_data_status_ == GatewayStatus::READY;
+  ready_ = connection_status_ == ConnectionStatus::CONNECTED && download_ == false &&
+           tick_size_ > TOLERANCE && min_trade_vol_ > TOLERANCE && multiplier_ > TOLERANCE &&
+           trading_status_ == TradingStatus::OPEN && market_data_status_ == GatewayStatus::READY;
   LOG_IF(INFO, ready_ != before)
   (R"([{}:{}] ready={})", exchange_, symbol_, ready_);
 }

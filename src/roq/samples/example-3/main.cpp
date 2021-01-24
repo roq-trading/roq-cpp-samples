@@ -9,7 +9,5 @@ static const auto DESCRIPTION = "Example 3 (Roq Samples)";
 }  // namespace
 
 int main(int argc, char **argv) {
-  return roq::samples::example_3::Application(
-             argc, argv, DESCRIPTION, ROQ_VERSION)
-      .run();
+  return roq::samples::example_3::Application(argc, argv, DESCRIPTION, ROQ_VERSION).run();
 }

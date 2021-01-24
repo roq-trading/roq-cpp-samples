@@ -14,11 +14,7 @@ ABSL_FLAG(std::string, cash_exchange, "coinbase-pro", "cash exchange");
 
 ABSL_FLAG(std::string, cash_symbol, "BTC-USD", "cash symbol");
 
-ABSL_FLAG(
-    double,
-    alpha,
-    double{0.2},
-    "alpha used to compute exponential moving average");
+ABSL_FLAG(double, alpha, double{0.2}, "alpha used to compute exponential moving average");
 
 namespace roq {
 namespace samples {

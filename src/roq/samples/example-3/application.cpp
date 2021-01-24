@@ -32,19 +32,14 @@ int Application::main_helper(const roq::span<std::string_view> &args) {
   if (Flags::simulation()) {
     // collector
     auto snapshot_frequency = std::chrono::seconds{1};
-    auto collector =
-        client::detail::SimulationFactory::create_collector(snapshot_frequency);
+    auto collector = client::detail::SimulationFactory::create_collector(snapshot_frequency);
     // matcher
     auto market_data_latency = std::chrono::milliseconds{1};
     auto order_manager_latency = std::chrono::milliseconds{1};
     auto matcher = client::detail::SimulationFactory::create_matcher(
-        "simple",
-        Flags::exchange(),
-        market_data_latency,
-        order_manager_latency);
+        "simple", Flags::exchange(), market_data_latency, order_manager_latency);
     // simulator
-    client::Simulator(config, connections, *collector, *matcher)
-        .dispatch<Strategy>();
+    client::Simulator(config, connections, *collector, *matcher).dispatch<Strategy>();
   } else {
     // trader
     client::Trader(config, connections).dispatch<Strategy>();

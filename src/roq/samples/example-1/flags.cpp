@@ -6,8 +6,7 @@
 
 #include <string>
 
-ABSL_FLAG(
-    std::string, deribit_exchange, "deribit", "name of the deribit exchange");
+ABSL_FLAG(std::string, deribit_exchange, "deribit", "name of the deribit exchange");
 
 ABSL_FLAG(
     std::string,
@@ -15,11 +14,7 @@ ABSL_FLAG(
     "BTC-\\d{2}\\D{3}\\d{2}",  // e.g. "BTC-27MAR20"
     "regex used to subscribe deribit symbols");
 
-ABSL_FLAG(
-    std::string,
-    coinbase_pro_exchange,
-    "coinbase-pro",
-    "name of the coinbase-pro exchange");
+ABSL_FLAG(std::string, coinbase_pro_exchange, "coinbase-pro", "name of the coinbase-pro exchange");
 
 ABSL_FLAG(
     std::string,

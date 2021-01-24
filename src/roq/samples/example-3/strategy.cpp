@@ -14,8 +14,7 @@ namespace samples {
 namespace example_3 {
 
 Strategy::Strategy(client::Dispatcher &dispatcher)
-    : dispatcher_(dispatcher),
-      instrument_(Flags::exchange(), Flags::symbol(), Flags::account()) {
+    : dispatcher_(dispatcher), instrument_(Flags::exchange(), Flags::symbol(), Flags::account()) {
 }
 
 void Strategy::operator()(const Event<Timer> &event) {

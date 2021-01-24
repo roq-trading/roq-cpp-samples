@@ -83,10 +83,7 @@ void Instrument::operator()(const MarketDataStatus &market_data_status) {
   // update our cache
   if (update(market_data_status_, market_data_status.status)) {
     LOG(INFO)
-    (R"([{}:{}] market_data_status={})",
-     exchange_,
-     symbol_,
-     market_data_status_);
+    (R"([{}:{}] market_data_status={})", exchange_, symbol_, market_data_status_);
   }
   // update the ready flag
   checkready_();
@@ -97,10 +94,7 @@ void Instrument::operator()(const OrderManagerStatus &order_manager_status) {
   // update our cache
   if (update(order_manager_status_, order_manager_status.status)) {
     LOG(INFO)
-    (R"([{}:{}] order_manager_status={})",
-     exchange_,
-     symbol_,
-     order_manager_status_);
+    (R"([{}:{}] order_manager_status={})", exchange_, symbol_, order_manager_status_);
   }
   // update the ready flag
   checkready_();
@@ -233,11 +227,9 @@ void Instrument::operator()(const PositionUpdate &position_update) {
 
 void Instrument::checkready_() {
   auto before = ready_;
-  ready_ = connection_status_ == ConnectionStatus::CONNECTED &&
-           download_ == false && tick_size_ > TOLERANCE &&
-           min_trade_vol_ > TOLERANCE && multiplier_ > TOLERANCE &&
-           trading_status_ == TradingStatus::OPEN &&
-           market_data_status_ == GatewayStatus::READY &&
+  ready_ = connection_status_ == ConnectionStatus::CONNECTED && download_ == false &&
+           tick_size_ > TOLERANCE && min_trade_vol_ > TOLERANCE && multiplier_ > TOLERANCE &&
+           trading_status_ == TradingStatus::OPEN && market_data_status_ == GatewayStatus::READY &&
            order_manager_status_ == GatewayStatus::READY;
   LOG_IF(INFO, ready_ != before)
   (R"([{}:{}] ready={})", exchange_, symbol_, ready_);
@@ -260,8 +252,7 @@ void Instrument::reset() {
 }
 
 void Instrument::validate(const Depth &depth) {
-  if (std::fabs(depth[0].bid_quantity) < TOLERANCE ||
-      std::fabs(depth[0].ask_quantity) < TOLERANCE)
+  if (std::fabs(depth[0].bid_quantity) < TOLERANCE || std::fabs(depth[0].ask_quantity) < TOLERANCE)
     return;
   auto spread = depth[0].ask_price - depth[0].bid_price;
   LOG_IF(FATAL, spread < TOLERANCE)

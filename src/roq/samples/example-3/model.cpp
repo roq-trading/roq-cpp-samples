@@ -92,11 +92,10 @@ Side Model::update(const Depth &depth) {
 }
 
 bool Model::validate(const Depth &depth) {  // require full depth
-  return std::accumulate(
-      depth.begin(), depth.end(), true, [](bool current, const Layer &layer) {
-        return current && std::fabs(layer.bid_quantity) > TOLERANCE &&
-               std::fabs(layer.ask_quantity) > TOLERANCE;
-      });
+  return std::accumulate(depth.begin(), depth.end(), true, [](bool current, const Layer &layer) {
+    return current && std::fabs(layer.bid_quantity) > TOLERANCE &&
+           std::fabs(layer.ask_quantity) > TOLERANCE;
+  });
 }
 
 double Model::weighted_bid(const Depth &depth) {
