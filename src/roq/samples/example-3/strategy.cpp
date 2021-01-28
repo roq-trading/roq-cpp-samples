@@ -21,7 +21,7 @@ void Strategy::operator()(const Event<Timer> &event) {
   // note! using system clock (*not* the wall clock)
   if (event.value.now < next_sample_)
     return;
-  if (next_sample_.count())  // initialized?
+  if (next_sample_ != next_sample_.zero())  // initialized?
     update_model();
   auto now = std::chrono::duration_cast<std::chrono::seconds>(event.value.now);
   next_sample_ = now + std::chrono::seconds{Flags::sample_freq_secs()};
