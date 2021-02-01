@@ -35,6 +35,14 @@ void Strategy::operator()(const Event<DownloadEnd> &event) {
    event.value);
 }
 
+void Strategy::operator()(const Event<GatewaySettings> &event) {
+  LOG(INFO)
+  (R"([{}:{}] Settings={})",
+   event.message_info.source,
+   event.message_info.source_name,
+   event.value);
+}
+
 void Strategy::operator()(const Event<MarketDataStatus> &event) {
   LOG(INFO)
   (R"([{}:{}] MarketDataStatus={})",

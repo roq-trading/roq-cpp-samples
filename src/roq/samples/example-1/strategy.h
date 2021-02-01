@@ -37,6 +37,7 @@ class Strategy final : public client::Handler {
   void operator()(const Event<Connection> &event) override;
   void operator()(const Event<DownloadBegin> &event) override;
   void operator()(const Event<DownloadEnd> &event) override;
+  void operator()(const Event<GatewaySettings> &event) override;
   void operator()(const Event<MarketDataStatus> &event) override;
   void operator()(const Event<OrderManagerStatus> &event) override;
   void operator()(const Event<ReferenceData> &event) override;
