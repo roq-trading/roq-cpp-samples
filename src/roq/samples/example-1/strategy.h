@@ -44,6 +44,7 @@ class Strategy final : public client::Handler {
   void operator()(const Event<MarketByPriceUpdate> &event) override;
   void operator()(const Event<MarketByOrderUpdate> &event) override;
   void operator()(const Event<TradeSummary> &event) override;
+  void operator()(const Event<ExternalLatency> &event) override;
 
  private:
   client::Dispatcher &dispatcher_;

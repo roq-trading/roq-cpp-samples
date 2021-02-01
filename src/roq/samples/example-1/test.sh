@@ -9,7 +9,7 @@ else
   PREFIX=
 fi
 
-NAME="example-1"
+NAME="trader"
 
 $PREFIX "$DIR/roq-samples-example-1" \
 	--name "$NAME" \

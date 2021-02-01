@@ -32,7 +32,7 @@ Simulation is controlled by the `--simulation` flag
 
 ```bash
 ./roq-samples-example-3 \
-    --name "example-3" \
+    --name "trader" \
     --simulation \
     $CONDA_PREFIX/share/roq-data/deribit.roq
 ```
@@ -121,7 +121,7 @@ Placement of limit orders is controlled by the `--enable-trading` flag
 
 ```bash
 ./roq-samples-example-3 \
-    --name "example-3" \
+    --name "trader" \
     --simulation \
     --enable-trading \
     $CONDA_PREFIX/share/roq-data/deribit.roq
@@ -254,7 +254,7 @@ Switching to live trading
 
 ```bash
 ./roq-samples-example-3 \
-    --name "example-3" \
+    --name "trader" \
     ~/deribit.sock
 ```
 

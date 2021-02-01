@@ -17,7 +17,7 @@ install, configure and run the required market gateways.
 
 ```bash
 ./roq-samples-example-2 \
-    --name "example-2" \
+    --name "trader" \
     ~/deribit.sock \
     ~/coinbase-pro.sock
 ```

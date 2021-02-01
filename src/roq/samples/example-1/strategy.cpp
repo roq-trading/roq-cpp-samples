@@ -94,6 +94,15 @@ void Strategy::operator()(const Event<TradeSummary> &event) {
    event.value);
 }
 
+void Strategy::operator()(const Event<ExternalLatency> &event) {
+  // only verbose logging, see comment in header
+  VLOG(1)
+  (R"([{}:{}] ExternalLatency={})",
+   event.message_info.source,
+   event.message_info.source_name,
+   event.value);
+}
+
 }  // namespace example_1
 }  // namespace samples
 }  // namespace roq

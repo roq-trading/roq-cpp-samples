@@ -25,7 +25,7 @@ Further arguments are UNIX domain socket end-points for the market gateways.
 
 ```bash
 ./roq-samples-example-1 \
-    --name "example-1" \
+    --name "trader" \
     ~/deribit.sock
 ```
 
@@ -63,7 +63,7 @@ Noteworthy observations
 
 ```bash
 ROQ_v=1 ./roq-samples-example-1 \
-    --name "example-1" \
+    --name "trader" \
     ~/deribit.sock
 ```
 
@@ -114,7 +114,7 @@ Noteworthy observations
 
 ```bash
 ./roq-samples-example-1 \
-    --name "example-1" \
+    --name "trader" \
     ~/deribit.sock \
     ~/coinbase-pro.sock
 ```
