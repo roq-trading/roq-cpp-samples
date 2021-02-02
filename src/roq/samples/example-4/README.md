@@ -18,6 +18,6 @@ Further arguments are UNIX domain socket end-points for the market gateways.
 
 ```bash
 ./roq-samples-example-4 \
-    --name "test" \
+    --name "trader" \
     ~/deribit.sock
 ```

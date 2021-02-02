@@ -123,7 +123,7 @@ Placement of limit orders is controlled by the `--enable-trading` flag
 ./roq-samples-example-3 \
     --name "trader" \
     --simulation \
-    --enable-trading \
+    --enable_trading \
     $CONDA_PREFIX/share/roq-data/deribit.roq
 ```
 
