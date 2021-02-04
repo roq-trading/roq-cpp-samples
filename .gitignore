@@ -74,5 +74,6 @@ doxygen/xml
 
 roq-samples-benchmark
 roq-samples-example-*
+roq-samples-import
 roq-samples-test
 roq-samples.pc
