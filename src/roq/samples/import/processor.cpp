@@ -96,7 +96,7 @@ void Processor::dispatch() {
           .symbol = SYMBOL,
           .bids = bids_image,
           .asks = asks_image,
-          .snapshot = true,         // indicates that it's an image
+          .snapshot = true,         // indicates that it's an *image*
           .exchange_time_utc = {},  // probably similar to the timestamp you're using
       },
       std::chrono::nanoseconds{4});
@@ -111,7 +111,7 @@ void Processor::dispatch() {
           .symbol = SYMBOL,
           .bids = bids_update,
           .asks = {},
-          .snapshot = true,         // indicates that it's an image
+          .snapshot = false,        // indicates that it's an *update*
           .exchange_time_utc = {},  // probably similar to the timestamp you're using
       },
       std::chrono::nanoseconds{5});
