@@ -6,7 +6,8 @@ All notable changes will be documented in this file.
 
 ### Added
 
-* Example showing how to import third-party data sources
+* Example demonstrating how to import third-party data sources using
+  the Flatbuffers encoding format
 
 ## 0.6.0 &ndash; 2021-02-02
 
