@@ -54,7 +54,7 @@ conda install -y --channel https://roq-trading.com/conda/stable \
 
 ```bash
 ./roq-samples-import \
-    my_fbs_stream
+    my_cme_fbs_stream
 ```
 
 ### Convert a Flatbuffers Stream to the Event-Log Format
@@ -63,9 +63,9 @@ conda install -y --channel https://roq-trading.com/conda/stable \
 roq-import \
     --type "event_log" \
     --encoding flatbuffers \
-    --name "exchange_name" \
+    --name "cme" \
     --event_log_dir "." \
-    my_fbs_stream
+    my_cme_fbs_stream
 ```
 
 ### Inspect Generated Event-Log
@@ -73,7 +73,9 @@ roq-import \
 Summary like this
 
 ```bash
-roq-dump --summary true exchange_name/test.roq
+roq-dump \
+    --summary true \
+    cme/test.roq
 ```
 
 ```console
@@ -113,7 +115,9 @@ controller.cpp:742] duration 0d 0h 0m 0s
 Details like this
 
 ```bash
-roq-dump --type log exchange_name/test.roq
+roq-dump \
+    --type log \
+    cme/test.roq
 ```
 
 ```console
@@ -122,4 +126,21 @@ controller.cpp:179] event={message_info={source=0, source_name="exchange_name", 
 controller.cpp:218] event={message_info={source=0, source_name="exchange_name", source_session_id="00000000-0000-0000-0000-000000000000", source_seqno=3, receive_time_utc=3ns, receive_time=3ns, source_send_time=3ns, source_receive_time=3ns, origin_create_time=3ns, origin_create_time_utc=3ns, is_last=true, opaque=0}, market_status={exchange="CME", symbol="GEZ1", trading_status=OPEN}}
 controller.cpp:269] event={message_info={source=0, source_name="exchange_name", source_session_id="00000000-0000-0000-0000-000000000000", source_seqno=4, receive_time_utc=4ns, receive_time=4ns, source_send_time=4ns, source_receive_time=4ns, origin_create_time=4ns, origin_create_time_utc=4ns, is_last=true, opaque=0}, market_by_price_update={exchange="CME", symbol="GEZ1", bids=[{price=99.785, quantity=3}, {price=99.78, quantity=2}, {price=99.775, quantity=1}], asks=[{price=99.8, quantity=3}, {price=99.805, quantity=2}, {price=99.81, quantity=1}], snapshot=true, exchange_time_utc=0ns}}
 controller.cpp:269] event={message_info={source=0, source_name="exchange_name", source_session_id="00000000-0000-0000-0000-000000000000", source_seqno=5, receive_time_utc=5ns, receive_time=5ns, source_send_time=5ns, source_receive_time=5ns, origin_create_time=5ns, origin_create_time_utc=5ns, is_last=true, opaque=0}, market_by_price_update={exchange="CME", symbol="GEZ1", bids=[{price=99.785, quantity=0}, {price=99.77, quantity=2}], asks=[], snapshot=false, exchange_time_utc=0ns}}
+```
+
+### Simulation
+
+You could also try the simulation example
+
+```bash
+../example-3/roq-samples-example-3 \
+    --name trader \
+    --exchange cme \
+    --symbol GEZ1 \
+    --simulation \
+    cme/test.roq
+```
+
+```console
+TODO
 ```
