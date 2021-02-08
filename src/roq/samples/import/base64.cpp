@@ -11,7 +11,7 @@ namespace {
 // https://creativecommons.org/licenses/by-sa/4.0/
 // changes:
 // - using reinterpret_cast (instead of C-style cast)
-// - access data buffr using unsigned char const * (instead of char const *)
+// - access data buffer using `unsigned char const *` (instead of `char *`)
 // - using static_cast (instead of C-style cast)
 // - added assertions
 // - removed functions and tables not needed here
