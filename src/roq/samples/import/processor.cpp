@@ -15,8 +15,6 @@
 #include "roq/samples/import/base64.h"
 #include "roq/samples/import/flags.h"
 
-#include "roq/logging.h"
-
 namespace roq {
 namespace samples {
 namespace import {
@@ -36,7 +34,7 @@ static bool use_base64() {
     return false;
   if (encoding.compare("base64") == 0)
     return true;
-  throw std::runtime_error(fmt::format(R"(Unable to encoding="{}")", encoding));
+  throw std::runtime_error(fmt::format(R"(Unknown encoding="{}")", encoding));
 }
 }  // namespace
 
