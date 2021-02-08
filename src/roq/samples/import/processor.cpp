@@ -167,7 +167,7 @@ void Processor::process(const T &value, std::chrono::nanoseconds timestamp) {
       file_.write(reinterpret_cast<char const *>(data), length);
       break;
     case Encoding::BASE64: {
-      auto message = Base64::encode(reinterpret_cast<char const *>(data), length);
+      auto message = Base64::encode(data, length);
       file_.write(message.c_str(), message.length());
       break;
     }
