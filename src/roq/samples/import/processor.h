@@ -35,6 +35,10 @@ class Processor final {
   uint64_t seqno_ = 0;
   flatbuffers::FlatBufferBuilder builder_;
   std::ofstream file_;
+  enum class Encoding {
+    BINARY,
+    BASE64,
+  } encoding_ = Encoding::BINARY;
 };
 
 }  // namespace import

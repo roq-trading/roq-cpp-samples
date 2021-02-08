@@ -4,12 +4,18 @@
 
 #include <fmt/format.h>
 
+#include <cassert>
 #include <iostream>
 #include <stdexcept>
 #include <string>
 
 #include "roq/fbs/api.h"
 #include "roq/fbs/encode.h"
+
+#include "roq/samples/import/base64.h"
+#include "roq/samples/import/flags.h"
+
+#include "roq/logging.h"
 
 namespace roq {
 namespace samples {
@@ -23,8 +29,20 @@ static const double MULTIPLIER = 2500.0;
 static const double MIN_TRADE_VOL = 1.0;  // lots
 }  // namespace
 
+namespace {
+static bool use_base64() {
+  auto encoding = Flags::encoding();
+  if (encoding.compare("binary") == 0)
+    return false;
+  if (encoding.compare("base64") == 0)
+    return true;
+  throw std::runtime_error(fmt::format(R"(Unable to encoding="{}")", encoding));
+}
+}  // namespace
+
 Processor::Processor(const std::string_view &path)
-    : file_(std::string{path}, std::ios::out | std::ios::binary) {
+    : file_(std::string{path}, std::ios::out | std::ios::binary),
+      encoding_(use_base64() ? Encoding::BASE64 : Encoding::BINARY) {
   if (!file_)
     throw std::runtime_error(fmt::format(R"(Unable to open file for writing: path="{}")", path));
 }
@@ -144,7 +162,16 @@ void Processor::process(const T &value, std::chrono::nanoseconds timestamp) {
   builder_.FinishSizePrefixed(root);  // note! *must* include size
   auto data = builder_.GetBufferPointer();
   auto length = builder_.GetSize();
-  file_.write(reinterpret_cast<char const *>(data), length);
+  switch (encoding_) {
+    case Encoding::BINARY:
+      file_.write(reinterpret_cast<char const *>(data), length);
+      break;
+    case Encoding::BASE64: {
+      auto message = Base64::encode(reinterpret_cast<char const *>(data), length);
+      file_.write(message.c_str(), message.length());
+      break;
+    }
+  }
 }
 
 }  // namespace import

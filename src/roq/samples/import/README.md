@@ -54,18 +54,20 @@ conda install -y --channel https://roq-trading.com/conda/stable \
 
 ```bash
 ./roq-samples-import \
-    my_cme_fbs_stream
+    --encoding binary \
+    my_tmp_file
 ```
 
 ### Convert a Flatbuffers Stream to the Event-Log Format
 
 ```bash
 roq-import \
-    --type "event_log" \
-    --encoding flatbuffers \
-    --name "cme" \
-    --event_log_dir "." \
-    my_cme_fbs_stream
+    --type event_log \
+    --protocol flatbuffers
+    --encoding binary \
+    --name cme \
+    --event_log_dir . \
+    my_tmp_file
 ```
 
 ### Inspect Generated Event-Log
