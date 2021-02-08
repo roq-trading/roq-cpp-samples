@@ -2,8 +2,8 @@
 
 #pragma once
 
-#include "roq/service.h"
 #include "roq/span.h"
+#include "roq/tool.h"
 
 namespace roq {
 namespace samples {
@@ -12,9 +12,9 @@ namespace import {
 // Service is a base class used to initialize the environment
 // it is not required, only for your convenience
 
-class Application final : public Service {
+class Application final : public Tool {
  public:
-  using Service::Service;
+  using Tool::Tool;
 
  protected:
   int main_helper(const roq::span<std::string_view> &args);
