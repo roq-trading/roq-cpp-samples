@@ -76,6 +76,9 @@ make -j4
   * Live trading
 * [Example 4](./src/roq/samples/example-4/README.md)
   * Subscribe and nothing else
+* [Import](./src/roq/samples/import/README.md)
+  * Convert any data source to an event-log
+  * Encoding has header-only dependencies
 
 
 ### Simulation Data (install)
