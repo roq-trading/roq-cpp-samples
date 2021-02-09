@@ -10,6 +10,8 @@
 
 #include "roq/samples/example-3/utilities.h"
 
+using namespace std::literals;  // NOLINT
+
 namespace roq {
 namespace samples {
 namespace example_3 {
@@ -44,12 +46,12 @@ bool Instrument::can_trade(Side side) const {
 void Instrument::operator()(const Connection &connection) {
   if (update(connection_status_, connection.status)) {
     LOG(INFO)
-    (R"([{}:{}] connection_status={})", exchange_, symbol_, connection_status_);
+    (R"([{}:{}] connection_status={})"sv, exchange_, symbol_, connection_status_);
     checkready_();
   }
   switch (connection_status_) {
     case ConnectionStatus::UNDEFINED:
-      LOG(FATAL)("Unexpected");
+      LOG(FATAL)("Unexpected"sv);
       break;
     case ConnectionStatus::CONNECTED:
       // nothing to do for this implementation
@@ -66,7 +68,7 @@ void Instrument::operator()(const DownloadBegin &download_begin) {
     return;
   assert(download_ == false);
   download_ = true;
-  LOG(INFO)(R"([{}:{}] download={})", exchange_, symbol_, download_);
+  LOG(INFO)(R"([{}:{}] download={})"sv, exchange_, symbol_, download_);
 }
 
 void Instrument::operator()(const DownloadEnd &download_end) {
@@ -74,7 +76,7 @@ void Instrument::operator()(const DownloadEnd &download_end) {
     return;
   assert(download_ == true);
   download_ = false;
-  LOG(INFO)(R"([{}:{}] download={})", exchange_, symbol_, download_);
+  LOG(INFO)(R"([{}:{}] download={})"sv, exchange_, symbol_, download_);
   // update the ready flag
   checkready_();
 }
@@ -83,7 +85,7 @@ void Instrument::operator()(const MarketDataStatus &market_data_status) {
   // update our cache
   if (update(market_data_status_, market_data_status.status)) {
     LOG(INFO)
-    (R"([{}:{}] market_data_status={})", exchange_, symbol_, market_data_status_);
+    (R"([{}:{}] market_data_status={})"sv, exchange_, symbol_, market_data_status_);
   }
   // update the ready flag
   checkready_();
@@ -94,7 +96,7 @@ void Instrument::operator()(const OrderManagerStatus &order_manager_status) {
   // update our cache
   if (update(order_manager_status_, order_manager_status.status)) {
     LOG(INFO)
-    (R"([{}:{}] order_manager_status={})", exchange_, symbol_, order_manager_status_);
+    (R"([{}:{}] order_manager_status={})"sv, exchange_, symbol_, order_manager_status_);
   }
   // update the ready flag
   checkready_();
@@ -107,14 +109,14 @@ void Instrument::operator()(const ReferenceData &reference_data) {
   depth_builder_->update(reference_data);
   // update our cache
   if (update(tick_size_, reference_data.tick_size)) {
-    LOG(INFO)(R"([{}:{}] tick_size={})", exchange_, symbol_, tick_size_);
+    LOG(INFO)(R"([{}:{}] tick_size={})"sv, exchange_, symbol_, tick_size_);
   }
   if (update(min_trade_vol_, reference_data.min_trade_vol)) {
     LOG(INFO)
-    (R"([{}:{}] min_trade_vol={})", exchange_, symbol_, min_trade_vol_);
+    (R"([{}:{}] min_trade_vol={})"sv, exchange_, symbol_, min_trade_vol_);
   }
   if (update(multiplier_, reference_data.multiplier)) {
-    LOG(INFO)(R"([{}:{}] multiplier={})", exchange_, symbol_, multiplier_);
+    LOG(INFO)(R"([{}:{}] multiplier={})"sv, exchange_, symbol_, multiplier_);
   }
   // update the ready flag
   checkready_();
@@ -126,7 +128,7 @@ void Instrument::operator()(const MarketStatus &market_status) {
   // update our cache
   if (update(trading_status_, market_status.trading_status)) {
     LOG(INFO)
-    (R"([{}:{}] trading_status={})", exchange_, symbol_, trading_status_);
+    (R"([{}:{}] trading_status={})"sv, exchange_, symbol_, trading_status_);
   }
   // update the ready flag
   checkready_();
@@ -135,7 +137,7 @@ void Instrument::operator()(const MarketStatus &market_status) {
 void Instrument::operator()(const MarketByPriceUpdate &market_by_price_update) {
   assert(exchange_.compare(market_by_price_update.exchange) == 0);
   assert(symbol_.compare(market_by_price_update.symbol) == 0);
-  LOG_IF(INFO, download_)(R"(MarketByPriceUpdate={})", market_by_price_update);
+  LOG_IF(INFO, download_)(R"(MarketByPriceUpdate={})"sv, market_by_price_update);
   // update depth
   // note!
   //   market by price only gives you *changes*.
@@ -145,14 +147,14 @@ void Instrument::operator()(const MarketByPriceUpdate &market_by_price_update) {
   //   the depth builder helps you maintain a correct view of
   //   the order book.
   depth_builder_->update(market_by_price_update);
-  VLOG(1)(R"([{}:{}] depth=[{}])", exchange_, symbol_, fmt::join(depth_, ", "));
+  VLOG(1)(R"([{}:{}] depth=[{}])"sv, exchange_, symbol_, fmt::join(depth_, ", "));
   validate(depth_);
 }
 
 void Instrument::operator()(const MarketByOrderUpdate &market_by_order_update) {
   assert(exchange_.compare(market_by_order_update.exchange) == 0);
   assert(symbol_.compare(market_by_order_update.symbol) == 0);
-  LOG_IF(INFO, download_)(R"(MarketByOrderUpdate={})", market_by_order_update);
+  LOG_IF(INFO, download_)(R"(MarketByOrderUpdate={})"sv, market_by_order_update);
   // update depth
   // note!
   //   market by order only gives you *changes*.
@@ -198,7 +200,7 @@ void Instrument::operator()(const OrderUpdate &order_update) {
 void Instrument::operator()(const PositionUpdate &position_update) {
   assert(account_.compare(position_update.account) == 0);
   LOG(INFO)
-  (R"([{}:{}] position_update={})", exchange_, symbol_, position_update);
+  (R"([{}:{}] position_update={})"sv, exchange_, symbol_, position_update);
   if (download_) {
     // note!
     //   only update positions when downloading
@@ -219,7 +221,7 @@ void Instrument::operator()(const PositionUpdate &position_update) {
         break;
       }
       default: {
-        LOG(WARNING)(R"(Unexpected side={})", position_update.side);
+        LOG(WARNING)(R"(Unexpected side={})"sv, position_update.side);
       }
     }
   }
@@ -232,7 +234,7 @@ void Instrument::checkready_() {
            trading_status_ == TradingStatus::OPEN && market_data_status_ == GatewayStatus::READY &&
            order_manager_status_ == GatewayStatus::READY;
   LOG_IF(INFO, ready_ != before)
-  (R"([{}:{}] ready={})", exchange_, symbol_, ready_);
+  (R"([{}:{}] ready={})"sv, exchange_, symbol_, ready_);
 }
 
 void Instrument::reset() {
@@ -257,7 +259,7 @@ void Instrument::validate(const Depth &depth) {
   auto spread = depth[0].ask_price - depth[0].bid_price;
   LOG_IF(FATAL, spread < TOLERANCE)
   (R"([{}:{}] Probably something wrong: )"
-   R"(choice or inversion detected. depth=[{}])",
+   R"(choice or inversion detected. depth=[{}])"sv,
    exchange_,
    symbol_,
    fmt::join(depth, ", "));

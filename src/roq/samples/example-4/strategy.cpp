@@ -4,6 +4,8 @@
 
 #include "roq/logging.h"
 
+using namespace std::literals;  // NOLINT
+
 namespace roq {
 namespace samples {
 namespace example_4 {
@@ -13,7 +15,7 @@ Strategy::Strategy(client::Dispatcher &dispatcher) : dispatcher_(dispatcher) {
 
 void Strategy::operator()(const Event<Connection> &event) {
   LOG(INFO)
-  (R"([{}:{}] Connection={})",
+  (R"([{}:{}] Connection={})"sv,
    event.message_info.source,
    event.message_info.source_name,
    event.value);
@@ -21,7 +23,7 @@ void Strategy::operator()(const Event<Connection> &event) {
 
 void Strategy::operator()(const Event<DownloadBegin> &event) {
   LOG(INFO)
-  (R"([{}:{}] DownloadBegin={})",
+  (R"([{}:{}] DownloadBegin={})"sv,
    event.message_info.source,
    event.message_info.source_name,
    event.value);
@@ -29,7 +31,7 @@ void Strategy::operator()(const Event<DownloadBegin> &event) {
 
 void Strategy::operator()(const Event<DownloadEnd> &event) {
   LOG(INFO)
-  (R"([{}:{}] DownloadEnd={})",
+  (R"([{}:{}] DownloadEnd={})"sv,
    event.message_info.source,
    event.message_info.source_name,
    event.value);
@@ -37,7 +39,7 @@ void Strategy::operator()(const Event<DownloadEnd> &event) {
 
 void Strategy::operator()(const Event<MarketDataStatus> &event) {
   LOG(INFO)
-  (R"([{}:{}] MarketDataStatus={})",
+  (R"([{}:{}] MarketDataStatus={})"sv,
    event.message_info.source,
    event.message_info.source_name,
    event.value);
@@ -45,7 +47,7 @@ void Strategy::operator()(const Event<MarketDataStatus> &event) {
 
 void Strategy::operator()(const Event<OrderManagerStatus> &event) {
   LOG(INFO)
-  (R"([{}:{}] OrderManagerStatus={})",
+  (R"([{}:{}] OrderManagerStatus={})"sv,
    event.message_info.source,
    event.message_info.source_name,
    event.value);
@@ -53,7 +55,7 @@ void Strategy::operator()(const Event<OrderManagerStatus> &event) {
 
 void Strategy::operator()(const Event<ReferenceData> &event) {
   LOG(INFO)
-  (R"([{}:{}] ReferenceData={})",
+  (R"([{}:{}] ReferenceData={})"sv,
    event.message_info.source,
    event.message_info.source_name,
    event.value);
@@ -61,7 +63,7 @@ void Strategy::operator()(const Event<ReferenceData> &event) {
 
 void Strategy::operator()(const Event<MarketStatus> &event) {
   LOG(INFO)
-  (R"([{}:{}] MarketStatus={})",
+  (R"([{}:{}] MarketStatus={})"sv,
    event.message_info.source,
    event.message_info.source_name,
    event.value);
@@ -69,7 +71,7 @@ void Strategy::operator()(const Event<MarketStatus> &event) {
 
 void Strategy::operator()(const Event<MarketByPriceUpdate> &event) {
   VLOG(1)
-  (R"([{}:{}] MarketByPriceUpdate={})",
+  (R"([{}:{}] MarketByPriceUpdate={})"sv,
    event.message_info.source,
    event.message_info.source_name,
    event.value);
@@ -77,7 +79,7 @@ void Strategy::operator()(const Event<MarketByPriceUpdate> &event) {
 
 void Strategy::operator()(const Event<MarketByOrderUpdate> &event) {
   VLOG(1)
-  (R"([{}:{}] MarketByOrderUpdate={})",
+  (R"([{}:{}] MarketByOrderUpdate={})"sv,
    event.message_info.source,
    event.message_info.source_name,
    event.value);
@@ -85,7 +87,7 @@ void Strategy::operator()(const Event<MarketByOrderUpdate> &event) {
 
 void Strategy::operator()(const Event<TradeSummary> &event) {
   VLOG(1)
-  (R"([{}:{}] TradeSummary={})",
+  (R"([{}:{}] TradeSummary={})"sv,
    event.message_info.source,
    event.message_info.source_name,
    event.value);

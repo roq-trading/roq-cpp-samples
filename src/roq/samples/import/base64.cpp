@@ -17,7 +17,7 @@ namespace {
 // - removed functions and tables not needed here
 // - clang-format
 
-static const char *B64chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+static char const *B64chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 
 const std::string b64encode(const void *data, const size_t &len) {
   std::string result((len + 2) / 3 * 4, '=');

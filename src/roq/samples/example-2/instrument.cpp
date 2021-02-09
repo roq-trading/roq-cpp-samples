@@ -6,6 +6,8 @@
 
 #include "roq/samples/example-2/flags.h"
 
+using namespace std::literals;  // NOLINT
+
 namespace {
 constexpr auto NaN = std::numeric_limits<double>::quiet_NaN();
 constexpr auto TOLERANCE = double{1.0e-10};
@@ -36,12 +38,12 @@ Instrument::Instrument(const std::string_view &exchange, const std::string_view 
 void Instrument::operator()(const Connection &connection) {
   if (update(connection_status_, connection.status)) {
     LOG(INFO)
-    (R"([{}:{}] connection_status={})", exchange_, symbol_, connection_status_);
+    (R"([{}:{}] connection_status={})"sv, exchange_, symbol_, connection_status_);
     checkready_();
   }
   switch (connection_status_) {
     case ConnectionStatus::UNDEFINED:
-      LOG(FATAL)("Unexpected");
+      LOG(FATAL)("Unexpected"sv);
       break;
     case ConnectionStatus::CONNECTED:
       // nothing to do for this implementation
@@ -58,7 +60,7 @@ void Instrument::operator()(const DownloadBegin &download_begin) {
     return;
   assert(download_ == false);
   download_ = true;
-  LOG(INFO)(R"([{}:{}] download={})", exchange_, symbol_, download_);
+  LOG(INFO)(R"([{}:{}] download={})"sv, exchange_, symbol_, download_);
 }
 
 void Instrument::operator()(const DownloadEnd &download_end) {
@@ -66,7 +68,7 @@ void Instrument::operator()(const DownloadEnd &download_end) {
     return;
   assert(download_ == true);
   download_ = false;
-  LOG(INFO)(R"([{}:{}] download={})", exchange_, symbol_, download_);
+  LOG(INFO)(R"([{}:{}] download={})"sv, exchange_, symbol_, download_);
   // update the ready flag
   checkready_();
 }
@@ -75,7 +77,7 @@ void Instrument::operator()(const MarketDataStatus &market_data_status) {
   // update our cache
   if (update(market_data_status_, market_data_status.status)) {
     LOG(INFO)
-    (R"([{}:{}] market_data_status={})", exchange_, symbol_, market_data_status_);
+    (R"([{}:{}] market_data_status={})"sv, exchange_, symbol_, market_data_status_);
   }
   // update the ready flag
   checkready_();
@@ -88,14 +90,14 @@ void Instrument::operator()(const ReferenceData &reference_data) {
   depth_builder_->update(reference_data);
   // update our cache
   if (update(tick_size_, reference_data.tick_size)) {
-    LOG(INFO)(R"([{}:{}] tick_size={})", exchange_, symbol_, tick_size_);
+    LOG(INFO)(R"([{}:{}] tick_size={})"sv, exchange_, symbol_, tick_size_);
   }
   if (update(min_trade_vol_, reference_data.min_trade_vol)) {
     LOG(INFO)
-    (R"([{}:{}] min_trade_vol={})", exchange_, symbol_, min_trade_vol_);
+    (R"([{}:{}] min_trade_vol={})"sv, exchange_, symbol_, min_trade_vol_);
   }
   if (update(multiplier_, reference_data.multiplier)) {
-    LOG(INFO)(R"([{}:{}] multiplier={})", exchange_, symbol_, multiplier_);
+    LOG(INFO)(R"([{}:{}] multiplier={})"sv, exchange_, symbol_, multiplier_);
   }
   // update the ready flag
   checkready_();
@@ -107,7 +109,7 @@ void Instrument::operator()(const MarketStatus &market_status) {
   // update our cache
   if (update(trading_status_, market_status.trading_status)) {
     LOG(INFO)
-    (R"([{}:{}] trading_status={})", exchange_, symbol_, trading_status_);
+    (R"([{}:{}] trading_status={})"sv, exchange_, symbol_, trading_status_);
   }
   // update the ready flag
   checkready_();
@@ -117,7 +119,7 @@ void Instrument::operator()(const MarketByPriceUpdate &market_by_price_update) {
   assert(exchange_.compare(market_by_price_update.exchange) == 0);
   assert(symbol_.compare(market_by_price_update.symbol) == 0);
   LOG_IF(INFO, download_)
-  (R"(MarketByPriceUpdate={})", market_by_price_update);
+  (R"(MarketByPriceUpdate={})"sv, market_by_price_update);
   // update depth
   // note!
   //   market by price only gives you *changes*.
@@ -128,7 +130,7 @@ void Instrument::operator()(const MarketByPriceUpdate &market_by_price_update) {
   //   the order book.
   auto depth = depth_builder_->update(market_by_price_update);
   VLOG(1)
-  (R"([{}:{}] depth=[{}])", exchange_, symbol_, fmt::join(depth_, ", "));
+  (R"([{}:{}] depth=[{}])"sv, exchange_, symbol_, fmt::join(depth_, ", "));
   if (depth > 0 && is_ready())
     update_model();
 }
@@ -137,7 +139,7 @@ void Instrument::operator()(const MarketByOrderUpdate &market_by_order_update) {
   assert(exchange_.compare(market_by_order_update.exchange) == 0);
   assert(symbol_.compare(market_by_order_update.symbol) == 0);
   LOG_IF(INFO, download_)
-  (R"(MarketByOrderUpdate={})", market_by_order_update);
+  (R"(MarketByOrderUpdate={})"sv, market_by_order_update);
   // update depth
   // note!
   //   market by order only gives you *changes*.
@@ -148,7 +150,7 @@ void Instrument::operator()(const MarketByOrderUpdate &market_by_order_update) {
   //   the order book.
   auto depth = depth_builder_->update(market_by_order_update);
   VLOG(1)
-  (R"([{}:{}] depth=[{}])", exchange_, symbol_, fmt::join(depth_, ", "));
+  (R"([{}:{}] depth=[{}])"sv, exchange_, symbol_, fmt::join(depth_, ", "));
   if (depth > 0 && is_ready())
     update_model();
 }
@@ -162,7 +164,7 @@ void Instrument::update_model() {
   auto spread = depth_[0].ask_price - depth_[0].bid_price;
   LOG_IF(FATAL, spread < TOLERANCE)
   (R"([{}:{}] Probably something wrong: )"
-   R"(choice or inversion detected. depth=[{}])",
+   R"(choice or inversion detected. depth=[{}])"sv,
    exchange_,
    symbol_,
    fmt::join(depth_, ", "));
@@ -180,7 +182,7 @@ void Instrument::update_model() {
     avg_price_ = Flags::alpha() * mid_price_ + (1.0 - Flags::alpha()) * avg_price_;
   // only verbose logging
   VLOG(1)
-  (R"([{}:{}] model={{mid_price={}, avg_price={}}})", exchange_, symbol_, mid_price_, avg_price_);
+  (R"([{}:{}] model={{mid_price={}, avg_price={}}})"sv, exchange_, symbol_, mid_price_, avg_price_);
 }
 
 void Instrument::checkready_() {
@@ -189,7 +191,7 @@ void Instrument::checkready_() {
            tick_size_ > TOLERANCE && min_trade_vol_ > TOLERANCE && multiplier_ > TOLERANCE &&
            trading_status_ == TradingStatus::OPEN && market_data_status_ == GatewayStatus::READY;
   LOG_IF(INFO, ready_ != before)
-  (R"([{}:{}] ready={})", exchange_, symbol_, ready_);
+  (R"([{}:{}] ready={})"sv, exchange_, symbol_, ready_);
 }
 
 void Instrument::reset() {

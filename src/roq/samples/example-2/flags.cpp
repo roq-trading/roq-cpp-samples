@@ -6,15 +6,37 @@
 
 #include <string>
 
-ABSL_FLAG(std::string, futures_exchange, "deribit", "futures exchange");
+using namespace std::literals;  // NOLINT
 
-ABSL_FLAG(std::string, futures_symbol, "BTC-PERPETUAL", "futures symbol");
+ABSL_FLAG(  //
+    std::string,
+    futures_exchange,
+    "deribit"s,
+    "futures exchange"sv);
 
-ABSL_FLAG(std::string, cash_exchange, "coinbase-pro", "cash exchange");
+ABSL_FLAG(  //
+    std::string,
+    futures_symbol,
+    "BTC-PERPETUAL"s,
+    "futures symbol"sv);
 
-ABSL_FLAG(std::string, cash_symbol, "BTC-USD", "cash symbol");
+ABSL_FLAG(  //
+    std::string,
+    cash_exchange,
+    "coinbase-pro"s,
+    "cash exchange"sv);
 
-ABSL_FLAG(double, alpha, double{0.2}, "alpha used to compute exponential moving average");
+ABSL_FLAG(  //
+    std::string,
+    cash_symbol,
+    "BTC-USD"s,
+    "cash symbol"sv);
+
+ABSL_FLAG(  //
+    double,
+    alpha,
+    double{0.2},
+    "alpha used to compute exponential moving average"sv);
 
 namespace roq {
 namespace samples {

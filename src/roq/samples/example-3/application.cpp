@@ -12,6 +12,8 @@
 #include "roq/samples/example-3/flags.h"
 #include "roq/samples/example-3/strategy.h"
 
+using namespace std::literals;  // NOLINT
+
 namespace roq {
 namespace samples {
 namespace example_3 {
@@ -37,7 +39,7 @@ int Application::main_helper(const roq::span<std::string_view> &args) {
     auto market_data_latency = std::chrono::milliseconds{1};
     auto order_manager_latency = std::chrono::milliseconds{1};
     auto matcher = client::detail::SimulationFactory::create_matcher(
-        "simple", Flags::exchange(), market_data_latency, order_manager_latency);
+        "simple"sv, Flags::exchange(), market_data_latency, order_manager_latency);
     // simulator
     client::Simulator(config, connections, *collector, *matcher).dispatch<Strategy>();
   } else {

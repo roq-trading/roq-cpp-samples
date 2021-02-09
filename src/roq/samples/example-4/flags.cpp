@@ -6,9 +6,19 @@
 
 #include <string>
 
-ABSL_FLAG(std::string, exchange, "deribit", "exchange name");
+using namespace std::literals;  // NOLINT
 
-ABSL_FLAG(std::string, symbols, ".*", "regex used to subscribe symbols");
+ABSL_FLAG(  //
+    std::string,
+    exchange,
+    "deribit"s,
+    "exchange name"sv);
+
+ABSL_FLAG(  //
+    std::string,
+    symbols,
+    ".*"s,
+    "regex used to subscribe symbols"sv);
 
 namespace roq {
 namespace samples {

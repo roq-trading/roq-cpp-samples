@@ -6,11 +6,13 @@
 
 #include <string>
 
+using namespace std::literals;  // NOLINT
+
 ABSL_FLAG(  //
     std::string,
     encoding,
-    {"binary"},
-    "encoding type -- one of binary or base64");
+    "binary"s,
+    "encoding type -- one of binary or base64"sv);
 
 namespace roq {
 namespace samples {

@@ -9,6 +9,8 @@
 #include "roq/samples/example-3/flags.h"
 #include "roq/samples/example-3/utilities.h"
 
+using namespace std::literals;  // NOLINT
+
 namespace roq {
 namespace samples {
 namespace example_3 {
@@ -39,7 +41,7 @@ void Strategy::operator()(const Event<DownloadBegin> &event) {
 void Strategy::operator()(const Event<DownloadEnd> &event) {
   dispatch(event);
   if (update(max_order_id_, event.value.max_order_id)) {
-    LOG(INFO)(R"(max_order_id={})", max_order_id_);
+    LOG(INFO)(R"(max_order_id={})"sv, max_order_id_);
   }
 }
 
@@ -64,7 +66,7 @@ void Strategy::operator()(const Event<MarketByPriceUpdate> &event) {
 }
 
 void Strategy::operator()(const Event<OrderAck> &event) {
-  LOG(INFO)(R"(OrderAck={})", event.value);
+  LOG(INFO)(R"(OrderAck={})"sv, event.value);
   auto &order_ack = event.value;
   if (is_request_complete(order_ack.status)) {
     // possible extension: reset request timeout
@@ -72,7 +74,7 @@ void Strategy::operator()(const Event<OrderAck> &event) {
 }
 
 void Strategy::operator()(const Event<OrderUpdate> &event) {
-  LOG(INFO)(R"(OrderUpdate={})", event.value);
+  LOG(INFO)(R"(OrderUpdate={})"sv, event.value);
   dispatch(event);  // update position
   auto &order_update = event.value;
   if (is_order_complete(order_update.status)) {
@@ -82,7 +84,7 @@ void Strategy::operator()(const Event<OrderUpdate> &event) {
 }
 
 void Strategy::operator()(const Event<TradeUpdate> &event) {
-  LOG(INFO)(R"(TradeUpdate={})", event.value);
+  LOG(INFO)(R"(TradeUpdate={})"sv, event.value);
 }
 
 void Strategy::operator()(const Event<PositionUpdate> &event) {
@@ -90,7 +92,7 @@ void Strategy::operator()(const Event<PositionUpdate> &event) {
 }
 
 void Strategy::operator()(const Event<FundsUpdate> &event) {
-  LOG(INFO)(R"(FundsUpdate={})", event.value);
+  LOG(INFO)(R"(FundsUpdate={})"sv, event.value);
 }
 
 void Strategy::update_model() {
@@ -114,7 +116,7 @@ void Strategy::update_model() {
 
 void Strategy::try_trade(Side side, double price) {
   if (Flags::enable_trading() == false) {
-    LOG(WARNING)("Trading *NOT* enabled");
+    LOG(WARNING)("Trading *NOT* enabled"sv);
     return;
   }
   // if buy:
@@ -124,9 +126,9 @@ void Strategy::try_trade(Side side, double price) {
   //     send buy order
   //
   if (working_order_id_) {
-    LOG(INFO)("*** ANOTHER ORDER IS WORKING ***");
+    LOG(INFO)("*** ANOTHER ORDER IS WORKING ***"sv);
     if (side != working_side_) {
-      LOG(INFO)("*** CANCEL WORKING ORDER ***");
+      LOG(INFO)("*** CANCEL WORKING ORDER ***"sv);
       dispatcher_.send(
           CancelOrder{
               .account = Flags::account(),
@@ -137,7 +139,7 @@ void Strategy::try_trade(Side side, double price) {
     return;
   }
   if (instrument_.can_trade(side) == false) {
-    LOG(INFO)("*** CAN'T INCREASE POSITION ***");
+    LOG(INFO)("*** CAN'T INCREASE POSITION ***"sv);
     return;
   }
   auto order_id = ++max_order_id_;
