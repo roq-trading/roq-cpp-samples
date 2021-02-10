@@ -130,7 +130,7 @@ void Instrument::operator()(const MarketByPriceUpdate &market_by_price_update) {
   //   the order book.
   auto depth = depth_builder_->update(market_by_price_update);
   VLOG(1)
-  (R"([{}:{}] depth=[{}])"sv, exchange_, symbol_, fmt::join(depth_, ", "));
+  (R"([{}:{}] depth=[{}])"sv, exchange_, symbol_, fmt::join(depth_, ", "sv));
   if (depth > 0 && is_ready())
     update_model();
 }
@@ -150,7 +150,7 @@ void Instrument::operator()(const MarketByOrderUpdate &market_by_order_update) {
   //   the order book.
   auto depth = depth_builder_->update(market_by_order_update);
   VLOG(1)
-  (R"([{}:{}] depth=[{}])"sv, exchange_, symbol_, fmt::join(depth_, ", "));
+  (R"([{}:{}] depth=[{}])"sv, exchange_, symbol_, fmt::join(depth_, ", "sv));
   if (depth > 0 && is_ready())
     update_model();
 }
@@ -167,7 +167,7 @@ void Instrument::update_model() {
    R"(choice or inversion detected. depth=[{}])"sv,
    exchange_,
    symbol_,
-   fmt::join(depth_, ", "));
+   fmt::join(depth_, ", "sv));
   // compute (weighted) mid
   double sum_1 = 0.0, sum_2 = 0.0;
   for (auto iter : depth_) {

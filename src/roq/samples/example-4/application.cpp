@@ -8,6 +8,8 @@
 #include "roq/samples/example-4/config.h"
 #include "roq/samples/example-4/strategy.h"
 
+using namespace std::literals;  // NOLINT
+
 namespace roq {
 namespace samples {
 namespace example_4 {
@@ -15,7 +17,7 @@ namespace example_4 {
 int Application::main_helper(const roq::span<std::string_view> &args) {
   assert(args.empty() == false);
   if (args.size() == 1)
-    throw std::runtime_error("Expected arguments");
+    throw std::runtime_error("Expected arguments"s);
   Config config;
   auto connections = args.subspan(1);
   client::Trader(config, connections).dispatch<Strategy>();

@@ -147,7 +147,7 @@ void Instrument::operator()(const MarketByPriceUpdate &market_by_price_update) {
   //   the depth builder helps you maintain a correct view of
   //   the order book.
   depth_builder_->update(market_by_price_update);
-  VLOG(1)(R"([{}:{}] depth=[{}])"sv, exchange_, symbol_, fmt::join(depth_, ", "));
+  VLOG(1)(R"([{}:{}] depth=[{}])"sv, exchange_, symbol_, fmt::join(depth_, ", "sv));
   validate(depth_);
 }
 
@@ -166,10 +166,10 @@ void Instrument::operator()(const MarketByOrderUpdate &market_by_order_update) {
   /*
   depth_builder_->update(market_by_order_update);
   VLOG(1)(
-      R"([{}:{}] depth=[{}])",
+      R"([{}:{}] depth=[{}])"sv,
       exchange_,
       symbol_,
-      fmt::join(depth_, ", "));
+      fmt::join(depth_, ", "sv));
   validate(depth_);
   */
 }
@@ -194,7 +194,7 @@ void Instrument::operator()(const OrderUpdate &order_update) {
     default:
       assert(false);  // unexpected
   }
-  LOG(INFO)(R"([{}:{}] position={})", exchange_, symbol_, position());
+  LOG(INFO)(R"([{}:{}] position={})"sv, exchange_, symbol_, position());
 }
 
 void Instrument::operator()(const PositionUpdate &position_update) {
@@ -262,7 +262,7 @@ void Instrument::validate(const Depth &depth) {
    R"(choice or inversion detected. depth=[{}])"sv,
    exchange_,
    symbol_,
-   fmt::join(depth, ", "));
+   fmt::join(depth, ", "sv));
 }
 
 }  // namespace example_3
