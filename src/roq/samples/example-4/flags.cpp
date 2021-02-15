@@ -6,19 +6,21 @@
 
 #include <string>
 
-using namespace std::literals;  // NOLINT
+#include "roq/literals.h"
+
+using namespace roq::literals;
 
 ABSL_FLAG(  //
     std::string,
     exchange,
-    "deribit"s,
-    "exchange name"sv);
+    "deribit"_s,
+    "exchange name"_sv);
 
 ABSL_FLAG(  //
     std::string,
     symbols,
-    ".*"s,
-    "regex used to subscribe symbols"sv);
+    ".*"_s,
+    "regex used to subscribe symbols"_sv);
 
 namespace roq {
 namespace samples {

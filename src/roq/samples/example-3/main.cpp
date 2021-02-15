@@ -4,10 +4,10 @@
 
 #include "roq/samples/example-3/application.h"
 
-using namespace std::literals;  // NOLINT
+using namespace roq::literals;
 
 namespace {
-static const auto DESCRIPTION = "Example 3 (Roq Samples)"sv;
+static const auto DESCRIPTION = "Example 3 (Roq Samples)"_sv;
 }  // namespace
 
 int main(int argc, char **argv) {

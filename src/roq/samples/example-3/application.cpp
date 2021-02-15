@@ -12,7 +12,7 @@
 #include "roq/samples/example-3/flags.h"
 #include "roq/samples/example-3/strategy.h"
 
-using namespace std::literals;  // NOLINT
+using namespace roq::literals;
 
 namespace roq {
 namespace samples {
@@ -21,9 +21,9 @@ namespace example_3 {
 int Application::main_helper(const roq::span<std::string_view> &args) {
   assert(args.empty() == false);
   if (args.size() == 1)
-    throw std::runtime_error("Expected arguments"s);
+    throw std::runtime_error("Expected arguments"_s);
   if (args.size() != 2)
-    throw std::runtime_error("Expected exactly one argument"s);
+    throw std::runtime_error("Expected exactly one argument"_s);
   Config config;
   // note!
   //   absl::flags will have removed all flags and we're left with arguments
@@ -39,7 +39,7 @@ int Application::main_helper(const roq::span<std::string_view> &args) {
     auto market_data_latency = std::chrono::milliseconds{1};
     auto order_manager_latency = std::chrono::milliseconds{1};
     auto matcher = client::detail::SimulationFactory::create_matcher(
-        "simple"sv, Flags::exchange(), market_data_latency, order_manager_latency);
+        "simple"_sv, Flags::exchange(), market_data_latency, order_manager_latency);
     // simulator
     client::Simulator(config, connections, *collector, *matcher).dispatch<Strategy>();
   } else {

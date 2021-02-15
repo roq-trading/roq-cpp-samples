@@ -2,8 +2,6 @@
 
 #include "roq/samples/import/processor.h"
 
-#include <fmt/format.h>
-
 #include <cassert>
 #include <iostream>
 #include <stdexcept>
@@ -15,15 +13,15 @@
 #include "roq/samples/import/base64.h"
 #include "roq/samples/import/flags.h"
 
-using namespace std::literals;  // NOLINT
+using namespace roq::literals;
 
 namespace roq {
 namespace samples {
 namespace import {
 
 namespace {
-static const auto EXCHANGE = "CME"sv;
-static const auto SYMBOL = "GEZ1"sv;
+static const auto EXCHANGE = "CME"_sv;
+static const auto SYMBOL = "GEZ1"_sv;
 static const double TICK_SIZE = 0.0025;
 static const double MULTIPLIER = 2500.0;
 static const double MIN_TRADE_VOL = 1.0;  // lots
@@ -32,11 +30,11 @@ static const double MIN_TRADE_VOL = 1.0;  // lots
 namespace {
 static bool use_base64() {
   auto encoding = Flags::encoding();
-  if (encoding.compare("binary"sv) == 0)
+  if (encoding.compare("binary"_sv) == 0)
     return false;
-  if (encoding.compare("base64"sv) == 0)
+  if (encoding.compare("base64"_sv) == 0)
     return true;
-  throw std::runtime_error(fmt::format(R"(Unknown encoding="{}")"sv, encoding));
+  throw std::runtime_error(roq::format(R"(Unknown encoding="{}")"_fmt, encoding));
 }
 }  // namespace
 
@@ -44,7 +42,8 @@ Processor::Processor(const std::string_view &path)
     : file_(std::string{path}, std::ios::out | std::ios::binary),
       encoding_(use_base64() ? Encoding::BASE64 : Encoding::BINARY) {
   if (!file_)
-    throw std::runtime_error(fmt::format(R"(Unable to open file for writing: path="{}")"sv, path));
+    throw std::runtime_error(
+        roq::format(R"(Unable to open file for writing: path="{}")"_fmt, path));
 }
 
 Processor::~Processor() {

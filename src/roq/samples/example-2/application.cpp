@@ -7,7 +7,7 @@
 #include "roq/samples/example-2/config.h"
 #include "roq/samples/example-2/strategy.h"
 
-using namespace std::literals;  // NOLINT
+using namespace roq::literals;
 
 namespace roq {
 namespace samples {
@@ -16,11 +16,11 @@ namespace example_2 {
 int Application::main_helper(const roq::span<std::string_view> &args) {
   assert(args.empty() == false);
   if (args.size() == 1)
-    throw std::runtime_error("Expected arguments"s);
+    throw std::runtime_error("Expected arguments"_s);
   if (args.size() != 3)
     throw std::runtime_error(
         "Expected exactly two arguments: "
-        "futures exchange then cash exchange"s);
+        "futures exchange then cash exchange"_s);
   Config config;
   // note!
   //   absl::flags will have removed all flags and we're left with arguments

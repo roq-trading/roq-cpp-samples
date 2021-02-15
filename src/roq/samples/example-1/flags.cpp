@@ -6,31 +6,33 @@
 
 #include <string>
 
-using namespace std::literals;  // NOLINT
+#include "roq/literals.h"
+
+using namespace roq::literals;
 
 ABSL_FLAG(  //
     std::string,
     deribit_exchange,
-    "deribit"s,
-    "name of the deribit exchange"sv);
+    "deribit"_s,
+    "name of the deribit exchange"_sv);
 
 ABSL_FLAG(  //
     std::string,
     deribit_symbols,
-    "BTC-\\d{2}\\D{3}\\d{2}"s,  // e.g. "BTC-27MAR20"
-    "regex used to subscribe deribit symbols"sv);
+    "BTC-\\d{2}\\D{3}\\d{2}"_s,  // e.g. "BTC-27MAR20"
+    "regex used to subscribe deribit symbols"_sv);
 
 ABSL_FLAG(  //
     std::string,
     coinbase_pro_exchange,
-    "coinbase-pro"s,
-    "name of the coinbase-pro exchange"sv);
+    "coinbase-pro"_s,
+    "name of the coinbase-pro exchange"_sv);
 
 ABSL_FLAG(  //
     std::string,
     coinbase_pro_symbols,
-    "BTC-.*"s,  // e.g. "BTC-USD"
-    "regex used to subscribe coinbase-pro symbols"sv);
+    "BTC-.*"_s,  // e.g. "BTC-USD"
+    "regex used to subscribe coinbase-pro symbols"_sv);
 
 namespace roq {
 namespace samples {

@@ -2,14 +2,14 @@
 
 #include "roq/samples/import/application.h"
 
-#include <fmt/format.h>
-
 #include <stdexcept>
 #include <vector>
 
+#include "roq/literals.h"
+
 #include "roq/samples/import/processor.h"
 
-using namespace std::literals;  // NOLINT
+using namespace roq::literals;
 
 namespace roq {
 namespace samples {
@@ -17,7 +17,8 @@ namespace import {
 
 int Application::main_helper(const roq::span<std::string_view> &args) {
   if (args.size() != 2)
-    throw std::runtime_error(fmt::format("Expected exactly 1 argument, got {}"sv, args.size() - 1));
+    throw std::runtime_error(
+        roq::format("Expected exactly 1 argument, got {}"_fmt, args.size() - 1));
   Processor(args[1]).dispatch();
   return EXIT_SUCCESS;
 }
