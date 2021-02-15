@@ -4,6 +4,8 @@
 
 #include "roq/logging.h"
 
+#include "roq/format.h"
+
 #include "roq/samples/example-2/flags.h"
 
 using namespace roq::literals;
@@ -130,7 +132,7 @@ void Instrument::operator()(const MarketByPriceUpdate &market_by_price_update) {
   //   the order book.
   auto depth = depth_builder_->update(market_by_price_update);
   VLOG(1)
-  (R"([{}:{}] depth=[{}])"_fmt, exchange_, symbol_, fmt::join(depth_, ", "_sv));
+  (R"([{}:{}] depth=[{}])"_fmt, exchange_, symbol_, roq::join(depth_, ", "_sv));
   if (depth > 0 && is_ready())
     update_model();
 }
@@ -150,7 +152,7 @@ void Instrument::operator()(const MarketByOrderUpdate &market_by_order_update) {
   //   the order book.
   auto depth = depth_builder_->update(market_by_order_update);
   VLOG(1)
-  (R"([{}:{}] depth=[{}])"_fmt, exchange_, symbol_, fmt::join(depth_, ", "_sv));
+  (R"([{}:{}] depth=[{}])"_fmt, exchange_, symbol_, roq::join(depth_, ", "_sv));
   if (depth > 0 && is_ready())
     update_model();
 }
@@ -167,7 +169,7 @@ void Instrument::update_model() {
    R"(choice or inversion detected. depth=[{}])"_fmt,
    exchange_,
    symbol_,
-   fmt::join(depth_, ", "_sv));
+   roq::join(depth_, ", "_sv));
   // compute (weighted) mid
   double sum_1 = 0.0, sum_2 = 0.0;
   for (auto iter : depth_) {
