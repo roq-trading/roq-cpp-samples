@@ -5,6 +5,8 @@
 #include <cmath>
 #include <type_traits>
 
+#include "roq/numbers.h"
+
 namespace roq {
 namespace samples {
 namespace example_2 {
