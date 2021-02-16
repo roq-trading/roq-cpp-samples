@@ -78,7 +78,7 @@ void Strategy::operator()(const Event<OrderUpdate> &event) {
   dispatch(event);  // update position
   auto &order_update = event.value;
   if (is_order_complete(order_update.status)) {
-    working_order_id_ = 0;
+    working_order_id_ = 0u;
     working_side_ = Side::UNDEFINED;
   }
 }
@@ -115,7 +115,7 @@ void Strategy::update_model() {
 }
 
 void Strategy::try_trade(Side side, double price) {
-  if (Flags::enable_trading() == false) {
+  if (!Flags::enable_trading()) {
     LOG(WARNING)("Trading *NOT* enabled"_fmt);
     return;
   }
@@ -134,11 +134,11 @@ void Strategy::try_trade(Side side, double price) {
               .account = Flags::account(),
               .order_id = working_order_id_,
           },
-          uint8_t{0});
+          0u);
     }
     return;
   }
-  if (instrument_.can_trade(side) == false) {
+  if (!instrument_.can_trade(side)) {
     LOG(INFO)("*** CAN'T INCREASE POSITION ***"_fmt);
     return;
   }
@@ -156,11 +156,11 @@ void Strategy::try_trade(Side side, double price) {
           .time_in_force = TimeInForce::GTC,
           .position_effect = PositionEffect::UNDEFINED,
           .execution_instruction = ExecutionInstruction::UNDEFINED,
-          .stop_price = std::numeric_limits<double>::quiet_NaN(),
-          .max_show_quantity = std::numeric_limits<double>::quiet_NaN(),
+          .stop_price = NaN,
+          .max_show_quantity = NaN,
           .order_template = {},
       },
-      uint8_t{0});
+      0u);
   working_order_id_ = order_id;
   working_side_ = side;
   // possible extension: monitor for request timeout

@@ -21,8 +21,8 @@ class Strategy final : public client::Handler {
  public:
   explicit Strategy(client::Dispatcher &dispatcher);
 
-  Strategy(const Strategy &) = delete;
   Strategy(Strategy &&) = default;
+  Strategy(const Strategy &) = delete;
 
  protected:
   // the following event handlers log every update as-is

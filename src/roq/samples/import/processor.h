@@ -29,10 +29,10 @@ class Processor final {
   MessageInfo create_message_info(std::chrono::nanoseconds timestamp_utc);
 
   template <typename T>
-  void process(const T &value, std::chrono::nanoseconds timestamp);
+  void process(const T &value, std::chrono::nanoseconds timestamp_utc);
 
  private:
-  uint64_t seqno_ = 0;
+  uint64_t seqno_ = {};
   flatbuffers::FlatBufferBuilder builder_;
   std::ofstream file_;
   enum class Encoding {

@@ -15,8 +15,8 @@ class Strategy final : public client::Handler {
  public:
   explicit Strategy(client::Dispatcher &dispatcher);
 
-  Strategy(const Strategy &) = delete;
   Strategy(Strategy &&) = default;
+  Strategy(const Strategy &) = delete;
 
  protected:
   void operator()(const Event<Timer> &event) override;
@@ -37,7 +37,7 @@ class Strategy final : public client::Handler {
   // helper - dispatch event to instrument
   template <typename T>
   void dispatch(const T &event) {
-    assert(event.message_info.source == uint8_t{0});
+    assert(event.message_info.source == 0u);
     instrument_(event.value);
   }
 
@@ -48,10 +48,10 @@ class Strategy final : public client::Handler {
  private:
   client::Dispatcher &dispatcher_;
   Instrument instrument_;
-  uint32_t max_order_id_ = 0;
+  uint32_t max_order_id_ = {};
   Model model_;
   std::chrono::nanoseconds next_sample_ = {};
-  uint32_t working_order_id_ = 0;
+  uint32_t working_order_id_ = {};
   Side working_side_ = Side::UNDEFINED;
 };
 

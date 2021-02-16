@@ -15,11 +15,11 @@ namespace samples {
 namespace example_4 {
 
 int Application::main_helper(const roq::span<std::string_view> &args) {
-  assert(args.empty() == false);
-  if (args.size() == 1)
+  assert(!args.empty());
+  if (args.size() == 1u)
     throw std::runtime_error("Expected arguments"_s);
   Config config;
-  auto connections = args.subspan(1);
+  auto connections = args.subspan(1u);
   client::Trader(config, connections).dispatch<Strategy>();
   return EXIT_SUCCESS;
 }

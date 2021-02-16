@@ -15,12 +15,12 @@ EMA::EMA(double alpha) : alpha_(alpha), countdown_(Flags::warmup()) {
 }
 
 void EMA::reset() {
-  value_ = std::numeric_limits<double>::quiet_NaN();
+  value_ = NaN;
   countdown_ = Flags::warmup();
 }
 
 double EMA::update(double value) {
-  countdown_ = std::max<uint32_t>(1, countdown_) - uint32_t{1};
+  countdown_ = std::max<uint32_t>(1u, countdown_) - 1u;
   if (std::isnan(value_))
     value_ = value;
   else

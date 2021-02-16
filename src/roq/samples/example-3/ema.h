@@ -5,6 +5,8 @@
 #include <cstdint>
 #include <limits>
 
+#include "roq/samples/example-3/utilities.h"
+
 namespace roq {
 namespace samples {
 namespace example_3 {
@@ -13,8 +15,8 @@ class EMA final {
  public:
   explicit EMA(double alpha);
 
-  EMA(const EMA &) = delete;
   EMA(EMA &&) = default;
+  EMA(const EMA &) = delete;
 
   operator double() const { return value_; }
 
@@ -26,7 +28,7 @@ class EMA final {
 
  private:
   const double alpha_;
-  double value_ = std::numeric_limits<double>::quiet_NaN();
+  double value_ = NaN;
   uint32_t countdown_;
 };
 

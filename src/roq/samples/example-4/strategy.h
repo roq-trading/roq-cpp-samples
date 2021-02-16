@@ -13,8 +13,8 @@ class Strategy final : public client::Handler {
  public:
   explicit Strategy(client::Dispatcher &dispatcher);
 
-  Strategy(const Strategy &) = delete;
   Strategy(Strategy &&) = default;
+  Strategy(const Strategy &) = delete;
 
  protected:
   void operator()(const Event<Connection> &event) override;

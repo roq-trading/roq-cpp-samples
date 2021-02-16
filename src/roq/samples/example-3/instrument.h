@@ -10,19 +10,24 @@
 
 #include "roq/client/depth_builder.h"
 
+#include "roq/samples/example-3/utilities.h"
+
 namespace roq {
 namespace samples {
 namespace example_3 {
 
 class Instrument final {
  public:
-  static constexpr size_t MAX_DEPTH = 3;
+  static constexpr size_t MAX_DEPTH = 3u;
   using Depth = std::array<Layer, MAX_DEPTH>;
 
   Instrument(
       const std::string_view &exchange,
       const std::string_view &symbol,
       const std::string_view &account);
+
+  Instrument(Instrument &&) = default;
+  Instrument(const Instrument &) = delete;
 
   operator const Depth &() const { return depth_; }
 
@@ -67,7 +72,7 @@ class Instrument final {
   void operator()(const PositionUpdate &position_update);
 
  protected:
-  void checkready_();
+  void check_ready();
 
   void reset();
 
@@ -79,19 +84,19 @@ class Instrument final {
   const std::string_view account_;
   ConnectionStatus connection_status_ = ConnectionStatus::DISCONNECTED;
   bool download_ = false;
-  double tick_size_ = std::numeric_limits<double>::quiet_NaN();
-  double min_trade_vol_ = std::numeric_limits<double>::quiet_NaN();
-  double multiplier_ = std::numeric_limits<double>::quiet_NaN();
+  double tick_size_ = NaN;
+  double min_trade_vol_ = NaN;
+  double multiplier_ = NaN;
   TradingStatus trading_status_ = TradingStatus::UNDEFINED;
   GatewayStatus market_data_status_ = GatewayStatus::DISCONNECTED;
   GatewayStatus order_manager_status_ = GatewayStatus::DISCONNECTED;
   Depth depth_;
   std::unique_ptr<client::DepthBuilder> depth_builder_;
-  double long_position_ = 0.0;
-  double short_position_ = 0.0;
+  double long_position_ = {};
+  double short_position_ = {};
   bool ready_ = false;
-  uint32_t last_order_id_ = 0;
-  double last_traded_quantity_ = 0.0;
+  uint32_t last_order_id_ = {};
+  double last_traded_quantity_ = {};
 };
 
 }  // namespace example_3

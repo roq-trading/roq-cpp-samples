@@ -8,7 +8,7 @@
 
 namespace roq {
 namespace samples {
-namespace example_3 {
+namespace example_2 {
 
 constexpr auto NaN = std::numeric_limits<double>::quiet_NaN();
 
@@ -46,6 +46,6 @@ inline bool is_strictly_positive(const T &value) {
   }
 }
 
-}  // namespace example_3
+}  // namespace example_2
 }  // namespace samples
 }  // namespace roq

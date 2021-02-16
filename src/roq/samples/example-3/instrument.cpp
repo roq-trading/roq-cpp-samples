@@ -8,15 +8,11 @@
 
 #include "roq/client.h"
 
-#include "roq/samples/example-3/utilities.h"
-
 using namespace roq::literals;
 
 namespace roq {
 namespace samples {
 namespace example_3 {
-
-constexpr double TOLERANCE = 1.0e-10;
 
 Instrument::Instrument(
     const std::string_view &exchange,
@@ -27,18 +23,18 @@ Instrument::Instrument(
 }
 
 double Instrument::position() const {
-  return (std::isnan(long_position_) ? double{0.0} : long_position_) -
-         (std::isnan(short_position_) ? double{0.0} : short_position_);
+  return (std::isnan(long_position_) ? 0.0 : long_position_) -
+         (std::isnan(short_position_) ? 0.0 : short_position_);
 }
 
 bool Instrument::can_trade(Side side) const {
   switch (side) {
     case Side::BUY:
-      return position() <= TOLERANCE;
+      return !is_strictly_positive(position());
     case Side::SELL:
-      return position() >= -TOLERANCE;
+      return !is_strictly_positive(-position());  // note! testing negated position
     default:
-      assert(false);  // unexpected / why call this function at all?
+      assert(false);  // why is this function being called?
       return false;
   }
 }
@@ -47,7 +43,7 @@ void Instrument::operator()(const Connection &connection) {
   if (update(connection_status_, connection.status)) {
     LOG(INFO)
     (R"([{}:{}] connection_status={})"_fmt, exchange_, symbol_, connection_status_);
-    checkready_();
+    check_ready();
   }
   switch (connection_status_) {
     case ConnectionStatus::UNDEFINED:
@@ -64,21 +60,21 @@ void Instrument::operator()(const Connection &connection) {
 }
 
 void Instrument::operator()(const DownloadBegin &download_begin) {
-  if (download_begin.account.empty() == false)
+  if (!download_begin.account.empty())  // we only care about market (not account)
     return;
-  assert(download_ == false);
+  assert(!download_);
   download_ = true;
   LOG(INFO)(R"([{}:{}] download={})"_fmt, exchange_, symbol_, download_);
 }
 
 void Instrument::operator()(const DownloadEnd &download_end) {
-  if (download_end.account.empty() == false)
+  if (!download_end.account.empty())  // we only care about market (not account)
     return;
-  assert(download_ == true);
+  assert(download_);
   download_ = false;
   LOG(INFO)(R"([{}:{}] download={})"_fmt, exchange_, symbol_, download_);
   // update the ready flag
-  checkready_();
+  check_ready();
 }
 
 void Instrument::operator()(const MarketDataStatus &market_data_status) {
@@ -88,7 +84,7 @@ void Instrument::operator()(const MarketDataStatus &market_data_status) {
     (R"([{}:{}] market_data_status={})"_fmt, exchange_, symbol_, market_data_status_);
   }
   // update the ready flag
-  checkready_();
+  check_ready();
 }
 
 void Instrument::operator()(const OrderManagerStatus &order_manager_status) {
@@ -99,7 +95,7 @@ void Instrument::operator()(const OrderManagerStatus &order_manager_status) {
     (R"([{}:{}] order_manager_status={})"_fmt, exchange_, symbol_, order_manager_status_);
   }
   // update the ready flag
-  checkready_();
+  check_ready();
 }
 
 void Instrument::operator()(const ReferenceData &reference_data) {
@@ -119,7 +115,7 @@ void Instrument::operator()(const ReferenceData &reference_data) {
     LOG(INFO)(R"([{}:{}] multiplier={})"_fmt, exchange_, symbol_, multiplier_);
   }
   // update the ready flag
-  checkready_();
+  check_ready();
 }
 
 void Instrument::operator()(const MarketStatus &market_status) {
@@ -131,7 +127,7 @@ void Instrument::operator()(const MarketStatus &market_status) {
     (R"([{}:{}] trading_status={})"_fmt, exchange_, symbol_, trading_status_);
   }
   // update the ready flag
-  checkready_();
+  check_ready();
 }
 
 void Instrument::operator()(const MarketByPriceUpdate &market_by_price_update) {
@@ -227,11 +223,12 @@ void Instrument::operator()(const PositionUpdate &position_update) {
   }
 }
 
-void Instrument::checkready_() {
+void Instrument::check_ready() {
   auto before = ready_;
-  ready_ = connection_status_ == ConnectionStatus::CONNECTED && download_ == false &&
-           tick_size_ > TOLERANCE && min_trade_vol_ > TOLERANCE && multiplier_ > TOLERANCE &&
-           trading_status_ == TradingStatus::OPEN && market_data_status_ == GatewayStatus::READY &&
+  ready_ = connection_status_ == ConnectionStatus::CONNECTED && !download_ &&
+           is_strictly_positive(tick_size_) && is_strictly_positive(min_trade_vol_) &&
+           is_strictly_positive(multiplier_) && trading_status_ == TradingStatus::OPEN &&
+           market_data_status_ == GatewayStatus::READY &&
            order_manager_status_ == GatewayStatus::READY;
   LOG_IF(INFO, ready_ != before)
   (R"([{}:{}] ready={})"_fmt, exchange_, symbol_, ready_);
@@ -240,26 +237,26 @@ void Instrument::checkready_() {
 void Instrument::reset() {
   connection_status_ = ConnectionStatus::DISCONNECTED;
   download_ = false;
-  tick_size_ = std::numeric_limits<double>::quiet_NaN();
-  min_trade_vol_ = std::numeric_limits<double>::quiet_NaN();
+  tick_size_ = NaN;
+  min_trade_vol_ = NaN;
   trading_status_ = TradingStatus::UNDEFINED;
   market_data_status_ = GatewayStatus::DISCONNECTED;
   order_manager_status_ = GatewayStatus::DISCONNECTED;
   depth_builder_->reset();
-  long_position_ = 0.0;
-  short_position_ = 0.0;
+  long_position_ = {};
+  short_position_ = {};
   ready_ = false;
-  last_order_id_ = 0;
-  last_traded_quantity_ = 0.0;
+  last_order_id_ = {};
+  last_traded_quantity_ = {};
 }
 
 void Instrument::validate(const Depth &depth) {
-  if (std::fabs(depth[0].bid_quantity) < TOLERANCE || std::fabs(depth[0].ask_quantity) < TOLERANCE)
+  if (!is_strictly_positive(depth[0].bid_quantity) || !is_strictly_positive(depth[0].ask_quantity))
     return;
   auto spread = depth[0].ask_price - depth[0].bid_price;
-  LOG_IF(FATAL, spread < TOLERANCE)
+  LOG_IF(FATAL, !is_strictly_positive(spread))
   (R"([{}:{}] Probably something wrong: )"
-   R"(choice or inversion detected. depth=[{}])"_fmt,
+   R"(choice price or price inversion detected. depth=[{}])"_fmt,
    exchange_,
    symbol_,
    roq::join(depth, ", "_sv));

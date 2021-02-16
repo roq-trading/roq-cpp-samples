@@ -12,6 +12,7 @@
 #include "roq/samples/example-3/flags.h"
 #include "roq/samples/example-3/strategy.h"
 
+using namespace std::chrono_literals;
 using namespace roq::literals;
 
 namespace roq {
@@ -19,10 +20,10 @@ namespace samples {
 namespace example_3 {
 
 int Application::main_helper(const roq::span<std::string_view> &args) {
-  assert(args.empty() == false);
-  if (args.size() == 1)
+  assert(!args.empty());
+  if (args.size() == 1u)
     throw std::runtime_error("Expected arguments"_s);
-  if (args.size() != 2)
+  if (args.size() != 2u)
     throw std::runtime_error("Expected exactly one argument"_s);
   Config config;
   // note!
@@ -33,11 +34,11 @@ int Application::main_helper(const roq::span<std::string_view> &args) {
   auto connections = args.subspan(1);
   if (Flags::simulation()) {
     // collector
-    auto snapshot_frequency = std::chrono::seconds{1};
+    auto snapshot_frequency = 1s;
     auto collector = client::detail::SimulationFactory::create_collector(snapshot_frequency);
     // matcher
-    auto market_data_latency = std::chrono::milliseconds{1};
-    auto order_manager_latency = std::chrono::milliseconds{1};
+    auto market_data_latency = 1ms;
+    auto order_manager_latency = 1ms;
     auto matcher = client::detail::SimulationFactory::create_matcher(
         "simple"_sv, Flags::exchange(), market_data_latency, order_manager_latency);
     // simulator

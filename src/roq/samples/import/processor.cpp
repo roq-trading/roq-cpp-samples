@@ -13,6 +13,7 @@
 #include "roq/samples/import/base64.h"
 #include "roq/samples/import/flags.h"
 
+using namespace std::chrono_literals;
 using namespace roq::literals;
 
 namespace roq {
@@ -22,9 +23,9 @@ namespace import {
 namespace {
 static const auto EXCHANGE = "CME"_sv;
 static const auto SYMBOL = "GEZ1"_sv;
-static const double TICK_SIZE = 0.0025;
-static const double MULTIPLIER = 2500.0;
-static const double MIN_TRADE_VOL = 1.0;  // lots
+static const auto TICK_SIZE = 0.0025;
+static const auto MULTIPLIER = 2500.0;
+static const auto MIN_TRADE_VOL = 1.0;  // lots
 }  // namespace
 
 namespace {
@@ -58,10 +59,10 @@ void Processor::dispatch() {
   // first message *must* GatewaySettings
   process(
       GatewaySettings{
-          .mbp_max_depth = 3,
+          .mbp_max_depth = 3u,
           .mbp_allow_price_inversion = false,
       },
-      std::chrono::nanoseconds{1});  // timestamp should be something useful, like UTC
+      1ns);  // timestamp should be something useful, like UTC
   // prefer to process ReferenceData before any market data
   process(
       ReferenceData{
@@ -85,7 +86,7 @@ void Processor::dispatch() {
           .expiry_datetime = {},
           .expiry_datetime_utc = {},
       },
-      std::chrono::nanoseconds{2});
+      2ns);
   // prefer to publish market trading status
   process(
       MarketStatus{
@@ -93,7 +94,7 @@ void Processor::dispatch() {
           .symbol = SYMBOL,
           .trading_status = TradingStatus::OPEN,
       },
-      std::chrono::nanoseconds{3});
+      3ns);
   // initial image
   // ... prefer to sort bids descending
   MBPUpdate bids_image[] = {
@@ -116,7 +117,7 @@ void Processor::dispatch() {
           .snapshot = true,         // indicates that it's an *image*
           .exchange_time_utc = {},  // probably similar to the timestamp you're using
       },
-      std::chrono::nanoseconds{4});
+      4ns);
   // update
   MBPUpdate bids_update[] = {
       {.price = 99.785, .quantity = 0.0},  // remove best price
@@ -131,7 +132,7 @@ void Processor::dispatch() {
           .snapshot = false,        // indicates that it's an *update*
           .exchange_time_utc = {},  // probably similar to the timestamp you're using
       },
-      std::chrono::nanoseconds{5});
+      5ns);
 }
 
 MessageInfo Processor::create_message_info(std::chrono::nanoseconds timestamp_utc) {
@@ -153,9 +154,9 @@ MessageInfo Processor::create_message_info(std::chrono::nanoseconds timestamp_ut
 }
 
 template <typename T>
-void Processor::process(const T &value, std::chrono::nanoseconds timestamp) {
+void Processor::process(const T &value, std::chrono::nanoseconds timestamp_utc) {
   builder_.Clear();
-  auto message_info = create_message_info(timestamp);
+  auto message_info = create_message_info(timestamp_utc);
   Event<T> event(message_info, value);
   auto root = fbs::encode(builder_, event);
   builder_.FinishSizePrefixed(root);  // note! *must* include size

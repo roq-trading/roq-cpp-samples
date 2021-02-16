@@ -37,13 +37,13 @@ ABSL_FLAG(  //
 ABSL_FLAG(  //
     uint32_t,
     sample_freq_secs,
-    uint32_t{1},
+    1u,
     "sample frequency (seconds)"_sv);
 
 ABSL_FLAG(  //
     double,
     ema_alpha,
-    double{0.33},
+    0.33,
     "alpha used to compute exponential moving average (0 < alpha <= 1)"_sv);
 // exponential moving average (ema) reference:
 //   https://en.wikipedia.org/wiki/Moving_average#Exponential_moving_average
@@ -51,7 +51,7 @@ ABSL_FLAG(  //
 ABSL_FLAG(  //
     uint32_t,
     warmup,
-    uint32_t{120},
+    120u,
     "warmup (number of samples before a signal is generated)"_sv);
 
 ABSL_FLAG(  //

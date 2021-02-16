@@ -37,7 +37,7 @@ ABSL_FLAG(  //
 ABSL_FLAG(  //
     double,
     alpha,
-    double{0.2},
+    0.2,
     "alpha used to compute exponential moving average"_sv);
 
 namespace roq {

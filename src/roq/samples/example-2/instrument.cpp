@@ -10,24 +10,6 @@
 
 using namespace roq::literals;
 
-namespace {
-constexpr auto NaN = std::numeric_limits<double>::quiet_NaN();
-constexpr auto TOLERANCE = double{1.0e-10};
-// order book depth
-//   we don't actually need 2 layers for this example
-constexpr auto MAX_DEPTH = size_t{2};
-}  // namespace
-
-namespace {
-template <typename T>
-inline bool update(T &lhs, const T &rhs) {
-  if (lhs == rhs)  // note! too simplistic for T == double
-    return false;
-  lhs = rhs;
-  return true;
-}
-}  // namespace
-
 namespace roq {
 namespace samples {
 namespace example_2 {
@@ -41,7 +23,7 @@ void Instrument::operator()(const Connection &connection) {
   if (update(connection_status_, connection.status)) {
     LOG(INFO)
     (R"([{}:{}] connection_status={})"_fmt, exchange_, symbol_, connection_status_);
-    checkready_();
+    check_ready();
   }
   switch (connection_status_) {
     case ConnectionStatus::UNDEFINED:
@@ -58,21 +40,21 @@ void Instrument::operator()(const Connection &connection) {
 }
 
 void Instrument::operator()(const DownloadBegin &download_begin) {
-  if (download_begin.account.empty() == false)
+  if (!download_begin.account.empty())  // we only care about market (not account)
     return;
-  assert(download_ == false);
+  assert(!download_);
   download_ = true;
   LOG(INFO)(R"([{}:{}] download={})"_fmt, exchange_, symbol_, download_);
 }
 
 void Instrument::operator()(const DownloadEnd &download_end) {
-  if (download_end.account.empty() == false)
+  if (!download_end.account.empty())  // we only care about market (not account)
     return;
-  assert(download_ == true);
+  assert(download_);
   download_ = false;
   LOG(INFO)(R"([{}:{}] download={})"_fmt, exchange_, symbol_, download_);
   // update the ready flag
-  checkready_();
+  check_ready();
 }
 
 void Instrument::operator()(const MarketDataStatus &market_data_status) {
@@ -82,7 +64,7 @@ void Instrument::operator()(const MarketDataStatus &market_data_status) {
     (R"([{}:{}] market_data_status={})"_fmt, exchange_, symbol_, market_data_status_);
   }
   // update the ready flag
-  checkready_();
+  check_ready();
 }
 
 void Instrument::operator()(const ReferenceData &reference_data) {
@@ -102,7 +84,7 @@ void Instrument::operator()(const ReferenceData &reference_data) {
     LOG(INFO)(R"([{}:{}] multiplier={})"_fmt, exchange_, symbol_, multiplier_);
   }
   // update the ready flag
-  checkready_();
+  check_ready();
 }
 
 void Instrument::operator()(const MarketStatus &market_status) {
@@ -114,7 +96,7 @@ void Instrument::operator()(const MarketStatus &market_status) {
     (R"([{}:{}] trading_status={})"_fmt, exchange_, symbol_, trading_status_);
   }
   // update the ready flag
-  checkready_();
+  check_ready();
 }
 
 void Instrument::operator()(const MarketByPriceUpdate &market_by_price_update) {
@@ -159,22 +141,21 @@ void Instrument::operator()(const MarketByOrderUpdate &market_by_order_update) {
 
 void Instrument::update_model() {
   // one sided market?
-  if (std::fabs(depth_[0].bid_quantity) < TOLERANCE ||
-      std::fabs(depth_[0].ask_quantity) < TOLERANCE)
+  if (is_zero(depth_[0].bid_quantity) || is_zero(depth_[0].ask_quantity))
     return;
   // validate depth
   auto spread = depth_[0].ask_price - depth_[0].bid_price;
-  LOG_IF(FATAL, spread < TOLERANCE)
+  LOG_IF(FATAL, !is_strictly_positive(spread))
   (R"([{}:{}] Probably something wrong: )"
-   R"(choice or inversion detected. depth=[{}])"_fmt,
+   R"(choice price or price inversion detected. depth=[{}])"_fmt,
    exchange_,
    symbol_,
    roq::join(depth_, ", "_sv));
   // compute (weighted) mid
   double sum_1 = 0.0, sum_2 = 0.0;
-  for (auto iter : depth_) {
-    sum_1 += iter.bid_price * iter.bid_quantity + iter.ask_price * iter.ask_quantity;
-    sum_2 += iter.bid_quantity + iter.ask_quantity;
+  for (auto &[bid_price, bid_quantity, ask_price, ask_quantity] : depth_) {
+    sum_1 += bid_price * bid_quantity + ask_price * ask_quantity;
+    sum_2 += bid_quantity + ask_quantity;
   }
   mid_price_ = sum_1 / sum_2;
   // update (exponential) moving average
@@ -191,11 +172,12 @@ void Instrument::update_model() {
    avg_price_);
 }
 
-void Instrument::checkready_() {
+void Instrument::check_ready() {
   auto before = ready_;
-  ready_ = connection_status_ == ConnectionStatus::CONNECTED && download_ == false &&
-           tick_size_ > TOLERANCE && min_trade_vol_ > TOLERANCE && multiplier_ > TOLERANCE &&
-           trading_status_ == TradingStatus::OPEN && market_data_status_ == GatewayStatus::READY;
+  ready_ = connection_status_ == ConnectionStatus::CONNECTED && !download_ &&
+           is_strictly_positive(tick_size_) && is_strictly_positive(min_trade_vol_) &&
+           is_strictly_positive(multiplier_) && trading_status_ == TradingStatus::OPEN &&
+           market_data_status_ == GatewayStatus::READY;
   LOG_IF(INFO, ready_ != before)
   (R"([{}:{}] ready={})"_fmt, exchange_, symbol_, ready_);
 }
@@ -203,13 +185,13 @@ void Instrument::checkready_() {
 void Instrument::reset() {
   connection_status_ = ConnectionStatus::DISCONNECTED;
   download_ = false;
-  tick_size_ = std::numeric_limits<double>::quiet_NaN();
-  min_trade_vol_ = std::numeric_limits<double>::quiet_NaN();
+  tick_size_ = NaN;
+  min_trade_vol_ = NaN;
   trading_status_ = TradingStatus::UNDEFINED;
   market_data_status_ = GatewayStatus::DISCONNECTED;
   depth_builder_->reset();
-  mid_price_ = std::numeric_limits<double>::quiet_NaN();
-  avg_price_ = std::numeric_limits<double>::quiet_NaN();
+  mid_price_ = NaN;
+  avg_price_ = NaN;
   ready_ = false;
 }
 

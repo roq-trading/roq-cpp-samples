@@ -14,8 +14,6 @@ namespace roq {
 namespace samples {
 namespace example_3 {
 
-constexpr double TOLERANCE = 1.0e-10;
-
 Model::Model() : bid_ema_(Flags::ema_alpha()), ask_ema_(Flags::ema_alpha()) {
 }
 
@@ -29,7 +27,7 @@ void Model::reset() {
 Side Model::update(const Depth &depth) {
   auto result = Side::UNDEFINED;
 
-  if (validate(depth) == false)
+  if (!validate(depth))
     return result;
 
   auto bid_fast = weighted_bid(depth);
@@ -94,9 +92,9 @@ Side Model::update(const Depth &depth) {
 }
 
 bool Model::validate(const Depth &depth) {  // require full depth
-  return std::accumulate(depth.begin(), depth.end(), true, [](bool current, const Layer &layer) {
-    return current && std::fabs(layer.bid_quantity) > TOLERANCE &&
-           std::fabs(layer.ask_quantity) > TOLERANCE;
+  return std::accumulate(depth.begin(), depth.end(), true, [](bool value, const Layer &layer) {
+    return value && is_strictly_positive(layer.bid_quantity) &&
+           is_strictly_positive(layer.ask_quantity);
   });
 }
 
