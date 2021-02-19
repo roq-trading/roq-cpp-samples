@@ -4,6 +4,8 @@ All notable changes will be documented in this file.
 
 ## Head
 
+## 0.6.1 &ndash; 2021-02-19
+
 ### Added
 
 * Example demonstrating how to import third-party data sources using
