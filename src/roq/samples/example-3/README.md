@@ -34,7 +34,7 @@ Simulation is controlled by the `--simulation` flag
 ./roq-samples-example-3 \
     --name "trader" \
     --simulation \
-    $CONDA_PREFIX/share/roq-data/deribit.roq
+    $CONDA_PREFIX/share/roq/data/deribit.roq
 ```
 
 ```text
