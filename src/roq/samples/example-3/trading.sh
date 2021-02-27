@@ -12,5 +12,5 @@ fi
 NAME="trader"
 
 $PREFIX "$DIR/roq-samples-example-3" \
-	--name "$NAME" \
-	$@
+  --name "$NAME" \
+  $@

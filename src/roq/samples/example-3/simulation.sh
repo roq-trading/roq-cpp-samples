@@ -12,7 +12,7 @@ fi
 NAME="trader"
 
 $PREFIX "$DIR/roq-samples-example-3" \
-	--name "$NAME" \
-	--simulation \
-	$CONDA_PREFIX/share/roq/data/deribit.roq \
-	$@
+  --name "$NAME" \
+  --simulation \
+  $CONDA_PREFIX/share/roq/data/deribit.roq \
+  $@
