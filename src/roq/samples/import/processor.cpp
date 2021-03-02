@@ -56,7 +56,7 @@ Processor::~Processor() {
   }
 }
 void Processor::dispatch() {
-  // first message *must* GatewaySettings
+  // first message *must* be GatewaySettings
   process(
       GatewaySettings{
           .mbp_max_depth = 3u,
@@ -66,6 +66,7 @@ void Processor::dispatch() {
   // prefer to process ReferenceData before any market data
   process(
       ReferenceData{
+          .stream_id = {},       // has little significance for simulation
           .exchange = EXCHANGE,  // required
           .symbol = SYMBOL,      // required
           .description = {},
@@ -90,6 +91,7 @@ void Processor::dispatch() {
   // prefer to publish market trading status
   process(
       MarketStatus{
+          .stream_id = {},
           .exchange = EXCHANGE,
           .symbol = SYMBOL,
           .trading_status = TradingStatus::OPEN,
@@ -110,6 +112,7 @@ void Processor::dispatch() {
   };
   process(
       MarketByPriceUpdate{
+          .stream_id = {},
           .exchange = EXCHANGE,
           .symbol = SYMBOL,
           .bids = bids_image,
@@ -125,6 +128,7 @@ void Processor::dispatch() {
   };
   process(
       MarketByPriceUpdate{
+          .stream_id = {},
           .exchange = EXCHANGE,
           .symbol = SYMBOL,
           .bids = bids_update,
@@ -138,7 +142,7 @@ void Processor::dispatch() {
 MessageInfo Processor::create_message_info(std::chrono::nanoseconds timestamp_utc) {
   // note! just re-use the same timestamp for all trace points
   return MessageInfo{
-      .source = 0,              // not encoded
+      .source = {},             // not encoded
       .source_name = {},        // not encoded
       .source_session_id = {},  // not encoded
       .source_seqno = ++seqno_,
