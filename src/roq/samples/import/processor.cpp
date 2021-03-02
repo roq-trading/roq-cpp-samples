@@ -148,8 +148,8 @@ MessageInfo Processor::create_message_info(std::chrono::nanoseconds timestamp_ut
       .source_receive_time = timestamp_utc,
       .origin_create_time = timestamp_utc,
       .origin_create_time_utc = timestamp_utc,
-      .is_last = true,
-      .opaque = {},  // unused
+      .is_last = true,  // messages can be batched
+      .opaque = {},     // unused
   };
 }
 
