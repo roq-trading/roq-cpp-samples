@@ -14,7 +14,8 @@ namespace example_3 {
 
 class Model final {
  public:
-  static constexpr size_t MAX_DEPTH = 3u;
+  static const constexpr size_t MAX_DEPTH = 3u;
+
   using Depth = std::array<Layer, MAX_DEPTH>;
 
   Model();
@@ -24,13 +25,13 @@ class Model final {
 
   void reset();
 
-  Side update(const Depth &depth);
+  Side update(const Depth &);
 
  protected:
-  bool validate(const Depth &depth);
+  bool validate(const Depth &);
 
-  double weighted_bid(const Depth &depth);
-  double weighted_ask(const Depth &depth);
+  double weighted_bid(const Depth &);
+  double weighted_ask(const Depth &);
 
  private:
   EMA bid_ema_;

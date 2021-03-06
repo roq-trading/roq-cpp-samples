@@ -34,18 +34,18 @@ class Strategy final : public client::Handler {
   // note!
   //   the ROQ_v environment variable defines the verbosity level
   //   for example, "export ROQ_v=1"
-  void operator()(const Event<Connection> &event) override;
-  void operator()(const Event<DownloadBegin> &event) override;
-  void operator()(const Event<DownloadEnd> &event) override;
-  void operator()(const Event<GatewaySettings> &event) override;
-  void operator()(const Event<MarketDataStatus> &event) override;
-  void operator()(const Event<OrderManagerStatus> &event) override;
-  void operator()(const Event<ReferenceData> &event) override;
-  void operator()(const Event<MarketStatus> &event) override;
-  void operator()(const Event<MarketByPriceUpdate> &event) override;
-  void operator()(const Event<MarketByOrderUpdate> &event) override;
-  void operator()(const Event<TradeSummary> &event) override;
-  void operator()(const Event<ExternalLatency> &event) override;
+  void operator()(const Event<Connection> &) override;
+  void operator()(const Event<DownloadBegin> &) override;
+  void operator()(const Event<DownloadEnd> &) override;
+  void operator()(const Event<GatewaySettings> &) override;
+  void operator()(const Event<MarketDataStatus> &) override;
+  void operator()(const Event<OrderManagerStatus> &) override;
+  void operator()(const Event<ReferenceData> &) override;
+  void operator()(const Event<MarketStatus> &) override;
+  void operator()(const Event<MarketByPriceUpdate> &) override;
+  void operator()(const Event<MarketByOrderUpdate> &) override;
+  void operator()(const Event<TradeSummary> &) override;
+  void operator()(const Event<ExternalLatency> &) override;
 
  private:
   client::Dispatcher &dispatcher_;

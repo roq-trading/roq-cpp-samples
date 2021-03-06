@@ -15,19 +15,19 @@ namespace example_2 {
 
 class Strategy final : public client::Handler {
  public:
-  explicit Strategy(client::Dispatcher &dispatcher);
+  explicit Strategy(client::Dispatcher &);
 
   Strategy(Strategy &&) = default;
   Strategy(const Strategy &) = delete;
 
  protected:
-  void operator()(const Event<Connection> &event) override;
-  void operator()(const Event<DownloadBegin> &event) override;
-  void operator()(const Event<DownloadEnd> &event) override;
-  void operator()(const Event<MarketDataStatus> &event) override;
-  void operator()(const Event<ReferenceData> &event) override;
-  void operator()(const Event<MarketStatus> &event) override;
-  void operator()(const Event<MarketByPriceUpdate> &event) override;
+  void operator()(const Event<Connection> &) override;
+  void operator()(const Event<DownloadBegin> &) override;
+  void operator()(const Event<DownloadEnd> &) override;
+  void operator()(const Event<MarketDataStatus> &) override;
+  void operator()(const Event<ReferenceData> &) override;
+  void operator()(const Event<MarketStatus> &) override;
+  void operator()(const Event<MarketByPriceUpdate> &) override;
 
   // helper - dispatch event to the relevant instrument
   template <typename T>

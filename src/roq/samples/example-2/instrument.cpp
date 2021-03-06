@@ -183,12 +183,12 @@ void Instrument::check_ready() {
 }
 
 void Instrument::reset() {
-  connection_status_ = ConnectionStatus::DISCONNECTED;
+  connection_status_ = {};
   download_ = false;
   tick_size_ = NaN;
   min_trade_vol_ = NaN;
-  trading_status_ = TradingStatus::UNDEFINED;
-  market_data_status_ = GatewayStatus::DISCONNECTED;
+  trading_status_ = {};
+  market_data_status_ = {};
   depth_builder_->reset();
   mid_price_ = NaN;
   avg_price_ = NaN;

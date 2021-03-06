@@ -25,14 +25,14 @@ class Instrument final {
 
   bool is_ready() const { return ready_; }
 
-  void operator()(const Connection &connection);
-  void operator()(const DownloadBegin &download_begin);
-  void operator()(const DownloadEnd &download_end);
-  void operator()(const MarketDataStatus &market_data_status);
-  void operator()(const ReferenceData &reference_data);
-  void operator()(const MarketStatus &market_status);
-  void operator()(const MarketByPriceUpdate &market_by_price_update);
-  void operator()(const MarketByOrderUpdate &market_by_order_update);
+  void operator()(const Connection &);
+  void operator()(const DownloadBegin &);
+  void operator()(const DownloadEnd &);
+  void operator()(const MarketDataStatus &);
+  void operator()(const ReferenceData &);
+  void operator()(const MarketStatus &);
+  void operator()(const MarketByPriceUpdate &);
+  void operator()(const MarketByOrderUpdate &);
 
  protected:
   void update_model();
@@ -46,13 +46,13 @@ class Instrument final {
 
   const std::string_view exchange_;
   const std::string_view symbol_;
-  ConnectionStatus connection_status_ = ConnectionStatus::DISCONNECTED;
+  ConnectionStatus connection_status_ = {};
   bool download_ = false;
   double tick_size_ = NaN;
   double min_trade_vol_ = NaN;
   double multiplier_ = NaN;
-  TradingStatus trading_status_ = TradingStatus::UNDEFINED;
-  GatewayStatus market_data_status_ = GatewayStatus::DISCONNECTED;
+  TradingStatus trading_status_ = {};
+  GatewayStatus market_data_status_ = {};
   std::array<Layer, MAX_DEPTH> depth_;
   std::unique_ptr<client::DepthBuilder> depth_builder_;
   double mid_price_ = NaN;

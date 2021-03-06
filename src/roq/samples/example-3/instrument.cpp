@@ -235,13 +235,13 @@ void Instrument::check_ready() {
 }
 
 void Instrument::reset() {
-  connection_status_ = ConnectionStatus::DISCONNECTED;
+  connection_status_ = {};
   download_ = false;
   tick_size_ = NaN;
   min_trade_vol_ = NaN;
-  trading_status_ = TradingStatus::UNDEFINED;
-  market_data_status_ = GatewayStatus::DISCONNECTED;
-  order_manager_status_ = GatewayStatus::DISCONNECTED;
+  trading_status_ = {};
+  market_data_status_ = {};
+  order_manager_status_ = {};
   depth_builder_->reset();
   long_position_ = {};
   short_position_ = {};

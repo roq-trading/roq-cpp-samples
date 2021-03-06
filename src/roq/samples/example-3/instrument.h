@@ -18,7 +18,8 @@ namespace example_3 {
 
 class Instrument final {
  public:
-  static constexpr size_t MAX_DEPTH = 3u;
+  static const constexpr size_t MAX_DEPTH = 3u;
+
   using Depth = std::array<Layer, MAX_DEPTH>;
 
   Instrument(
@@ -49,27 +50,17 @@ class Instrument final {
 
   bool can_trade(Side side) const;
 
-  void operator()(const Connection &connection);
-
-  void operator()(const DownloadBegin &download_begin);
-
-  void operator()(const DownloadEnd &download_end);
-
-  void operator()(const MarketDataStatus &market_data_status);
-
-  void operator()(const OrderManagerStatus &order_manager_status);
-
-  void operator()(const ReferenceData &reference_data);
-
-  void operator()(const MarketStatus &market_status);
-
-  void operator()(const MarketByPriceUpdate &market_by_price_update);
-
-  void operator()(const MarketByOrderUpdate &market_by_order_update);
-
-  void operator()(const OrderUpdate &order_update);
-
-  void operator()(const PositionUpdate &position_update);
+  void operator()(const Connection &);
+  void operator()(const DownloadBegin &);
+  void operator()(const DownloadEnd &);
+  void operator()(const MarketDataStatus &);
+  void operator()(const OrderManagerStatus &);
+  void operator()(const ReferenceData &);
+  void operator()(const MarketStatus &);
+  void operator()(const MarketByPriceUpdate &);
+  void operator()(const MarketByOrderUpdate &);
+  void operator()(const OrderUpdate &);
+  void operator()(const PositionUpdate &);
 
  protected:
   void check_ready();
@@ -82,14 +73,14 @@ class Instrument final {
   const std::string_view exchange_;
   const std::string_view symbol_;
   const std::string_view account_;
-  ConnectionStatus connection_status_ = ConnectionStatus::DISCONNECTED;
+  ConnectionStatus connection_status_ = {};
   bool download_ = false;
   double tick_size_ = NaN;
   double min_trade_vol_ = NaN;
   double multiplier_ = NaN;
-  TradingStatus trading_status_ = TradingStatus::UNDEFINED;
-  GatewayStatus market_data_status_ = GatewayStatus::DISCONNECTED;
-  GatewayStatus order_manager_status_ = GatewayStatus::DISCONNECTED;
+  TradingStatus trading_status_ = {};
+  GatewayStatus market_data_status_ = {};
+  GatewayStatus order_manager_status_ = {};
   Depth depth_;
   std::unique_ptr<client::DepthBuilder> depth_builder_;
   double long_position_ = {};

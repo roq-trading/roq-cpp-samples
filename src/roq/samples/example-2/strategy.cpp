@@ -42,10 +42,10 @@ void Strategy::operator()(const Event<MarketByPriceUpdate> &event) {
 template <typename T>
 void Strategy::dispatch(const T &event) {
   switch (event.message_info.source) {
-    case 0:
+    case 0u:
       futures_(event.value);
       break;
-    case 1:
+    case 1u:
       cash_(event.value);
       break;
     default:

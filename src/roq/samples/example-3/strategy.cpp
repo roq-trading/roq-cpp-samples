@@ -78,8 +78,8 @@ void Strategy::operator()(const Event<OrderUpdate> &event) {
   dispatch(event);  // update position
   auto &order_update = event.value;
   if (is_order_complete(order_update.status)) {
-    working_order_id_ = 0u;
-    working_side_ = Side::UNDEFINED;
+    working_order_id_ = {};
+    working_side_ = {};
   }
 }
 
@@ -154,8 +154,8 @@ void Strategy::try_trade(Side side, double price) {
           .order_type = OrderType::LIMIT,
           .price = price,
           .time_in_force = TimeInForce::GTC,
-          .position_effect = PositionEffect::UNDEFINED,
-          .execution_instruction = ExecutionInstruction::UNDEFINED,
+          .position_effect = {},
+          .execution_instruction = {},
           .stop_price = NaN,
           .max_show_quantity = NaN,
           .order_template = {},
