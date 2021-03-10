@@ -2,19 +2,13 @@
 
 #pragma once
 
-#include <string_view>
+#include "roq/samples/example-2/flags/flags.h"
 
 namespace roq {
 namespace samples {
 namespace example_2 {
 
-struct Flags final {
-  static std::string_view futures_exchange();
-  static std::string_view futures_symbol();
-  static std::string_view cash_exchange();
-  static std::string_view cash_symbol();
-  static double alpha();
-};
+using flags::Flags;
 
 }  // namespace example_2
 }  // namespace samples

@@ -2,14 +2,18 @@
 
 #pragma once
 
-#include "roq/samples/import/flags/flags.h"
+#include <string_view>
 
 namespace roq {
 namespace samples {
 namespace import {
+namespace flags {
 
-using flags::Flags;
+struct Flags final {
+  static std::string_view encoding();
+};
 
+}  // namespace flags
 }  // namespace import
 }  // namespace samples
 }  // namespace roq
