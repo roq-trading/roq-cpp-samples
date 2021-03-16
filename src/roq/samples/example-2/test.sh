@@ -1,16 +1,26 @@
 #!/usr/bin/env bash
 
-DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
+NAME="trader"
+
+# debug?
 
 if [ "$1" == "debug" ]; then
-  PREFIX="gdb --args"
+  KERNEL="$(uname -a)"
+  case "$KERNEL" in
+    Linux*)
+      PREFIX="gdb --args"
+      ;;
+    Darwin*)
+      PREFIX="lldb --"
+      ;;
+  esac
   shift 1
 else
   PREFIX=
 fi
 
-NAME="trader"
+# launch
 
-$PREFIX "$DIR/roq-samples-example-2" \
+$PREFIX "./roq-samples-example-2" \
   --name "$NAME" \
   $@
