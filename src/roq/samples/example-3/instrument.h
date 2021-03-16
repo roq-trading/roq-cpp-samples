@@ -10,8 +10,6 @@
 
 #include "roq/client/depth_builder.h"
 
-#include "roq/samples/example-3/utilities.h"
-
 namespace roq {
 namespace samples {
 namespace example_3 {

@@ -5,9 +5,9 @@
 #include <limits>
 
 #include "roq/logging.h"
+#include "roq/update.h"
 
 #include "roq/samples/example-3/flags.h"
-#include "roq/samples/example-3/utilities.h"
 
 using namespace roq::literals;
 

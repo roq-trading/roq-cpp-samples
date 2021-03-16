@@ -4,9 +4,10 @@
 
 #include <algorithm>
 
-#include "roq/logging.h"
-
 #include "roq/client.h"
+#include "roq/compare.h"
+#include "roq/logging.h"
+#include "roq/update.h"
 
 using namespace roq::literals;
 
@@ -30,9 +31,9 @@ double Instrument::position() const {
 bool Instrument::can_trade(Side side) const {
   switch (side) {
     case Side::BUY:
-      return !is_strictly_positive(position());
+      return compare(position(), 0.0) <= 0;
     case Side::SELL:
-      return !is_strictly_positive(-position());  // note! testing negated position
+      return compare(position(), 0.0) >= 0;
     default:
       assert(false);  // why is this function being called?
       return false;
@@ -226,8 +227,8 @@ void Instrument::operator()(const PositionUpdate &position_update) {
 void Instrument::check_ready() {
   auto before = ready_;
   ready_ = connection_status_ == ConnectionStatus::CONNECTED && !download_ &&
-           is_strictly_positive(tick_size_) && is_strictly_positive(min_trade_vol_) &&
-           is_strictly_positive(multiplier_) && trading_status_ == TradingStatus::OPEN &&
+           compare(tick_size_, 0.0) > 0 && compare(min_trade_vol_, 0.0) > 0 &&
+           compare(multiplier_, 0.0) > 0 && trading_status_ == TradingStatus::OPEN &&
            market_data_status_ == GatewayStatus::READY &&
            order_manager_status_ == GatewayStatus::READY;
   LOG_IF(INFO, ready_ != before)
@@ -251,10 +252,10 @@ void Instrument::reset() {
 }
 
 void Instrument::validate(const Depth &depth) {
-  if (!is_strictly_positive(depth[0].bid_quantity) || !is_strictly_positive(depth[0].ask_quantity))
+  if (compare(depth[0].bid_quantity, 0.0) <= 0 || compare(depth[0].ask_quantity, 0.0) <= 0)
     return;
   auto spread = depth[0].ask_price - depth[0].bid_price;
-  LOG_IF(FATAL, !is_strictly_positive(spread))
+  LOG_IF(FATAL, compare(spread, 0.0) <= 0)
   (R"([{}:{}] Probably something wrong: )"
    R"(choice price or price inversion detected. depth=[{}])"_fmt,
    exchange_,

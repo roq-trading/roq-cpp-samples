@@ -8,8 +8,6 @@
 #include "roq/api.h"
 #include "roq/client.h"
 
-#include "roq/samples/example-2/utilities.h"
-
 namespace roq {
 namespace samples {
 namespace example_2 {

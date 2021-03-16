@@ -2,9 +2,10 @@
 
 #include "roq/samples/example-2/instrument.h"
 
-#include "roq/logging.h"
-
+#include "roq/compare.h"
 #include "roq/format.h"
+#include "roq/logging.h"
+#include "roq/update.h"
 
 #include "roq/samples/example-2/flags.h"
 
@@ -141,11 +142,11 @@ void Instrument::operator()(const MarketByOrderUpdate &market_by_order_update) {
 
 void Instrument::update_model() {
   // one sided market?
-  if (is_zero(depth_[0].bid_quantity) || is_zero(depth_[0].ask_quantity))
+  if (compare(depth_[0].bid_quantity, 0.0) == 0 || compare(depth_[0].ask_quantity, 0.0) == 0)
     return;
   // validate depth
   auto spread = depth_[0].ask_price - depth_[0].bid_price;
-  LOG_IF(FATAL, !is_strictly_positive(spread))
+  LOG_IF(FATAL, compare(spread, 0.0) <= 0)
   (R"([{}:{}] Probably something wrong: )"
    R"(choice price or price inversion detected. depth=[{}])"_fmt,
    exchange_,
@@ -175,8 +176,8 @@ void Instrument::update_model() {
 void Instrument::check_ready() {
   auto before = ready_;
   ready_ = connection_status_ == ConnectionStatus::CONNECTED && !download_ &&
-           is_strictly_positive(tick_size_) && is_strictly_positive(min_trade_vol_) &&
-           is_strictly_positive(multiplier_) && trading_status_ == TradingStatus::OPEN &&
+           compare(tick_size_, 0.0) > 0 && compare(min_trade_vol_, 0.0) > 0 &&
+           compare(multiplier_, 0.0) > 0 && trading_status_ == TradingStatus::OPEN &&
            market_data_status_ == GatewayStatus::READY;
   LOG_IF(INFO, ready_ != before)
   (R"([{}:{}] ready={})"_fmt, exchange_, symbol_, ready_);

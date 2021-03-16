@@ -5,7 +5,7 @@
 #include <cstdint>
 #include <limits>
 
-#include "roq/samples/example-3/utilities.h"
+#include "roq/numbers.h"
 
 namespace roq {
 namespace samples {
