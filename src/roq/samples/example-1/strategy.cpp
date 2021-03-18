@@ -45,17 +45,18 @@ void Strategy::operator()(const Event<GatewaySettings> &event) {
    event.value);
 }
 
-void Strategy::operator()(const Event<MarketDataStatus> &event) {
+void Strategy::operator()(const Event<StreamUpdate> &event) {
   LOG(INFO)
-  (R"([{}:{}] MarketDataStatus={})"_fmt,
+  (R"([{}:{}] StreamUpdate={})"_fmt,
    event.message_info.source,
    event.message_info.source_name,
    event.value);
 }
 
-void Strategy::operator()(const Event<OrderManagerStatus> &event) {
-  LOG(INFO)
-  (R"([{}:{}] OrderManagerStatus={})"_fmt,
+void Strategy::operator()(const Event<ExternalLatency> &event) {
+  // only verbose logging, see comment in header
+  VLOG(1)
+  (R"([{}:{}] ExternalLatency={})"_fmt,
    event.message_info.source,
    event.message_info.source_name,
    event.value);
@@ -99,15 +100,6 @@ void Strategy::operator()(const Event<TradeSummary> &event) {
   // only verbose logging, see comment in header
   VLOG(1)
   (R"([{}:{}] TradeSummary={})"_fmt,
-   event.message_info.source,
-   event.message_info.source_name,
-   event.value);
-}
-
-void Strategy::operator()(const Event<ExternalLatency> &event) {
-  // only verbose logging, see comment in header
-  VLOG(1)
-  (R"([{}:{}] ExternalLatency={})"_fmt,
    event.message_info.source,
    event.message_info.source_name,
    event.value);

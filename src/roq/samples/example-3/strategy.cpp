@@ -45,11 +45,7 @@ void Strategy::operator()(const Event<DownloadEnd> &event) {
   }
 }
 
-void Strategy::operator()(const Event<MarketDataStatus> &event) {
-  dispatch(event);
-}
-
-void Strategy::operator()(const Event<OrderManagerStatus> &event) {
+void Strategy::operator()(const Event<StreamUpdate> &event) {
   dispatch(event);
 }
 

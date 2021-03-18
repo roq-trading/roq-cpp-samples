@@ -51,8 +51,7 @@ class Instrument final {
   void operator()(const Connection &);
   void operator()(const DownloadBegin &);
   void operator()(const DownloadEnd &);
-  void operator()(const MarketDataStatus &);
-  void operator()(const OrderManagerStatus &);
+  void operator()(const StreamUpdate &);
   void operator()(const ReferenceData &);
   void operator()(const MarketStatus &);
   void operator()(const MarketByPriceUpdate &);
@@ -65,7 +64,7 @@ class Instrument final {
 
   void reset();
 
-  void validate(const Depth &depth);
+  void validate(const Depth &);
 
  private:
   const std::string_view exchange_;
@@ -77,8 +76,7 @@ class Instrument final {
   double min_trade_vol_ = NaN;
   double multiplier_ = NaN;
   TradingStatus trading_status_ = {};
-  GatewayStatus market_data_status_ = {};
-  GatewayStatus order_manager_status_ = {};
+  GatewayStatus stream_status_ = {};
   Depth depth_;
   std::unique_ptr<client::DepthBuilder> depth_builder_;
   double long_position_ = {};

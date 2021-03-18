@@ -22,7 +22,7 @@ void Strategy::operator()(const Event<DownloadBegin> &event) {
 void Strategy::operator()(const Event<DownloadEnd> &event) {
   dispatch(event);
 }
-void Strategy::operator()(const Event<MarketDataStatus> &event) {
+void Strategy::operator()(const Event<StreamUpdate> &event) {
   dispatch(event);
 }
 void Strategy::operator()(const Event<ReferenceData> &event) {

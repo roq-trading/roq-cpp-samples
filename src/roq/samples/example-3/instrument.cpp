@@ -78,22 +78,11 @@ void Instrument::operator()(const DownloadEnd &download_end) {
   check_ready();
 }
 
-void Instrument::operator()(const MarketDataStatus &market_data_status) {
+void Instrument::operator()(const StreamUpdate &stream_update) {
   // update our cache
-  if (update(market_data_status_, market_data_status.status)) {
+  if (update(stream_status_, stream_update.status)) {
     LOG(INFO)
-    (R"([{}:{}] market_data_status={})"_fmt, exchange_, symbol_, market_data_status_);
-  }
-  // update the ready flag
-  check_ready();
-}
-
-void Instrument::operator()(const OrderManagerStatus &order_manager_status) {
-  assert(account_.compare(order_manager_status.account) == 0);
-  // update our cache
-  if (update(order_manager_status_, order_manager_status.status)) {
-    LOG(INFO)
-    (R"([{}:{}] order_manager_status={})"_fmt, exchange_, symbol_, order_manager_status_);
+    (R"([{}:{}] stream_status={})"_fmt, exchange_, symbol_, stream_status_);
   }
   // update the ready flag
   check_ready();
@@ -229,8 +218,7 @@ void Instrument::check_ready() {
   ready_ = connection_status_ == ConnectionStatus::CONNECTED && !download_ &&
            compare(tick_size_, 0.0) > 0 && compare(min_trade_vol_, 0.0) > 0 &&
            compare(multiplier_, 0.0) > 0 && trading_status_ == TradingStatus::OPEN &&
-           market_data_status_ == GatewayStatus::READY &&
-           order_manager_status_ == GatewayStatus::READY;
+           stream_status_ == GatewayStatus::READY && stream_status_ == GatewayStatus::READY;
   LOG_IF(INFO, ready_ != before)
   (R"([{}:{}] ready={})"_fmt, exchange_, symbol_, ready_);
 }
@@ -241,8 +229,7 @@ void Instrument::reset() {
   tick_size_ = NaN;
   min_trade_vol_ = NaN;
   trading_status_ = {};
-  market_data_status_ = {};
-  order_manager_status_ = {};
+  stream_status_ = {};
   depth_builder_->reset();
   long_position_ = {};
   short_position_ = {};

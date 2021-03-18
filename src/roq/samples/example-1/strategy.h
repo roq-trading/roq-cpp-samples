@@ -19,7 +19,7 @@ namespace example_1 {
 
 class Strategy final : public client::Handler {
  public:
-  explicit Strategy(client::Dispatcher &dispatcher);
+  explicit Strategy(client::Dispatcher &);
 
   Strategy(Strategy &&) = default;
   Strategy(const Strategy &) = delete;
@@ -38,14 +38,13 @@ class Strategy final : public client::Handler {
   void operator()(const Event<DownloadBegin> &) override;
   void operator()(const Event<DownloadEnd> &) override;
   void operator()(const Event<GatewaySettings> &) override;
-  void operator()(const Event<MarketDataStatus> &) override;
-  void operator()(const Event<OrderManagerStatus> &) override;
+  void operator()(const Event<StreamUpdate> &) override;
+  void operator()(const Event<ExternalLatency> &) override;
   void operator()(const Event<ReferenceData> &) override;
   void operator()(const Event<MarketStatus> &) override;
   void operator()(const Event<MarketByPriceUpdate> &) override;
   void operator()(const Event<MarketByOrderUpdate> &) override;
   void operator()(const Event<TradeSummary> &) override;
-  void operator()(const Event<ExternalLatency> &) override;
 
  private:
   client::Dispatcher &dispatcher_;

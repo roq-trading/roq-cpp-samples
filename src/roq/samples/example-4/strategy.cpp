@@ -37,17 +37,9 @@ void Strategy::operator()(const Event<DownloadEnd> &event) {
    event.value);
 }
 
-void Strategy::operator()(const Event<MarketDataStatus> &event) {
+void Strategy::operator()(const Event<StreamUpdate> &event) {
   LOG(INFO)
-  (R"([{}:{}] MarketDataStatus={})"_fmt,
-   event.message_info.source,
-   event.message_info.source_name,
-   event.value);
-}
-
-void Strategy::operator()(const Event<OrderManagerStatus> &event) {
-  LOG(INFO)
-  (R"([{}:{}] OrderManagerStatus={})"_fmt,
+  (R"([{}:{}] StreamUpdate={})"_fmt,
    event.message_info.source,
    event.message_info.source_name,
    event.value);

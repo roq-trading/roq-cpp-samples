@@ -26,7 +26,7 @@ class Instrument final {
   void operator()(const Connection &);
   void operator()(const DownloadBegin &);
   void operator()(const DownloadEnd &);
-  void operator()(const MarketDataStatus &);
+  void operator()(const StreamUpdate &);
   void operator()(const ReferenceData &);
   void operator()(const MarketStatus &);
   void operator()(const MarketByPriceUpdate &);
@@ -50,7 +50,7 @@ class Instrument final {
   double min_trade_vol_ = NaN;
   double multiplier_ = NaN;
   TradingStatus trading_status_ = {};
-  GatewayStatus market_data_status_ = {};
+  GatewayStatus stream_status_ = {};
   std::array<Layer, MAX_DEPTH> depth_;
   std::unique_ptr<client::DepthBuilder> depth_builder_;
   double mid_price_ = NaN;

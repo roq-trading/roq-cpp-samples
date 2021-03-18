@@ -25,7 +25,7 @@ static const auto EXCHANGE = "CME"_sv;
 static const auto SYMBOL = "GEZ1"_sv;
 static const auto TICK_SIZE = 0.0025;
 static const auto MULTIPLIER = 2500.0;
-static const auto MIN_TRADE_VOL = 1.0;  // lots
+static const auto MIN_TRADE_VOL = 1.0;  // 1 lot
 }  // namespace
 
 namespace {
