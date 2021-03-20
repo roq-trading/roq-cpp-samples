@@ -161,7 +161,7 @@ void Instrument::update_model() {
   mid_price_ = sum_1 / sum_2;
   // update (exponential) moving average
   if (std::isnan(avg_price_))
-    avg_price_ = mid_price_;
+    avg_price_ = mid_price_;  // initialize
   else
     avg_price_ = Flags::alpha() * mid_price_ + (1.0 - Flags::alpha()) * avg_price_;
   // only verbose logging
