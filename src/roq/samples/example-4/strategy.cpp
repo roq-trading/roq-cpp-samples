@@ -14,75 +14,75 @@ Strategy::Strategy(client::Dispatcher &dispatcher) : dispatcher_(dispatcher) {
 }
 
 void Strategy::operator()(const Event<Connection> &event) {
-  LOG(INFO)
-  (R"([{}:{}] Connection={})"_fmt,
-   event.message_info.source,
-   event.message_info.source_name,
-   event.value);
+  log::info(
+      R"([{}:{}] Connection={})"_fmt,
+      event.message_info.source,
+      event.message_info.source_name,
+      event.value);
 }
 
 void Strategy::operator()(const Event<DownloadBegin> &event) {
-  LOG(INFO)
-  (R"([{}:{}] DownloadBegin={})"_fmt,
-   event.message_info.source,
-   event.message_info.source_name,
-   event.value);
+  log::info(
+      R"([{}:{}] DownloadBegin={})"_fmt,
+      event.message_info.source,
+      event.message_info.source_name,
+      event.value);
 }
 
 void Strategy::operator()(const Event<DownloadEnd> &event) {
-  LOG(INFO)
-  (R"([{}:{}] DownloadEnd={})"_fmt,
-   event.message_info.source,
-   event.message_info.source_name,
-   event.value);
+  log::info(
+      R"([{}:{}] DownloadEnd={})"_fmt,
+      event.message_info.source,
+      event.message_info.source_name,
+      event.value);
 }
 
 void Strategy::operator()(const Event<StreamUpdate> &event) {
-  LOG(INFO)
-  (R"([{}:{}] StreamUpdate={})"_fmt,
-   event.message_info.source,
-   event.message_info.source_name,
-   event.value);
+  log::info(
+      R"([{}:{}] StreamUpdate={})"_fmt,
+      event.message_info.source,
+      event.message_info.source_name,
+      event.value);
 }
 
 void Strategy::operator()(const Event<ReferenceData> &event) {
-  LOG(INFO)
-  (R"([{}:{}] ReferenceData={})"_fmt,
-   event.message_info.source,
-   event.message_info.source_name,
-   event.value);
+  log::info(
+      R"([{}:{}] ReferenceData={})"_fmt,
+      event.message_info.source,
+      event.message_info.source_name,
+      event.value);
 }
 
 void Strategy::operator()(const Event<MarketStatus> &event) {
-  LOG(INFO)
-  (R"([{}:{}] MarketStatus={})"_fmt,
-   event.message_info.source,
-   event.message_info.source_name,
-   event.value);
+  log::info(
+      R"([{}:{}] MarketStatus={})"_fmt,
+      event.message_info.source,
+      event.message_info.source_name,
+      event.value);
 }
 
 void Strategy::operator()(const Event<MarketByPriceUpdate> &event) {
-  VLOG(1)
-  (R"([{}:{}] MarketByPriceUpdate={})"_fmt,
-   event.message_info.source,
-   event.message_info.source_name,
-   event.value);
+  log::trace_1(
+      R"([{}:{}] MarketByPriceUpdate={})"_fmt,
+      event.message_info.source,
+      event.message_info.source_name,
+      event.value);
 }
 
 void Strategy::operator()(const Event<MarketByOrderUpdate> &event) {
-  VLOG(1)
-  (R"([{}:{}] MarketByOrderUpdate={})"_fmt,
-   event.message_info.source,
-   event.message_info.source_name,
-   event.value);
+  log::trace_1(
+      R"([{}:{}] MarketByOrderUpdate={})"_fmt,
+      event.message_info.source,
+      event.message_info.source_name,
+      event.value);
 }
 
 void Strategy::operator()(const Event<TradeSummary> &event) {
-  VLOG(1)
-  (R"([{}:{}] TradeSummary={})"_fmt,
-   event.message_info.source,
-   event.message_info.source_name,
-   event.value);
+  log::trace_1(
+      R"([{}:{}] TradeSummary={})"_fmt,
+      event.message_info.source,
+      event.message_info.source_name,
+      event.value);
 }
 
 }  // namespace example_4

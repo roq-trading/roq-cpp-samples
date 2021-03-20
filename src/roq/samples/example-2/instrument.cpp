@@ -22,13 +22,12 @@ Instrument::Instrument(const std::string_view &exchange, const std::string_view 
 
 void Instrument::operator()(const Connection &connection) {
   if (update(connection_status_, connection.status)) {
-    LOG(INFO)
-    (R"([{}:{}] connection_status={})"_fmt, exchange_, symbol_, connection_status_);
+    log::info(R"([{}:{}] connection_status={})"_fmt, exchange_, symbol_, connection_status_);
     check_ready();
   }
   switch (connection_status_) {
     case ConnectionStatus::UNDEFINED:
-      LOG(FATAL)("Unexpected"_fmt);
+      log::fatal("Unexpected"_sv);
       break;
     case ConnectionStatus::CONNECTED:
       // nothing to do for this implementation
@@ -45,7 +44,7 @@ void Instrument::operator()(const DownloadBegin &download_begin) {
     return;
   assert(!download_);
   download_ = true;
-  LOG(INFO)(R"([{}:{}] download={})"_fmt, exchange_, symbol_, download_);
+  log::info(R"([{}:{}] download={})"_fmt, exchange_, symbol_, download_);
 }
 
 void Instrument::operator()(const DownloadEnd &download_end) {
@@ -53,7 +52,7 @@ void Instrument::operator()(const DownloadEnd &download_end) {
     return;
   assert(download_);
   download_ = false;
-  LOG(INFO)(R"([{}:{}] download={})"_fmt, exchange_, symbol_, download_);
+  log::info(R"([{}:{}] download={})"_fmt, exchange_, symbol_, download_);
   // update the ready flag
   check_ready();
 }
@@ -61,8 +60,7 @@ void Instrument::operator()(const DownloadEnd &download_end) {
 void Instrument::operator()(const StreamUpdate &stream_update) {
   // update our cache
   if (update(stream_status_, stream_update.status)) {
-    LOG(INFO)
-    (R"([{}:{}] stream_update={})"_fmt, exchange_, symbol_, stream_status_);
+    log::info(R"([{}:{}] stream_update={})"_fmt, exchange_, symbol_, stream_status_);
   }
   // update the ready flag
   check_ready();
@@ -75,14 +73,13 @@ void Instrument::operator()(const ReferenceData &reference_data) {
   depth_builder_->update(reference_data);
   // update our cache
   if (update(tick_size_, reference_data.tick_size)) {
-    LOG(INFO)(R"([{}:{}] tick_size={})"_fmt, exchange_, symbol_, tick_size_);
+    log::info(R"([{}:{}] tick_size={})"_fmt, exchange_, symbol_, tick_size_);
   }
   if (update(min_trade_vol_, reference_data.min_trade_vol)) {
-    LOG(INFO)
-    (R"([{}:{}] min_trade_vol={})"_fmt, exchange_, symbol_, min_trade_vol_);
+    log::info(R"([{}:{}] min_trade_vol={})"_fmt, exchange_, symbol_, min_trade_vol_);
   }
   if (update(multiplier_, reference_data.multiplier)) {
-    LOG(INFO)(R"([{}:{}] multiplier={})"_fmt, exchange_, symbol_, multiplier_);
+    log::info(R"([{}:{}] multiplier={})"_fmt, exchange_, symbol_, multiplier_);
   }
   // update the ready flag
   check_ready();
@@ -93,8 +90,7 @@ void Instrument::operator()(const MarketStatus &market_status) {
   assert(symbol_.compare(market_status.symbol) == 0);
   // update our cache
   if (update(trading_status_, market_status.trading_status)) {
-    LOG(INFO)
-    (R"([{}:{}] trading_status={})"_fmt, exchange_, symbol_, trading_status_);
+    log::info(R"([{}:{}] trading_status={})"_fmt, exchange_, symbol_, trading_status_);
   }
   // update the ready flag
   check_ready();
@@ -103,8 +99,8 @@ void Instrument::operator()(const MarketStatus &market_status) {
 void Instrument::operator()(const MarketByPriceUpdate &market_by_price_update) {
   assert(exchange_.compare(market_by_price_update.exchange) == 0);
   assert(symbol_.compare(market_by_price_update.symbol) == 0);
-  LOG_IF(INFO, download_)
-  (R"(MarketByPriceUpdate={})"_fmt, market_by_price_update);
+  if (ROQ_UNLIKELY(download_))
+    log::info(R"(MarketByPriceUpdate={})"_fmt, market_by_price_update);
   // update depth
   // note!
   //   market by price only gives you *changes*.
@@ -114,8 +110,7 @@ void Instrument::operator()(const MarketByPriceUpdate &market_by_price_update) {
   //   the depth builder helps you maintain a correct view of
   //   the order book.
   auto depth = depth_builder_->update(market_by_price_update);
-  VLOG(1)
-  (R"([{}:{}] depth=[{}])"_fmt, exchange_, symbol_, roq::join(depth_, ", "_sv));
+  log::trace_1(R"([{}:{}] depth=[{}])"_fmt, exchange_, symbol_, roq::join(depth_, ", "_sv));
   if (depth > 0 && is_ready())
     update_model();
 }
@@ -123,8 +118,8 @@ void Instrument::operator()(const MarketByPriceUpdate &market_by_price_update) {
 void Instrument::operator()(const MarketByOrderUpdate &market_by_order_update) {
   assert(exchange_.compare(market_by_order_update.exchange) == 0);
   assert(symbol_.compare(market_by_order_update.symbol) == 0);
-  LOG_IF(INFO, download_)
-  (R"(MarketByOrderUpdate={})"_fmt, market_by_order_update);
+  if (ROQ_UNLIKELY(download_))
+    log::info(R"(MarketByOrderUpdate={})"_fmt, market_by_order_update);
   // update depth
   // note!
   //   market by order only gives you *changes*.
@@ -134,8 +129,7 @@ void Instrument::operator()(const MarketByOrderUpdate &market_by_order_update) {
   //   the depth builder helps you maintain a correct view of
   //   the order book.
   auto depth = depth_builder_->update(market_by_order_update);
-  VLOG(1)
-  (R"([{}:{}] depth=[{}])"_fmt, exchange_, symbol_, roq::join(depth_, ", "_sv));
+  log::trace_1(R"([{}:{}] depth=[{}])"_fmt, exchange_, symbol_, roq::join(depth_, ", "_sv));
   if (depth > 0 && is_ready())
     update_model();
 }
@@ -146,12 +140,13 @@ void Instrument::update_model() {
     return;
   // validate depth
   auto spread = depth_[0].ask_price - depth_[0].bid_price;
-  LOG_IF(FATAL, compare(spread, 0.0) <= 0)
-  (R"([{}:{}] Probably something wrong: )"
-   R"(choice price or price inversion detected. depth=[{}])"_fmt,
-   exchange_,
-   symbol_,
-   roq::join(depth_, ", "_sv));
+  if (ROQ_UNLIKELY(compare(spread, 0.0) <= 0))
+    log::fatal(
+        R"([{}:{}] Probably something wrong: )"
+        R"(choice price or price inversion detected. depth=[{}])"_fmt,
+        exchange_,
+        symbol_,
+        roq::join(depth_, ", "_sv));
   // compute (weighted) mid
   double sum_1 = 0.0, sum_2 = 0.0;
   for (auto &[bid_price, bid_quantity, ask_price, ask_quantity] : depth_) {
@@ -165,12 +160,12 @@ void Instrument::update_model() {
   else
     avg_price_ = Flags::alpha() * mid_price_ + (1.0 - Flags::alpha()) * avg_price_;
   // only verbose logging
-  VLOG(1)
-  (R"([{}:{}] model={{mid_price={}, avg_price={}}})"_fmt,
-   exchange_,
-   symbol_,
-   mid_price_,
-   avg_price_);
+  log::trace_1(
+      R"([{}:{}] model={{mid_price={}, avg_price={}}})"_fmt,
+      exchange_,
+      symbol_,
+      mid_price_,
+      avg_price_);
 }
 
 void Instrument::check_ready() {
@@ -179,8 +174,8 @@ void Instrument::check_ready() {
            compare(tick_size_, 0.0) > 0 && compare(min_trade_vol_, 0.0) > 0 &&
            compare(multiplier_, 0.0) > 0 && trading_status_ == TradingStatus::OPEN &&
            stream_status_ == GatewayStatus::READY;
-  LOG_IF(INFO, ready_ != before)
-  (R"([{}:{}] ready={})"_fmt, exchange_, symbol_, ready_);
+  if (ROQ_UNLIKELY(ready_ != before))
+    log::info(R"([{}:{}] ready={})"_fmt, exchange_, symbol_, ready_);
 }
 
 void Instrument::reset() {

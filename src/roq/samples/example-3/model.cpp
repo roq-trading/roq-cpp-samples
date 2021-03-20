@@ -40,13 +40,13 @@ Side Model::update(const Depth &depth) {
 
   if (selling_) {
     if (ready && ask_fast > ask_slow) {
-      LOG(INFO)(R"(SIGNAL: BUY @ {})"_fmt, depth[0].ask_price);
+      log::info(R"(SIGNAL: BUY @ {})"_fmt, depth[0].ask_price);
       result = Side::BUY;
       selling_ = false;
     }
   } else {
     if (ask_fast < bid_slow && ask_fast < ask_slow) {
-      LOG(INFO)("DIRECTION: SELLING"_fmt);
+      log::info("DIRECTION: SELLING"_sv);
       selling_ = true;
       buying_ = false;
     }
@@ -54,13 +54,13 @@ Side Model::update(const Depth &depth) {
 
   if (buying_) {
     if (ready && bid_fast > bid_slow) {
-      LOG(INFO)(R"(SIGNAL: SELL @ {})"_fmt, depth[0].bid_price);
+      log::info(R"(SIGNAL: SELL @ {})"_fmt, depth[0].bid_price);
       result = Side::SELL;
       buying_ = false;
     }
   } else {
     if (bid_fast > ask_slow && bid_fast > bid_slow) {
-      LOG(INFO)("DIRECTION: BUYING"_fmt);
+      log::info("DIRECTION: BUYING"_sv);
       buying_ = true;
       selling_ = false;
     }
@@ -69,25 +69,25 @@ Side Model::update(const Depth &depth) {
   // can't be both
   assert(2 != ((selling_ ? 1 : 0) + (buying_ ? 1 : 0)));
 
-  VLOG(1)
-  (R"(model={{)"
-   R"(bid={} )"
-   R"(ask={} )"
-   R"(bid_fast={} )"
-   R"(ask_fast={} )"
-   R"(bid_slow={} )"
-   R"(ask_slow={} )"
-   R"(selling={} )"
-   R"(buying={})"
-   R"(}})"_fmt,
-   depth[0].bid_price,
-   depth[0].ask_price,
-   bid_fast,
-   ask_fast,
-   bid_slow,
-   ask_slow,
-   selling_,
-   buying_);
+  log::trace_1(
+      R"(model={{)"
+      R"(bid={} )"
+      R"(ask={} )"
+      R"(bid_fast={} )"
+      R"(ask_fast={} )"
+      R"(bid_slow={} )"
+      R"(ask_slow={} )"
+      R"(selling={} )"
+      R"(buying={})"
+      R"(}})"_fmt,
+      depth[0].bid_price,
+      depth[0].ask_price,
+      bid_fast,
+      ask_fast,
+      bid_slow,
+      ask_slow,
+      selling_,
+      buying_);
 
   return result;
 }

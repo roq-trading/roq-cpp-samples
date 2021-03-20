@@ -28,7 +28,7 @@ class Strategy final : public client::Handler {
   // the following event handlers log every update as-is
   // an important lesson here is to only use verbose logging in
   // the "hot path" (i.e. inside the event handlers)
-  // using LOG(INFO) is not disallowed, but you should only use
+  // using log::info(...) is not disallowed, but you should only use
   // this logging facility very minimally as it may have significant
   // latency impact
   // note!
