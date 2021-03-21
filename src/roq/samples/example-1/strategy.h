@@ -26,13 +26,13 @@ class Strategy final : public client::Handler {
 
  protected:
   // the following event handlers log every update as-is
-  // an important lesson here is to only use verbose logging in
+  // an important lesson here is to only use only verbose logging in
   // the "hot path" (i.e. inside the event handlers)
   // using log::info(...) is not disallowed, but you should only use
-  // this logging facility very minimally as it may have significant
+  // this logging facility very minimally as it may have undesirable
   // latency impact
   // note!
-  //   the ROQ_v environment variable defines the verbosity level
+  //   the ROQ_v environment variable controls the verbosity level
   //   for example, "export ROQ_v=1"
   void operator()(const Event<Connection> &) override;
   void operator()(const Event<DownloadBegin> &) override;
@@ -48,7 +48,7 @@ class Strategy final : public client::Handler {
 
  private:
   client::Dispatcher &dispatcher_;
-};  // namespace example_1
+};
 
 }  // namespace example_1
 }  // namespace samples

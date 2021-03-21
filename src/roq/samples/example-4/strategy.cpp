@@ -15,7 +15,7 @@ Strategy::Strategy(client::Dispatcher &dispatcher) : dispatcher_(dispatcher) {
 
 void Strategy::operator()(const Event<Connection> &event) {
   log::info(
-      R"([{}:{}] Connection={})"_fmt,
+      "[{}:{}] Connection={}"_fmt,
       event.message_info.source,
       event.message_info.source_name,
       event.value);
@@ -23,7 +23,7 @@ void Strategy::operator()(const Event<Connection> &event) {
 
 void Strategy::operator()(const Event<DownloadBegin> &event) {
   log::info(
-      R"([{}:{}] DownloadBegin={})"_fmt,
+      "[{}:{}] DownloadBegin={}"_fmt,
       event.message_info.source,
       event.message_info.source_name,
       event.value);
@@ -31,7 +31,7 @@ void Strategy::operator()(const Event<DownloadBegin> &event) {
 
 void Strategy::operator()(const Event<DownloadEnd> &event) {
   log::info(
-      R"([{}:{}] DownloadEnd={})"_fmt,
+      "[{}:{}] DownloadEnd={}"_fmt,
       event.message_info.source,
       event.message_info.source_name,
       event.value);
@@ -39,7 +39,7 @@ void Strategy::operator()(const Event<DownloadEnd> &event) {
 
 void Strategy::operator()(const Event<StreamUpdate> &event) {
   log::info(
-      R"([{}:{}] StreamUpdate={})"_fmt,
+      "[{}:{}] StreamUpdate={}"_fmt,
       event.message_info.source,
       event.message_info.source_name,
       event.value);
@@ -47,7 +47,7 @@ void Strategy::operator()(const Event<StreamUpdate> &event) {
 
 void Strategy::operator()(const Event<ReferenceData> &event) {
   log::info(
-      R"([{}:{}] ReferenceData={})"_fmt,
+      "[{}:{}] ReferenceData={}"_fmt,
       event.message_info.source,
       event.message_info.source_name,
       event.value);
@@ -55,7 +55,7 @@ void Strategy::operator()(const Event<ReferenceData> &event) {
 
 void Strategy::operator()(const Event<MarketStatus> &event) {
   log::info(
-      R"([{}:{}] MarketStatus={})"_fmt,
+      "[{}:{}] MarketStatus={}"_fmt,
       event.message_info.source,
       event.message_info.source_name,
       event.value);
@@ -63,7 +63,7 @@ void Strategy::operator()(const Event<MarketStatus> &event) {
 
 void Strategy::operator()(const Event<MarketByPriceUpdate> &event) {
   log::trace_1(
-      R"([{}:{}] MarketByPriceUpdate={})"_fmt,
+      "[{}:{}] MarketByPriceUpdate={}"_fmt,
       event.message_info.source,
       event.message_info.source_name,
       event.value);
@@ -71,7 +71,7 @@ void Strategy::operator()(const Event<MarketByPriceUpdate> &event) {
 
 void Strategy::operator()(const Event<MarketByOrderUpdate> &event) {
   log::trace_1(
-      R"([{}:{}] MarketByOrderUpdate={})"_fmt,
+      "[{}:{}] MarketByOrderUpdate={}"_fmt,
       event.message_info.source,
       event.message_info.source_name,
       event.value);
@@ -79,7 +79,7 @@ void Strategy::operator()(const Event<MarketByOrderUpdate> &event) {
 
 void Strategy::operator()(const Event<TradeSummary> &event) {
   log::trace_1(
-      R"([{}:{}] TradeSummary={})"_fmt,
+      "[{}:{}] TradeSummary={}"_fmt,
       event.message_info.source,
       event.message_info.source_name,
       event.value);
