@@ -2,10 +2,11 @@
 
 #include "roq/samples/example-2/instrument.h"
 
-#include "roq/compare.h"
 #include "roq/format.h"
 #include "roq/logging.h"
-#include "roq/update.h"
+
+#include "roq/utils/compare.h"
+#include "roq/utils/update.h"
 
 #include "roq/samples/example-2/flags.h"
 
@@ -21,7 +22,7 @@ Instrument::Instrument(const std::string_view &exchange, const std::string_view 
 }
 
 void Instrument::operator()(const Connection &connection) {
-  if (update(connection_status_, connection.status)) {
+  if (utils::update(connection_status_, connection.status)) {
     log::info("[{}:{}] connection_status={}"_fmt, exchange_, symbol_, connection_status_);
     check_ready();
   }
@@ -59,7 +60,7 @@ void Instrument::operator()(const DownloadEnd &download_end) {
 
 void Instrument::operator()(const StreamUpdate &stream_update) {
   // update our cache
-  if (update(stream_status_, stream_update.status)) {
+  if (utils::update(stream_status_, stream_update.status)) {
     log::info("[{}:{}] stream_update={}"_fmt, exchange_, symbol_, stream_status_);
   }
   // update the ready flag
@@ -72,13 +73,13 @@ void Instrument::operator()(const ReferenceData &reference_data) {
   // update the depth builder
   depth_builder_->update(reference_data);
   // update our cache
-  if (update(tick_size_, reference_data.tick_size)) {
+  if (utils::update(tick_size_, reference_data.tick_size)) {
     log::info("[{}:{}] tick_size={}"_fmt, exchange_, symbol_, tick_size_);
   }
-  if (update(min_trade_vol_, reference_data.min_trade_vol)) {
+  if (utils::update(min_trade_vol_, reference_data.min_trade_vol)) {
     log::info("[{}:{}] min_trade_vol={}"_fmt, exchange_, symbol_, min_trade_vol_);
   }
-  if (update(multiplier_, reference_data.multiplier)) {
+  if (utils::update(multiplier_, reference_data.multiplier)) {
     log::info("[{}:{}] multiplier={}"_fmt, exchange_, symbol_, multiplier_);
   }
   // update the ready flag
@@ -89,7 +90,7 @@ void Instrument::operator()(const MarketStatus &market_status) {
   assert(exchange_.compare(market_status.exchange) == 0);
   assert(symbol_.compare(market_status.symbol) == 0);
   // update our cache
-  if (update(trading_status_, market_status.trading_status)) {
+  if (utils::update(trading_status_, market_status.trading_status)) {
     log::info("[{}:{}] trading_status={}"_fmt, exchange_, symbol_, trading_status_);
   }
   // update the ready flag
@@ -136,11 +137,12 @@ void Instrument::operator()(const MarketByOrderUpdate &market_by_order_update) {
 
 void Instrument::update_model() {
   // one sided market?
-  if (compare(depth_[0].bid_quantity, 0.0) == 0 || compare(depth_[0].ask_quantity, 0.0) == 0)
+  if (utils::compare(depth_[0].bid_quantity, 0.0) == 0 ||
+      utils::compare(depth_[0].ask_quantity, 0.0) == 0)
     return;
   // validate depth
   auto spread = depth_[0].ask_price - depth_[0].bid_price;
-  if (ROQ_UNLIKELY(compare(spread, 0.0) <= 0))
+  if (ROQ_UNLIKELY(utils::compare(spread, 0.0) <= 0))
     log::fatal(
         "[{}:{}] Probably something wrong: "
         "choice price or price inversion detected. "
@@ -172,8 +174,8 @@ void Instrument::update_model() {
 void Instrument::check_ready() {
   auto before = ready_;
   ready_ = connection_status_ == ConnectionStatus::CONNECTED && !download_ &&
-           compare(tick_size_, 0.0) > 0 && compare(min_trade_vol_, 0.0) > 0 &&
-           compare(multiplier_, 0.0) > 0 && trading_status_ == TradingStatus::OPEN &&
+           utils::compare(tick_size_, 0.0) > 0 && utils::compare(min_trade_vol_, 0.0) > 0 &&
+           utils::compare(multiplier_, 0.0) > 0 && trading_status_ == TradingStatus::OPEN &&
            stream_status_ == GatewayStatus::READY;
   if (ROQ_UNLIKELY(ready_ != before))
     log::info("[{}:{}] ready={}"_fmt, exchange_, symbol_, ready_);

@@ -4,8 +4,9 @@
 
 #include <numeric>
 
-#include "roq/compare.h"
 #include "roq/logging.h"
+
+#include "roq/utils/compare.h"
 
 #include "roq/samples/example-3/flags.h"
 
@@ -94,7 +95,8 @@ Side Model::update(const Depth &depth) {
 
 bool Model::validate(const Depth &depth) {  // require full depth
   return std::accumulate(depth.begin(), depth.end(), true, [](bool value, const Layer &layer) {
-    return value && compare(layer.bid_quantity, 0.0) > 0 && compare(layer.ask_quantity, 0.0) > 0;
+    return value && utils::compare(layer.bid_quantity, 0.0) > 0 &&
+           utils::compare(layer.ask_quantity, 0.0) > 0;
   });
 }
 

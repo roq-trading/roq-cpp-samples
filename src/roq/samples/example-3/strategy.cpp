@@ -5,7 +5,9 @@
 #include <limits>
 
 #include "roq/logging.h"
-#include "roq/update.h"
+
+#include "roq/utils/common.h"
+#include "roq/utils/update.h"
 
 #include "roq/samples/example-3/flags.h"
 
@@ -40,7 +42,7 @@ void Strategy::operator()(const Event<DownloadBegin> &event) {
 
 void Strategy::operator()(const Event<DownloadEnd> &event) {
   dispatch(event);
-  if (update(max_order_id_, event.value.max_order_id)) {
+  if (utils::update(max_order_id_, event.value.max_order_id)) {
     log::info("max_order_id={}"_fmt, max_order_id_);
   }
 }
@@ -64,7 +66,7 @@ void Strategy::operator()(const Event<MarketByPriceUpdate> &event) {
 void Strategy::operator()(const Event<OrderAck> &event) {
   log::info("OrderAck={}"_fmt, event.value);
   auto &order_ack = event.value;
-  if (is_request_complete(order_ack.status)) {
+  if (utils::is_request_complete(order_ack.status)) {
     // possible extension: reset request timeout
   }
 }
@@ -73,7 +75,7 @@ void Strategy::operator()(const Event<OrderUpdate> &event) {
   log::info("OrderUpdate={}"_fmt, event.value);
   dispatch(event);  // update position
   auto &order_update = event.value;
-  if (is_order_complete(order_update.status)) {
+  if (utils::is_order_complete(order_update.status)) {
     working_order_id_ = {};
     working_side_ = {};
   }
