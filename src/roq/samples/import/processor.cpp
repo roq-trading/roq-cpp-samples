@@ -10,6 +10,8 @@
 #include "roq/fbs/api.h"
 #include "roq/fbs/encode.h"
 
+#include "roq/utils/compare.h"
+
 #include "roq/samples/import/base64.h"
 #include "roq/samples/import/flags.h"
 
@@ -31,9 +33,9 @@ static const auto MIN_TRADE_VOL = 1.0;  // 1 lot
 namespace {
 static bool use_base64() {
   auto encoding = Flags::encoding();
-  if (encoding.compare("binary"_sv) == 0)
+  if (utils::case_insensitive_compare(encoding, "binary"_sv) == 0)
     return false;
-  if (encoding.compare("base64"_sv) == 0)
+  if (utils::case_insensitive_compare(encoding, "base64"_sv) == 0)
     return true;
   throw std::runtime_error(roq::format(R"(Unknown encoding="{}")"_fmt, encoding));
 }

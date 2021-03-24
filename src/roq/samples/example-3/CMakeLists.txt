@@ -7,7 +7,6 @@ add_executable(
   application.cpp
   config.cpp
   ema.cpp
-  flags.cpp
   instrument.cpp
   model.cpp
   strategy.cpp

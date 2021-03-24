@@ -1,4 +1,4 @@
-set(TARGET_NAME "${PROJECT_NAME}-example-4")
+set(TARGET_NAME "${PROJECT_NAME}-example-5")
 
 add_subdirectory(flags)
 
