@@ -5,6 +5,8 @@
 #include <cassert>
 #include <vector>
 
+#include "roq/exceptions.h"
+
 #include "roq/samples/example-5/config.h"
 #include "roq/samples/example-5/strategy.h"
 
@@ -17,7 +19,7 @@ namespace example_5 {
 int Application::main_helper(const roq::span<std::string_view> &args) {
   assert(!args.empty());
   if (args.size() == 1u)
-    throw std::runtime_error("Expected arguments"_s);
+    throw RuntimeErrorException("Expected arguments"_sv);
   Config config;
   // note!
   //   absl::flags will have removed all flags and we're left with arguments

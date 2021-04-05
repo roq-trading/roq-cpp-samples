@@ -37,7 +37,7 @@ static bool use_base64() {
     return false;
   if (utils::case_insensitive_compare(encoding, "base64"_sv) == 0)
     return true;
-  throw std::runtime_error(roq::format(R"(Unknown encoding="{}")"_fmt, encoding));
+  throw RuntimeErrorException(R"(Unknown encoding="{}")"_fmt, encoding);
 }
 }  // namespace
 
@@ -45,8 +45,7 @@ Processor::Processor(const std::string_view &path)
     : file_(std::string{path}, std::ios::out | std::ios::binary),
       encoding_(use_base64() ? Encoding::BASE64 : Encoding::BINARY) {
   if (!file_)
-    throw std::runtime_error(
-        roq::format(R"(Unable to open file for writing: path="{}")"_fmt, path));
+    throw RuntimeErrorException(R"(Unable to open file for writing: path="{}")"_fmt, path);
 }
 
 Processor::~Processor() {

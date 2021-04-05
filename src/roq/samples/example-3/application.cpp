@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "roq/client.h"
+#include "roq/exceptions.h"
 
 #include "roq/samples/example-3/config.h"
 #include "roq/samples/example-3/flags.h"
@@ -22,9 +23,9 @@ namespace example_3 {
 int Application::main_helper(const roq::span<std::string_view> &args) {
   assert(!args.empty());
   if (args.size() == 1u)
-    throw std::runtime_error("Expected arguments"_s);
+    throw RuntimeErrorException("Expected arguments"_sv);
   if (args.size() != 2u)
-    throw std::runtime_error("Expected exactly one argument"_s);
+    throw RuntimeErrorException("Expected exactly one argument"_sv);
   Config config;
   // note!
   //   absl::flags will have removed all flags and we're left with arguments

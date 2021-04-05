@@ -5,6 +5,7 @@
 #include <stdexcept>
 #include <vector>
 
+#include "roq/exceptions.h"
 #include "roq/literals.h"
 
 #include "roq/samples/import/processor.h"
@@ -17,8 +18,7 @@ namespace import {
 
 int Application::main_helper(const roq::span<std::string_view> &args) {
   if (args.size() != 2u)
-    throw std::runtime_error(
-        roq::format("Expected exactly 1 argument, got {}"_fmt, args.size() - 1u));
+    throw RuntimeErrorException("Expected exactly 1 argument, got {}"_fmt, args.size() - 1u);
   Processor(args[1u]).dispatch();
   return EXIT_SUCCESS;
 }
