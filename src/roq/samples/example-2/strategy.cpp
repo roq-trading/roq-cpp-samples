@@ -13,24 +13,34 @@ Strategy::Strategy(client::Dispatcher &dispatcher)
       cash_(Flags::cash_exchange(), Flags::cash_symbol()) {
 }
 
-void Strategy::operator()(const Event<Connection> &event) {
+void Strategy::operator()(const Event<Connected> &event) {
   dispatch(event);
 }
+
+void Strategy::operator()(const Event<Disconnected> &event) {
+  dispatch(event);
+}
+
 void Strategy::operator()(const Event<DownloadBegin> &event) {
   dispatch(event);
 }
+
 void Strategy::operator()(const Event<DownloadEnd> &event) {
   dispatch(event);
 }
+
 void Strategy::operator()(const Event<StreamUpdate> &event) {
   dispatch(event);
 }
+
 void Strategy::operator()(const Event<ReferenceData> &event) {
   dispatch(event);
 }
+
 void Strategy::operator()(const Event<MarketStatus> &event) {
   dispatch(event);
 }
+
 void Strategy::operator()(const Event<MarketByPriceUpdate> &event) {
   dispatch(event);
   if (futures_.is_ready() && cash_.is_ready()) {

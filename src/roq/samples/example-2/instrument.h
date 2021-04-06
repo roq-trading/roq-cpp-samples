@@ -23,7 +23,8 @@ class Instrument final {
 
   bool is_ready() const { return ready_; }
 
-  void operator()(const Connection &);
+  void operator()(const Connected &);
+  void operator()(const Disconnected &);
   void operator()(const DownloadBegin &);
   void operator()(const DownloadEnd &);
   void operator()(const StreamUpdate &);
@@ -44,13 +45,13 @@ class Instrument final {
 
   const std::string_view exchange_;
   const std::string_view symbol_;
-  ConnectionStatus connection_status_ = {};
+  bool connected_ = false;
   bool download_ = false;
   double tick_size_ = NaN;
   double min_trade_vol_ = NaN;
   double multiplier_ = NaN;
   TradingStatus trading_status_ = {};
-  GatewayStatus stream_status_ = {};
+  ConnectionStatus stream_status_ = {};
   std::array<Layer, MAX_DEPTH> depth_;
   std::unique_ptr<client::DepthBuilder> depth_builder_;
   double mid_price_ = NaN;

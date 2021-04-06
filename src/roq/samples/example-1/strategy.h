@@ -34,7 +34,8 @@ class Strategy final : public client::Handler {
   // note!
   //   the ROQ_v environment variable controls the verbosity level
   //   for example, "export ROQ_v=1"
-  void operator()(const Event<Connection> &) override;
+  void operator()(const Event<Connected> &) override;
+  void operator()(const Event<Disconnected> &) override;
   void operator()(const Event<DownloadBegin> &) override;
   void operator()(const Event<DownloadEnd> &) override;
   void operator()(const Event<GatewaySettings> &) override;

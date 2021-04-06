@@ -13,9 +13,17 @@ namespace example_1 {
 Strategy::Strategy(client::Dispatcher &dispatcher) : dispatcher_(dispatcher) {
 }
 
-void Strategy::operator()(const Event<Connection> &event) {
+void Strategy::operator()(const Event<Connected> &event) {
   log::info(
-      "[{}:{}] Connection={}"_fmt,
+      "[{}:{}] connected={}"_fmt,
+      event.message_info.source,
+      event.message_info.source_name,
+      event.value);
+}
+
+void Strategy::operator()(const Event<Disconnected> &event) {
+  log::info(
+      "[{}:{}] Disconnected={}"_fmt,
       event.message_info.source,
       event.message_info.source_name,
       event.value);

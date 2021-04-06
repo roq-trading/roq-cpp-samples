@@ -41,22 +41,18 @@ bool Instrument::can_trade(Side side) const {
   }
 }
 
-void Instrument::operator()(const Connection &connection) {
-  if (utils::update(connection_status_, connection.status)) {
-    log::info("[{}:{}] connection_status={}"_fmt, exchange_, symbol_, connection_status_);
+void Instrument::operator()(const Connected &) {
+  if (utils::update(connected_, true)) {
+    log::info("[{}:{}] connected={}"_fmt, exchange_, symbol_, connected_);
     check_ready();
   }
-  switch (connection_status_) {
-    case ConnectionStatus::UNDEFINED:
-      log::fatal("Unexpected"_sv);
-      break;
-    case ConnectionStatus::CONNECTED:
-      // nothing to do for this implementation
-      break;
-    case ConnectionStatus::DISCONNECTED:
-      // reset all cached state - await download upon reconnection
-      reset();
-      break;
+}
+
+void Instrument::operator()(const Disconnected &) {
+  if (utils::update(connected_, false)) {
+    log::info("[{}:{}] connected={}"_fmt, exchange_, symbol_, connected_);
+    // reset all cached state - await download upon reconnection
+    reset();
   }
 }
 
@@ -213,16 +209,16 @@ void Instrument::operator()(const PositionUpdate &position_update) {
 
 void Instrument::check_ready() {
   auto before = ready_;
-  ready_ = connection_status_ == ConnectionStatus::CONNECTED && !download_ &&
-           utils::compare(tick_size_, 0.0) > 0 && utils::compare(min_trade_vol_, 0.0) > 0 &&
-           utils::compare(multiplier_, 0.0) > 0 && trading_status_ == TradingStatus::OPEN &&
-           stream_status_ == GatewayStatus::READY && stream_status_ == GatewayStatus::READY;
+  ready_ = connected_ && !download_ && utils::compare(tick_size_, 0.0) > 0 &&
+           utils::compare(min_trade_vol_, 0.0) > 0 && utils::compare(multiplier_, 0.0) > 0 &&
+           trading_status_ == TradingStatus::OPEN && stream_status_ == ConnectionStatus::READY &&
+           stream_status_ == ConnectionStatus::READY;
   if (ROQ_UNLIKELY(ready_ != before))
     log::info("[{}:{}] ready={}"_fmt, exchange_, symbol_, ready_);
 }
 
 void Instrument::reset() {
-  connection_status_ = {};
+  connected_ = false;
   download_ = false;
   tick_size_ = NaN;
   min_trade_vol_ = NaN;

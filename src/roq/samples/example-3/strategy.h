@@ -20,7 +20,8 @@ class Strategy final : public client::Handler {
 
  protected:
   void operator()(const Event<Timer> &) override;
-  void operator()(const Event<Connection> &) override;
+  void operator()(const Event<Connected> &) override;
+  void operator()(const Event<Disconnected> &) override;
   void operator()(const Event<DownloadBegin> &) override;
   void operator()(const Event<DownloadEnd> &) override;
   void operator()(const Event<StreamUpdate> &) override;

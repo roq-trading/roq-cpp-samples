@@ -32,7 +32,11 @@ void Strategy::operator()(const Event<Timer> &event) {
   // possible extension: reset request timeout
 }
 
-void Strategy::operator()(const Event<Connection> &event) {
+void Strategy::operator()(const Event<Connected> &event) {
+  dispatch(event);
+}
+
+void Strategy::operator()(const Event<Disconnected> &event) {
   dispatch(event);
 }
 
