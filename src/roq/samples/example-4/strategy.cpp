@@ -45,9 +45,9 @@ void Strategy::operator()(const Event<DownloadEnd> &event) {
       event.value);
 }
 
-void Strategy::operator()(const Event<StreamUpdate> &event) {
+void Strategy::operator()(const Event<GatewayStatus> &event) {
   log::info(
-      "[{}:{}] StreamUpdate={}"_fmt,
+      "[{}:{}] GatewayStatus={}"_fmt,
       event.message_info.source,
       event.message_info.source_name,
       event.value);

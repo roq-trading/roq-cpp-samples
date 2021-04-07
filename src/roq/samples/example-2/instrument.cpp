@@ -6,6 +6,7 @@
 #include "roq/logging.h"
 
 #include "roq/utils/compare.h"
+#include "roq/utils/mask.h"
 #include "roq/utils/update.h"
 
 #include "roq/samples/example-2/flags.h"
@@ -54,10 +55,20 @@ void Instrument::operator()(const DownloadEnd &download_end) {
   check_ready();
 }
 
-void Instrument::operator()(const StreamUpdate &stream_update) {
-  // update our cache
-  if (utils::update(stream_status_, stream_update.status)) {
-    log::info("[{}:{}] stream_update={}"_fmt, exchange_, symbol_, stream_status_);
+void Instrument::operator()(const GatewayStatus &gateway_status) {
+  if (!gateway_status.account.empty())  // we only care about market (not account)
+    return;
+  // bit-mask of required message types
+  static const utils::Mask<SupportType> required{
+      SupportType::REFERENCE_DATA,
+      SupportType::MARKET_STATUS,
+      SupportType::MARKET_BY_PRICE,
+  };
+  // readiness defined by full availability of all required message types
+  auto market_data = utils::Mask<SupportType>(gateway_status.available).has_all(required) &&
+                     utils::Mask<SupportType>(gateway_status.unavailable).has_none(required);
+  if (utils::update(market_data_, market_data)) {
+    log::info("[{}:{}] market_data={}"_fmt, exchange_, symbol_, market_data_);
   }
   // update the ready flag
   check_ready();
@@ -171,7 +182,7 @@ void Instrument::check_ready() {
   auto before = ready_;
   ready_ = connected_ && !download_ && utils::compare(tick_size_, 0.0) > 0 &&
            utils::compare(min_trade_vol_, 0.0) > 0 && utils::compare(multiplier_, 0.0) > 0 &&
-           trading_status_ == TradingStatus::OPEN && stream_status_ == ConnectionStatus::READY;
+           trading_status_ == TradingStatus::OPEN && market_data_;
   if (ROQ_UNLIKELY(ready_ != before))
     log::info("[{}:{}] ready={}"_fmt, exchange_, symbol_, ready_);
 }
@@ -182,7 +193,7 @@ void Instrument::reset() {
   tick_size_ = NaN;
   min_trade_vol_ = NaN;
   trading_status_ = {};
-  stream_status_ = {};
+  market_data_ = {};
   depth_builder_->reset();
   mid_price_ = NaN;
   avg_price_ = NaN;

@@ -51,7 +51,7 @@ void Strategy::operator()(const Event<DownloadEnd> &event) {
   }
 }
 
-void Strategy::operator()(const Event<StreamUpdate> &event) {
+void Strategy::operator()(const Event<GatewayStatus> &event) {
   dispatch(event);
 }
 

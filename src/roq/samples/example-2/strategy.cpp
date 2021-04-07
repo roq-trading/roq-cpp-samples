@@ -29,7 +29,7 @@ void Strategy::operator()(const Event<DownloadEnd> &event) {
   dispatch(event);
 }
 
-void Strategy::operator()(const Event<StreamUpdate> &event) {
+void Strategy::operator()(const Event<GatewayStatus> &event) {
   dispatch(event);
 }
 

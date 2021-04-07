@@ -53,15 +53,24 @@ void Strategy::operator()(const Event<GatewaySettings> &event) {
       event.value);
 }
 
-void Strategy::operator()(const Event<StreamUpdate> &event) {
+void Strategy::operator()(const Event<StreamStatus> &event) {
   log::info(
-      "[{}:{}] StreamUpdate={}"_fmt,
+      "[{}:{}] StreamStatus={}"_fmt,
       event.message_info.source,
       event.message_info.source_name,
       event.value);
 }
 
 void Strategy::operator()(const Event<ExternalLatency> &event) {
+  // only verbose logging, see comment in header
+  log::trace_1(
+      "[{}:{}] ExternalLatency={}"_fmt,
+      event.message_info.source,
+      event.message_info.source_name,
+      event.value);
+}
+
+void Strategy::operator()(const Event<GatewayStatus> &event) {
   // only verbose logging, see comment in header
   log::trace_1(
       "[{}:{}] ExternalLatency={}"_fmt,
