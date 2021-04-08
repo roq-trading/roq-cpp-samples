@@ -76,6 +76,8 @@ make -j4
   * Live trading
 * [Example 4](./src/roq/samples/example-4/README.md)
   * Subscribe and nothing else
+* [Example 5](./src/roq/samples/example-5/README.md)
+  * Transfer `CustomMessage` from a secondary thread
 * [Import](./src/roq/samples/import/README.md)
   * Convert any data source to an event-log
   * Encoding has header-only dependencies
