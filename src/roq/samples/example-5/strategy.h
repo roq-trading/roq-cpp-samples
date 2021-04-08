@@ -5,6 +5,8 @@
 #include "roq/api.h"
 #include "roq/client.h"
 
+#include "roq/samples/example-5/producer.h"
+
 namespace roq {
 namespace samples {
 namespace example_5 {
@@ -13,7 +15,7 @@ class Strategy final : public client::Handler {
  public:
   explicit Strategy(client::Dispatcher &);
 
-  Strategy(Strategy &&) = default;
+  Strategy(Strategy &&) = delete;
   Strategy(const Strategy &) = delete;
 
  protected:
@@ -24,6 +26,7 @@ class Strategy final : public client::Handler {
 
  private:
   client::Dispatcher &dispatcher_;
+  Producer producer_;
 };
 
 }  // namespace example_5
