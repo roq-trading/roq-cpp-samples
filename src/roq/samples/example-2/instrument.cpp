@@ -64,11 +64,17 @@ void Instrument::operator()(const GatewayStatus &gateway_status) {
       SupportType::MARKET_STATUS,
       SupportType::MARKET_BY_PRICE,
   };
+  // because the API doesn't (yet) expose Mask
+  utils::Mask<SupportType> available(gateway_status.available),
+      unavailable(gateway_status.unavailable);
   // readiness defined by full availability of all required message types
-  auto market_data = utils::Mask<SupportType>(gateway_status.available).has_all(required) &&
-                     utils::Mask<SupportType>(gateway_status.unavailable).has_none(required);
-  if (utils::update(market_data_, market_data)) {
+  auto market_data = available.has_all(required) && unavailable.has_none(required);
+  if (utils::update(market_data_, market_data))
     log::info("[{}:{}] market_data={}"_fmt, exchange_, symbol_, market_data_);
+  // sometimes useful to see what is missing
+  if (!market_data_) {
+    auto missing = required & ~available;
+    log::debug("missing={:#x}"_fmt, missing.get());
   }
   // update the ready flag
   check_ready();

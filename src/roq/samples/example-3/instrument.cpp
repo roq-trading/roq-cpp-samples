@@ -76,6 +76,9 @@ void Instrument::operator()(const DownloadEnd &download_end) {
 }
 
 void Instrument::operator()(const GatewayStatus &gateway_status) {
+  // because the API doesn't (yet) expose Mask
+  utils::Mask<SupportType> available(gateway_status.available),
+      unavailable(gateway_status.unavailable);
   if (gateway_status.account.empty()) {
     // bit-mask of required message types
     static const utils::Mask<SupportType> required{
@@ -84,10 +87,13 @@ void Instrument::operator()(const GatewayStatus &gateway_status) {
         SupportType::MARKET_BY_PRICE,
     };
     // readiness defined by full availability of all required message types
-    auto market_data = utils::Mask<SupportType>(gateway_status.available).has_all(required) &&
-                       utils::Mask<SupportType>(gateway_status.unavailable).has_none(required);
-    if (utils::update(market_data_, market_data)) {
+    auto market_data = available.has_all(required) && unavailable.has_none(required);
+    if (utils::update(market_data_, market_data))
       log::info("[{}:{}] market_data={}"_fmt, exchange_, symbol_, market_data_);
+    // sometimes useful to see what is missing
+    if (!market_data_) {
+      auto missing = required & ~available;
+      log::debug("missing={:#x}"_fmt, missing.get());
     }
   } else if (gateway_status.account.compare(account_) == 0) {
     // bit-mask of required message types
@@ -98,10 +104,13 @@ void Instrument::operator()(const GatewayStatus &gateway_status) {
         SupportType::POSITION,
     };
     // readiness defined by full availability of all required message types
-    auto order_management = utils::Mask<SupportType>(gateway_status.available).has_all(required) &&
-                            utils::Mask<SupportType>(gateway_status.unavailable).has_none(required);
-    if (utils::update(order_management_, order_management)) {
+    auto order_management = available.has_all(required) && unavailable.has_none(required);
+    if (utils::update(order_management_, order_management))
       log::info("[{}:{}] order_management={}"_fmt, exchange_, symbol_, order_management_);
+    // sometimes useful to see what is missing
+    if (!market_data_) {
+      auto missing = required & ~available;
+      log::debug("missing={:#x}"_fmt, missing.get());
     }
   }
   // update the ready flag
