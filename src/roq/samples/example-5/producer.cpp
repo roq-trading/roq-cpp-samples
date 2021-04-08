@@ -4,7 +4,6 @@
 
 #include <cassert>
 #include <chrono>
-#include <memory>
 #include <string>
 
 #include "roq/logging.h"

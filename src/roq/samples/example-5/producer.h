@@ -3,6 +3,7 @@
 #pragma once
 
 #include <atomic>
+#include <memory>
 #include <thread>
 
 #include "roq/api.h"
