@@ -1,11 +1,13 @@
 # roq-samples
 
-Samples demonstrating how to implement various features of algorithmic trading.
+Samples demonstrating how to implement various features of algorithmic trading
+solutions.
 
 
 ## Operating Systems
 
-* Linux
+* Linux (x86-64, AArch64)
+* macOS (x86-64)
 
 *Note!*
 The Windows Subsystem for Linux (WSL) is **NOT** supported.
@@ -14,11 +16,14 @@ Reason can be found [here](https://devblogs.microsoft.com/commandline/windowswsl
 
 ## Library/Package Dependencies
 
+* [Abseil-C++](https://github.com/abseil/abseil-cpp) (Apache 2.0 License)
+* [FlatBuffers](https://github.com/google/flatbuffers) (Apache 2.0 License)
 * [fmt](https://github.com/fmtlib/fmt) (MIT License)
-* [gflags](https://github.com/gflags/gflags) (BSD 3-Clause License)
+* [range-v3](https://github.com/ericniebler/range-v3) (BSL 1.0 License)
+* [span-lite](https://github.com/martinmoene/span-lite) (BSL 1.0 License)
 * [roq-api](https://github.com/roq-trading/roq-api) (MIT License)
-* roq-client (Commerical License)
 * [roq-logging](https://github.com/roq-trading/roq-api) (MIT License)
+* roq-client (Commerical License, free to use)
 
 Optional
 
@@ -28,24 +33,40 @@ Optional
 
 ## Prerequisites
 
-The project is designed to be compatible with the conda package manager.
+The project is primarily designed to be compatible with the conda package manager.
+
+### Linux
 
 ```bash
-wget -N https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-Linux-x86_64.sh
+wget -N https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-$(uname -s)-$(uname -m).sh
 
-bash Miniforge3-Linux-x86_64.sh -b -u -p ~/conda
+bash Miniforge3-$(uname -s)-$(uname -m).sh -b -u -p ~/conda
+```
 
+### macOS
+
+```bash
+wget -N https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-$(uname -s)-$(uname -m).sh
+
+bash Miniforge3-$(uname -s)-$(uname -m).sh -b -u -p ~/conda
+```
+
+### All
+
+```bash
 source ~/conda/bin/activate
 
 conda install -y \
     git \
     cmake \
-    gxx_linux-64
+    gxx_linux-64 \
+    flatbuffers \
+    fmt
 
 conda install -y --channel https://roq-trading.com/conda/stable \
-    roq-client
+    roq-oss-range-v3 \
+    roq-oss-span-lite
 ```
-
 
 ## Building
 
