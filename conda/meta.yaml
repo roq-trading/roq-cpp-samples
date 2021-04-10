@@ -6,10 +6,10 @@ package:
   version: {{ version }}
 
 source:
-  path: ..
+  git_url: ..
 
 build:
-  skip: True  # [win and osx]
+  skip: True  # [win]
   number: {{ number }}
   run_exports:
     - {{ pin_subpackage('roq-samples', max_pin='x.x') }}
