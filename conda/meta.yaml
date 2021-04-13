@@ -1,16 +1,13 @@
-{% set version = environ.get('GIT_DESCRIBE_TAG', '0.0.0') %}
-{% set number = environ.get('GIT_DESCRIBE_NUMBER', 0) %}
-
 package:
   name: roq-samples
-  version: {{ version }}
+  version: {{ GIT_DESCRIBE_TAG }}
 
 source:
   git_url: ..
 
 build:
   skip: True  # [win]
-  number: {{ number }}
+  number: {{ GIT_DESCRIBE_NUMBER }}
   run_exports:
     - {{ pin_subpackage('roq-samples', max_pin='x.x') }}
 
@@ -22,7 +19,7 @@ requirements:
     - make
   host:
     - benchmark
-    - roq-client =={{ version }}
+    - roq-client
 
 about:
   home: https://roq-trading.com
