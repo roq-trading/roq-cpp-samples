@@ -161,6 +161,7 @@ void Strategy::try_trade(Side side, double price) {
           .stop_price = NaN,
           .max_show_quantity = NaN,
           .order_template = {},
+          .routing_id = {},
       },
       0u);
   working_order_id_ = order_id;
