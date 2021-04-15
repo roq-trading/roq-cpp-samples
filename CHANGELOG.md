@@ -4,6 +4,16 @@ All notable changes will be documented in this file.
 
 ## Head
 
+## 0.7.0 &ndash; 2021-04-15
+
+### Added
+
+* Example demonstrating the use of a secondary thread and `CustomMessage`
+
+### Changed
+
+* Using new Logging interface
+
 ## 0.6.1 &ndash; 2021-02-19
 
 ### Added
