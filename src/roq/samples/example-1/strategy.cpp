@@ -70,6 +70,15 @@ void Strategy::operator()(const Event<ExternalLatency> &event) {
       event.value);
 }
 
+void Strategy::operator()(const Event<RateLimitUsage> &event) {
+  // only verbose logging, see comment in header
+  log::trace_1(
+      "[{}:{}] ExternalLatency={}"_fmt,
+      event.message_info.source,
+      event.message_info.source_name,
+      event.value);
+}
+
 void Strategy::operator()(const Event<GatewayStatus> &event) {
   // only verbose logging, see comment in header
   log::trace_1(
