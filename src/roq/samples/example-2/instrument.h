@@ -41,7 +41,7 @@ class Instrument final {
   void reset();
 
  private:
-  static constexpr size_t MAX_DEPTH = 2u;
+  static constexpr size_t MAX_DEPTH = 2;
 
   const std::string_view exchange_;
   const std::string_view symbol_;

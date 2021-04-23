@@ -60,7 +60,7 @@ void Processor::dispatch() {
   // first message *must* be GatewaySettings
   process(
       GatewaySettings{
-          .mbp_max_depth = 3u,
+          .mbp_max_depth = 3,
           .mbp_allow_price_inversion = false,
       },
       1ns);  // timestamp should be something useful, like UTC

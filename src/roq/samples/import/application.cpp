@@ -17,9 +17,9 @@ namespace samples {
 namespace import {
 
 int Application::main_helper(const roq::span<std::string_view> &args) {
-  if (args.size() != 2u)
-    throw RuntimeErrorException("Expected exactly 1 argument, got {}"_fmt, args.size() - 1u);
-  Processor(args[1u]).dispatch();
+  if (args.size() != 2)
+    throw RuntimeErrorException("Expected exactly 1 argument, got {}"_fmt, args.size() - 1);
+  Processor(args[1]).dispatch();
   return EXIT_SUCCESS;
 }
 

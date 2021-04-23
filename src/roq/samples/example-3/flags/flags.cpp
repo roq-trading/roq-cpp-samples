@@ -33,7 +33,7 @@ ABSL_FLAG(  //
 ABSL_FLAG(  //
     uint32_t,
     sample_freq_secs,
-    1u,
+    1,
     "sample frequency (seconds)");
 
 ABSL_FLAG(  //
@@ -47,7 +47,7 @@ ABSL_FLAG(  //
 ABSL_FLAG(  //
     uint32_t,
     warmup,
-    120u,
+    120,
     "warmup (number of samples before a signal is generated)");
 
 ABSL_FLAG(  //

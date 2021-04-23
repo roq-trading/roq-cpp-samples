@@ -136,7 +136,7 @@ void Strategy::try_trade(Side side, double price) {
               .account = Flags::account(),
               .order_id = working_order_id_,
           },
-          0u);
+          0);
     }
     return;
   }
@@ -163,7 +163,7 @@ void Strategy::try_trade(Side side, double price) {
           .order_template = {},
           .routing_id = {},
       },
-      0u);
+      0);
   working_order_id_ = order_id;
   working_side_ = side;
   // possible extension: monitor for request timeout

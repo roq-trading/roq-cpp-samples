@@ -17,9 +17,9 @@ namespace example_2 {
 
 int Application::main_helper(const roq::span<std::string_view> &args) {
   assert(!args.empty());
-  if (args.size() == 1u)
+  if (args.size() == 1)
     throw RuntimeErrorException("Expected arguments"_sv);
-  if (args.size() != 3u)
+  if (args.size() != 3)
     throw RuntimeErrorException(
         "Expected exactly two arguments: "
         "futures exchange then cash exchange"_sv);
@@ -27,7 +27,7 @@ int Application::main_helper(const roq::span<std::string_view> &args) {
   // note!
   //   absl::flags will have removed all flags and we're left with arguments
   //   arguments should be a list of unix domain sockets
-  auto connections = args.subspan(1u);
+  auto connections = args.subspan(1);
   client::Trader(config, connections).dispatch<Strategy>();
   return EXIT_SUCCESS;
 }

@@ -22,9 +22,9 @@ namespace example_3 {
 
 int Application::main_helper(const roq::span<std::string_view> &args) {
   assert(!args.empty());
-  if (args.size() == 1u)
+  if (args.size() == 1)
     throw RuntimeErrorException("Expected arguments"_sv);
-  if (args.size() != 2u)
+  if (args.size() != 2)
     throw RuntimeErrorException("Expected exactly one argument"_sv);
   Config config;
   // note!

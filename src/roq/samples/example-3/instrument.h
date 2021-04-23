@@ -16,7 +16,7 @@ namespace example_3 {
 
 class Instrument final {
  public:
-  static const constexpr size_t MAX_DEPTH = 3u;
+  static const constexpr size_t MAX_DEPTH = 3;
 
   using Depth = std::array<Layer, MAX_DEPTH>;
 
