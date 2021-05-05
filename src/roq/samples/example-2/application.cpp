@@ -18,9 +18,9 @@ namespace example_2 {
 int Application::main_helper(const roq::span<std::string_view> &args) {
   assert(!args.empty());
   if (args.size() == 1)
-    throw RuntimeErrorException("Expected arguments"_sv);
+    log::fatal("Expected arguments"_sv);
   if (args.size() != 3)
-    throw RuntimeErrorException(
+    log::fatal(
         "Expected exactly two arguments: "
         "futures exchange then cash exchange"_sv);
   Config config;

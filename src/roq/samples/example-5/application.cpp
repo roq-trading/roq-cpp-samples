@@ -19,7 +19,7 @@ namespace example_5 {
 int Application::main_helper(const roq::span<std::string_view> &args) {
   assert(!args.empty());
   if (args.size() == 1)
-    throw RuntimeErrorException("Expected arguments"_sv);
+    log::fatal("Expected arguments"_sv);
   Config config;
   // note!
   //   absl::flags will have removed all flags and we're left with arguments
