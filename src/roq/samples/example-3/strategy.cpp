@@ -135,6 +135,7 @@ void Strategy::try_trade(Side side, double price) {
           CancelOrder{
               .account = Flags::account(),
               .order_id = working_order_id_,
+              .routing_id = {},
           },
           0);
     }
