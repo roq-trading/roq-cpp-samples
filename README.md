@@ -82,6 +82,7 @@ conda install -y \
     fmt
 
 conda install -y --channel https://roq-trading.com/conda/stable \
+    roq-client \
     roq-oss-range-v3 \
     roq-oss-span-lite
 ```
