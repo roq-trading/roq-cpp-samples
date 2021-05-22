@@ -77,6 +77,7 @@ source ~/conda/bin/activate
 
 conda install -y \
     git \
+    make \
     cmake
 
 conda install -y --channel https://roq-trading.com/conda/stable \
