@@ -9,6 +9,10 @@ namespace samples {
 namespace example_3 {
 
 void Config::dispatch(Handler &handler) const {
+  // settings
+  handler(client::Settings{
+      .cancel_policy = CancelPolicy::MANAGED_ORDERS,
+  });
   // accounts
   handler(client::Account{
       .regex = Flags::account(),
