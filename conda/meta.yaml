@@ -20,6 +20,7 @@ requirements:
   host:
     - benchmark
     - roq-client
+    - roq-oss-abseil-cpp
 
 about:
   home: https://roq-trading.com
