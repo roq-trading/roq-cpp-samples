@@ -20,10 +20,7 @@ class Instrument final {
 
   using Depth = std::array<Layer, MAX_DEPTH>;
 
-  Instrument(
-      const std::string_view &exchange,
-      const std::string_view &symbol,
-      const std::string_view &account);
+  Instrument(const std::string_view &exchange, const std::string_view &symbol, const std::string_view &account);
 
   Instrument(Instrument &&) = default;
   Instrument(const Instrument &) = delete;

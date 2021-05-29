@@ -18,16 +18,13 @@ namespace samples {
 namespace example_3 {
 
 Instrument::Instrument(
-    const std::string_view &exchange,
-    const std::string_view &symbol,
-    const std::string_view &account)
+    const std::string_view &exchange, const std::string_view &symbol, const std::string_view &account)
     : exchange_(exchange), symbol_(symbol), account_(account),
       depth_builder_(client::DepthBuilderFactory::create(symbol, depth_)) {
 }
 
 double Instrument::position() const {
-  return (std::isnan(long_position_) ? 0.0 : long_position_) -
-         (std::isnan(short_position_) ? 0.0 : short_position_);
+  return (std::isnan(long_position_) ? 0.0 : long_position_) - (std::isnan(short_position_) ? 0.0 : short_position_);
 }
 
 bool Instrument::can_trade(Side side) const {
@@ -77,8 +74,7 @@ void Instrument::operator()(const DownloadEnd &download_end) {
 
 void Instrument::operator()(const GatewayStatus &gateway_status) {
   // because the API doesn't (yet) expose Mask
-  utils::Mask<SupportType> available(gateway_status.available),
-      unavailable(gateway_status.unavailable);
+  utils::Mask<SupportType> available(gateway_status.available), unavailable(gateway_status.unavailable);
   if (gateway_status.account.empty()) {
     // bit-mask of required message types
     static const utils::Mask<SupportType> required{
@@ -243,9 +239,9 @@ void Instrument::operator()(const PositionUpdate &position_update) {
 
 void Instrument::check_ready() {
   auto before = ready_;
-  ready_ = connected_ && !download_ && utils::compare(tick_size_, 0.0) > 0 &&
-           utils::compare(min_trade_vol_, 0.0) > 0 && utils::compare(multiplier_, 0.0) > 0 &&
-           trading_status_ == TradingStatus::OPEN && market_data_ && order_management_;
+  ready_ = connected_ && !download_ && utils::compare(tick_size_, 0.0) > 0 && utils::compare(min_trade_vol_, 0.0) > 0 &&
+           utils::compare(multiplier_, 0.0) > 0 && trading_status_ == TradingStatus::OPEN && market_data_ &&
+           order_management_;
   if (ROQ_UNLIKELY(ready_ != before))
     log::info("[{}:{}] ready={}"_fmt, exchange_, symbol_, ready_);
 }
@@ -267,8 +263,7 @@ void Instrument::reset() {
 }
 
 void Instrument::validate(const Depth &depth) {
-  if (utils::compare(depth[0].bid_quantity, 0.0) <= 0 ||
-      utils::compare(depth[0].ask_quantity, 0.0) <= 0)
+  if (utils::compare(depth[0].bid_quantity, 0.0) <= 0 || utils::compare(depth[0].ask_quantity, 0.0) <= 0)
     return;
   auto spread = depth[0].ask_price - depth[0].bid_price;
   if (ROQ_UNLIKELY(utils::compare(spread, 0.0) <= 0))

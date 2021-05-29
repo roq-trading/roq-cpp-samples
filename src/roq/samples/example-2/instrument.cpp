@@ -18,8 +18,7 @@ namespace samples {
 namespace example_2 {
 
 Instrument::Instrument(const std::string_view &exchange, const std::string_view &symbol)
-    : exchange_(exchange), symbol_(symbol),
-      depth_builder_(client::DepthBuilderFactory::create(symbol, depth_)) {
+    : exchange_(exchange), symbol_(symbol), depth_builder_(client::DepthBuilderFactory::create(symbol, depth_)) {
 }
 
 void Instrument::operator()(const Connected &) {
@@ -65,8 +64,7 @@ void Instrument::operator()(const GatewayStatus &gateway_status) {
       SupportType::MARKET_BY_PRICE,
   };
   // because the API doesn't (yet) expose Mask
-  utils::Mask<SupportType> available(gateway_status.available),
-      unavailable(gateway_status.unavailable);
+  utils::Mask<SupportType> available(gateway_status.available), unavailable(gateway_status.unavailable);
   // readiness defined by full availability of all required message types
   auto market_data = available.has_all(required) && unavailable.has_none(required);
   if (utils::update(market_data_, market_data))
@@ -150,8 +148,7 @@ void Instrument::operator()(const MarketByOrderUpdate &market_by_order_update) {
 
 void Instrument::update_model() {
   // one sided market?
-  if (utils::compare(depth_[0].bid_quantity, 0.0) == 0 ||
-      utils::compare(depth_[0].ask_quantity, 0.0) == 0)
+  if (utils::compare(depth_[0].bid_quantity, 0.0) == 0 || utils::compare(depth_[0].ask_quantity, 0.0) == 0)
     return;
   // validate depth
   auto spread = depth_[0].ask_price - depth_[0].bid_price;
@@ -176,19 +173,13 @@ void Instrument::update_model() {
   else
     avg_price_ = Flags::alpha() * mid_price_ + (1.0 - Flags::alpha()) * avg_price_;
   // only verbose logging
-  log::trace_1(
-      "[{}:{}] model={{mid_price={}, avg_price={}}}"_fmt,
-      exchange_,
-      symbol_,
-      mid_price_,
-      avg_price_);
+  log::trace_1("[{}:{}] model={{mid_price={}, avg_price={}}}"_fmt, exchange_, symbol_, mid_price_, avg_price_);
 }
 
 void Instrument::check_ready() {
   auto before = ready_;
-  ready_ = connected_ && !download_ && utils::compare(tick_size_, 0.0) > 0 &&
-           utils::compare(min_trade_vol_, 0.0) > 0 && utils::compare(multiplier_, 0.0) > 0 &&
-           trading_status_ == TradingStatus::OPEN && market_data_;
+  ready_ = connected_ && !download_ && utils::compare(tick_size_, 0.0) > 0 && utils::compare(min_trade_vol_, 0.0) > 0 &&
+           utils::compare(multiplier_, 0.0) > 0 && trading_status_ == TradingStatus::OPEN && market_data_;
   if (ROQ_UNLIKELY(ready_ != before))
     log::info("[{}:{}] ready={}"_fmt, exchange_, symbol_, ready_);
 }

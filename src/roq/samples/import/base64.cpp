@@ -27,8 +27,7 @@ const std::string b64encode(const void *data, const size_t &len) {
   const size_t last = len - pad;
 
   for (size_t i = 0; i < last; i += 3) {
-    int n =
-        static_cast<int>(p[i]) << 16 | static_cast<int>(p[i + 1]) << 8 | static_cast<int>(p[i + 2]);
+    int n = static_cast<int>(p[i]) << 16 | static_cast<int>(p[i + 1]) << 8 | static_cast<int>(p[i + 2]);
     assert(n >= 0 && n < (1 << 24));
     str[j++] = B64chars[n >> 18];
     str[j++] = B64chars[n >> 12 & 0x3F];
@@ -37,8 +36,7 @@ const std::string b64encode(const void *data, const size_t &len) {
   }
   if (pad)  /// Set padding
   {
-    int n = --pad ? static_cast<int>(p[last]) << 8 | static_cast<int>(p[last + 1])
-                  : static_cast<int>(p[last]);
+    int n = --pad ? static_cast<int>(p[last]) << 8 | static_cast<int>(p[last + 1]) : static_cast<int>(p[last]);
     assert(n >= 0 && n < (1 << 16));
     str[j++] = B64chars[pad ? n >> 10 & 0x3F : n >> 2];
     str[j++] = B64chars[pad ? n >> 4 & 0x03F : n << 4 & 0x3F];
