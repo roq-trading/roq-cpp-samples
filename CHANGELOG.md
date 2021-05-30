@@ -4,6 +4,8 @@ All notable changes will be documented in this file.
 
 ## Head
 
+## 0.7.1 &ndash; 2021-05-30
+
 ## 0.7.0 &ndash; 2021-04-15
 
 ### Added
