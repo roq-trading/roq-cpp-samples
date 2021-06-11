@@ -136,6 +136,8 @@ void Strategy::try_trade(Side side, double price) {
               .account = Flags::account(),
               .order_id = working_order_id_,
               .routing_id = {},
+              .version = {},
+              .conditional_on_version = {},
           },
           0);
     }
