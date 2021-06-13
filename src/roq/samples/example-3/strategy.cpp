@@ -70,7 +70,7 @@ void Strategy::operator()(const Event<MarketByPriceUpdate> &event) {
 void Strategy::operator()(const Event<OrderAck> &event) {
   log::info("OrderAck={}"_fmt, event.value);
   auto &order_ack = event.value;
-  if (utils::is_request_complete(order_ack.status)) {
+  if (utils::has_request_completed(order_ack.status)) {
     // possible extension: reset request timeout
   }
 }
