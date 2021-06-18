@@ -101,15 +101,51 @@ void Processor::dispatch() {
   // initial image
   // ... prefer to sort bids descending
   MBPUpdate bids_image[] = {
-      {.price = 99.785, .quantity = 3.0},
-      {.price = 99.780, .quantity = 2.0},
-      {.price = 99.775, .quantity = 1.0},
+      {
+          .price = 99.785,
+          .quantity = 3.0,
+          .implied_quantity = NaN,
+          .price_level = {},
+          .number_of_orders = {},
+      },
+      {
+          .price = 99.780,
+          .quantity = 2.0,
+          .implied_quantity = NaN,
+          .price_level = {},
+          .number_of_orders = {},
+      },
+      {
+          .price = 99.775,
+          .quantity = 1.0,
+          .implied_quantity = NaN,
+          .price_level = {},
+          .number_of_orders = {},
+      },
   };
   // ... prefer to sort asks asscending
   MBPUpdate asks_image[] = {
-      {.price = 99.800, .quantity = 3.0},
-      {.price = 99.805, .quantity = 2.0},
-      {.price = 99.810, .quantity = 1.0},
+      {
+          .price = 99.800,
+          .quantity = 3.0,
+          .implied_quantity = NaN,
+          .price_level = {},
+          .number_of_orders = {},
+      },
+      {
+          .price = 99.805,
+          .quantity = 2.0,
+          .implied_quantity = NaN,
+          .price_level = {},
+          .number_of_orders = {},
+      },
+      {
+          .price = 99.810,
+          .quantity = 1.0,
+          .implied_quantity = NaN,
+          .price_level = {},
+          .number_of_orders = {},
+      },
   };
   process(
       MarketByPriceUpdate{
@@ -124,8 +160,22 @@ void Processor::dispatch() {
       4ns);
   // update
   MBPUpdate bids_update[] = {
-      {.price = 99.785, .quantity = 0.0},  // remove best price
-      {.price = 99.770, .quantity = 2.0},  // introduce new price
+      // remove best price ...
+      {
+          .price = 99.785,
+          .quantity = 0.0,
+          .implied_quantity = NaN,
+          .price_level = {},
+          .number_of_orders = {},
+      },
+      // ... then introduce new price
+      {
+          .price = 99.770,
+          .quantity = 2.0,
+          .implied_quantity = NaN,
+          .price_level = {},
+          .number_of_orders = {},
+      },
   };
   process(
       MarketByPriceUpdate{
