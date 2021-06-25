@@ -47,7 +47,7 @@ void Strategy::operator()(const Event<DownloadBegin> &event) {
 void Strategy::operator()(const Event<DownloadEnd> &event) {
   dispatch(event);
   if (utils::update(max_order_id_, event.value.max_order_id)) {
-    log::info("max_order_id={}"_fmt, max_order_id_);
+    log::info("max_order_id={}"_sv, max_order_id_);
   }
 }
 
@@ -68,7 +68,7 @@ void Strategy::operator()(const Event<MarketByPriceUpdate> &event) {
 }
 
 void Strategy::operator()(const Event<OrderAck> &event) {
-  log::info("OrderAck={}"_fmt, event.value);
+  log::info("OrderAck={}"_sv, event.value);
   auto &order_ack = event.value;
   if (utils::has_request_completed(order_ack.status)) {
     // possible extension: reset request timeout
@@ -76,7 +76,7 @@ void Strategy::operator()(const Event<OrderAck> &event) {
 }
 
 void Strategy::operator()(const Event<OrderUpdate> &event) {
-  log::info("OrderUpdate={}"_fmt, event.value);
+  log::info("OrderUpdate={}"_sv, event.value);
   dispatch(event);  // update position
   auto &order_update = event.value;
   if (utils::is_order_complete(order_update.status)) {
@@ -86,7 +86,7 @@ void Strategy::operator()(const Event<OrderUpdate> &event) {
 }
 
 void Strategy::operator()(const Event<TradeUpdate> &event) {
-  log::info("TradeUpdate={}"_fmt, event.value);
+  log::info("TradeUpdate={}"_sv, event.value);
 }
 
 void Strategy::operator()(const Event<PositionUpdate> &event) {
@@ -94,7 +94,7 @@ void Strategy::operator()(const Event<PositionUpdate> &event) {
 }
 
 void Strategy::operator()(const Event<FundsUpdate> &event) {
-  log::info("FundsUpdate={}"_fmt, event.value);
+  log::info("FundsUpdate={}"_sv, event.value);
 }
 
 void Strategy::update_model() {

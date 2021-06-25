@@ -18,7 +18,7 @@ namespace import {
 
 int Application::main_helper(const roq::span<std::string_view> &args) {
   if (args.size() != 2)
-    log::fatal("Expected exactly 1 argument, got {}"_fmt, args.size() - 1);
+    log::fatal("Expected exactly 1 argument, got {}"_sv, args.size() - 1);
   Processor(args[1]).dispatch();
   return EXIT_SUCCESS;
 }
