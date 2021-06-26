@@ -11,7 +11,8 @@ namespace example_3 {
 void Config::dispatch(Handler &handler) const {
   // settings
   handler(client::Settings{
-      .cancel_policy = CancelPolicy::MANAGED_ORDERS,
+      .order_cancel_policy = OrderCancelPolicy::MANAGED_ORDERS,
+      .order_management = {},
   });
   // accounts
   handler(client::Account{
