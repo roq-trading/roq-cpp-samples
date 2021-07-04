@@ -39,20 +39,17 @@ void Strategy::operator()(const Event<StreamStatus> &event) {
 
 void Strategy::operator()(const Event<ExternalLatency> &event) {
   // only verbose logging, see comment in header
-  log::info<1>(
-      "[{}:{}] ExternalLatency={}"_sv, event.message_info.source, event.message_info.source_name, event.value);
+  log::info<1>("[{}:{}] ExternalLatency={}"_sv, event.message_info.source, event.message_info.source_name, event.value);
 }
 
 void Strategy::operator()(const Event<RateLimitUsage> &event) {
   // only verbose logging, see comment in header
-  log::info<1>(
-      "[{}:{}] ExternalLatency={}"_sv, event.message_info.source, event.message_info.source_name, event.value);
+  log::info<1>("[{}:{}] ExternalLatency={}"_sv, event.message_info.source, event.message_info.source_name, event.value);
 }
 
 void Strategy::operator()(const Event<GatewayStatus> &event) {
   // only verbose logging, see comment in header
-  log::info<1>(
-      "[{}:{}] ExternalLatency={}"_sv, event.message_info.source, event.message_info.source_name, event.value);
+  log::info<1>("[{}:{}] ExternalLatency={}"_sv, event.message_info.source, event.message_info.source_name, event.value);
 }
 
 void Strategy::operator()(const Event<ReferenceData> &event) {
