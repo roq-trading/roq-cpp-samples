@@ -23,6 +23,6 @@ fi
 
 $PREFIX "./roq-samples-example-3" \
   --name "$NAME" \
-  --simulation \
+  --simulation=true \
   $CONDA_PREFIX/share/roq/data/deribit.roq \
   $@
