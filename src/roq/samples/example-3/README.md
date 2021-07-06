@@ -28,12 +28,12 @@ For this example, make sure you have installed the `roq-data` conda package.
 
 ### Simulation
 
-Simulation is controlled by the `--simulation` flag
+Simulation is controlled by the `--simulation=true` flag
 
 ```bash
 ./roq-samples-example-3 \
     --name "trader" \
-    --simulation \
+    --simulation=true \
     $CONDA_PREFIX/share/roq/data/deribit.roq
 ```
 
@@ -84,7 +84,7 @@ Placement of limit orders is controlled by the `--enable-trading` flag
 ```bash
 ./roq-samples-example-3 \
     --name "trader" \
-    --simulation \
+    --simulation=true \
     --enable_trading \
     $CONDA_PREFIX/share/roq/data/deribit.roq
 ```
