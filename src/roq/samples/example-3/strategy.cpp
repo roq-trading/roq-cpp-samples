@@ -28,7 +28,7 @@ void Strategy::operator()(const Event<Timer> &event) {
   if (next_sample_ != next_sample_.zero())  // initialized?
     update_model();
   auto now = std::chrono::duration_cast<std::chrono::seconds>(event.value.now);
-  next_sample_ = now + std::chrono::seconds{Flags::sample_freq_secs()};
+  next_sample_ = now + Flags::sample_freq();
   // possible extension: reset request timeout
 }
 

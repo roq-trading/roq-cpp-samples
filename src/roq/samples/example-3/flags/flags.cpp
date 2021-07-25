@@ -6,6 +6,41 @@
 
 #include <string>
 
+using namespace std::chrono_literals;  // NOLINT
+
+namespace {
+class TimePeriod final {
+ public:
+  TimePeriod() = default;
+
+  TimePeriod(const std::chrono::nanoseconds value) : value_(absl::FromChrono(value)) {}  // NOLINT (allow implicit)
+
+  operator const absl::Duration &() const { return value_; }
+
+  static std::string unparse(const TimePeriod &flag) { return absl::AbslUnparseFlag(flag.value_); }
+
+  static bool parse(absl::string_view text, TimePeriod *flag, std::string *error) {
+    if (!absl::ParseFlag(text, &flag->value_, error)) {
+      return false;
+    }
+    return true;
+  }
+
+ private:
+  absl::Duration value_ = {};
+};
+
+template <typename T>
+static std::string AbslUnparseFlag(T flag) {
+  return T::unparse(flag);
+}
+
+template <typename T>
+static bool AbslParseFlag(absl::string_view text, T *flag, std::string *error) {
+  return T::parse(text, flag, error);
+}
+}  // namespace
+
 ABSL_FLAG(  //
     std::string,
     exchange,
@@ -31,10 +66,10 @@ ABSL_FLAG(  //
     "currencies (regex)");
 
 ABSL_FLAG(  //
-    uint32_t,
-    sample_freq_secs,
-    1,
-    "sample frequency (seconds)");
+    TimePeriod,
+    sample_freq,
+    {1s},
+    "sample frequency");
 
 ABSL_FLAG(  //
     double,
@@ -87,8 +122,8 @@ std::string_view Flags::currencies() {
   return result;
 }
 
-uint32_t Flags::sample_freq_secs() {
-  static const uint32_t result = absl::GetFlag(FLAGS_sample_freq_secs);
+std::chrono::nanoseconds Flags::sample_freq() {
+  static const std::chrono::nanoseconds result{absl::ToChronoNanoseconds(absl::GetFlag(FLAGS_sample_freq))};
   return result;
 }
 

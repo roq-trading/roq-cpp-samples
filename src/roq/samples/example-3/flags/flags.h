@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include <chrono>
 #include <string_view>
 
 namespace roq {
@@ -14,7 +15,7 @@ struct Flags final {
   static std::string_view symbol();
   static std::string_view account();
   static std::string_view currencies();
-  static uint32_t sample_freq_secs();
+  static std::chrono::nanoseconds sample_freq();
   static double ema_alpha();
   static uint32_t warmup();
   static bool enable_trading();
