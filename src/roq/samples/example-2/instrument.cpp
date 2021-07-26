@@ -18,7 +18,7 @@ namespace samples {
 namespace example_2 {
 
 Instrument::Instrument(const std::string_view &exchange, const std::string_view &symbol)
-    : exchange_(exchange), symbol_(symbol), depth_builder_(client::DepthBuilderFactory::create(symbol, depth_)) {
+    : exchange_(exchange), symbol_(symbol), depth_builder_(client::DepthBuilderFactory::create(symbol)) {
 }
 
 void Instrument::operator()(const Connected &) {
@@ -82,7 +82,7 @@ void Instrument::operator()(const ReferenceData &reference_data) {
   assert(exchange_.compare(reference_data.exchange) == 0);
   assert(symbol_.compare(reference_data.symbol) == 0);
   // update the depth builder
-  depth_builder_->update(reference_data);
+  (*depth_builder_)(reference_data);
   // update our cache
   if (utils::update(tick_size_, reference_data.tick_size)) {
     log::info("[{}:{}] tick_size={}"_sv, exchange_, symbol_, tick_size_);
@@ -121,7 +121,7 @@ void Instrument::operator()(const MarketByPriceUpdate &market_by_price_update) {
   //   liquidity.
   //   the depth builder helps you maintain a correct view of
   //   the order book.
-  auto depth = depth_builder_->update(market_by_price_update);
+  auto depth = depth_builder_->update(market_by_price_update, depth_);
   log::info<1>("[{}:{}] depth=[{}]"_sv, exchange_, symbol_, roq::join(depth_, ", "_sv));
   if (depth > 0 && is_ready())
     update_model();
@@ -140,7 +140,7 @@ void Instrument::operator()(const MarketByOrderUpdate &market_by_order_update) {
   //   modify the liquidity.
   //   the depth builder helps you maintain a correct view of
   //   the order book.
-  auto depth = depth_builder_->update(market_by_order_update);
+  auto depth = depth_builder_->update(market_by_order_update, depth_);
   log::info<1>("[{}:{}] depth=[{}]"_sv, exchange_, symbol_, roq::join(depth_, ", "_sv));
   if (depth > 0 && is_ready())
     update_model();
