@@ -31,10 +31,13 @@ void Producer::operator()(const Event<Stop> &) {
 void Producer::run() {
   log::info("producer was started"_sv);
   while (!terminating_) {
-    std::string message = "hello world"_s;
+    std::string text = "hello world"_s;
+    roq::span message{
+        reinterpret_cast<std::byte const *>(std::data(text)),
+        text.length() + 1,  // including trailing null
+    };
     client::CustomMessage custom_message{
-        .message = message.data(),
-        .length = message.length() + 1,  // including trailining null
+        .message = message,
     };
     dispatcher_.enqueue(custom_message);
     std::this_thread::sleep_for(100ms);
