@@ -2,7 +2,8 @@
 
 #include "roq/samples/example-2/instrument.h"
 
-#include "roq/format.h"
+#include <fmt/format.h>
+
 #include "roq/logging.h"
 
 #include "roq/utils/compare.h"
@@ -122,7 +123,7 @@ void Instrument::operator()(const MarketByPriceUpdate &market_by_price_update) {
   //   the depth builder helps you maintain a correct view of
   //   the order book.
   auto depth = depth_builder_->update(market_by_price_update, depth_);
-  log::info<1>("[{}:{}] depth=[{}]"_sv, exchange_, symbol_, roq::join(depth_, ", "_sv));
+  log::info<1>("[{}:{}] depth=[{}]"_sv, exchange_, symbol_, fmt::join(depth_, ", "_sv));
   if (depth > 0 && is_ready())
     update_model();
 }
@@ -141,7 +142,7 @@ void Instrument::operator()(const MarketByOrderUpdate &market_by_order_update) {
   //   the depth builder helps you maintain a correct view of
   //   the order book.
   auto depth = depth_builder_->update(market_by_order_update, depth_);
-  log::info<1>("[{}:{}] depth=[{}]"_sv, exchange_, symbol_, roq::join(depth_, ", "_sv));
+  log::info<1>("[{}:{}] depth=[{}]"_sv, exchange_, symbol_, fmt::join(depth_, ", "_sv));
   if (depth > 0 && is_ready())
     update_model();
 }
@@ -159,7 +160,7 @@ void Instrument::update_model() {
         "depth=[{}]"_sv,
         exchange_,
         symbol_,
-        roq::join(depth_, ", "_sv));
+        fmt::join(depth_, ", "_sv));
   // compute (weighted) mid
   double sum_1 = 0.0, sum_2 = 0.0;
   for (auto &[bid_price, bid_quantity, ask_price, ask_quantity] : depth_) {

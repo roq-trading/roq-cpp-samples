@@ -157,7 +157,7 @@ void Instrument::operator()(const MarketByPriceUpdate &market_by_price_update) {
   //   the depth builder helps you maintain a correct view of
   //   the order book.
   depth_builder_->update(market_by_price_update, depth_);
-  log::info<1>("[{}:{}] depth=[{}]"_sv, exchange_, symbol_, roq::join(depth_, ", "_sv));
+  log::info<1>("[{}:{}] depth=[{}]"_sv, exchange_, symbol_, fmt::join(depth_, ", "_sv));
   validate(depth_);
 }
 
@@ -180,7 +180,7 @@ void Instrument::operator()(const MarketByOrderUpdate &market_by_order_update) {
       "[{}:{}] depth=[{}]"_sv,
       exchange_,
       symbol_,
-      roq::join(depth_, ", "_sv));
+      fmt::join(depth_, ", "_sv));
   validate(depth_);
   */
 }
@@ -273,7 +273,7 @@ void Instrument::validate(const Depth &depth) {
         "depth=[{}]"_sv,
         exchange_,
         symbol_,
-        roq::join(depth, ", "_sv));
+        fmt::join(depth, ", "_sv));
 }
 
 }  // namespace example_3
