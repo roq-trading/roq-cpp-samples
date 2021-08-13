@@ -1,6 +1,6 @@
 /* Copyright (c) 2017-2021, Hans Erik Thrane */
 
-#include "roq/samples/example-3/application.h"
+#include "roq/samples/example-6/application.h"
 
 #include <cassert>
 #include <chrono>
@@ -10,41 +10,39 @@
 #include "roq/client.h"
 #include "roq/exceptions.h"
 
-#include "roq/samples/example-3/config.h"
-#include "roq/samples/example-3/flags.h"
-#include "roq/samples/example-3/strategy.h"
+#include "roq/samples/example-6/config.h"
+#include "roq/samples/example-6/flags.h"
+#include "roq/samples/example-6/strategy.h"
 
 using namespace std::chrono_literals;
 using namespace roq::literals;
 
 namespace roq {
 namespace samples {
-namespace example_3 {
+namespace example_6 {
 
 int Application::main_helper(const roq::span<std::string_view> &args) {
   assert(!args.empty());
-  if (args.size() == 1)
-    log::fatal("Expected arguments"_sv);
-  if (args.size() != 2)
-    log::fatal("Expected exactly one argument"_sv);
+  if (args.size() != 3)
+    log::fatal("Expected exactly two arguments"_sv);
   Config config;
-  // note!
-  //   absl::flags will have removed all flags and we're left with arguments
-  //   arguments can be a list of either
-  //   * unix domain sockets (trading) or
-  //   * event logs (simulation)
   auto connections = args.subspan(1);
   if (Flags::simulation()) {
     // collector
     auto snapshot_frequency = 1s;
     auto collector = client::detail::SimulationFactory::create_collector(snapshot_frequency);
-    // matcher
-    auto market_data_latency = 1ms;
-    auto order_manager_latency = 1ms;
-    // ... demonstrating how one could possibly set up multiple matchers (one for each exchange)
+    // matchers
     std::vector<std::unique_ptr<Matcher> > matchers;
+    // ... matcher #1
+    auto market_data_latency_1 = 1ms;
+    auto order_management_latency_1 = 5ms;
     matchers.emplace_back(client::detail::SimulationFactory::create_matcher(
-        "simple"_sv, 0, Flags::exchange(), market_data_latency, order_manager_latency));
+        "simple"_sv, 0, Flags::source_name_1(), market_data_latency_1, order_management_latency_1));
+    // ... matcher #2
+    auto market_data_latency_2 = 100ms;
+    auto order_management_latency_2 = 150ms;
+    matchers.emplace_back(client::detail::SimulationFactory::create_matcher(
+        "simple"_sv, 1, Flags::source_name_2(), market_data_latency_2, order_management_latency_2));
     // simulator
     client::Simulator(config, connections, *collector, matchers).dispatch<Strategy>();
   } else {
@@ -63,6 +61,6 @@ int Application::main(int argc, char **argv) {
   return main_helper(args);
 }
 
-}  // namespace example_3
+}  // namespace example_6
 }  // namespace samples
 }  // namespace roq

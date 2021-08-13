@@ -21,9 +21,6 @@ fi
 
 # launch
 
-$PREFIX "./roq-samples-example-3" \
+$PREFIX "./roq-samples-example-6" \
   --name "$NAME" \
-  --simulation=true \
-  --timer_freq=1s \
-  $CONDA_PREFIX/share/roq/data/deribit.roq \
   $@

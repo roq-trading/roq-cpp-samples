@@ -4,6 +4,10 @@ All notable changes will be documented in this file.
 
 ## Head
 
+### Added
+
+* example-6 to demonstrate and test event-log multiplexing
+
 ## 0.7.5 &ndash; 2021-08-08
 
 ## 0.7.4 &ndash; 2021-07-20
