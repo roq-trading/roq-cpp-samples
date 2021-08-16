@@ -31,20 +31,28 @@ int Application::main_helper(const roq::span<std::string_view> &args) {
     // collector
     auto snapshot_frequency = 1s;
     auto collector = client::detail::SimulationFactory::create_collector(snapshot_frequency);
-    // matchers
-    std::vector<std::unique_ptr<Matcher> > matchers;
-    // ... matcher #1
-    auto market_data_latency_1 = 1ms;
-    auto order_management_latency_1 = 5ms;
-    matchers.emplace_back(client::detail::SimulationFactory::create_matcher(
-        "simple"_sv, 0, Flags::source_name_1(), market_data_latency_1, order_management_latency_1));
-    // ... matcher #2
-    auto market_data_latency_2 = 100ms;
-    auto order_management_latency_2 = 150ms;
-    matchers.emplace_back(client::detail::SimulationFactory::create_matcher(
-        "simple"_sv, 1, Flags::source_name_2(), market_data_latency_2, order_management_latency_2));
     // simulator
-    client::Simulator(config, connections, *collector, matchers).dispatch<Strategy>();
+    auto create_generator = [&connections](auto source_id) {
+      return client::detail::SimulationFactory::create_generator(connections[source_id], source_id);
+    };
+    auto create_matcher = [](auto &dispatcher) {
+      return client::detail::SimulationFactory::create_matcher(dispatcher, "simple"_sv);
+    };
+    client::Simulator::Factory factories[] = {
+        {
+            .create_generator = create_generator,
+            .create_matcher = create_matcher,
+            .market_data_latency = 1ms,
+            .order_management_latency = 5ms,
+        },
+        {
+            .create_generator = create_generator,
+            .create_matcher = create_matcher,
+            .market_data_latency = 100ms,
+            .order_management_latency = 150ms,
+        },
+    };
+    client::Simulator(config, factories).dispatch<Strategy>();
   } else {
     // trader
     client::Trader(config, connections).dispatch<Strategy>();

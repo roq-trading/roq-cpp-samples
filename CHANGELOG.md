@@ -6,7 +6,11 @@ All notable changes will be documented in this file.
 
 ### Added
 
-* example-6 to demonstrate and test event-log multiplexing
+* example-6 to demonstrate and test event-log multiplexing (#7)
+
+### Changed
+
+* New Simulation interface requiring a specification of factory methods and latencies (#7)
 
 ## 0.7.5 &ndash; 2021-08-08
 

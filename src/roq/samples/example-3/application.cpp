@@ -38,15 +38,20 @@ int Application::main_helper(const roq::span<std::string_view> &args) {
     // collector
     auto snapshot_frequency = 1s;
     auto collector = client::detail::SimulationFactory::create_collector(snapshot_frequency);
-    // matcher
-    auto market_data_latency = 1ms;
-    auto order_manager_latency = 1ms;
-    // ... demonstrating how one could possibly set up multiple matchers (one for each exchange)
-    std::vector<std::unique_ptr<Matcher> > matchers;
-    matchers.emplace_back(client::detail::SimulationFactory::create_matcher(
-        "simple"_sv, 0, Flags::exchange(), market_data_latency, order_manager_latency));
     // simulator
-    client::Simulator(config, connections, *collector, matchers).dispatch<Strategy>();
+    auto create_generator = [&connections](auto source_id) {
+      return client::detail::SimulationFactory::create_generator(connections[source_id], source_id);
+    };
+    auto create_matcher = [](auto &dispatcher) {
+      return client::detail::SimulationFactory::create_matcher(dispatcher, "simple"_sv);
+    };
+    client::Simulator::Factory factory{
+        .create_generator = create_generator,
+        .create_matcher = create_matcher,
+        .market_data_latency = 1ms,
+        .order_management_latency = 10ms,
+    };
+    client::Simulator(config, factory).dispatch<Strategy>();
   } else {
     // trader
     client::Trader(config, connections).dispatch<Strategy>();
