@@ -40,6 +40,7 @@ add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/src/roq/samples/example-4")
 add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/src/roq/samples/example-5")
 add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/src/roq/samples/example-6")
 add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/src/roq/samples/import")
+add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/src/roq/samples/event-log")
 
 # test
 

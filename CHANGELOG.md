@@ -6,6 +6,7 @@ All notable changes will be documented in this file.
 
 ### Added
 
+* event-log to demonstrate how to read event-logs (#10)
 * example-6 to demonstrate and test event-log multiplexing (#7)
 
 ### Changed
