@@ -118,6 +118,10 @@ void Processor::operator()(const Event<FundsUpdate> &event) {
   log::info("{}"_sv, event);
 }
 
+void Processor::operator()(const Event<CustomMetrics> &event) {
+  log::info("{}"_sv, event);
+}
+
 }  // namespace event_log
 }  // namespace samples
 }  // namespace roq
