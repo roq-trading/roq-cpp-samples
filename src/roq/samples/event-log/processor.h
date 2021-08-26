@@ -56,7 +56,7 @@ class Processor final : public client::EventLogReader::Handler {
   void operator()(const Event<FundsUpdate> &) override;
 
   // broadcast
-  void operator()(const Event<CustomMetrics> &) override;
+  void operator()(const Event<CustomMetricsUpdate> &) override;
 
  private:
   std::unique_ptr<client::EventLogReader> reader_;

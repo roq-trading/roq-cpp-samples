@@ -51,7 +51,7 @@ int Application::main_helper(const roq::span<std::string_view> &args) {
         .market_data_latency = 1ms,
         .order_management_latency = 10ms,
     };
-    client::Simulator(config, factory).dispatch<Strategy>();
+    client::Simulator(config, factory, *collector).dispatch<Strategy>();
   } else {
     // trader
     client::Trader(config, connections).dispatch<Strategy>();

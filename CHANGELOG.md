@@ -6,6 +6,7 @@ All notable changes will be documented in this file.
 
 ### Added
 
+* example-7 to demonstrate how to use collector for custom metrics (#8)
 * event-log to demonstrate how to read event-logs (#10)
 * example-6 to demonstrate and test event-log multiplexing (#7)
 

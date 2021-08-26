@@ -11,7 +11,7 @@ namespace example_7 {
 
 class Collector final : public client::Collector {
  public:
-  void operator()(const Event<CustomMetrics> &) override;
+  void operator()(const Event<CustomMetricsUpdate> &) override;
 };
 
 }  // namespace example_7

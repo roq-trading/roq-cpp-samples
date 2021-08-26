@@ -211,4 +211,5 @@ The project is released under the terms of the BSD 3-Clause license.
 
 * [Roq GmbH](https://roq-trading.com/)
 * [Documentation](https://roq-trading.com/docs/)
+* [Issues](https://github.com/roq-trading/roq-issues/issues)
 * [Contact us](mailto:info@roq-trading.com)

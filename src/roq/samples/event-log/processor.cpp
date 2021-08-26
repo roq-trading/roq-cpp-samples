@@ -118,7 +118,7 @@ void Processor::operator()(const Event<FundsUpdate> &event) {
   log::info("{}"_sv, event);
 }
 
-void Processor::operator()(const Event<CustomMetrics> &event) {
+void Processor::operator()(const Event<CustomMetricsUpdate> &event) {
   log::info("{}"_sv, event);
 }
 
