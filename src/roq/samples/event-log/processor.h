@@ -26,7 +26,7 @@ class Processor final : public client::EventLogReader::Handler {
   // stream
   void operator()(const Event<StreamStatus> &) override;
   void operator()(const Event<ExternalLatency> &) override;
-  void operator()(const Event<RateLimitUsage> &) override;
+  void operator()(const Event<RateLimitTrigger> &) override;
 
   // service
   void operator()(const Event<GatewayStatus> &) override;

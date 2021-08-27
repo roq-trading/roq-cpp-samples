@@ -46,7 +46,7 @@ void Processor::operator()(const Event<ExternalLatency> &event) {
   log::info("{}"_sv, event);
 }
 
-void Processor::operator()(const Event<RateLimitUsage> &event) {
+void Processor::operator()(const Event<RateLimitTrigger> &event) {
   log::info("{}"_sv, event);
 }
 

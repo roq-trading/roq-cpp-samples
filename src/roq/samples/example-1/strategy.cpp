@@ -42,14 +42,15 @@ void Strategy::operator()(const Event<ExternalLatency> &event) {
   log::info<1>("[{}:{}] ExternalLatency={}"_sv, event.message_info.source, event.message_info.source_name, event.value);
 }
 
-void Strategy::operator()(const Event<RateLimitUsage> &event) {
+void Strategy::operator()(const Event<RateLimitTrigger> &event) {
   // only verbose logging, see comment in header
-  log::info<1>("[{}:{}] ExternalLatency={}"_sv, event.message_info.source, event.message_info.source_name, event.value);
+  log::info<1>(
+      "[{}:{}] RateLimitTrigger={}"_sv, event.message_info.source, event.message_info.source_name, event.value);
 }
 
 void Strategy::operator()(const Event<GatewayStatus> &event) {
   // only verbose logging, see comment in header
-  log::info<1>("[{}:{}] ExternalLatency={}"_sv, event.message_info.source, event.message_info.source_name, event.value);
+  log::info<1>("[{}:{}] GatewayStatus={}"_sv, event.message_info.source, event.message_info.source_name, event.value);
 }
 
 void Strategy::operator()(const Event<ReferenceData> &event) {
