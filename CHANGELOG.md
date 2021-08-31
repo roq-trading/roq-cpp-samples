@@ -4,6 +4,8 @@ All notable changes will be documented in this file.
 
 ## Head
 
+## 0.7.6 &ndash; 2021-09-02
+
 ### Added
 
 * example-7 to demonstrate how to use collector for custom metrics (#8)
