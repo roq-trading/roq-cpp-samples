@@ -61,6 +61,11 @@ void Strategy::operator()(const Event<MarketStatus> &event) {
   log::info("[{}:{}] MarketStatus={}"_sv, event.message_info.source, event.message_info.source_name, event.value);
 }
 
+void Strategy::operator()(const Event<TopOfBook> &event) {
+  // only verbose logging, see comment in header
+  log::info<1>("[{}:{}] TopOfBook={}"_sv, event.message_info.source, event.message_info.source_name, event.value);
+}
+
 void Strategy::operator()(const Event<MarketByPriceUpdate> &event) {
   // only verbose logging, see comment in header
   log::info<1>(
@@ -76,6 +81,12 @@ void Strategy::operator()(const Event<MarketByOrderUpdate> &event) {
 void Strategy::operator()(const Event<TradeSummary> &event) {
   // only verbose logging, see comment in header
   log::info<1>("[{}:{}] TradeSummary={}"_sv, event.message_info.source, event.message_info.source_name, event.value);
+}
+
+void Strategy::operator()(const Event<CustomMetricsUpdate> &event) {
+  // only verbose logging, see comment in header
+  log::info<1>(
+      "[{}:{}] CustomMetricsUpdate={}"_sv, event.message_info.source, event.message_info.source_name, event.value);
 }
 
 }  // namespace example_1

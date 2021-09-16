@@ -10,6 +10,8 @@ namespace example_7 {
 namespace flags {
 
 struct Flags final {
+  static std::string_view label();
+  static std::string_view account();
   static std::string_view exchange();
   static std::string_view symbol();
   static bool simulation();

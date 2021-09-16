@@ -4,6 +4,8 @@
 
 #include "roq/logging.h"
 
+#include "roq/samples/example-7/flags.h"
+
 using namespace roq::literals;
 
 namespace roq {
@@ -30,8 +32,8 @@ void Strategy::operator()(const Event<TopOfBook> &event) {
   measurements_[0].value = top_of_book.layer.bid_price;
   measurements_[1].value = top_of_book.layer.ask_price;
   CustomMetrics custom_metrics{
-      .label = "ToB"_sv,
-      .account = {},
+      .label = Flags::label(),
+      .account = Flags::account(),
       .exchange = top_of_book.exchange,
       .symbol = top_of_book.symbol,
       .measurements = measurements_,

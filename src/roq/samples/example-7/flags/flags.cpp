@@ -8,6 +8,18 @@
 
 ABSL_FLAG(  //
     std::string,
+    label,
+    "ToB",
+    "label");
+
+ABSL_FLAG(  //
+    std::string,
+    account,
+    "",
+    "account name");
+
+ABSL_FLAG(  //
+    std::string,
     exchange,
     "deribit",
     "exchange name");
@@ -28,6 +40,16 @@ namespace roq {
 namespace samples {
 namespace example_7 {
 namespace flags {
+
+std::string_view Flags::label() {
+  static const std::string result = absl::GetFlag(FLAGS_label);
+  return result;
+}
+
+std::string_view Flags::account() {
+  static const std::string result = absl::GetFlag(FLAGS_account);
+  return result;
+}
 
 std::string_view Flags::exchange() {
   static const std::string result = absl::GetFlag(FLAGS_exchange);

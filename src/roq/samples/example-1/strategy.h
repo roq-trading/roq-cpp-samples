@@ -45,9 +45,11 @@ class Strategy final : public client::Handler {
   void operator()(const Event<GatewayStatus> &) override;
   void operator()(const Event<ReferenceData> &) override;
   void operator()(const Event<MarketStatus> &) override;
+  void operator()(const Event<TopOfBook> &) override;
   void operator()(const Event<MarketByPriceUpdate> &) override;
   void operator()(const Event<MarketByOrderUpdate> &) override;
   void operator()(const Event<TradeSummary> &) override;
+  void operator()(const Event<CustomMetricsUpdate> &) override;
 
  private:
   client::Dispatcher &dispatcher_;
