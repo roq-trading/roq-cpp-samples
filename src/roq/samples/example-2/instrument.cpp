@@ -19,7 +19,7 @@ namespace samples {
 namespace example_2 {
 
 Instrument::Instrument(const std::string_view &exchange, const std::string_view &symbol)
-    : exchange_(exchange), symbol_(symbol), depth_builder_(client::DepthBuilderFactory::create(symbol)) {
+    : exchange_(exchange), symbol_(symbol), depth_builder_(client::DepthBuilderFactory::create(exchange, symbol)) {
 }
 
 void Instrument::operator()(const Connected &) {
@@ -53,6 +53,11 @@ void Instrument::operator()(const DownloadEnd &download_end) {
   log::info("[{}:{}] download={}"_sv, exchange_, symbol_, download_);
   // update the ready flag
   check_ready();
+}
+
+void Instrument::operator()(const GatewaySettings &gateway_settings) {
+  // note! this is important -- the depth builder must know the gateway settings
+  (*depth_builder_)(gateway_settings);
 }
 
 void Instrument::operator()(const GatewayStatus &gateway_status) {

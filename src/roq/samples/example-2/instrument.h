@@ -27,6 +27,7 @@ class Instrument final {
   void operator()(const Disconnected &);
   void operator()(const DownloadBegin &);
   void operator()(const DownloadEnd &);
+  void operator()(const GatewaySettings &);
   void operator()(const GatewayStatus &);
   void operator()(const ReferenceData &);
   void operator()(const MarketStatus &);
