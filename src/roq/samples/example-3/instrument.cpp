@@ -221,24 +221,8 @@ void Instrument::operator()(const PositionUpdate &position_update) {
     //   only update positions when downloading
     //   at run-time we're better off maintaining own positions
     //   since the position feed could be broken or very delayed
-    switch (position_update.side) {
-      case Side::UNDEFINED: {
-        long_position_ = std::max(0.0, position_update.position);
-        short_position_ = std::max(0.0, -position_update.position);
-        break;
-      }
-      case Side::BUY: {
-        long_position_ = position_update.position;
-        break;
-      }
-      case Side::SELL: {
-        short_position_ = position_update.position;
-        break;
-      }
-      default: {
-        log::warn("Unexpected side={}"_sv, position_update.side);
-      }
-    }
+    long_position_ = position_update.long_quantity;
+    short_position_ = position_update.short_quantity;
   }
 }
 

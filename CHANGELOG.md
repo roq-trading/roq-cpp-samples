@@ -4,6 +4,10 @@ All notable changes will be documented in this file.
 
 ## Head
 
+### Changed
+
+* Align `PositionUpdate` with the FIX protocol (#89)
+
 ## 0.7.7 &ndash; 2021-09-20
 
 ### Changed
