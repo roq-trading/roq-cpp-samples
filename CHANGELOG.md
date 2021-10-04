@@ -4,6 +4,10 @@ All notable changes will be documented in this file.
 
 ## Head
 
+### Added
+
+* Demonstrate how to conservatively measure queue position of limit order (#21)
+
 ### Changed
 
 * Align `PositionUpdate` with the FIX protocol (#89)
