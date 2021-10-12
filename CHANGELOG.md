@@ -10,6 +10,7 @@ All notable changes will be documented in this file.
 
 ### Changed
 
+* Replace "snapshot" (bool) with "update_type" (UpdateType) (#97)
 * Align `PositionUpdate` with the FIX protocol (#89)
 
 ## 0.7.7 &ndash; 2021-09-20
