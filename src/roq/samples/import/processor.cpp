@@ -72,8 +72,8 @@ void Processor::dispatch() {
           .symbol = SYMBOL,      // required
           .description = {},
           .security_type = {},
-          .currency = {},
-          .settlement_currency = {},
+          .base_currency = {},
+          .quote_currency = {},
           .commission_currency = {},
           .tick_size = TICK_SIZE,          // strongly recommended
           .multiplier = MULTIPLIER,        // useful
