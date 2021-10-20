@@ -6,6 +6,7 @@ All notable changes will be documented in this file.
 
 ### Added
 
+* Add `max_trade_vol` and `trade_vol_step_size` to ReferenceData (#100)
 * Demonstrate how to conservatively measure queue position of limit order (#21)
 
 ### Changed

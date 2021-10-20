@@ -78,9 +78,11 @@ void Processor::dispatch() {
           .tick_size = TICK_SIZE,          // strongly recommended
           .multiplier = MULTIPLIER,        // useful
           .min_trade_vol = MIN_TRADE_VOL,  // strongly recommended
+          .max_trade_vol = NaN,
+          .trade_vol_step_size = NaN,
           .option_type = {},
           .strike_currency = {},
-          .strike_price = {},
+          .strike_price = NaN,
           .underlying = {},
           .time_zone = {},
           .issue_date = {},
