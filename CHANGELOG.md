@@ -11,6 +11,7 @@ All notable changes will be documented in this file.
 
 ### Changed
 
+* Remove custom literals (#110)
 * ReferenceData currencies should follow FX conventions (#99)
 * Replace `snapshot` (bool) with `update_type` (UpdateType) (#97)
 * Align `PositionUpdate` with the FIX protocol (#89)

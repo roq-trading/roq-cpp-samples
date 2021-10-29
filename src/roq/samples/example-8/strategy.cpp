@@ -10,7 +10,7 @@
 
 #include "roq/samples/example-8/flags.h"
 
-using namespace roq::literals;
+using namespace std::literals;
 using namespace std::chrono_literals;
 
 namespace roq {
@@ -27,7 +27,7 @@ void Strategy::operator()(const Event<Timer> &event) {
   if (active_ && next_info_ < timer.now) {
     next_info_ = timer.now + 5s;
     log::info(
-        "best_bid={}, best_ask={}, limit_price={}, quantity_when_placed={}, traded_since_placed={}"_sv,
+        "best_bid={}, best_ask={}, limit_price={}, quantity_when_placed={}, traded_since_placed={}"sv,
         best_bid_,
         best_ask_,
         limit_price_,
@@ -55,7 +55,7 @@ void Strategy::operator()(const Event<MarketByPriceUpdate> &event) {
       if (std::size(bids) >= index) {
         limit_price_ = (*market_by_price_).internal_to_price(bids[index].first);
         quantity_when_placed_ = (*market_by_price_).internal_to_quantity(bids[index].second);
-        log::info("Placed: limit_price={}, quantity_when_place={}"_sv, limit_price_, quantity_when_placed_);
+        log::info("Placed: limit_price={}, quantity_when_place={}"sv, limit_price_, quantity_when_placed_);
       }
     }
   }
@@ -65,7 +65,7 @@ void Strategy::operator()(const Event<MarketByPriceUpdate> &event) {
     if (active_) {
       auto limit_price = (*market_by_price_).price_to_internal(limit_price_);
       if (asks[0].second && asks[0].first <= limit_price) {
-        log::info("COMPLETED (ask <= bid)"_sv);
+        log::info("COMPLETED (ask <= bid)"sv);
         active_ = false;
         dispatcher_.stop();
       }
@@ -75,7 +75,7 @@ void Strategy::operator()(const Event<MarketByPriceUpdate> &event) {
 
 void Strategy::operator()(const Event<TradeSummary> &event) {
   auto &[message_info, trade_summary] = event;
-  log::info("trade_summary={}"_sv, trade_summary);
+  log::info("trade_summary={}"sv, trade_summary);
   if (active_) {
     bool updated = false;
     // note! we can't cache this because the scaling may change
@@ -89,9 +89,9 @@ void Strategy::operator()(const Event<TradeSummary> &event) {
     }
     if (updated) {
       auto quantity_in_front = std::max(0.0, quantity_when_placed_ - traded_since_placed_);
-      log::info("Changed: traded_since_placed={}, quantity_in_front={}"_sv, traded_since_placed_, quantity_in_front);
+      log::info("Changed: traded_since_placed={}, quantity_in_front={}"sv, traded_since_placed_, quantity_in_front);
       if (utils::compare(quantity_in_front, 0.0) == 0) {
-        log::info("COMPLETED (filled)"_sv);
+        log::info("COMPLETED (filled)"sv);
         active_ = false;
         dispatcher_.stop();
       }

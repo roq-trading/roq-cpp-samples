@@ -4,7 +4,7 @@
 
 #include "roq/logging.h"
 
-using namespace roq::literals;
+using namespace std::literals;
 
 namespace roq {
 namespace samples {
@@ -14,45 +14,45 @@ Strategy::Strategy(client::Dispatcher &dispatcher) : dispatcher_(dispatcher) {
 }
 
 void Strategy::operator()(const Event<Connected> &event) {
-  log::info("[{}:{}] Connected={}"_sv, event.message_info.source, event.message_info.source_name, event.value);
+  log::info("[{}:{}] Connected={}"sv, event.message_info.source, event.message_info.source_name, event.value);
 }
 
 void Strategy::operator()(const Event<Disconnected> &event) {
-  log::info("[{}:{}] Disconnected={}"_sv, event.message_info.source, event.message_info.source_name, event.value);
+  log::info("[{}:{}] Disconnected={}"sv, event.message_info.source, event.message_info.source_name, event.value);
 }
 
 void Strategy::operator()(const Event<DownloadBegin> &event) {
-  log::info("[{}:{}] DownloadBegin={}"_sv, event.message_info.source, event.message_info.source_name, event.value);
+  log::info("[{}:{}] DownloadBegin={}"sv, event.message_info.source, event.message_info.source_name, event.value);
 }
 
 void Strategy::operator()(const Event<DownloadEnd> &event) {
-  log::info("[{}:{}] DownloadEnd={}"_sv, event.message_info.source, event.message_info.source_name, event.value);
+  log::info("[{}:{}] DownloadEnd={}"sv, event.message_info.source, event.message_info.source_name, event.value);
 }
 
 void Strategy::operator()(const Event<GatewayStatus> &event) {
-  log::info("[{}:{}] GatewayStatus={}"_sv, event.message_info.source, event.message_info.source_name, event.value);
+  log::info("[{}:{}] GatewayStatus={}"sv, event.message_info.source, event.message_info.source_name, event.value);
 }
 
 void Strategy::operator()(const Event<ReferenceData> &event) {
-  log::info("[{}:{}] ReferenceData={}"_sv, event.message_info.source, event.message_info.source_name, event.value);
+  log::info("[{}:{}] ReferenceData={}"sv, event.message_info.source, event.message_info.source_name, event.value);
 }
 
 void Strategy::operator()(const Event<MarketStatus> &event) {
-  log::info("[{}:{}] MarketStatus={}"_sv, event.message_info.source, event.message_info.source_name, event.value);
+  log::info("[{}:{}] MarketStatus={}"sv, event.message_info.source, event.message_info.source_name, event.value);
 }
 
 void Strategy::operator()(const Event<MarketByPriceUpdate> &event) {
   log::info<1>(
-      "[{}:{}] MarketByPriceUpdate={}"_sv, event.message_info.source, event.message_info.source_name, event.value);
+      "[{}:{}] MarketByPriceUpdate={}"sv, event.message_info.source, event.message_info.source_name, event.value);
 }
 
 void Strategy::operator()(const Event<MarketByOrderUpdate> &event) {
   log::info<1>(
-      "[{}:{}] MarketByOrderUpdate={}"_sv, event.message_info.source, event.message_info.source_name, event.value);
+      "[{}:{}] MarketByOrderUpdate={}"sv, event.message_info.source, event.message_info.source_name, event.value);
 }
 
 void Strategy::operator()(const Event<TradeSummary> &event) {
-  log::info<1>("[{}:{}] TradeSummary={}"_sv, event.message_info.source, event.message_info.source_name, event.value);
+  log::info<1>("[{}:{}] TradeSummary={}"sv, event.message_info.source, event.message_info.source_name, event.value);
 }
 
 }  // namespace example_4

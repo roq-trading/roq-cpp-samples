@@ -10,7 +10,7 @@
 #include "roq/samples/example-8/config.h"
 #include "roq/samples/example-8/strategy.h"
 
-using namespace roq::literals;
+using namespace std::literals;
 
 namespace roq {
 namespace samples {
@@ -19,7 +19,7 @@ namespace example_8 {
 int Application::main_helper(const roq::span<std::string_view> &args) {
   assert(!args.empty());
   if (args.size() == 1)
-    log::fatal("Expected arguments"_sv);
+    log::fatal("Expected arguments"sv);
   Config config;
   auto connections = args.subspan(1);
   client::Trader(config, connections).dispatch<Strategy>();

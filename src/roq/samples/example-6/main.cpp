@@ -4,10 +4,10 @@
 
 #include "roq/samples/example-6/application.h"
 
-using namespace roq::literals;
+using namespace std::literals;
 
 namespace {
-static const auto DESCRIPTION = "Example 6 (Roq Samples)"_sv;
+static const auto DESCRIPTION = "Example 6 (Roq Samples)"sv;
 }  // namespace
 
 int main(int argc, char **argv) {

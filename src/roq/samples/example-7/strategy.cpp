@@ -6,7 +6,7 @@
 
 #include "roq/samples/example-7/flags.h"
 
-using namespace roq::literals;
+using namespace std::literals;
 
 namespace roq {
 namespace samples {
@@ -21,14 +21,14 @@ namespace example_7 {
  */
 Strategy::Strategy(client::Dispatcher &dispatcher)
     : dispatcher_(dispatcher), measurements_{{
-                                   {.name = "bp"_sv, .value = NaN},
-                                   {.name = "ap"_sv, .value = NaN},
+                                   {.name = "bp"sv, .value = NaN},
+                                   {.name = "ap"sv, .value = NaN},
                                }} {
 }
 
 void Strategy::operator()(const Event<TopOfBook> &event) {
   auto &[message_info, top_of_book] = event;
-  log::info<1>("[{}:{}] TopOfBook={}"_sv, message_info.source, message_info.source_name, top_of_book);
+  log::info<1>("[{}:{}] TopOfBook={}"sv, message_info.source, message_info.source_name, top_of_book);
   measurements_[0].value = top_of_book.layer.bid_price;
   measurements_[1].value = top_of_book.layer.ask_price;
   CustomMetrics custom_metrics{

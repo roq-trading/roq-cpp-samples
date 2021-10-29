@@ -12,7 +12,7 @@
 #include "roq/samples/example-7/flags.h"
 #include "roq/samples/example-7/strategy.h"
 
-using namespace roq::literals;
+using namespace std::literals;
 
 using namespace std::chrono_literals;
 
@@ -23,9 +23,9 @@ namespace example_7 {
 int Application::main_helper(const roq::span<std::string_view> &args) {
   assert(!args.empty());
   if (args.size() == 1)
-    log::fatal("Expected arguments"_sv);
+    log::fatal("Expected arguments"sv);
   if (args.size() != 2)
-    log::fatal("Expected exactly one argument"_sv);
+    log::fatal("Expected exactly one argument"sv);
   Config config;
   // note!
   //   absl::flags will have removed all flags and we're left with arguments
@@ -42,7 +42,7 @@ int Application::main_helper(const roq::span<std::string_view> &args) {
       return client::detail::SimulationFactory::create_generator(connections[source_id], source_id);
     };
     auto create_matcher = [](auto &dispatcher) {
-      return client::detail::SimulationFactory::create_matcher(dispatcher, "simple"_sv);
+      return client::detail::SimulationFactory::create_matcher(dispatcher, "simple"sv);
     };
     client::Simulator::Factory factory{
         .create_generator = create_generator,

@@ -8,6 +8,7 @@
 
 #include "roq/logging.h"
 
+using namespace std::literals;
 using namespace std::chrono_literals;
 
 namespace roq {
@@ -29,9 +30,9 @@ void Producer::operator()(const Event<Stop> &) {
 }
 
 void Producer::run() {
-  log::info("producer was started"_sv);
+  log::info("producer was started"sv);
   while (!terminating_) {
-    std::string text = "hello world"_s;
+    std::string text = "hello world"s;
     roq::span message{
         reinterpret_cast<std::byte const *>(std::data(text)),
         text.length() + 1,  // including trailing null
@@ -42,7 +43,7 @@ void Producer::run() {
     dispatcher_.enqueue(custom_message);
     std::this_thread::sleep_for(100ms);
   }
-  log::info("producer was terminated"_sv);
+  log::info("producer was terminated"sv);
 }
 
 }  // namespace example_5

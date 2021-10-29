@@ -11,7 +11,7 @@
 #include "roq/utils/mask.h"
 #include "roq/utils/update.h"
 
-using namespace roq::literals;
+using namespace std::literals;
 
 namespace roq {
 namespace samples {
@@ -41,14 +41,14 @@ bool Instrument::can_trade(Side side) const {
 
 void Instrument::operator()(const Connected &) {
   if (utils::update(connected_, true)) {
-    log::info("[{}:{}] connected={}"_sv, exchange_, symbol_, connected_);
+    log::info("[{}:{}] connected={}"sv, exchange_, symbol_, connected_);
     check_ready();
   }
 }
 
 void Instrument::operator()(const Disconnected &) {
   if (utils::update(connected_, false)) {
-    log::info("[{}:{}] connected={}"_sv, exchange_, symbol_, connected_);
+    log::info("[{}:{}] connected={}"sv, exchange_, symbol_, connected_);
     // reset all cached state - await download upon reconnection
     reset();
   }
@@ -59,7 +59,7 @@ void Instrument::operator()(const DownloadBegin &download_begin) {
     return;
   assert(!download_);
   download_ = true;
-  log::info("[{}:{}] download={}"_sv, exchange_, symbol_, download_);
+  log::info("[{}:{}] download={}"sv, exchange_, symbol_, download_);
 }
 
 void Instrument::operator()(const DownloadEnd &download_end) {
@@ -67,7 +67,7 @@ void Instrument::operator()(const DownloadEnd &download_end) {
     return;
   assert(download_);
   download_ = false;
-  log::info("[{}:{}] download={}"_sv, exchange_, symbol_, download_);
+  log::info("[{}:{}] download={}"sv, exchange_, symbol_, download_);
   // update the ready flag
   check_ready();
 }
@@ -90,11 +90,11 @@ void Instrument::operator()(const GatewayStatus &gateway_status) {
     // readiness defined by full availability of all required message types
     auto market_data = available.has_all(required) && unavailable.has_none(required);
     if (utils::update(market_data_, market_data))
-      log::info("[{}:{}] market_data={}"_sv, exchange_, symbol_, market_data_);
+      log::info("[{}:{}] market_data={}"sv, exchange_, symbol_, market_data_);
     // sometimes useful to see what is missing
     if (!market_data_) {
       auto missing = required & ~available;
-      log::debug("missing={:#x}"_sv, missing.get());
+      log::debug("missing={:#x}"sv, missing.get());
     }
   } else if (gateway_status.account.compare(account_) == 0) {
     // bit-mask of required message types
@@ -107,11 +107,11 @@ void Instrument::operator()(const GatewayStatus &gateway_status) {
     // readiness defined by full availability of all required message types
     auto order_management = available.has_all(required) && unavailable.has_none(required);
     if (utils::update(order_management_, order_management))
-      log::info("[{}:{}] order_management={}"_sv, exchange_, symbol_, order_management_);
+      log::info("[{}:{}] order_management={}"sv, exchange_, symbol_, order_management_);
     // sometimes useful to see what is missing
     if (!market_data_) {
       auto missing = required & ~available;
-      log::debug("missing={:#x}"_sv, missing.get());
+      log::debug("missing={:#x}"sv, missing.get());
     }
   }
   // update the ready flag
@@ -125,13 +125,13 @@ void Instrument::operator()(const ReferenceData &reference_data) {
   (*depth_builder_)(reference_data);
   // update our cache
   if (utils::update(tick_size_, reference_data.tick_size)) {
-    log::info("[{}:{}] tick_size={}"_sv, exchange_, symbol_, tick_size_);
+    log::info("[{}:{}] tick_size={}"sv, exchange_, symbol_, tick_size_);
   }
   if (utils::update(min_trade_vol_, reference_data.min_trade_vol)) {
-    log::info("[{}:{}] min_trade_vol={}"_sv, exchange_, symbol_, min_trade_vol_);
+    log::info("[{}:{}] min_trade_vol={}"sv, exchange_, symbol_, min_trade_vol_);
   }
   if (utils::update(multiplier_, reference_data.multiplier)) {
-    log::info("[{}:{}] multiplier={}"_sv, exchange_, symbol_, multiplier_);
+    log::info("[{}:{}] multiplier={}"sv, exchange_, symbol_, multiplier_);
   }
   // update the ready flag
   check_ready();
@@ -142,7 +142,7 @@ void Instrument::operator()(const MarketStatus &market_status) {
   assert(symbol_.compare(market_status.symbol) == 0);
   // update our cache
   if (utils::update(trading_status_, market_status.trading_status)) {
-    log::info("[{}:{}] trading_status={}"_sv, exchange_, symbol_, trading_status_);
+    log::info("[{}:{}] trading_status={}"sv, exchange_, symbol_, trading_status_);
   }
   // update the ready flag
   check_ready();
@@ -152,7 +152,7 @@ void Instrument::operator()(const MarketByPriceUpdate &market_by_price_update) {
   assert(exchange_.compare(market_by_price_update.exchange) == 0);
   assert(symbol_.compare(market_by_price_update.symbol) == 0);
   if (ROQ_UNLIKELY(download_))
-    log::info("MarketByPriceUpdate={}"_sv, market_by_price_update);
+    log::info("MarketByPriceUpdate={}"sv, market_by_price_update);
   // update depth
   // note!
   //   market by price only gives you *changes*.
@@ -162,7 +162,7 @@ void Instrument::operator()(const MarketByPriceUpdate &market_by_price_update) {
   //   the depth builder helps you maintain a correct view of
   //   the order book.
   depth_builder_->update(market_by_price_update, depth_);
-  log::info<1>("[{}:{}] depth=[{}]"_sv, exchange_, symbol_, fmt::join(depth_, ", "_sv));
+  log::info<1>("[{}:{}] depth=[{}]"sv, exchange_, symbol_, fmt::join(depth_, ", "sv));
   validate(depth_);
 }
 
@@ -170,7 +170,7 @@ void Instrument::operator()(const MarketByOrderUpdate &market_by_order_update) {
   assert(exchange_.compare(market_by_order_update.exchange) == 0);
   assert(symbol_.compare(market_by_order_update.symbol) == 0);
   if (ROQ_UNLIKELY(download_))
-    log::info("MarketByOrderUpdate={}"_sv, market_by_order_update);
+    log::info("MarketByOrderUpdate={}"sv, market_by_order_update);
   // update depth
   // note!
   //   market by order only gives you *changes*.
@@ -182,10 +182,10 @@ void Instrument::operator()(const MarketByOrderUpdate &market_by_order_update) {
   /*
   depth_builder_->update(market_by_order_update);
   log::info<1>(
-      "[{}:{}] depth=[{}]"_sv,
+      "[{}:{}] depth=[{}]"sv,
       exchange_,
       symbol_,
-      fmt::join(depth_, ", "_sv));
+      fmt::join(depth_, ", "sv));
   validate(depth_);
   */
 }
@@ -210,12 +210,12 @@ void Instrument::operator()(const OrderUpdate &order_update) {
     default:
       assert(false);  // unexpected
   }
-  log::info("[{}:{}] position={}"_sv, exchange_, symbol_, position());
+  log::info("[{}:{}] position={}"sv, exchange_, symbol_, position());
 }
 
 void Instrument::operator()(const PositionUpdate &position_update) {
   assert(account_.compare(position_update.account) == 0);
-  log::info("[{}:{}] position_update={}"_sv, exchange_, symbol_, position_update);
+  log::info("[{}:{}] position_update={}"sv, exchange_, symbol_, position_update);
   if (download_) {
     // note!
     //   only update positions when downloading
@@ -232,7 +232,7 @@ void Instrument::check_ready() {
            utils::compare(multiplier_, 0.0) > 0 && trading_status_ == TradingStatus::OPEN && market_data_ &&
            order_management_;
   if (ROQ_UNLIKELY(ready_ != before))
-    log::info("[{}:{}] ready={}"_sv, exchange_, symbol_, ready_);
+    log::info("[{}:{}] ready={}"sv, exchange_, symbol_, ready_);
 }
 
 void Instrument::reset() {
@@ -259,10 +259,10 @@ void Instrument::validate(const Depth &depth) {
     log::fatal(
         "[{}:{}] Probably something wrong: "
         "choice price or price inversion detected. "
-        "depth=[{}]"_sv,
+        "depth=[{}]"sv,
         exchange_,
         symbol_,
-        fmt::join(depth, ", "_sv));
+        fmt::join(depth, ", "sv));
 }
 
 }  // namespace example_3

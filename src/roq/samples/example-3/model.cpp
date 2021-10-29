@@ -10,7 +10,7 @@
 
 #include "roq/samples/example-3/flags.h"
 
-using namespace roq::literals;
+using namespace std::literals;
 
 namespace roq {
 namespace samples {
@@ -41,13 +41,13 @@ Side Model::update(const Depth &depth) {
 
   if (selling_) {
     if (ready && ask_fast > ask_slow) {
-      log::info("SIGNAL: BUY @ {}"_sv, depth[0].ask_price);
+      log::info("SIGNAL: BUY @ {}"sv, depth[0].ask_price);
       result = Side::BUY;
       selling_ = false;
     }
   } else {
     if (ask_fast < bid_slow && ask_fast < ask_slow) {
-      log::info("DIRECTION: SELLING"_sv);
+      log::info("DIRECTION: SELLING"sv);
       selling_ = true;
       buying_ = false;
     }
@@ -55,13 +55,13 @@ Side Model::update(const Depth &depth) {
 
   if (buying_) {
     if (ready && bid_fast > bid_slow) {
-      log::info("SIGNAL: SELL @ {}"_sv, depth[0].bid_price);
+      log::info("SIGNAL: SELL @ {}"sv, depth[0].bid_price);
       result = Side::SELL;
       buying_ = false;
     }
   } else {
     if (bid_fast > ask_slow && bid_fast > bid_slow) {
-      log::info("DIRECTION: BUYING"_sv);
+      log::info("DIRECTION: BUYING"sv);
       buying_ = true;
       selling_ = false;
     }
@@ -80,7 +80,7 @@ Side Model::update(const Depth &depth) {
       "ask_slow={} "
       "selling={} "
       "buying={}"
-      "}}"_sv,
+      "}}"sv,
       depth[0].bid_price,
       depth[0].ask_price,
       bid_fast,

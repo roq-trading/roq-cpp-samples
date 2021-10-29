@@ -4,7 +4,7 @@
 
 #include "roq/logging.h"
 
-using namespace roq::literals;
+using namespace std::literals;
 
 namespace roq {
 namespace samples {
@@ -95,17 +95,16 @@ void Strategy::operator()(const Event<FundsUpdate> &event) {
 
 template <typename T>
 void Strategy::check(const Event<T> &event) {
-  log::info("event={}"_sv, event);
+  log::info("event={}"sv, event);
   auto receive_time = event.message_info.receive_time;
   log::debug<4>(
-      "prev={}, next={}, delta={}, source={}"_sv,
+      "prev={}, next={}, delta={}, source={}"sv,
       receive_time,
       prev_receive_time_,
       receive_time - prev_receive_time_,
       event.message_info.source);
   if (receive_time < prev_receive_time_)
-    log::fatal(
-        "Discovered a time machine (receive_time={}, prev_receive_time={})"_sv, receive_time, prev_receive_time_);
+    log::fatal("Discovered a time machine (receive_time={}, prev_receive_time={})"sv, receive_time, prev_receive_time_);
   prev_receive_time_ = receive_time;
 }
 

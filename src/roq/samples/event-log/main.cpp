@@ -4,10 +4,10 @@
 
 #include "roq/samples/event-log/application.h"
 
-using namespace roq::literals;
+using namespace std::literals;
 
 namespace {
-static const auto DESCRIPTION = "Event-Log (Roq Samples)"_sv;
+static const auto DESCRIPTION = "Event-Log (Roq Samples)"sv;
 }  // namespace
 
 int main(int argc, char **argv) {

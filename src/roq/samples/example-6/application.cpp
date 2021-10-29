@@ -15,7 +15,7 @@
 #include "roq/samples/example-6/strategy.h"
 
 using namespace std::chrono_literals;
-using namespace roq::literals;
+using namespace std::literals;
 
 namespace roq {
 namespace samples {
@@ -24,7 +24,7 @@ namespace example_6 {
 int Application::main_helper(const roq::span<std::string_view> &args) {
   assert(!args.empty());
   if (args.size() != 3)
-    log::fatal("Expected exactly two arguments"_sv);
+    log::fatal("Expected exactly two arguments"sv);
   Config config;
   auto connections = args.subspan(1);
   if (Flags::simulation()) {
@@ -36,7 +36,7 @@ int Application::main_helper(const roq::span<std::string_view> &args) {
       return client::detail::SimulationFactory::create_generator(connections[source_id], source_id);
     };
     auto create_matcher = [](auto &dispatcher) {
-      return client::detail::SimulationFactory::create_matcher(dispatcher, "simple"_sv);
+      return client::detail::SimulationFactory::create_matcher(dispatcher, "simple"sv);
     };
     client::Simulator::Factory factories[] = {
         {

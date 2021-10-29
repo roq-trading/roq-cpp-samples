@@ -4,7 +4,7 @@
 
 #include "roq/logging.h"
 
-using namespace roq::literals;
+using namespace std::literals;
 
 namespace roq {
 namespace samples {
@@ -22,11 +22,11 @@ void Strategy::operator()(const Event<Stop> &event) {
 }
 
 void Strategy::operator()(const Event<TopOfBook> &event) {
-  log::info("[{}:{}] TopOfBook={}"_sv, event.message_info.source, event.message_info.source_name, event.value);
+  log::info("[{}:{}] TopOfBook={}"sv, event.message_info.source, event.message_info.source_name, event.value);
 }
 
 void Strategy::operator()(const Event<client::CustomMessage> &event) {
-  log::info("[{}:{}] CustomMessage={}"_sv, event.message_info.source, event.message_info.source_name, event.value);
+  log::info("[{}:{}] CustomMessage={}"sv, event.message_info.source, event.message_info.source_name, event.value);
 }
 
 }  // namespace example_5

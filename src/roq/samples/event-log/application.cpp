@@ -6,11 +6,10 @@
 #include <vector>
 
 #include "roq/exceptions.h"
-#include "roq/literals.h"
 
 #include "roq/samples/event-log/processor.h"
 
-using namespace roq::literals;
+using namespace std::literals;
 
 namespace roq {
 namespace samples {
@@ -18,7 +17,7 @@ namespace event_log {
 
 int Application::main_helper(const roq::span<std::string_view> &args) {
   if (args.size() != 2)
-    log::fatal("Expected exactly 1 argument, got {}"_sv, args.size() - 1);
+    log::fatal("Expected exactly 1 argument, got {}"sv, args.size() - 1);
   Processor(args[1]).dispatch();
   return EXIT_SUCCESS;
 }
