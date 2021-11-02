@@ -4,6 +4,8 @@ All notable changes will be documented in this file.
 
 ## Head
 
+## 0.7.8 &ndash; 2021-11-02
+
 ### Added
 
 * Add `max_trade_vol` and `trade_vol_step_size` to ReferenceData (#100)
