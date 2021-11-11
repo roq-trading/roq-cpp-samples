@@ -87,8 +87,6 @@ void Instrument::operator()(const GatewayStatus &gateway_status) {
 void Instrument::operator()(const ReferenceData &reference_data) {
   assert(exchange_.compare(reference_data.exchange) == 0);
   assert(symbol_.compare(reference_data.symbol) == 0);
-  // update the depth builder
-  (*depth_builder_)(reference_data);
   // update our cache
   if (utils::update(tick_size_, reference_data.tick_size)) {
     log::info("[{}:{}] tick_size={}"sv, exchange_, symbol_, tick_size_);

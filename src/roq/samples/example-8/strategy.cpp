@@ -40,10 +40,6 @@ void Strategy::operator()(const Event<GatewaySettings> &event) {
   (*market_by_price_)(event);
 }
 
-void Strategy::operator()(const Event<ReferenceData> &event) {
-  (*market_by_price_)(event);
-}
-
 void Strategy::operator()(const Event<MarketByPriceUpdate> &event) {
   (*market_by_price_)(event);
   auto bids = (*market_by_price_).bids();
