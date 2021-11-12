@@ -19,7 +19,7 @@ namespace example_8 {
 
 Strategy::Strategy(client::Dispatcher &dispatcher)
     : dispatcher_(dispatcher),
-      market_by_price_(client::DepthBuilderFactory::create(Flags::exchange(), Flags::symbol())) {
+      market_by_price_(client::MarketByPriceFactory::create(Flags::exchange(), Flags::symbol())) {
 }
 
 void Strategy::operator()(const Event<Timer> &event) {
@@ -34,10 +34,6 @@ void Strategy::operator()(const Event<Timer> &event) {
         quantity_when_placed_,
         traded_since_placed_);
   }
-}
-
-void Strategy::operator()(const Event<GatewaySettings> &event) {
-  (*market_by_price_)(event);
 }
 
 void Strategy::operator()(const Event<MarketByPriceUpdate> &event) {

@@ -27,12 +27,10 @@ class Instrument final {
   void operator()(const Disconnected &);
   void operator()(const DownloadBegin &);
   void operator()(const DownloadEnd &);
-  void operator()(const GatewaySettings &);
   void operator()(const GatewayStatus &);
   void operator()(const ReferenceData &);
   void operator()(const MarketStatus &);
   void operator()(const MarketByPriceUpdate &);
-  void operator()(const MarketByOrderUpdate &);
 
  protected:
   void update_model();
@@ -54,7 +52,7 @@ class Instrument final {
   TradingStatus trading_status_ = {};
   bool market_data_ = {};
   std::array<Layer, MAX_DEPTH> depth_;
-  std::unique_ptr<client::DepthBuilder> depth_builder_;
+  std::unique_ptr<cache::MarketByPrice> market_by_price_;
   double mid_price_ = NaN;
   double avg_price_ = NaN;
   bool ready_ = false;

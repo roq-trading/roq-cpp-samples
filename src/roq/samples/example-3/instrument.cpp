@@ -20,7 +20,7 @@ namespace example_3 {
 Instrument::Instrument(
     const std::string_view &exchange, const std::string_view &symbol, const std::string_view &account)
     : exchange_(exchange), symbol_(symbol), account_(account),
-      depth_builder_(client::DepthBuilderFactory::create(exchange, symbol)) {
+      market_by_price_(client::MarketByPriceFactory::create(exchange, symbol)) {
 }
 
 double Instrument::position() const {
@@ -70,11 +70,6 @@ void Instrument::operator()(const DownloadEnd &download_end) {
   log::info("[{}:{}] download={}"sv, exchange_, symbol_, download_);
   // update the ready flag
   check_ready();
-}
-
-void Instrument::operator()(const GatewaySettings &gateway_settings) {
-  // note! this is important -- the depth builder must know the gateway settings
-  (*depth_builder_)(gateway_settings);
 }
 
 void Instrument::operator()(const GatewayStatus &gateway_status) {
@@ -159,33 +154,10 @@ void Instrument::operator()(const MarketByPriceUpdate &market_by_price_update) {
   //   liquidity.
   //   the depth builder helps you maintain a correct view of
   //   the order book.
-  depth_builder_->update(market_by_price_update, depth_);
+  (*market_by_price_)(market_by_price_update);
+  market_by_price_->extract(depth_, true);
   log::info<1>("[{}:{}] depth=[{}]"sv, exchange_, symbol_, fmt::join(depth_, ", "sv));
   validate(depth_);
-}
-
-void Instrument::operator()(const MarketByOrderUpdate &market_by_order_update) {
-  assert(exchange_.compare(market_by_order_update.exchange) == 0);
-  assert(symbol_.compare(market_by_order_update.symbol) == 0);
-  if (ROQ_UNLIKELY(download_))
-    log::info("MarketByOrderUpdate={}"sv, market_by_order_update);
-  // update depth
-  // note!
-  //   market by order only gives you *changes*.
-  //   you will most likely want to use the the price and order_id
-  //   to look up the relative position in an order book and then
-  //   modify the liquidity.
-  //   the depth builder helps you maintain a correct view of
-  //   the order book.
-  /*
-  depth_builder_->update(market_by_order_update);
-  log::info<1>(
-      "[{}:{}] depth=[{}]"sv,
-      exchange_,
-      symbol_,
-      fmt::join(depth_, ", "sv));
-  validate(depth_);
-  */
 }
 
 void Instrument::operator()(const OrderUpdate &order_update) {
@@ -241,7 +213,7 @@ void Instrument::reset() {
   trading_status_ = {};
   market_data_ = false;
   order_management_ = false;
-  depth_builder_->reset();
+  market_by_price_->clear();
   long_position_ = {};
   short_position_ = {};
   ready_ = false;

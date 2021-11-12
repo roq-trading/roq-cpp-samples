@@ -20,13 +20,12 @@ class Strategy final : public client::Handler {
 
  protected:
   void operator()(const Event<Timer> &) override;
-  void operator()(const Event<GatewaySettings> &) override;
   void operator()(const Event<MarketByPriceUpdate> &) override;
   void operator()(const Event<TradeSummary> &) override;
 
  private:
   client::Dispatcher &dispatcher_;
-  std::unique_ptr<client::DepthBuilder> market_by_price_;
+  std::unique_ptr<cache::MarketByPrice> market_by_price_;
   bool active_ = false;
   double limit_price_ = NaN;
   double quantity_when_placed_ = NaN;

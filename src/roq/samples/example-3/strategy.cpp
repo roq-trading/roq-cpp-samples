@@ -51,10 +51,6 @@ void Strategy::operator()(const Event<DownloadEnd> &event) {
   }
 }
 
-void Strategy::operator()(const Event<GatewaySettings> &event) {
-  dispatch(event);
-}
-
 void Strategy::operator()(const Event<GatewayStatus> &event) {
   dispatch(event);
 }

@@ -49,12 +49,10 @@ class Instrument final {
   void operator()(const Disconnected &);
   void operator()(const DownloadBegin &);
   void operator()(const DownloadEnd &);
-  void operator()(const GatewaySettings &);
   void operator()(const GatewayStatus &);
   void operator()(const ReferenceData &);
   void operator()(const MarketStatus &);
   void operator()(const MarketByPriceUpdate &);
-  void operator()(const MarketByOrderUpdate &);
   void operator()(const OrderUpdate &);
   void operator()(const PositionUpdate &);
 
@@ -78,7 +76,7 @@ class Instrument final {
   bool market_data_ = {};
   bool order_management_ = {};
   Depth depth_;
-  std::unique_ptr<client::DepthBuilder> depth_builder_;
+  std::unique_ptr<cache::MarketByPrice> market_by_price_;
   double long_position_ = {};
   double short_position_ = {};
   bool ready_ = false;
