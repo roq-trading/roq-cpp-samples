@@ -1,4 +1,4 @@
-/* Copyright (c) 2017-2021, Hans Erik Thrane */
+/* Copyright (c) 2017-2022, Hans Erik Thrane */
 
 #include "roq/samples/example-3/model.h"
 
@@ -94,14 +94,14 @@ Side Model::update(const Depth &depth) {
 }
 
 bool Model::validate(const Depth &depth) {  // require full depth
-  return std::accumulate(depth.begin(), depth.end(), true, [](bool value, const Layer &layer) {
+  return std::accumulate(std::begin(depth), std::end(depth), true, [](bool value, const Layer &layer) {
     return value && utils::compare(layer.bid_quantity, 0.0) > 0 && utils::compare(layer.ask_quantity, 0.0) > 0;
   });
 }
 
 double Model::weighted_bid(const Depth &depth) {
   double sum_1 = 0.0, sum_2 = 0.0;
-  std::for_each(depth.begin(), depth.end(), [&](const Layer &layer) {
+  std::for_each(std::begin(depth), std::end(depth), [&](const Layer &layer) {
     sum_1 += layer.bid_quantity * layer.bid_price;
     sum_2 += layer.bid_quantity;
   });
@@ -110,7 +110,7 @@ double Model::weighted_bid(const Depth &depth) {
 
 double Model::weighted_ask(const Depth &depth) {
   double sum_1 = 0.0, sum_2 = 0.0;
-  std::for_each(depth.begin(), depth.end(), [&](const Layer &layer) {
+  std::for_each(std::begin(depth), std::end(depth), [&](const Layer &layer) {
     sum_1 += layer.ask_quantity * layer.ask_price;
     sum_2 += layer.ask_quantity;
   });

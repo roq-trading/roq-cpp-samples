@@ -1,4 +1,4 @@
-/* Copyright (c) 2017-2021, Hans Erik Thrane */
+/* Copyright (c) 2017-2022, Hans Erik Thrane */
 
 #include "roq/samples/example-6/application.h"
 
@@ -22,8 +22,8 @@ namespace samples {
 namespace example_6 {
 
 int Application::main_helper(const roq::span<std::string_view> &args) {
-  assert(!args.empty());
-  if (args.size() != 3)
+  assert(!std::empty(args));
+  if (std::size(args) != 3)
     log::fatal("Expected exactly two arguments"sv);
   Config config;
   auto connections = args.subspan(1);

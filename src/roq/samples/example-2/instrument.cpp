@@ -1,4 +1,4 @@
-/* Copyright (c) 2017-2021, Hans Erik Thrane */
+/* Copyright (c) 2017-2022, Hans Erik Thrane */
 
 #include "roq/samples/example-2/instrument.h"
 
@@ -38,7 +38,7 @@ void Instrument::operator()(const Disconnected &) {
 }
 
 void Instrument::operator()(const DownloadBegin &download_begin) {
-  if (!download_begin.account.empty())  // we only care about market (not account)
+  if (!std::empty(download_begin.account))  // we only care about market (not account)
     return;
   assert(!download_);
   download_ = true;
@@ -46,7 +46,7 @@ void Instrument::operator()(const DownloadBegin &download_begin) {
 }
 
 void Instrument::operator()(const DownloadEnd &download_end) {
-  if (!download_end.account.empty())  // we only care about market (not account)
+  if (!std::empty(download_end.account))  // we only care about market (not account)
     return;
   assert(download_);
   download_ = false;
@@ -56,7 +56,7 @@ void Instrument::operator()(const DownloadEnd &download_end) {
 }
 
 void Instrument::operator()(const GatewayStatus &gateway_status) {
-  if (!gateway_status.account.empty())  // we only care about market (not account)
+  if (!std::empty(gateway_status.account))  // we only care about market (not account)
     return;
   // bit-mask of required message types
   static const utils::Mask<SupportType> required{

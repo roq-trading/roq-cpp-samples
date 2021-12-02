@@ -1,4 +1,4 @@
-/* Copyright (c) 2017-2021, Hans Erik Thrane */
+/* Copyright (c) 2017-2022, Hans Erik Thrane */
 
 #include "roq/samples/import/base64.h"
 
@@ -53,7 +53,7 @@ namespace import {
 
 std::string Base64::encode(void const *data, size_t length) {
   auto result = ::b64encode(data, length);
-  assert(result.length() == std::strlen(result.c_str()));
+  assert(std::size(result) == std::strlen(result.c_str()));
   return result;
 }
 

@@ -1,4 +1,4 @@
-/* Copyright (c) 2017-2021, Hans Erik Thrane */
+/* Copyright (c) 2017-2022, Hans Erik Thrane */
 
 #include "roq/samples/example-3/instrument.h"
 
@@ -55,7 +55,7 @@ void Instrument::operator()(const Disconnected &) {
 }
 
 void Instrument::operator()(const DownloadBegin &download_begin) {
-  if (!download_begin.account.empty())  // we only care about market (not account)
+  if (!std::empty(download_begin.account))  // we only care about market (not account)
     return;
   assert(!download_);
   download_ = true;
@@ -63,7 +63,7 @@ void Instrument::operator()(const DownloadBegin &download_begin) {
 }
 
 void Instrument::operator()(const DownloadEnd &download_end) {
-  if (!download_end.account.empty())  // we only care about market (not account)
+  if (!std::empty(download_end.account))  // we only care about market (not account)
     return;
   assert(download_);
   download_ = false;
@@ -75,7 +75,7 @@ void Instrument::operator()(const DownloadEnd &download_end) {
 void Instrument::operator()(const GatewayStatus &gateway_status) {
   // because the API doesn't (yet) expose Mask
   utils::Mask<SupportType> available(gateway_status.available), unavailable(gateway_status.unavailable);
-  if (gateway_status.account.empty()) {
+  if (std::empty(gateway_status.account)) {
     // bit-mask of required message types
     static const utils::Mask<SupportType> required{
         SupportType::REFERENCE_DATA,

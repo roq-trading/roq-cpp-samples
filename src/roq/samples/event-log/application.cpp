@@ -1,4 +1,4 @@
-/* Copyright (c) 2017-2021, Hans Erik Thrane */
+/* Copyright (c) 2017-2022, Hans Erik Thrane */
 
 #include "roq/samples/event-log/application.h"
 
@@ -16,8 +16,8 @@ namespace samples {
 namespace event_log {
 
 int Application::main_helper(const roq::span<std::string_view> &args) {
-  if (args.size() != 2)
-    log::fatal("Expected exactly 1 argument, got {}"sv, args.size() - 1);
+  if (std::size(args) != 2)
+    log::fatal("Expected exactly 1 argument, got {}"sv, std::size(args) - 1);
   Processor(args[1]).dispatch();
   return EXIT_SUCCESS;
 }

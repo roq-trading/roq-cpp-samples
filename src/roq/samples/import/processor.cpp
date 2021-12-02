@@ -1,4 +1,4 @@
-/* Copyright (c) 2017-2021, Hans Erik Thrane */
+/* Copyright (c) 2017-2022, Hans Erik Thrane */
 
 #include "roq/samples/import/processor.h"
 
@@ -225,7 +225,7 @@ void Processor::process(const T &value, std::chrono::nanoseconds timestamp_utc) 
       break;
     case Encoding::BASE64: {
       auto message = Base64::encode(data, length);
-      file_.write(message.c_str(), message.length());
+      file_.write(message.c_str(), std::size(message));
       break;
     }
   }

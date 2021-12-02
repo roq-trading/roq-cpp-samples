@@ -1,4 +1,4 @@
-/* Copyright (c) 2017-2021, Hans Erik Thrane */
+/* Copyright (c) 2017-2022, Hans Erik Thrane */
 
 #include "roq/samples/example-5/producer.h"
 
@@ -35,7 +35,7 @@ void Producer::run() {
     std::string text = "hello world"s;
     roq::span message{
         reinterpret_cast<std::byte const *>(std::data(text)),
-        text.length() + 1,  // including trailing null
+        std::size(text) + 1,  // including trailing null
     };
     client::CustomMessage custom_message{
         .message = message,

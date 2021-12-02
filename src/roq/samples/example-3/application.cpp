@@ -1,4 +1,4 @@
-/* Copyright (c) 2017-2021, Hans Erik Thrane */
+/* Copyright (c) 2017-2022, Hans Erik Thrane */
 
 #include "roq/samples/example-3/application.h"
 
@@ -22,10 +22,10 @@ namespace samples {
 namespace example_3 {
 
 int Application::main_helper(const roq::span<std::string_view> &args) {
-  assert(!args.empty());
-  if (args.size() == 1)
+  assert(!std::empty(args));
+  if (std::size(args) == 1)
     log::fatal("Expected arguments"sv);
-  if (args.size() != 2)
+  if (std::size(args) != 2)
     log::fatal("Expected exactly one argument"sv);
   Config config;
   // note!
