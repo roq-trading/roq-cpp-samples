@@ -4,6 +4,10 @@ All notable changes will be documented in this file.
 
 ## Head
 
+### Removed                                                                                                             
+
+* `client::DepthBuilder` (#152)  
+
 ## 0.7.9 &ndash; 2021-12-08
 
 ### Changed
