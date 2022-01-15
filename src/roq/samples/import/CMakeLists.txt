@@ -7,6 +7,6 @@ add_executable("${TARGET_NAME}" application.cpp base64.cpp processor.cpp main.cp
 target_link_libraries("${TARGET_NAME}" PRIVATE ${TARGET_NAME}-flags roq-logging::roq-logging
                                                absl::flags fmt::fmt)
 
-target_compile_features("${TARGET_NAME}" PUBLIC cxx_std_17)
+target_compile_features("${TARGET_NAME}" PUBLIC cxx_std_20)
 
 install(TARGETS ${TARGET_NAME})
