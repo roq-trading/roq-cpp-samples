@@ -21,7 +21,7 @@ namespace roq {
 namespace samples {
 namespace example_6 {
 
-int Application::main_helper(const roq::span<std::string_view> &args) {
+int Application::main_helper(const std::span<std::string_view> &args) {
   assert(!std::empty(args));
   if (std::size(args) != 3)
     log::fatal("Expected exactly two arguments"sv);

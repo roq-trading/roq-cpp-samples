@@ -33,7 +33,7 @@ void Producer::run() {
   log::info("producer was started"sv);
   while (!terminating_) {
     std::string text = "hello world"s;
-    roq::span message{
+    std::span message{
         reinterpret_cast<std::byte const *>(std::data(text)),
         std::size(text) + 1,  // including trailing null
     };
