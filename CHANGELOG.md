@@ -4,6 +4,10 @@ All notable changes will be documented in this file.
 
 ## Head
 
+### Changed                                                                                                                
+                                                                                                                           
+* Always log packaging and build information (#159)
+
 ## 0.8.1 &ndash; 2022-01-16
 
 ### Changed                                                                                                                

@@ -15,11 +15,11 @@ set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
 
 # c++
 
-if (CMAKE_BUILD_TYPE STREQUAL "Release")
+if(CMAKE_BUILD_TYPE STREQUAL "Release")
   message("Setting default visibility to hidden")
   set(CMAKE_CXX_VISIBILITY_PRESET hidden)
   set(CMAKE_VISIBILITY_INLINES_HIDDEN 1)
-endif (CMAKE_BUILD_TYPE STREQUAL "Release")
+endif(CMAKE_BUILD_TYPE STREQUAL "Release")
 
 # filesystem
 
