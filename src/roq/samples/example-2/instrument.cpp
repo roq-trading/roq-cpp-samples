@@ -110,8 +110,7 @@ void Instrument::operator()(const MarketStatus &market_status) {
 void Instrument::operator()(const MarketByPriceUpdate &market_by_price_update) {
   assert(exchange_.compare(market_by_price_update.exchange) == 0);
   assert(symbol_.compare(market_by_price_update.symbol) == 0);
-  if (download_) [[unlikely]]
-    log::info("MarketByPriceUpdate={}"sv, market_by_price_update);
+  log::info<>::when(download_, "MarketByPriceUpdate={}"sv, market_by_price_update);
   // update depth
   // note!
   //   market by price only gives you *changes*.
@@ -133,14 +132,14 @@ void Instrument::update_model() {
     return;
   // validate depth
   auto spread = depth_[0].ask_price - depth_[0].bid_price;
-  if (utils::compare(spread, 0.0) <= 0) [[unlikely]]
-    log::fatal(
-        "[{}:{}] Probably something wrong: "
-        "choice price or price inversion detected. "
-        "depth=[{}]"sv,
-        exchange_,
-        symbol_,
-        fmt::join(depth_, ", "sv));
+  log::fatal::when(
+      utils::compare(spread, 0.0) <= 0,
+      "[{}:{}] Probably something wrong: "
+      "choice price or price inversion detected. "
+      "depth=[{}]"sv,
+      exchange_,
+      symbol_,
+      fmt::join(depth_, ", "sv));
   // compute (weighted) mid
   double sum_1 = 0.0, sum_2 = 0.0;
   for (auto &[bid_price, bid_quantity, ask_price, ask_quantity] : depth_) {
@@ -161,8 +160,7 @@ void Instrument::check_ready() {
   auto before = ready_;
   ready_ = connected_ && !download_ && utils::compare(tick_size_, 0.0) > 0 && utils::compare(min_trade_vol_, 0.0) > 0 &&
            utils::compare(multiplier_, 0.0) > 0 && trading_status_ == TradingStatus::OPEN && market_data_;
-  if (ready_ != before) [[unlikely]]
-    log::info("[{}:{}] ready={}"sv, exchange_, symbol_, ready_);
+  log::info<>::when(ready_ != before, "[{}:{}] ready={}"sv, exchange_, symbol_, ready_);
 }
 
 void Instrument::reset() {
