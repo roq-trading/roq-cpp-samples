@@ -23,15 +23,15 @@ namespace samples {
 namespace import {
 
 namespace {
-static const auto EXCHANGE = "CME"sv;
-static const auto SYMBOL = "GEZ1"sv;
-static const auto TICK_SIZE = 0.0025;
-static const auto MULTIPLIER = 2500.0;
-static const auto MIN_TRADE_VOL = 1.0;  // 1 lot
+const auto EXCHANGE = "CME"sv;
+const auto SYMBOL = "GEZ1"sv;
+const auto TICK_SIZE = 0.0025;
+const auto MULTIPLIER = 2500.0;
+const auto MIN_TRADE_VOL = 1.0;  // 1 lot
 }  // namespace
 
 namespace {
-static bool use_base64() {
+bool use_base64() {
   auto encoding = Flags::encoding();
   if (utils::case_insensitive_compare(encoding, "binary"sv) == 0)
     return false;

@@ -31,12 +31,12 @@ class TimePeriod final {
 };
 
 template <typename T>
-static std::string AbslUnparseFlag(T flag) {
+std::string AbslUnparseFlag(T flag) {
   return T::unparse(flag);
 }
 
 template <typename T>
-static bool AbslParseFlag(absl::string_view text, T *flag, std::string *error) {
+bool AbslParseFlag(absl::string_view text, T *flag, std::string *error) {
   return T::parse(text, flag, error);
 }
 }  // namespace
