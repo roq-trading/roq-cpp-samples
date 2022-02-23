@@ -34,7 +34,6 @@ Simulation is controlled by the `--simulation=true` flag
 ./roq-samples-example-3 \
     --name "trader" \
     --simulation=true \
-    --timer_freq=1s \
     $CONDA_PREFIX/share/roq/data/deribit.roq
 ```
 
@@ -94,7 +93,6 @@ Placement of limit orders is controlled by the `--enable-trading` flag
 ./roq-samples-example-3 \
     --name "trader" \
     --simulation=true \
-    --timer_freq=1s \
     --enable_trading \
     $CONDA_PREFIX/share/roq/data/deribit.roq
 ```

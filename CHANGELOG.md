@@ -4,6 +4,10 @@ All notable changes will be documented in this file.
 
 ## Head
 
+### Changed
+
+* The `--timer_freq` flag was incorrectly defaulting to zero (#188)
+
 ## 0.8.2 &ndash; 2022-02-18
 
 ### Changed                                                                                                                
