@@ -9,7 +9,7 @@ build:
   skip: True  # [win]
   number: {{ GIT_DESCRIBE_NUMBER }}
   run_exports:
-    - {{ pin_subpackage('roq-samples', max_pin='x.x') }}
+    - {{ pin_subpackage('roq-samples', max_pin='x.x.x') }}
   script_env:                                                                                                              
     - ROQ_BUILD_TYPE
 
