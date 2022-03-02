@@ -99,8 +99,6 @@ conda install -y --channel https://roq-trading.com/conda/stable \
 ## Building
 
 ```bash
-git submodule update --init --recursive
-
 cmake .
 
 make -j4
