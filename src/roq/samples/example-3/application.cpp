@@ -1,18 +1,18 @@
 /* Copyright (c) 2017-2022, Hans Erik Thrane */
 
-#include "roq/samples/example-3/application.h"
+#include "roq/samples/example-3/application.hpp"
 
 #include <cassert>
 #include <chrono>
 #include <memory>
 #include <vector>
 
-#include "roq/client.h"
-#include "roq/exceptions.h"
+#include "roq/client.hpp"
+#include "roq/exceptions.hpp"
 
-#include "roq/samples/example-3/config.h"
-#include "roq/samples/example-3/flags.h"
-#include "roq/samples/example-3/strategy.h"
+#include "roq/samples/example-3/config.hpp"
+#include "roq/samples/example-3/flags.hpp"
+#include "roq/samples/example-3/strategy.hpp"
 
 using namespace std::chrono_literals;
 using namespace std::literals;

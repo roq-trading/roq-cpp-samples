@@ -1,13 +1,13 @@
 /* Copyright (c) 2017-2022, Hans Erik Thrane */
 
-#include "roq/samples/example-2/application.h"
+#include "roq/samples/example-2/application.hpp"
 
 #include <vector>
 
-#include "roq/exceptions.h"
+#include "roq/exceptions.hpp"
 
-#include "roq/samples/example-2/config.h"
-#include "roq/samples/example-2/strategy.h"
+#include "roq/samples/example-2/config.hpp"
+#include "roq/samples/example-2/strategy.hpp"
 
 using namespace std::literals;
 

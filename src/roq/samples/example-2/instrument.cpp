@@ -1,16 +1,16 @@
 /* Copyright (c) 2017-2022, Hans Erik Thrane */
 
-#include "roq/samples/example-2/instrument.h"
+#include "roq/samples/example-2/instrument.hpp"
 
 #include <fmt/format.h>
 
-#include "roq/logging.h"
+#include "roq/logging.hpp"
 
-#include "roq/utils/compare.h"
-#include "roq/utils/mask.h"
-#include "roq/utils/update.h"
+#include "roq/utils/compare.hpp"
+#include "roq/utils/mask.hpp"
+#include "roq/utils/update.hpp"
 
-#include "roq/samples/example-2/flags.h"
+#include "roq/samples/example-2/flags.hpp"
 
 using namespace std::literals;
 

@@ -1,6 +1,6 @@
 /* Copyright (c) 2017-2022, Hans Erik Thrane */
 
-#include "roq/samples/import/flags/flags.h"
+#include "roq/samples/import/flags/flags.hpp"
 
 #include <absl/flags/flag.h>
 

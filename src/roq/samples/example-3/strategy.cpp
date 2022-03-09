@@ -1,15 +1,15 @@
 /* Copyright (c) 2017-2022, Hans Erik Thrane */
 
-#include "roq/samples/example-3/strategy.h"
+#include "roq/samples/example-3/strategy.hpp"
 
 #include <limits>
 
-#include "roq/logging.h"
+#include "roq/logging.hpp"
 
-#include "roq/utils/common.h"
-#include "roq/utils/update.h"
+#include "roq/utils/common.hpp"
+#include "roq/utils/update.hpp"
 
-#include "roq/samples/example-3/flags.h"
+#include "roq/samples/example-3/flags.hpp"
 
 using namespace std::literals;
 

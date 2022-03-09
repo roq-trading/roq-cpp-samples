@@ -1,12 +1,12 @@
 /* Copyright (c) 2017-2022, Hans Erik Thrane */
 
-#include "roq/samples/example-5/producer.h"
+#include "roq/samples/example-5/producer.hpp"
 
 #include <cassert>
 #include <chrono>
 #include <string>
 
-#include "roq/logging.h"
+#include "roq/logging.hpp"
 
 using namespace std::literals;
 using namespace std::chrono_literals;

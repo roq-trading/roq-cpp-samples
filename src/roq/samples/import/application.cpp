@@ -1,13 +1,13 @@
 /* Copyright (c) 2017-2022, Hans Erik Thrane */
 
-#include "roq/samples/import/application.h"
+#include "roq/samples/import/application.hpp"
 
 #include <stdexcept>
 #include <vector>
 
-#include "roq/exceptions.h"
+#include "roq/exceptions.hpp"
 
-#include "roq/samples/import/processor.h"
+#include "roq/samples/import/processor.hpp"
 
 using namespace std::literals;
 

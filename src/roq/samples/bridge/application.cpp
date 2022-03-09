@@ -1,14 +1,14 @@
 /* Copyright (c) 2017-2022, Hans Erik Thrane */
 
-#include "roq/samples/bridge/application.h"
+#include "roq/samples/bridge/application.hpp"
 
 #include <cassert>
 #include <vector>
 
-#include "roq/client.h"
+#include "roq/client.hpp"
 
-#include "roq/samples/bridge/bridge.h"
-#include "roq/samples/bridge/config.h"
+#include "roq/samples/bridge/bridge.hpp"
+#include "roq/samples/bridge/config.hpp"
 
 using namespace std::literals;
 

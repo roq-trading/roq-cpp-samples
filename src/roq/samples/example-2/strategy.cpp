@@ -1,8 +1,8 @@
 /* Copyright (c) 2017-2022, Hans Erik Thrane */
 
-#include "roq/samples/example-2/strategy.h"
+#include "roq/samples/example-2/strategy.hpp"
 
-#include "roq/samples/example-2/flags.h"
+#include "roq/samples/example-2/flags.hpp"
 
 namespace roq {
 namespace samples {

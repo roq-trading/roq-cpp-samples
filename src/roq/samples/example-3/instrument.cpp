@@ -1,15 +1,15 @@
 /* Copyright (c) 2017-2022, Hans Erik Thrane */
 
-#include "roq/samples/example-3/instrument.h"
+#include "roq/samples/example-3/instrument.hpp"
 
 #include <algorithm>
 
-#include "roq/client.h"
-#include "roq/logging.h"
+#include "roq/client.hpp"
+#include "roq/logging.hpp"
 
-#include "roq/utils/compare.h"
-#include "roq/utils/mask.h"
-#include "roq/utils/update.h"
+#include "roq/utils/compare.hpp"
+#include "roq/utils/mask.hpp"
+#include "roq/utils/update.hpp"
 
 using namespace std::literals;
 

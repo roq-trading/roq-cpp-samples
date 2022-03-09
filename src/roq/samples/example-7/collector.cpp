@@ -1,8 +1,8 @@
 /* Copyright (c) 2017-2022, Hans Erik Thrane */
 
-#include "roq/samples/example-7/collector.h"
+#include "roq/samples/example-7/collector.hpp"
 
-#include "roq/logging.h"
+#include "roq/logging.hpp"
 
 using namespace std::literals;
 

@@ -1,6 +1,6 @@
 /* Copyright (c) 2017-2022, Hans Erik Thrane */
 
-#include "roq/samples/import/base64.h"
+#include "roq/samples/import/base64.hpp"
 
 #include <cassert>
 #include <cstring>

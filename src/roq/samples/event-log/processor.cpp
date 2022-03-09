@@ -1,12 +1,12 @@
 /* Copyright (c) 2017-2022, Hans Erik Thrane */
 
-#include "roq/samples/event-log/processor.h"
+#include "roq/samples/event-log/processor.hpp"
 
 #include <thread>
 
-#include "roq/logging.h"
+#include "roq/logging.hpp"
 
-#include "roq/client.h"
+#include "roq/client.hpp"
 
 using namespace std::chrono_literals;
 using namespace std::literals;

@@ -6,6 +6,7 @@ All notable changes will be documented in this file.
 
 ### Changed
 
+* Rename headers to .hpp (#195)
 * Conda packaging should pin versions to match x.x.x (#189)
 * The `--timer_freq` flag was incorrectly defaulting to zero (#188)
 

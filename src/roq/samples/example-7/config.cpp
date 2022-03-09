@@ -1,8 +1,8 @@
 /* Copyright (c) 2017-2022, Hans Erik Thrane */
 
-#include "roq/samples/example-7/config.h"
+#include "roq/samples/example-7/config.hpp"
 
-#include "roq/samples/example-7/flags.h"
+#include "roq/samples/example-7/flags.hpp"
 
 namespace roq {
 namespace samples {

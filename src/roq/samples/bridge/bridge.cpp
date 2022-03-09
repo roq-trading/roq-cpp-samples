@@ -1,6 +1,6 @@
 /* Copyright (c) 2017-2022, Hans Erik Thrane */
 
-#include "roq/samples/bridge/bridge.h"
+#include "roq/samples/bridge/bridge.hpp"
 
 using namespace std::literals;
 

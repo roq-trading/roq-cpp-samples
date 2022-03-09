@@ -1,19 +1,19 @@
 /* Copyright (c) 2017-2022, Hans Erik Thrane */
 
-#include "roq/samples/import/processor.h"
+#include "roq/samples/import/processor.hpp"
 
 #include <cassert>
 #include <iostream>
 #include <stdexcept>
 #include <string>
 
-#include "roq/fbs/api.h"
-#include "roq/fbs/encode.h"
+#include "roq/fbs/api.hpp"
+#include "roq/fbs/encode.hpp"
 
-#include "roq/utils/compare.h"
+#include "roq/utils/compare.hpp"
 
-#include "roq/samples/import/base64.h"
-#include "roq/samples/import/flags.h"
+#include "roq/samples/import/base64.hpp"
+#include "roq/samples/import/flags.hpp"
 
 using namespace std::chrono_literals;
 using namespace std::literals;

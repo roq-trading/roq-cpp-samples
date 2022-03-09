@@ -1,14 +1,14 @@
 /* Copyright (c) 2017-2022, Hans Erik Thrane */
 
-#include "roq/samples/example-3/model.h"
+#include "roq/samples/example-3/model.hpp"
 
 #include <numeric>
 
-#include "roq/logging.h"
+#include "roq/logging.hpp"
 
-#include "roq/utils/compare.h"
+#include "roq/utils/compare.hpp"
 
-#include "roq/samples/example-3/flags.h"
+#include "roq/samples/example-3/flags.hpp"
 
 using namespace std::literals;
 

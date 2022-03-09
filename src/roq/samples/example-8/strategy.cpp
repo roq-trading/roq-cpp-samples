@@ -1,14 +1,14 @@
 /* Copyright (c) 2017-2022, Hans Erik Thrane */
 
-#include "roq/samples/example-8/strategy.h"
+#include "roq/samples/example-8/strategy.hpp"
 
 #include <algorithm>
 
-#include "roq/logging.h"
+#include "roq/logging.hpp"
 
-#include "roq/utils/compare.h"
+#include "roq/utils/compare.hpp"
 
-#include "roq/samples/example-8/flags.h"
+#include "roq/samples/example-8/flags.hpp"
 
 using namespace std::literals;
 using namespace std::chrono_literals;

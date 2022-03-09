@@ -1,8 +1,8 @@
 /* Copyright (c) 2017-2022, Hans Erik Thrane */
 
-#include "roq/samples/bridge/config.h"
+#include "roq/samples/bridge/config.hpp"
 
-#include "roq/samples/bridge/flags.h"
+#include "roq/samples/bridge/flags.hpp"
 
 namespace roq {
 namespace samples {

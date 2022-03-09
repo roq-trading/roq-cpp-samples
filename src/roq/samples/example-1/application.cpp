@@ -1,14 +1,14 @@
 /* Copyright (c) 2017-2022, Hans Erik Thrane */
 
-#include "roq/samples/example-1/application.h"
+#include "roq/samples/example-1/application.hpp"
 
 #include <cassert>
 #include <vector>
 
-#include "roq/exceptions.h"
+#include "roq/exceptions.hpp"
 
-#include "roq/samples/example-1/config.h"
-#include "roq/samples/example-1/strategy.h"
+#include "roq/samples/example-1/config.hpp"
+#include "roq/samples/example-1/strategy.hpp"
 
 using namespace std::literals;
 

@@ -1,11 +1,11 @@
 /* Copyright (c) 2017-2022, Hans Erik Thrane */
 
-#include "roq/samples/example-3/ema.h"
+#include "roq/samples/example-3/ema.hpp"
 
 #include <algorithm>
 #include <cmath>
 
-#include "roq/samples/example-3/flags.h"
+#include "roq/samples/example-3/flags.hpp"
 
 namespace roq {
 namespace samples {
