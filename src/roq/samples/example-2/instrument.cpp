@@ -6,8 +6,9 @@
 
 #include "roq/logging.hpp"
 
+#include "roq/mask.hpp"
+
 #include "roq/utils/compare.hpp"
-#include "roq/utils/mask.hpp"
 #include "roq/utils/update.hpp"
 
 #include "roq/samples/example-2/flags.hpp"
@@ -59,13 +60,13 @@ void Instrument::operator()(const GatewayStatus &gateway_status) {
   if (!std::empty(gateway_status.account))  // we only care about market (not account)
     return;
   // bit-mask of required message types
-  static const utils::Mask<SupportType> required{
+  static const Mask<SupportType> required{
       SupportType::REFERENCE_DATA,
       SupportType::MARKET_STATUS,
       SupportType::MARKET_BY_PRICE,
   };
   // because the API doesn't (yet) expose Mask
-  utils::Mask<SupportType> available(gateway_status.available), unavailable(gateway_status.unavailable);
+  Mask<SupportType> available(gateway_status.available), unavailable(gateway_status.unavailable);
   // readiness defined by full availability of all required message types
   auto market_data = available.has_all(required) && unavailable.has_none(required);
   if (utils::update(market_data_, market_data))

@@ -6,9 +6,9 @@
 
 #include "roq/client.hpp"
 #include "roq/logging.hpp"
+#include "roq/mask.hpp"
 
 #include "roq/utils/compare.hpp"
-#include "roq/utils/mask.hpp"
 #include "roq/utils/update.hpp"
 
 using namespace std::literals;
@@ -74,10 +74,10 @@ void Instrument::operator()(const DownloadEnd &download_end) {
 
 void Instrument::operator()(const GatewayStatus &gateway_status) {
   // because the API doesn't (yet) expose Mask
-  utils::Mask<SupportType> available(gateway_status.available), unavailable(gateway_status.unavailable);
+  Mask<SupportType> available(gateway_status.available), unavailable(gateway_status.unavailable);
   if (std::empty(gateway_status.account)) {
     // bit-mask of required message types
-    static const utils::Mask<SupportType> required{
+    static const Mask<SupportType> required{
         SupportType::REFERENCE_DATA,
         SupportType::MARKET_STATUS,
         SupportType::MARKET_BY_PRICE,
@@ -93,7 +93,7 @@ void Instrument::operator()(const GatewayStatus &gateway_status) {
     }
   } else if (gateway_status.account.compare(account_) == 0) {
     // bit-mask of required message types
-    static const utils::Mask<SupportType> required{
+    static const Mask<SupportType> required{
         SupportType::CREATE_ORDER,
         SupportType::CANCEL_ORDER,
         SupportType::ORDER,
