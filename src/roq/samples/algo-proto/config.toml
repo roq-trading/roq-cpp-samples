@@ -1,0 +1,8 @@
+[strategies]
+
+  [strategies.spread_btc]
+  type = "spread"
+  instruments = [
+    { exchange="deribit", symbol="BTC-PERPETUAL", weight=1.0 },
+    { exchange="deribit", symbol="BTC-25MAR22", weight=-1.0 }
+  ]
