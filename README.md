@@ -90,7 +90,8 @@ conda install -y \
     git \
     make \
     cmake \
-    abseil-cpp
+    abseil-cpp \
+    tomlplusplus
 
 conda install -y --channel https://roq-trading.com/conda/stable \
     roq-client

@@ -24,6 +24,7 @@ find_package(fmt REQUIRED)
 find_package(roq-api REQUIRED)
 find_package(roq-client REQUIRED)
 find_package(roq-logging REQUIRED)
+find_package(tomlplusplus REQUIRED)
 
 # include
 
