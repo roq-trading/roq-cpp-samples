@@ -1,0 +1,92 @@
+/* Copyright (c) 2017-2022, Hans Erik Thrane */
+
+#include "roq/algo/strategies/order_manager.hpp"
+
+#include "roq/logging.hpp"
+
+#include "roq/algo/strategies/base.hpp"
+
+using namespace std::literals;
+
+namespace roq {
+namespace algo {
+namespace strategies {
+
+// TODO(thraneh): Base -> shared (lookup + dispatcher + ...) + instrument
+
+OrderManager::OrderManager(Base &base, size_t index, const Side &side) : base_(base), index_(index), side_(side) {
+}
+
+void OrderManager::set_target(double quantity, double price) {
+  assert(base_.ready());
+  auto changed = false;
+  changed |= utils::update(target_quantity_, quantity);
+  changed |= utils::update(target_price_, price);
+  if (!changed)
+    return;
+  log::debug("UPDATE!"sv);
+  if (!order_id_) {
+    log::debug("CREATE_ORDER"sv);
+    auto order_id = base_.dispatcher_.next_order_id();
+    auto &instrument = base_.state_.get_instrument(index_);
+    CreateOrder create_order{
+        .account = base_.account_,
+        .order_id = order_id,
+        .exchange = instrument.exchange,
+        .symbol = instrument.symbol,
+        .side = side_,
+        .position_effect = {},
+        .max_show_quantity = NaN,
+        .order_type = OrderType::LIMIT,
+        .time_in_force = TimeInForce::GTC,
+        .execution_instruction = {},
+        .order_template = {},
+        .quantity = target_quantity_,
+        .price = target_price_,
+        .stop_price = NaN,
+        .routing_id = base_.routing_id_,
+    };
+    base_.dispatcher_(create_order);
+    order_id_ = order_id;
+    auto res = base_.order_id_to_order_manager_index_.try_emplace(order_id, index_);
+    assert(res.second);
+  } else {
+    log::debug("MODIFY_ORDER"sv);
+    // XXX assuming it's target price
+    ModifyOrder modify_order{
+        .account = base_.account_,
+        .order_id = order_id_,
+        .quantity = NaN,
+        .price = target_price_,
+        .routing_id = base_.routing_id_,
+        .version = {},
+        .conditional_on_version = {},
+    };
+    base_.dispatcher_(modify_order);
+  }
+}
+
+void OrderManager::start() {
+}
+
+void OrderManager::stop() {
+}
+
+void OrderManager::operator()(const Event<OrderAck> &event) {
+  auto &[message_info, order_ack] = event;
+  log::debug("order_ack={}"sv, order_ack);
+  // XXX rejected?
+}
+
+void OrderManager::operator()(const Event<OrderUpdate> &event) {
+  auto &[message_info, order_update] = event;
+  log::debug("order_update={}"sv, order_update);
+  // XXX finished?
+}
+
+void OrderManager::operator()(const Event<PositionUpdate> &) {
+}
+
+}  // namespace strategies
+}  // namespace algo
+}  // namespace roq

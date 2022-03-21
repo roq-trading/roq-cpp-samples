@@ -32,4 +32,5 @@ include_directories("${CMAKE_SOURCE_DIR}/src")
 
 # sub-projects
 
+add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/src/roq/algo")
 add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/src/roq/samples")
