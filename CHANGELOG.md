@@ -4,6 +4,8 @@ All notable changes will be documented in this file.
 
 ## Head
 
+## 0.8.3 &ndash; 2022-03-22
+
 ### Changed
 
 * Rename headers to .hpp (#195)
