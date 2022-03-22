@@ -122,7 +122,7 @@ void Base::dispatch(const Event<T> &event) {
     auto index = (*iter).second;
     order_managers_[index](event);
   } else {
-    log::fatal("Unknown order_id={}"sv, value.order_id);
+    log::warn("Unknown order_id={}"sv, value.order_id);
   }
 }
 

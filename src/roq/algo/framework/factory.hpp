@@ -17,6 +17,8 @@ namespace framework {
 
 class Factory {
  public:
+  virtual ~Factory() = default;
+
   virtual operator const framework::State &() const = 0;
   virtual std::unique_ptr<Handler> create(Dispatcher &, const std::string_view &routing_id, const CreateOrder &) = 0;
 };
