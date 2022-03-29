@@ -60,8 +60,15 @@ void Processor::dispatch() {
   // first message *must* be GatewaySettings
   process(
       GatewaySettings{
+          .supports = {},
           .mbp_max_depth = 3,
+          .mbp_tick_size_multiplier = NaN,
+          .mbp_min_trade_vol_multiplier = NaN,
+          .mbp_allow_remove_non_existing = false,
           .mbp_allow_price_inversion = false,
+          .oms_download_has_state = false,
+          .oms_download_has_routing_id = false,
+          .oms_request_id_type = {},
       },
       1ns);  // timestamp should be something useful, like UTC
   // prefer to process ReferenceData before any market data
