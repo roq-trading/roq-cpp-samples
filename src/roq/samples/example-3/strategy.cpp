@@ -159,7 +159,7 @@ void Strategy::try_trade(Side side, double price) {
           .max_show_quantity = NaN,
           .order_type = OrderType::LIMIT,
           .time_in_force = TimeInForce::GTC,
-          .execution_instruction = {},
+          .execution_instructions = {},
           .order_template = {},
           .quantity = instrument_.min_trade_vol(),
           .price = price,

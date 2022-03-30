@@ -166,6 +166,11 @@ void Processor::dispatch() {
           .asks = asks_image,
           .update_type = UpdateType::SNAPSHOT,  // indicates that it's an *image*
           .exchange_time_utc = {},              // probably similar to the timestamp you're using
+          .exchange_sequence = {},
+          .price_decimals = {},
+          .quantity_decimals = {},
+          .max_depth = {},
+          .checksum = {},
       },
       4ns);
   // update
@@ -196,6 +201,11 @@ void Processor::dispatch() {
           .asks = {},
           .update_type = UpdateType::INCREMENTAL,  // indicates that it's an *update*
           .exchange_time_utc = {},                 // probably similar to the timestamp you're using
+          .exchange_sequence = {},
+          .price_decimals = {},
+          .quantity_decimals = {},
+          .max_depth = {},
+          .checksum = {},
       },
       5ns);
 }

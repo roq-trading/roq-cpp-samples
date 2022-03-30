@@ -83,7 +83,7 @@ Bridge::Bridge(client::Dispatcher &dispatcher, const Config &config, size_t size
       .max_show_quantity = NaN,
       .order_type = OrderType::LIMIT,
       .time_in_force = TimeInForce::GTC,
-      .execution_instruction = {},
+      .execution_instructions = {},
       .order_template{},
       .quantity = flags::Flags::quantity(),
       .price = flags::Flags::price(),

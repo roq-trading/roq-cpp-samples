@@ -39,7 +39,7 @@ void OrderManager::set_target(double quantity, double price) {
         .max_show_quantity = NaN,
         .order_type = OrderType::LIMIT,
         .time_in_force = TimeInForce::GTC,
-        .execution_instruction = {},
+        .execution_instructions = {},
         .order_template = {},
         .quantity = target_quantity_,
         .price = target_price_,
