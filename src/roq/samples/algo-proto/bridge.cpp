@@ -72,7 +72,7 @@ auto create_factories(const auto &config, const auto &routes, const auto &gatewa
 Bridge::Bridge(client::Dispatcher &dispatcher, const Config &config, size_t size)
     : dispatcher_(dispatcher), routes_(create_routes<decltype(routes_)>(config)), gateways_(size),
       factories_(create_factories<decltype(factories_)>(config, routes_, gateways_)) {
-  Side side{flags::Flags::side()};
+  auto side = magic_enum::enum_cast<Side>(flags::Flags::side()).value_or(Side::UNDEFINED);
   CreateOrder create_order{
       .account = flags::Flags::account(),
       .order_id = {},
