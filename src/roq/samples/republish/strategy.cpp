@@ -31,11 +31,11 @@ auto create_socket(auto &address) {
   if (::bind(fd, reinterpret_cast<struct sockaddr *>(&address), sizeof(address)) < 0)
     log::system_error("Failed to bind socket"sv);
   // non-blocking
-  auto flags = fcntl(fd, F_GETFL, 0);
+  auto flags = ::fcntl(fd, F_GETFL, 0);
   if (flags < 0)
     log::system_error("Failed to get flags"sv);
   flags |= O_NONBLOCK;
-  if (fcntl(fd, F_SETFL, flags) < 0)
+  if (::fcntl(fd, F_SETFL, flags) < 0)
     log::system_error("Failed to set flags"sv);
   return fd;
 }
