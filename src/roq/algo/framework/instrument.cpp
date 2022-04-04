@@ -9,13 +9,13 @@ namespace algo {
 namespace framework {
 
 namespace {
-const Mask<SupportType> REQUIRED_MARKET_DATA{
+const Mask REQUIRED_MARKET_DATA{
     SupportType::REFERENCE_DATA,
     SupportType::MARKET_STATUS,
     SupportType::MARKET_BY_PRICE,
 };
 
-const Mask<SupportType> REQUIRED_ORDER_MANAGEMENT{
+const Mask REQUIRED_ORDER_MANAGEMENT{
     SupportType::CREATE_ORDER,
     SupportType::CANCEL_ORDER,
 };
