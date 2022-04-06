@@ -30,9 +30,9 @@ double Instrument::position() const {
 bool Instrument::can_trade(Side side) const {
   switch (side) {
     case Side::BUY:
-      return utils::compare(position(), 0.0) <= 0;
+      return utils::is_less_or_equal(position(), 0.0);
     case Side::SELL:
-      return utils::compare(position(), 0.0) >= 0;
+      return utils::is_greater_or_equal(position(), 0.0);
     default:
       assert(false);  // why is this function being called?
       return false;
@@ -195,8 +195,8 @@ void Instrument::operator()(const PositionUpdate &position_update) {
 
 void Instrument::check_ready() {
   auto before = ready_;
-  ready_ = connected_ && !download_ && utils::compare(tick_size_, 0.0) > 0 && utils::compare(min_trade_vol_, 0.0) > 0 &&
-           utils::compare(multiplier_, 0.0) > 0 && trading_status_ == TradingStatus::OPEN && market_data_ &&
+  ready_ = connected_ && !download_ && utils::is_greater(tick_size_, 0.0) && utils::is_greater(min_trade_vol_, 0.0) &&
+           utils::is_greater(multiplier_, 0.0) && trading_status_ == TradingStatus::OPEN && market_data_ &&
            order_management_;
   log::info<>::when(ready_ != before, "[{}:{}] ready={}"sv, exchange_, symbol_, ready_);
 }
@@ -218,11 +218,11 @@ void Instrument::reset() {
 }
 
 void Instrument::validate(const Depth &depth) {
-  if (utils::compare(depth[0].bid_quantity, 0.0) <= 0 || utils::compare(depth[0].ask_quantity, 0.0) <= 0)
+  if (utils::is_less_or_equal(depth[0].bid_quantity, 0.0) || utils::is_less_or_equal(depth[0].ask_quantity, 0.0))
     return;
   auto spread = depth[0].ask_price - depth[0].bid_price;
   log::fatal::when(
-      utils::compare(spread, 0.0) <= 0,
+      utils::is_less_or_equal(spread, 0.0),
       "[{}:{}] Probably something wrong: "
       "choice price or price inversion detected. "
       "depth=[{}]"sv,

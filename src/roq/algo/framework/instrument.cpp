@@ -25,10 +25,10 @@ bool Instrument::ready(
     const cache::Gateway &gateway, const cache::Market &market, const std::string_view &account) const {
   if (!gateway.ready(REQUIRED_MARKET_DATA))
     return false;
-  if (utils::compare(market.reference_data.tick_size, 0.0) == 0)
+  if (utils::is_zero(market.reference_data.tick_size))
     return false;
   // XXX this might not be the right place...
-  if (utils::compare(market.market_status.trading_status, TradingStatus::OPEN) != 0)
+  if (market.market_status.trading_status != TradingStatus::OPEN)
     return false;
   if (!gateway.ready(REQUIRED_ORDER_MANAGEMENT, account))
     return false;

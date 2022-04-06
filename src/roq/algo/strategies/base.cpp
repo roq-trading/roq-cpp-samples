@@ -20,20 +20,16 @@ auto create_order_managers(Base &base, const framework::State &state, const Crea
   result.reserve(std::size(state));
   for (size_t index = 0; index < std::size(state); ++index) {
     auto &instrument = state.get_instrument(index);
-    auto direction = utils::compare(instrument.weight, 0.0);
-    switch (direction) {
-      case 0:
-        log::fatal("Weight can not be zero (index={})"sv, index);
-        assert(false);
-        break;
-      case 1:
-        result.emplace_back(base, index, create_order.side);
-        break;
-      case -1:
-        result.emplace_back(base, index, utils::invert(create_order.side));
-        break;
-      default:
-        assert(false);
+    auto ordering = utils::compare(instrument.weight, 0.0);
+    if (ordering == std::strong_ordering::equal) {
+      log::fatal("Weight can not be zero (index={})"sv, index);
+      assert(false);
+    } else if (ordering == std::strong_ordering::greater) {
+      result.emplace_back(base, index, create_order.side);
+    } else if (ordering == std::strong_ordering::less) {
+      result.emplace_back(base, index, utils::invert(create_order.side));
+    } else {
+      assert(false);
     }
   }
   return result;

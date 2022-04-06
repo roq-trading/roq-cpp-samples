@@ -127,12 +127,12 @@ void Instrument::operator()(const MarketByPriceUpdate &market_by_price_update) {
 
 void Instrument::update_model() {
   // one sided market?
-  if (utils::compare(depth_[0].bid_quantity, 0.0) == 0 || utils::compare(depth_[0].ask_quantity, 0.0) == 0)
+  if (utils::is_zero(depth_[0].bid_quantity) || utils::is_zero(depth_[0].ask_quantity))
     return;
   // validate depth
   auto spread = depth_[0].ask_price - depth_[0].bid_price;
   log::fatal::when(
-      utils::compare(spread, 0.0) <= 0,
+      utils::is_less_or_equal(spread, 0.0),
       "[{}:{}] Probably something wrong: "
       "choice price or price inversion detected. "
       "depth=[{}]"sv,
@@ -157,8 +157,8 @@ void Instrument::update_model() {
 
 void Instrument::check_ready() {
   auto before = ready_;
-  ready_ = connected_ && !download_ && utils::compare(tick_size_, 0.0) > 0 && utils::compare(min_trade_vol_, 0.0) > 0 &&
-           utils::compare(multiplier_, 0.0) > 0 && trading_status_ == TradingStatus::OPEN && market_data_;
+  ready_ = connected_ && !download_ && utils::is_greater(tick_size_, 0.0) && utils::is_greater(min_trade_vol_, 0.0) &&
+           utils::is_greater(multiplier_, 0.0) && trading_status_ == TradingStatus::OPEN && market_data_;
   log::info<>::when(ready_ != before, "[{}:{}] ready={}"sv, exchange_, symbol_, ready_);
 }
 

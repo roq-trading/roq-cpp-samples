@@ -95,7 +95,7 @@ Side Model::update(const Depth &depth) {
 
 bool Model::validate(const Depth &depth) {  // require full depth
   return std::accumulate(std::begin(depth), std::end(depth), true, [](bool value, const Layer &layer) {
-    return value && utils::compare(layer.bid_quantity, 0.0) > 0 && utils::compare(layer.ask_quantity, 0.0) > 0;
+    return value && utils::is_greater(layer.bid_quantity, 0.0) && utils::is_greater(layer.ask_quantity, 0.0);
   });
 }
 

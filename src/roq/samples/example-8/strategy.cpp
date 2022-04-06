@@ -82,7 +82,7 @@ void Strategy::operator()(const Event<TradeSummary> &event) {
     if (updated) {
       auto quantity_in_front = std::max(0.0, quantity_when_placed_ - traded_since_placed_);
       log::info("Changed: traded_since_placed={}, quantity_in_front={}"sv, traded_since_placed_, quantity_in_front);
-      if (utils::compare(quantity_in_front, 0.0) == 0) {
+      if (utils::is_zero(quantity_in_front)) {
         log::info("COMPLETED (filled)"sv);
         active_ = false;
         dispatcher_.stop();
