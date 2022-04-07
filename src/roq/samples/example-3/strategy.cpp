@@ -101,13 +101,14 @@ void Strategy::update_model() {
   if (instrument_.is_ready()) {
     auto side = model_.update(instrument_);
     switch (side) {
-      case Side::UNDEFINED:
+      using enum Side;
+      case UNDEFINED:
         // nothing to do
         break;
-      case Side::BUY:
+      case BUY:
         try_trade(side, instrument_.best_bid());
         break;
-      case Side::SELL:
+      case SELL:
         try_trade(side, instrument_.best_ask());
         break;
     }

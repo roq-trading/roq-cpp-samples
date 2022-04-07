@@ -238,10 +238,11 @@ void Processor::process(const T &value, std::chrono::nanoseconds timestamp_utc) 
   auto data = builder_.GetBufferPointer();
   auto length = builder_.GetSize();
   switch (encoding_) {
-    case Encoding::BINARY:
+    using enum Encoding;
+    case BINARY:
       file_.write(reinterpret_cast<char const *>(data), length);
       break;
-    case Encoding::BASE64: {
+    case BASE64: {
       auto message = Base64::encode(data, length);
       file_.write(message.c_str(), std::size(message));
       break;

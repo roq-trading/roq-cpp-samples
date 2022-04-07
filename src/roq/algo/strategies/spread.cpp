@@ -78,13 +78,14 @@ void Spread::update() {
     return;
   auto price = NaN;
   switch (side_) {
-    case Side::UNDEFINED:
+    using enum Side;
+    case UNDEFINED:
       assert(false);
       break;
-    case Side::BUY:
+    case BUY:
       price = best[1].bid_price - price_;
       break;
-    case Side::SELL:
+    case SELL:
       price = best[1].ask_price - price_;
       break;
   }
@@ -100,12 +101,13 @@ double Spread::current_spread() const {
     return NaN;
   // log::debug("{} {}"sv, best[0], best[1]);
   switch (side_) {
-    case Side::UNDEFINED:
+    using enum Side;
+    case UNDEFINED:
       assert(false);
       break;
-    case Side::BUY:
+    case BUY:
       return best[0].ask_price - best[1].bid_price;
-    case Side::SELL:
+    case SELL:
       return best[0].bid_price - best[1].ask_price;
   }
   return NaN;

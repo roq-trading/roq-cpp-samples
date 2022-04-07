@@ -29,9 +29,10 @@ double Instrument::position() const {
 
 bool Instrument::can_trade(Side side) const {
   switch (side) {
-    case Side::BUY:
+    using enum Side;
+    case BUY:
       return utils::is_less_or_equal(position(), 0.0);
-    case Side::SELL:
+    case SELL:
       return utils::is_greater_or_equal(position(), 0.0);
     default:
       assert(false);  // why is this function being called?
@@ -168,10 +169,11 @@ void Instrument::operator()(const OrderUpdate &order_update) {
   auto quantity = order_update.traded_quantity - last_traded_quantity_;
   last_traded_quantity_ = order_update.traded_quantity;
   switch (order_update.side) {
-    case Side::BUY:
+    using enum Side;
+    case BUY:
       long_position_ += quantity;
       break;
-    case Side::SELL:
+    case SELL:
       short_position_ += quantity;
       break;
     default:
