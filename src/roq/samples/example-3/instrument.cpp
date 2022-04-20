@@ -223,14 +223,14 @@ void Instrument::validate(const Depth &depth) {
   if (utils::is_less_or_equal(depth[0].bid_quantity, 0.0) || utils::is_less_or_equal(depth[0].ask_quantity, 0.0))
     return;
   auto spread = depth[0].ask_price - depth[0].bid_price;
-  log::fatal::when(
-      utils::is_less_or_equal(spread, 0.0),
-      "[{}:{}] Probably something wrong: "
-      "choice price or price inversion detected. "
-      "depth=[{}]"sv,
-      exchange_,
-      symbol_,
-      fmt::join(depth, ", "sv));
+  if (utils::is_less_or_equal(spread, 0.0))
+    log::fatal(
+        "[{}:{}] Probably something wrong: "
+        "choice price or price inversion detected. "
+        "depth=[{}]"sv,
+        exchange_,
+        symbol_,
+        fmt::join(depth, ", "sv));
 }
 
 }  // namespace example_3
