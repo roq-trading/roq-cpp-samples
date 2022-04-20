@@ -109,7 +109,8 @@ void Instrument::operator()(const MarketStatus &market_status) {
 void Instrument::operator()(const MarketByPriceUpdate &market_by_price_update) {
   assert(exchange_.compare(market_by_price_update.exchange) == 0);
   assert(symbol_.compare(market_by_price_update.symbol) == 0);
-  log::info<>::when(download_, "MarketByPriceUpdate={}"sv, market_by_price_update);
+  if (download_)
+    log::info("MarketByPriceUpdate={}"sv, market_by_price_update);
   // update depth
   // note!
   //   market by price only gives you *changes*.
@@ -159,7 +160,8 @@ void Instrument::check_ready() {
   auto before = ready_;
   ready_ = connected_ && !download_ && utils::is_greater(tick_size_, 0.0) && utils::is_greater(min_trade_vol_, 0.0) &&
            utils::is_greater(multiplier_, 0.0) && trading_status_ == TradingStatus::OPEN && market_data_;
-  log::info<>::when(ready_ != before, "[{}:{}] ready={}"sv, exchange_, symbol_, ready_);
+  if (ready_ != before)
+    log::info("[{}:{}] ready={}"sv, exchange_, symbol_, ready_);
 }
 
 void Instrument::reset() {
