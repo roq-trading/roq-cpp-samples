@@ -2,12 +2,6 @@
 
 #include "roq/samples/zeromq/strategy.hpp"
 
-#include <zmq.h>
-
-#include <fcntl.h>
-#include <sys/socket.h>
-#include <unistd.h>
-
 #include <fmt/format.h>
 
 #include "roq/samples/zeromq/flags/flags.hpp"

@@ -7,6 +7,7 @@
 #include "roq/api.hpp"
 #include "roq/client.hpp"
 
+// note! thin wrappers around libzmq
 #include "roq/samples/zeromq/zmq/context.hpp"
 #include "roq/samples/zeromq/zmq/socket.hpp"
 
