@@ -50,10 +50,18 @@ void Socket::bind(const std::string_view &endpoint) {
   assert(result == 0);
 }
 
+void Socket::connect(const std::string_view &endpoint) {
+  std::string tmp{endpoint};
+  auto result = zmq_connect(handle_.get(), tmp.c_str());
+  if (result == -1)
+    throw SystemError{std::make_error_code(static_cast<std::errc>(errno)), "zmq_connect"sv};
+  assert(result == 0);
+}
+
 size_t Socket::send(void const *buf, size_t len, int flags) {
   auto result = zmq_send(handle_.get(), buf, len, flags);
   if (result == -1)
-    throw SystemError{std::make_error_code(static_cast<std::errc>(errno)), "zmq_bind"sv};
+    throw SystemError{std::make_error_code(static_cast<std::errc>(errno)), "zmq_send"sv};
   assert(result >= 0);
   return result;
 }

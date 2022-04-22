@@ -27,6 +27,8 @@ struct Socket final {
 
   void bind(const std::string_view &endpoint);
 
+  void connect(const std::string_view &endpoint);
+
   size_t send(void const *buf, size_t len, int flags);
 
  private:

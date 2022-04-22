@@ -22,7 +22,7 @@ namespace zeromq {
 
 namespace {
 auto create_socket(auto &context) {
-  zmq::Socket result(context, ZMQ_PUB);  // note! using publish socket for this example
+  zmq::Socket result(context, ZMQ_PUB);
   result.bind(flags::Flags::endpoint());
   return result;
 }

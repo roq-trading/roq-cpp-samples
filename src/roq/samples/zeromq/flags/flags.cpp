@@ -21,7 +21,7 @@ ABSL_FLAG(  //
 ABSL_FLAG(  //
     std::string,
     endpoint,
-    "tcp://localhost:1234",
+    "tcp://*:1234",
     "endpoint (zeromq)");
 
 namespace roq {
