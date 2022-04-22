@@ -20,57 +20,15 @@ namespace roq {
 namespace samples {
 namespace zeromq {
 
-// convenience wrappers around some libc socket functions
-// note! not very generic -- just for the example
 namespace {
-auto create_socket(auto &address) {
-  // EXPERIMENTING
-  void *context = zmq_ctx_new();
-  // create
-  auto fd = ::socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
-  if (fd < 0)
-    log::system_error("Failed to create socket"sv);
-  // bind
-  address.sin_family = AF_INET;
-  address.sin_port = htons(flags::Flags::port());
-  address.sin_addr.s_addr = htonl(INADDR_ANY);
-  if (::bind(fd, reinterpret_cast<struct sockaddr *>(&address), sizeof(address)) < 0)
-    log::system_error("Failed to bind socket"sv);
-  // non-blocking
-  auto flags = ::fcntl(fd, F_GETFL, 0);
-  if (flags < 0)
-    log::system_error("Failed to get flags"sv);
-  flags |= O_NONBLOCK;
-  if (::fcntl(fd, F_SETFL, flags) < 0)
-    log::system_error("Failed to set flags"sv);
-  return fd;
-}
-void close_socket(auto fd) {
-  if (fd > 0)
-    ::close(fd);
-}
-void socket_sendto(const auto socket, const auto &address, const auto &message) {
-  auto res = ::sendto(
-      socket,
-      std::data(message),
-      std::size(message),
-      0,
-      reinterpret_cast<struct sockaddr const *>(&address),
-      sizeof(address));
-  if (res < 0)
-    log::system_error("Failed to send"sv);
+auto create_socket(auto &context) {
+  zmq::Socket result(context, ZMQ_PUB);  // note! using publish socket for this example
+  result.bind(flags::Flags::endpoint());
+  return result;
 }
 }  // namespace
 
-Strategy::Strategy(client::Dispatcher &dispatcher) : dispatcher_(dispatcher), socket_(create_socket(address_)) {
-}
-
-Strategy::~Strategy() {
-  // note! best effort
-  try {
-    close_socket(socket_);
-  } catch (...) {
-  }
+Strategy::Strategy(client::Dispatcher &dispatcher) : dispatcher_(dispatcher), socket_(create_socket(context_)) {
 }
 
 void Strategy::operator()(const Event<TopOfBook> &event) {
@@ -87,8 +45,8 @@ void Strategy::operator()(const Event<TopOfBook> &event) {
       layer.ask_quantity);
   // note! you should use a higher verbosity level here to make it possible to avoid some logging
   log::info<0>("{}"sv, message);
-  // broadcast
-  socket_sendto(socket_, address_, message);
+  // send
+  socket_.send(std::data(message), std::size(message), ZMQ_DONTWAIT);
 }
 
 }  // namespace zeromq

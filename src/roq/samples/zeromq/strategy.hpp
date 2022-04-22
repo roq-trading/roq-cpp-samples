@@ -7,6 +7,9 @@
 #include "roq/api.hpp"
 #include "roq/client.hpp"
 
+#include "roq/samples/zeromq/zmq/context.hpp"
+#include "roq/samples/zeromq/zmq/socket.hpp"
+
 namespace roq {
 namespace samples {
 namespace zeromq {
@@ -17,8 +20,6 @@ class Strategy final : public client::Handler {
  public:
   explicit Strategy(client::Dispatcher &);
 
-  ~Strategy();
-
   Strategy(Strategy &&) = default;
   Strategy(const Strategy &) = delete;
 
@@ -27,8 +28,8 @@ class Strategy final : public client::Handler {
 
  private:
   client::Dispatcher &dispatcher_;
-  struct sockaddr_in address_ = {};
-  int socket_ = {};
+  zmq::Context context_;
+  zmq::Socket socket_;
 };
 
 }  // namespace zeromq

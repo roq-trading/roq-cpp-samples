@@ -19,10 +19,10 @@ ABSL_FLAG(  //
     "symbol");
 
 ABSL_FLAG(  //
-    uint16_t,
-    port,
-    8888,
-    "port");
+    std::string,
+    endpoint,
+    "tcp://localhost:1234",
+    "endpoint (zeromq)");
 
 namespace roq {
 namespace samples {
@@ -39,8 +39,8 @@ std::string_view Flags::symbol() {
   return result;
 }
 
-uint16_t Flags::port() {
-  static const uint16_t result = absl::GetFlag(FLAGS_port);
+std::string_view Flags::endpoint() {
+  static const std::string result = absl::GetFlag(FLAGS_endpoint);
   return result;
 }
 
