@@ -34,3 +34,11 @@ include_directories("${CMAKE_SOURCE_DIR}/src")
 
 add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/src/roq/algo")
 add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/src/roq/samples")
+
+option(BUILD_ZEROMQ "Enable ZeroMQ example?" OFF)
+
+# zeromq is optional
+
+if(BUILD_ZEROMQ)
+  find_package(ZeroMQ REQUIRED)
+endif(BUILD_ZEROMQ)
