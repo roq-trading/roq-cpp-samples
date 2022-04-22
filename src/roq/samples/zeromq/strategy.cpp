@@ -2,6 +2,8 @@
 
 #include "roq/samples/zeromq/strategy.hpp"
 
+#include <zmq.h>
+
 #include <fcntl.h>
 #include <sys/socket.h>
 #include <unistd.h>
@@ -22,6 +24,8 @@ namespace zeromq {
 // note! not very generic -- just for the example
 namespace {
 auto create_socket(auto &address) {
+  // EXPERIMENTING
+  void *context = zmq_ctx_new();
   // create
   auto fd = ::socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
   if (fd < 0)

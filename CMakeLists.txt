@@ -41,4 +41,5 @@ option(BUILD_ZEROMQ "Enable ZeroMQ example?" OFF)
 
 if(BUILD_ZEROMQ)
   find_package(ZeroMQ REQUIRED)
+  include_directories("${ZeroMQ_INCLUDE_DIR}")
 endif(BUILD_ZEROMQ)
