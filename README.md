@@ -147,7 +147,7 @@ Data can now be found in the `$CONDA_PREFIX/share/roq-data/` directory.
 ### Gateways (install, configure, run)
 
 
-#### [Deribit](https://roq-trading.com/docs/gateways/deribit/index.html)
+#### [Deribit](https://roq-trading.com/docs/reference/gateways/roq-deribit/)
 
 ```bash
 conda install -y --channel https://roq-trading.com/conda/stable \
@@ -179,7 +179,7 @@ roq-deribit \
     --client_listen_address ~/deribit.sock
 ```
 
-#### [Coinbase Pro](https://roq-trading.com/docs/gateways/deribit/index.html)
+#### [Coinbase Pro](https://roq-trading.com/docs/reference/gateways/roq-coinbase-pro/)
 
 ```bash
 conda install -y --channel https://roq-trading.com/conda/stable \
