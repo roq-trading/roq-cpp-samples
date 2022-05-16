@@ -91,6 +91,7 @@ conda install -y \
     make \
     cmake \
     abseil-cpp \
+    flatbuffers \
     tomlplusplus
 
 conda install -y --channel https://roq-trading.com/conda/stable \
