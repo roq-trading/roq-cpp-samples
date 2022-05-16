@@ -13,7 +13,7 @@ target_link_libraries(
   roq-logging::roq-logging
   tomlplusplus::tomlplusplus
   absl::flags
-  fmt::fmt-header-only)
+  fmt::fmt)
 
 target_compile_features("${TARGET_NAME}" PUBLIC cxx_std_20)
 
