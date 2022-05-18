@@ -21,7 +21,7 @@ namespace algo_proto {
 
 namespace {
 template <typename Callback>
-bool find(auto &node, const std::string_view &key, Callback callback) {
+bool find(auto &node, std::string_view const &key, Callback callback) {
   if (!node.is_table()) {
     log::warn("Unexpected: node is not a table"sv);
     return false;
@@ -86,7 +86,7 @@ auto parse_strategy(auto &node) {
 }
 }  // namespace
 
-Config::Config(const std::string_view &path) {
+Config::Config(std::string_view const &path) {
   auto root = toml::parse_file(path);
   if (find(root, "strategies"sv, [&](auto &node) {
         auto table = node.as_table();

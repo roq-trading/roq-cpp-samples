@@ -35,14 +35,14 @@ R create(Context &context, int type) {
 Socket::Socket(Context &context, int type) : handle_(create<decltype(handle_)>(context, type)) {
 }
 
-void Socket::setsockopt(int option_name, const void *option_value, size_t option_len) {
+void Socket::setsockopt(int option_name, void const *option_value, size_t option_len) {
   auto result = zmq_setsockopt(handle_.get(), option_name, option_value, option_len);
   if (result == -1)
     throw SystemError{std::make_error_code(static_cast<std::errc>(errno)), "zmq_setsockopt"sv};
   assert(result == 0);
 }
 
-void Socket::bind(const std::string_view &endpoint) {
+void Socket::bind(std::string_view const &endpoint) {
   std::string tmp{endpoint};
   auto result = zmq_bind(handle_.get(), tmp.c_str());
   if (result == -1)
@@ -50,7 +50,7 @@ void Socket::bind(const std::string_view &endpoint) {
   assert(result == 0);
 }
 
-void Socket::connect(const std::string_view &endpoint) {
+void Socket::connect(std::string_view const &endpoint) {
   std::string tmp{endpoint};
   auto result = zmq_connect(handle_.get(), tmp.c_str());
   if (result == -1)

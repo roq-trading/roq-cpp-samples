@@ -11,23 +11,23 @@ namespace bridge {
 Bridge::Bridge(client::Dispatcher &dispatcher) : dispatcher_(dispatcher) {
 }
 
-void Bridge::operator()(const Event<Start> &) {
+void Bridge::operator()(Event<Start> const &) {
   // here you can create (initialize, start threads, etc.)
 }
 
-void Bridge::operator()(const Event<Stop> &) {
+void Bridge::operator()(Event<Stop> const &) {
   // here you can tear down (destroy, stop threads, etc.)
 }
 
-void Bridge::operator()(const Event<Timer> &) {
+void Bridge::operator()(Event<Timer> const &) {
   // this is where you can poll other resources
 }
 
-void Bridge::operator()(const Event<Connected> &) {
+void Bridge::operator()(Event<Connected> const &) {
   // connected to gateway
 }
 
-void Bridge::operator()(const Event<Disconnected> &) {
+void Bridge::operator()(Event<Disconnected> const &) {
   // disconnected from gateway
 }
 

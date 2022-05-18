@@ -13,16 +13,16 @@ class Bridge final : public client::Handler {
   explicit Bridge(client::Dispatcher &);
 
   Bridge(Bridge &&) = default;
-  Bridge(const Bridge &) = delete;
+  Bridge(Bridge const &) = delete;
 
  protected:
   // these methods have special meaning for a bridge application
-  void operator()(const Event<Start> &) override;
-  void operator()(const Event<Stop> &) override;
-  void operator()(const Event<Timer> &) override;
+  void operator()(Event<Start> const &) override;
+  void operator()(Event<Stop> const &) override;
+  void operator()(Event<Timer> const &) override;
   // these methods are similar to trader applications
-  void operator()(const Event<Connected> &) override;
-  void operator()(const Event<Disconnected> &) override;
+  void operator()(Event<Connected> const &) override;
+  void operator()(Event<Disconnected> const &) override;
   // ... etc.
 
  private:

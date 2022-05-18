@@ -13,19 +13,19 @@ namespace example_5 {
 Strategy::Strategy(client::Dispatcher &dispatcher) : dispatcher_(dispatcher), producer_(dispatcher) {
 }
 
-void Strategy::operator()(const Event<Start> &event) {
+void Strategy::operator()(Event<Start> const &event) {
   producer_(event);
 }
 
-void Strategy::operator()(const Event<Stop> &event) {
+void Strategy::operator()(Event<Stop> const &event) {
   producer_(event);
 }
 
-void Strategy::operator()(const Event<TopOfBook> &event) {
+void Strategy::operator()(Event<TopOfBook> const &event) {
   log::info("[{}:{}] TopOfBook={}"sv, event.message_info.source, event.message_info.source_name, event.value);
 }
 
-void Strategy::operator()(const Event<client::CustomMessage> &event) {
+void Strategy::operator()(Event<client::CustomMessage> const &event) {
   log::info("[{}:{}] CustomMessage={}"sv, event.message_info.source, event.message_info.source_name, event.value);
 }
 

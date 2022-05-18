@@ -14,19 +14,19 @@ class Strategy final : public client::Handler {
   explicit Strategy(client::Dispatcher &);
 
   Strategy(Strategy &&) = default;
-  Strategy(const Strategy &) = delete;
+  Strategy(Strategy const &) = delete;
 
  protected:
-  void operator()(const Event<Connected> &) override;
-  void operator()(const Event<Disconnected> &) override;
-  void operator()(const Event<DownloadBegin> &) override;
-  void operator()(const Event<DownloadEnd> &) override;
-  void operator()(const Event<GatewayStatus> &) override;
-  void operator()(const Event<ReferenceData> &) override;
-  void operator()(const Event<MarketStatus> &) override;
-  void operator()(const Event<MarketByPriceUpdate> &) override;
-  void operator()(const Event<MarketByOrderUpdate> &) override;
-  void operator()(const Event<TradeSummary> &) override;
+  void operator()(Event<Connected> const &) override;
+  void operator()(Event<Disconnected> const &) override;
+  void operator()(Event<DownloadBegin> const &) override;
+  void operator()(Event<DownloadEnd> const &) override;
+  void operator()(Event<GatewayStatus> const &) override;
+  void operator()(Event<ReferenceData> const &) override;
+  void operator()(Event<MarketStatus> const &) override;
+  void operator()(Event<MarketByPriceUpdate> const &) override;
+  void operator()(Event<MarketByOrderUpdate> const &) override;
+  void operator()(Event<TradeSummary> const &) override;
 
  private:
   client::Dispatcher &dispatcher_;

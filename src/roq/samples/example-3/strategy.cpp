@@ -21,7 +21,7 @@ Strategy::Strategy(client::Dispatcher &dispatcher)
     : dispatcher_(dispatcher), instrument_(Flags::exchange(), Flags::symbol(), Flags::account()) {
 }
 
-void Strategy::operator()(const Event<Timer> &event) {
+void Strategy::operator()(Event<Timer> const &event) {
   // note! using system clock (*not* the wall clock)
   if (event.value.now < next_sample_)
     return;
@@ -32,42 +32,42 @@ void Strategy::operator()(const Event<Timer> &event) {
   // possible extension: reset request timeout
 }
 
-void Strategy::operator()(const Event<Connected> &event) {
+void Strategy::operator()(Event<Connected> const &event) {
   dispatch(event);
 }
 
-void Strategy::operator()(const Event<Disconnected> &event) {
+void Strategy::operator()(Event<Disconnected> const &event) {
   dispatch(event);
 }
 
-void Strategy::operator()(const Event<DownloadBegin> &event) {
+void Strategy::operator()(Event<DownloadBegin> const &event) {
   dispatch(event);
 }
 
-void Strategy::operator()(const Event<DownloadEnd> &event) {
+void Strategy::operator()(Event<DownloadEnd> const &event) {
   dispatch(event);
   if (utils::update(max_order_id_, event.value.max_order_id)) {
     log::info("max_order_id={}"sv, max_order_id_);
   }
 }
 
-void Strategy::operator()(const Event<GatewayStatus> &event) {
+void Strategy::operator()(Event<GatewayStatus> const &event) {
   dispatch(event);
 }
 
-void Strategy::operator()(const Event<ReferenceData> &event) {
+void Strategy::operator()(Event<ReferenceData> const &event) {
   dispatch(event);
 }
 
-void Strategy::operator()(const Event<MarketStatus> &event) {
+void Strategy::operator()(Event<MarketStatus> const &event) {
   dispatch(event);
 }
 
-void Strategy::operator()(const Event<MarketByPriceUpdate> &event) {
+void Strategy::operator()(Event<MarketByPriceUpdate> const &event) {
   dispatch(event);
 }
 
-void Strategy::operator()(const Event<OrderAck> &event) {
+void Strategy::operator()(Event<OrderAck> const &event) {
   log::info("OrderAck={}"sv, event.value);
   auto &order_ack = event.value;
   if (utils::has_request_completed(order_ack.status)) {
@@ -75,7 +75,7 @@ void Strategy::operator()(const Event<OrderAck> &event) {
   }
 }
 
-void Strategy::operator()(const Event<OrderUpdate> &event) {
+void Strategy::operator()(Event<OrderUpdate> const &event) {
   log::info("OrderUpdate={}"sv, event.value);
   dispatch(event);  // update position
   auto &order_update = event.value;
@@ -85,15 +85,15 @@ void Strategy::operator()(const Event<OrderUpdate> &event) {
   }
 }
 
-void Strategy::operator()(const Event<TradeUpdate> &event) {
+void Strategy::operator()(Event<TradeUpdate> const &event) {
   log::info("TradeUpdate={}"sv, event.value);
 }
 
-void Strategy::operator()(const Event<PositionUpdate> &event) {
+void Strategy::operator()(Event<PositionUpdate> const &event) {
   dispatch(event);
 }
 
-void Strategy::operator()(const Event<FundsUpdate> &event) {
+void Strategy::operator()(Event<FundsUpdate> const &event) {
   log::info("FundsUpdate={}"sv, event.value);
 }
 

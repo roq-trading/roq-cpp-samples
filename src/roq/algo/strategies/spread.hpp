@@ -13,21 +13,21 @@ namespace strategies {
 
 class Spread final : public Base {
  public:
-  Spread(framework::Dispatcher &, const framework::State &, const std::string_view &routing_id, const CreateOrder &);
+  Spread(framework::Dispatcher &, framework::State const &, std::string_view const &routing_id, CreateOrder const &);
 
-  void operator()(const ModifyOrder &);
-  void operator()(const CancelOrder &);
+  void operator()(ModifyOrder const &);
+  void operator()(CancelOrder const &);
 
  protected:
-  void operator()(const Ready &) override;
-  void operator()(const NotReady &) override;
+  void operator()(Ready const &) override;
+  void operator()(NotReady const &) override;
 
-  void operator()(const Event<Timer> &) override;
+  void operator()(Event<Timer> const &) override;
 
-  void operator()(const Event<TopOfBook> &) override;
-  void operator()(const Event<MarketByPriceUpdate> &) override;
+  void operator()(Event<TopOfBook> const &) override;
+  void operator()(Event<MarketByPriceUpdate> const &) override;
 
-  void operator()(const Event<PositionUpdate> &) override;
+  void operator()(Event<PositionUpdate> const &) override;
 
   void update();
 
@@ -36,8 +36,8 @@ class Spread final : public Base {
 
  private:
   const Side side_;
-  const double quantity_;
-  const double price_;
+  double const quantity_;
+  double const price_;
 };
 
 }  // namespace strategies

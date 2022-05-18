@@ -15,7 +15,7 @@ namespace roq {
 namespace samples {
 namespace event_log {
 
-Processor::Processor(const std::string_view &path) : reader_(client::EventLogReaderFactory::create(path)) {
+Processor::Processor(std::string_view const &path) : reader_(client::EventLogReaderFactory::create(path)) {
 }
 
 void Processor::dispatch() {
@@ -28,97 +28,97 @@ void Processor::dispatch() {
       continue;
     // if you get here you're probably tailing an event-log...
     // use filesystem monitoring to detect updates, or simply wait
-    const auto delay = 10s;
+    auto const delay = 10s;
     log::info("sleeping for {}..."sv, delay);
     std::this_thread::sleep_for(delay);
   }
 }
 
-void Processor::operator()(const Event<GatewaySettings> &event) {
+void Processor::operator()(Event<GatewaySettings> const &event) {
   log::info("{}"sv, event);
 }
 
-void Processor::operator()(const Event<StreamStatus> &event) {
+void Processor::operator()(Event<StreamStatus> const &event) {
   log::info("{}"sv, event);
 }
 
-void Processor::operator()(const Event<ExternalLatency> &event) {
+void Processor::operator()(Event<ExternalLatency> const &event) {
   log::info("{}"sv, event);
 }
 
-void Processor::operator()(const Event<RateLimitTrigger> &event) {
+void Processor::operator()(Event<RateLimitTrigger> const &event) {
   log::info("{}"sv, event);
 }
 
-void Processor::operator()(const Event<GatewayStatus> &event) {
+void Processor::operator()(Event<GatewayStatus> const &event) {
   log::info("{}"sv, event);
 }
 
-void Processor::operator()(const Event<ReferenceData> &event) {
+void Processor::operator()(Event<ReferenceData> const &event) {
   log::info("{}"sv, event);
 }
 
-void Processor::operator()(const Event<MarketStatus> &event) {
+void Processor::operator()(Event<MarketStatus> const &event) {
   log::info("{}"sv, event);
 }
 
-void Processor::operator()(const Event<TopOfBook> &event) {
+void Processor::operator()(Event<TopOfBook> const &event) {
   log::info("{}"sv, event);
 }
 
-void Processor::operator()(const Event<MarketByPriceUpdate> &event) {
+void Processor::operator()(Event<MarketByPriceUpdate> const &event) {
   log::info("{}"sv, event);
 }
 
-void Processor::operator()(const Event<MarketByOrderUpdate> &event) {
+void Processor::operator()(Event<MarketByOrderUpdate> const &event) {
   log::info("{}"sv, event);
 }
 
-void Processor::operator()(const Event<TradeSummary> &event) {
+void Processor::operator()(Event<TradeSummary> const &event) {
   log::info("{}"sv, event);
 }
 
-void Processor::operator()(const Event<StatisticsUpdate> &event) {
+void Processor::operator()(Event<StatisticsUpdate> const &event) {
   log::info("{}"sv, event);
 }
 
-void Processor::operator()(const Event<CreateOrder> &event) {
+void Processor::operator()(Event<CreateOrder> const &event) {
   log::info("{}"sv, event);
 }
 
-void Processor::operator()(const Event<ModifyOrder> &event) {
+void Processor::operator()(Event<ModifyOrder> const &event) {
   log::info("{}"sv, event);
 }
 
-void Processor::operator()(const Event<CancelOrder> &event) {
+void Processor::operator()(Event<CancelOrder> const &event) {
   log::info("{}"sv, event);
 }
 
-void Processor::operator()(const Event<CancelAllOrders> &event) {
+void Processor::operator()(Event<CancelAllOrders> const &event) {
   log::info("{}"sv, event);
 }
 
-void Processor::operator()(const Event<OrderAck> &event) {
+void Processor::operator()(Event<OrderAck> const &event) {
   log::info("{}"sv, event);
 }
 
-void Processor::operator()(const Event<OrderUpdate> &event) {
+void Processor::operator()(Event<OrderUpdate> const &event) {
   log::info("{}"sv, event);
 }
 
-void Processor::operator()(const Event<TradeUpdate> &event) {
+void Processor::operator()(Event<TradeUpdate> const &event) {
   log::info("{}"sv, event);
 }
 
-void Processor::operator()(const Event<PositionUpdate> &event) {
+void Processor::operator()(Event<PositionUpdate> const &event) {
   log::info("{}"sv, event);
 }
 
-void Processor::operator()(const Event<FundsUpdate> &event) {
+void Processor::operator()(Event<FundsUpdate> const &event) {
   log::info("{}"sv, event);
 }
 
-void Processor::operator()(const Event<CustomMetricsUpdate> &event) {
+void Processor::operator()(Event<CustomMetricsUpdate> const &event) {
   log::info("{}"sv, event);
 }
 

@@ -18,12 +18,12 @@ namespace example_5 {
 Producer::Producer(client::Dispatcher &dispatcher) : dispatcher_(dispatcher) {
 }
 
-void Producer::operator()(const Event<Start> &) {
+void Producer::operator()(Event<Start> const &) {
   assert(!static_cast<bool>(thread_) && !terminating_);
   thread_ = std::make_unique<std::thread>([this]() { run(); });
 }
 
-void Producer::operator()(const Event<Stop> &) {
+void Producer::operator()(Event<Stop> const &) {
   assert(static_cast<bool>(thread_) && !terminating_);
   terminating_ = true;
   thread_->join();

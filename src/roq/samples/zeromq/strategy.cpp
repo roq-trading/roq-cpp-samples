@@ -25,7 +25,7 @@ auto create_socket(auto &context) {
 Strategy::Strategy(client::Dispatcher &dispatcher) : dispatcher_(dispatcher), socket_(create_socket(context_)) {
 }
 
-void Strategy::operator()(const Event<TopOfBook> &event) {
+void Strategy::operator()(Event<TopOfBook> const &event) {
   auto &[message_info, top_of_book] = event;
   auto &layer = top_of_book.layer;
   // json message

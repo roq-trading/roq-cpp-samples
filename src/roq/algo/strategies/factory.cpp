@@ -13,15 +13,15 @@ namespace algo {
 namespace strategies {
 
 Factory::Factory(
-    const std::string_view &type,
-    const std::span<const framework::Instrument> &instruments,
-    const std::span<const framework::Market *> &markets,
-    const std::span<const cache::Gateway> &gateways)
+    std::string_view const &type,
+    std::span<const framework::Instrument> const &instruments,
+    std::span<framework::Market const *> const &markets,
+    std::span<const cache::Gateway> const &gateways)
     : type_(type), state_(instruments, markets, gateways) {
 }
 
 std::unique_ptr<framework::Handler> Factory::create(
-    framework::Dispatcher &dispatcher, const std::string_view &routing_id, const CreateOrder &create_order) {
+    framework::Dispatcher &dispatcher, std::string_view const &routing_id, CreateOrder const &create_order) {
   if (type_.compare("spread"sv) == 0)
     return std::make_unique<Spread>(dispatcher, state_, routing_id, create_order);
   throw RuntimeError(R"(Unknown type="{}")"sv, type_);

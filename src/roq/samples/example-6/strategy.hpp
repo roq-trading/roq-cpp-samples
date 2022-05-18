@@ -13,47 +13,47 @@ class Strategy final : public client::Handler {
   explicit Strategy(client::Dispatcher &);
 
   Strategy(Strategy &&) = default;
-  Strategy(const Strategy &) = delete;
+  Strategy(Strategy const &) = delete;
 
  protected:
   // host
-  void operator()(const Event<Timer> &) override;
-  void operator()(const Event<Connected> &) override;
-  void operator()(const Event<Disconnected> &) override;
+  void operator()(Event<Timer> const &) override;
+  void operator()(Event<Connected> const &) override;
+  void operator()(Event<Disconnected> const &) override;
 
   // control
-  void operator()(const Event<DownloadBegin> &) override;
-  void operator()(const Event<DownloadEnd> &) override;
+  void operator()(Event<DownloadBegin> const &) override;
+  void operator()(Event<DownloadEnd> const &) override;
 
   // config
-  void operator()(const Event<GatewaySettings> &) override;
+  void operator()(Event<GatewaySettings> const &) override;
 
   // stream
-  void operator()(const Event<StreamStatus> &) override;
+  void operator()(Event<StreamStatus> const &) override;
 
   // service
-  void operator()(const Event<GatewayStatus> &) override;
+  void operator()(Event<GatewayStatus> const &) override;
 
   // market data
-  void operator()(const Event<ReferenceData> &) override;
-  void operator()(const Event<MarketStatus> &) override;
-  void operator()(const Event<TopOfBook> &) override;
-  void operator()(const Event<MarketByPriceUpdate> &) override;
-  void operator()(const Event<MarketByOrderUpdate> &) override;
-  void operator()(const Event<TradeSummary> &) override;
-  void operator()(const Event<StatisticsUpdate> &) override;
+  void operator()(Event<ReferenceData> const &) override;
+  void operator()(Event<MarketStatus> const &) override;
+  void operator()(Event<TopOfBook> const &) override;
+  void operator()(Event<MarketByPriceUpdate> const &) override;
+  void operator()(Event<MarketByOrderUpdate> const &) override;
+  void operator()(Event<TradeSummary> const &) override;
+  void operator()(Event<StatisticsUpdate> const &) override;
 
   // order management
-  void operator()(const Event<OrderAck> &) override;
-  void operator()(const Event<OrderUpdate> &) override;
-  void operator()(const Event<TradeUpdate> &) override;
+  void operator()(Event<OrderAck> const &) override;
+  void operator()(Event<OrderUpdate> const &) override;
+  void operator()(Event<TradeUpdate> const &) override;
 
   // account management
-  void operator()(const Event<PositionUpdate> &) override;
-  void operator()(const Event<FundsUpdate> &) override;
+  void operator()(Event<PositionUpdate> const &) override;
+  void operator()(Event<FundsUpdate> const &) override;
 
   template <typename T>
-  void check(const Event<T> &);
+  void check(Event<T> const &);
 
  private:
   client::Dispatcher &dispatcher_;

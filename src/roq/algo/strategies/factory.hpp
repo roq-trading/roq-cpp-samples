@@ -24,18 +24,18 @@ namespace strategies {
 class Factory final : public framework::Factory {
  public:
   Factory(
-      const std::string_view &type,
-      const std::span<const framework::Instrument> &,
-      const std::span<const framework::Market *> &,
-      const std::span<const cache::Gateway> &);
+      std::string_view const &type,
+      std::span<const framework::Instrument> const &,
+      std::span<framework::Market const *> const &,
+      std::span<const cache::Gateway> const &);
 
   Factory(Factory &&) = default;
-  Factory(const Factory &) = delete;
+  Factory(Factory const &) = delete;
 
-  operator const framework::State &() const override { return state_; }
+  operator framework::State const &() const override { return state_; }
 
   std::unique_ptr<framework::Handler> create(
-      framework::Dispatcher &, const std::string_view &routing_id, const CreateOrder &) override;
+      framework::Dispatcher &, std::string_view const &routing_id, CreateOrder const &) override;
 
  private:
   const std::string type_;

@@ -26,7 +26,7 @@ int Application::main(int argc, char **argv) {
   return main_helper(args);
 }
 
-int Application::main_helper(const std::span<std::string_view> &args) {
+int Application::main_helper(std::span<std::string_view> const &args) {
   assert(!std::empty(args));
   if (std::size(args) == 1)
     log::fatal("Expected arguments"sv);

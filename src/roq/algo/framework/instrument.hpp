@@ -16,7 +16,7 @@ namespace framework {
 struct Instrument final {
   Instrument() = default;
 
-  bool ready(const cache::Gateway &, const cache::Market &, const std::string_view &account) const;
+  bool ready(cache::Gateway const &, cache::Market const &, std::string_view const &account) const;
 
   Exchange exchange;
   Symbol symbol;

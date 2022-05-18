@@ -15,10 +15,10 @@ namespace algo_proto {
 
 class Config final : public client::Config {
  public:
-  Config(const std::string_view &path);
+  Config(std::string_view const &path);
 
   Config(Config &&) = default;
-  Config(const Config &) = delete;
+  Config(Config const &) = delete;
 
  protected:
   void dispatch(Handler &handler) const override;

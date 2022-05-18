@@ -13,35 +13,35 @@ Strategy::Strategy(client::Dispatcher &dispatcher)
       cash_(Flags::cash_exchange(), Flags::cash_symbol()) {
 }
 
-void Strategy::operator()(const Event<Connected> &event) {
+void Strategy::operator()(Event<Connected> const &event) {
   dispatch(event);
 }
 
-void Strategy::operator()(const Event<Disconnected> &event) {
+void Strategy::operator()(Event<Disconnected> const &event) {
   dispatch(event);
 }
 
-void Strategy::operator()(const Event<DownloadBegin> &event) {
+void Strategy::operator()(Event<DownloadBegin> const &event) {
   dispatch(event);
 }
 
-void Strategy::operator()(const Event<DownloadEnd> &event) {
+void Strategy::operator()(Event<DownloadEnd> const &event) {
   dispatch(event);
 }
 
-void Strategy::operator()(const Event<GatewayStatus> &event) {
+void Strategy::operator()(Event<GatewayStatus> const &event) {
   dispatch(event);
 }
 
-void Strategy::operator()(const Event<ReferenceData> &event) {
+void Strategy::operator()(Event<ReferenceData> const &event) {
   dispatch(event);
 }
 
-void Strategy::operator()(const Event<MarketStatus> &event) {
+void Strategy::operator()(Event<MarketStatus> const &event) {
   dispatch(event);
 }
 
-void Strategy::operator()(const Event<MarketByPriceUpdate> &event) {
+void Strategy::operator()(Event<MarketByPriceUpdate> const &event) {
   dispatch(event);
   if (futures_.is_ready() && cash_.is_ready()) {
     // TODO(thraneh): compute basis

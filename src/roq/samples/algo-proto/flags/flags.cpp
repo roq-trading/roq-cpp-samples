@@ -70,12 +70,12 @@ std::string_view Flags::side() {
 }
 
 double Flags::quantity() {
-  static const double result{absl::GetFlag(FLAGS_quantity)};
+  static double const result{absl::GetFlag(FLAGS_quantity)};
   return result;
 }
 
 double Flags::price() {
-  static const double result{absl::GetFlag(FLAGS_price)};
+  static double const result{absl::GetFlag(FLAGS_price)};
   return result;
 }
 

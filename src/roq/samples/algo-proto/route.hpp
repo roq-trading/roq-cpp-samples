@@ -13,17 +13,17 @@ namespace samples {
 namespace algo_proto {
 
 struct Route final {
-  Route(uint32_t market_id, const std::string_view &exchange, const std::string_view &symbol);
+  Route(uint32_t market_id, std::string_view const &exchange, std::string_view const &symbol);
 
   Route(Route &&) = default;
-  Route(const Route &) = delete;
+  Route(Route const &) = delete;
 
   uint8_t get_source() const { return market_.get_source(); }
 
-  operator const algo::framework::Market &() const { return market_; }
+  operator algo::framework::Market const &() const { return market_; }
 
   template <typename T, typename Callback>
-  bool dispatch(const Event<T> &event, Callback callback) {
+  bool dispatch(Event<T> const &event, Callback callback) {
     if (!market_(event))
       return false;
     for (auto strategy_id : strategies_)

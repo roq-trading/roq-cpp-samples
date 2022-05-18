@@ -15,7 +15,7 @@ namespace algo {
 namespace strategies {
 
 namespace {
-auto create_order_managers(Base &base, const framework::State &state, const CreateOrder &create_order) {
+auto create_order_managers(Base &base, framework::State const &state, CreateOrder const &create_order) {
   std::vector<OrderManager> result;
   result.reserve(std::size(state));
   for (size_t index = 0; index < std::size(state); ++index) {
@@ -38,58 +38,58 @@ auto create_order_managers(Base &base, const framework::State &state, const Crea
 
 Base::Base(
     framework::Dispatcher &dispatcher,
-    const framework::State &state,
-    const std::string_view &routing_id,
-    const CreateOrder &create_order)
+    framework::State const &state,
+    std::string_view const &routing_id,
+    CreateOrder const &create_order)
     : dispatcher_(dispatcher), state_(state), routing_id_(routing_id), account_(create_order.account),
       order_managers_(create_order_managers(*this, state_, create_order)), ready_by_instrument_(std::size(state_)) {
   assert(std::empty(create_order.routing_id));
 }
 
-void Base::operator()(const Event<Connected> &event) {
+void Base::operator()(Event<Connected> const &event) {
   update(event);
 }
 
-void Base::operator()(const Event<Disconnected> &event) {
+void Base::operator()(Event<Disconnected> const &event) {
   update(event);
 }
 
-void Base::operator()(const Event<DownloadBegin> &event) {
+void Base::operator()(Event<DownloadBegin> const &event) {
   update(event);
 }
 
-void Base::operator()(const Event<DownloadEnd> &event) {
+void Base::operator()(Event<DownloadEnd> const &event) {
   update(event);
 }
 
-void Base::operator()(const Event<GatewaySettings> &event) {
+void Base::operator()(Event<GatewaySettings> const &event) {
   update(event);
 }
 
-void Base::operator()(const Event<GatewayStatus> &event) {
+void Base::operator()(Event<GatewayStatus> const &event) {
   update(event);
 }
 
-void Base::operator()(const Event<ReferenceData> &event) {
+void Base::operator()(Event<ReferenceData> const &event) {
   update(event);
 }
 
-void Base::operator()(const Event<MarketStatus> &event) {
+void Base::operator()(Event<MarketStatus> const &event) {
   // XXX currently managed by the instrument -- maybe we need more control (like cancel-only)
   update(event);
 }
 
-void Base::operator()(const Event<OrderAck> &event) {
+void Base::operator()(Event<OrderAck> const &event) {
   dispatch(event);
 }
 
-void Base::operator()(const Event<OrderUpdate> &event) {
+void Base::operator()(Event<OrderUpdate> const &event) {
   dispatch(event);
 }
 
 // note! the cached state is already updated prior to this method being called
 template <typename T>
-void Base::update(const Event<T> &event) {
+void Base::update(Event<T> const &event) {
   auto ready = true;
   for (size_t index = 0; index < std::size(state_); ++index) {
     // note! vector<bool> doesn't support reference to item
@@ -111,7 +111,7 @@ void Base::update(const Event<T> &event) {
 
 // note! the order managers will themselves maintain the lookup table
 template <typename T>
-void Base::dispatch(const Event<T> &event) {
+void Base::dispatch(Event<T> const &event) {
   auto &[message_info, value] = event;
   auto iter = order_id_to_order_manager_index_.find(value.order_id);
   if (iter != std::end(order_id_to_order_manager_index_)) {

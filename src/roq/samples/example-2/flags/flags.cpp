@@ -62,7 +62,7 @@ std::string_view Flags::cash_symbol() {
 }
 
 double Flags::alpha() {
-  static const double result = absl::GetFlag(FLAGS_alpha);
+  static double const result = absl::GetFlag(FLAGS_alpha);
   return result;
 }
 

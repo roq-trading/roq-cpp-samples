@@ -17,46 +17,46 @@ namespace strategies {
 
 Spread::Spread(
     framework::Dispatcher &dispatcher,
-    const framework::State &state,
-    const std::string_view &routing_id,
-    const CreateOrder &create_order)
+    framework::State const &state,
+    std::string_view const &routing_id,
+    CreateOrder const &create_order)
     : Base(dispatcher, state, routing_id, create_order), side_(create_order.side), quantity_(create_order.quantity),
       price_(create_order.price) {
   // XXX tick size + min trade vol
   // XXX md ready
 }
 
-void Spread::operator()(const ModifyOrder &) {
+void Spread::operator()(ModifyOrder const &) {
   // user requests quantity or price change
 }
 
-void Spread::operator()(const CancelOrder &) {
+void Spread::operator()(CancelOrder const &) {
   // user request cancelation
   // orders?
   // yes: remove + async ack
   // no: ack
 }
 
-void Spread::operator()(const Ready &) {
+void Spread::operator()(Ready const &) {
   log::debug("READY!"sv);
   for (auto &order_manager : order_managers_)
     order_manager.start();
   update();
 }
 
-void Spread::operator()(const NotReady &) {
+void Spread::operator()(NotReady const &) {
   for (auto &order_manager : order_managers_)
     order_manager.stop();
 }
 
-void Spread::operator()(const Event<Timer> &) {
+void Spread::operator()(Event<Timer> const &) {
   // !ready -> try cancel orders?
 }
 
-void Spread::operator()(const Event<TopOfBook> &) {
+void Spread::operator()(Event<TopOfBook> const &) {
 }
 
-void Spread::operator()(const Event<MarketByPriceUpdate> &) {
+void Spread::operator()(Event<MarketByPriceUpdate> const &) {
   // auto spread = current_spread();
   // log::info("spread={}"sv, spread);
   update();
@@ -66,7 +66,7 @@ void Spread::operator()(const Event<MarketByPriceUpdate> &) {
   // supports(0, SupportType::MODIFY_ORDER);
 }
 
-void Spread::operator()(const Event<PositionUpdate> &) {
+void Spread::operator()(Event<PositionUpdate> const &) {
 }
 
 // note! it's quicker to loop all instead of looking up what instrument has updated

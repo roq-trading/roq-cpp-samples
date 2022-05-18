@@ -16,21 +16,21 @@ namespace example_2 {
 
 class Instrument final {
  public:
-  Instrument(const std::string_view &exchange, const std::string_view &symbol);
+  Instrument(std::string_view const &exchange, std::string_view const &symbol);
 
   Instrument(Instrument &&) = default;
-  Instrument(const Instrument &) = delete;
+  Instrument(Instrument const &) = delete;
 
   bool is_ready() const { return ready_; }
 
-  void operator()(const Connected &);
-  void operator()(const Disconnected &);
-  void operator()(const DownloadBegin &);
-  void operator()(const DownloadEnd &);
-  void operator()(const GatewayStatus &);
-  void operator()(const ReferenceData &);
-  void operator()(const MarketStatus &);
-  void operator()(const MarketByPriceUpdate &);
+  void operator()(Connected const &);
+  void operator()(Disconnected const &);
+  void operator()(DownloadBegin const &);
+  void operator()(DownloadEnd const &);
+  void operator()(GatewayStatus const &);
+  void operator()(ReferenceData const &);
+  void operator()(MarketStatus const &);
+  void operator()(MarketByPriceUpdate const &);
 
  protected:
   void update_model();

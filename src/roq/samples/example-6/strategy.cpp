@@ -13,88 +13,88 @@ namespace example_6 {
 Strategy::Strategy(client::Dispatcher &dispatcher) : dispatcher_(dispatcher) {
 }
 
-void Strategy::operator()(const Event<Timer> &event) {
+void Strategy::operator()(Event<Timer> const &event) {
   check(event);
 }
 
-void Strategy::operator()(const Event<Connected> &event) {
+void Strategy::operator()(Event<Connected> const &event) {
   check(event);
 }
 
-void Strategy::operator()(const Event<Disconnected> &event) {
+void Strategy::operator()(Event<Disconnected> const &event) {
   check(event);
 }
 
-void Strategy::operator()(const Event<DownloadBegin> &event) {
+void Strategy::operator()(Event<DownloadBegin> const &event) {
   check(event);
 }
 
-void Strategy::operator()(const Event<DownloadEnd> &event) {
+void Strategy::operator()(Event<DownloadEnd> const &event) {
   check(event);
 }
 
-void Strategy::operator()(const Event<GatewaySettings> &event) {
+void Strategy::operator()(Event<GatewaySettings> const &event) {
   check(event);
 }
 
-void Strategy::operator()(const Event<StreamStatus> &event) {
+void Strategy::operator()(Event<StreamStatus> const &event) {
   check(event);
 }
 
-void Strategy::operator()(const Event<GatewayStatus> &event) {
+void Strategy::operator()(Event<GatewayStatus> const &event) {
   check(event);
 }
 
-void Strategy::operator()(const Event<ReferenceData> &event) {
+void Strategy::operator()(Event<ReferenceData> const &event) {
   check(event);
 }
 
-void Strategy::operator()(const Event<MarketStatus> &event) {
+void Strategy::operator()(Event<MarketStatus> const &event) {
   check(event);
 }
 
-void Strategy::operator()(const Event<TopOfBook> &event) {
+void Strategy::operator()(Event<TopOfBook> const &event) {
   check(event);
 }
 
-void Strategy::operator()(const Event<MarketByPriceUpdate> &event) {
+void Strategy::operator()(Event<MarketByPriceUpdate> const &event) {
   check(event);
 }
 
-void Strategy::operator()(const Event<MarketByOrderUpdate> &event) {
+void Strategy::operator()(Event<MarketByOrderUpdate> const &event) {
   check(event);
 }
 
-void Strategy::operator()(const Event<TradeSummary> &event) {
+void Strategy::operator()(Event<TradeSummary> const &event) {
   check(event);
 }
 
-void Strategy::operator()(const Event<StatisticsUpdate> &event) {
+void Strategy::operator()(Event<StatisticsUpdate> const &event) {
   check(event);
 }
 
-void Strategy::operator()(const Event<OrderAck> &event) {
+void Strategy::operator()(Event<OrderAck> const &event) {
   check(event);
 }
 
-void Strategy::operator()(const Event<OrderUpdate> &event) {
+void Strategy::operator()(Event<OrderUpdate> const &event) {
   check(event);
 }
 
-void Strategy::operator()(const Event<TradeUpdate> &event) {
+void Strategy::operator()(Event<TradeUpdate> const &event) {
   check(event);
 }
 
-void Strategy::operator()(const Event<PositionUpdate> &event) {
+void Strategy::operator()(Event<PositionUpdate> const &event) {
   check(event);
 }
 
-void Strategy::operator()(const Event<FundsUpdate> &event) {
+void Strategy::operator()(Event<FundsUpdate> const &event) {
   check(event);
 }
 
 template <typename T>
-void Strategy::check(const Event<T> &event) {
+void Strategy::check(Event<T> const &event) {
   log::info("event={}"sv, event);
   auto receive_time = event.message_info.receive_time;
   log::debug<4>(

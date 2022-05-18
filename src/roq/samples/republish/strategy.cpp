@@ -45,7 +45,7 @@ void close_socket(auto fd) {
   if (fd > 0)
     ::close(fd);
 }
-void socket_sendto(const auto socket, const auto &address, const auto &message) {
+void socket_sendto(auto const socket, auto const &address, auto const &message) {
   auto res = ::sendto(
       socket,
       std::data(message),
@@ -69,7 +69,7 @@ Strategy::~Strategy() {
   }
 }
 
-void Strategy::operator()(const Event<TopOfBook> &event) {
+void Strategy::operator()(Event<TopOfBook> const &event) {
   auto &[message_info, top_of_book] = event;
   auto &layer = top_of_book.layer;
   // json message

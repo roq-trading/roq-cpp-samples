@@ -27,7 +27,7 @@ class EMA final {
   double update(double value);
 
  private:
-  const double alpha_;
+  double const alpha_;
   double value_ = NaN;
   uint32_t countdown_;
 };

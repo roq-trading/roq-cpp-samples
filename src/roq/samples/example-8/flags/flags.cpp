@@ -15,9 +15,9 @@ class TimePeriod final {
 
   TimePeriod(const std::chrono::nanoseconds value) : value_(absl::FromChrono(value)) {}  // NOLINT (allow implicit)
 
-  operator const absl::Duration &() const { return value_; }
+  operator absl::Duration const &() const { return value_; }
 
-  static std::string unparse(const TimePeriod &flag) { return absl::AbslUnparseFlag(flag.value_); }
+  static std::string unparse(TimePeriod const &flag) { return absl::AbslUnparseFlag(flag.value_); }
 
   static bool parse(absl::string_view text, TimePeriod *flag, std::string *error) {
     if (!absl::ParseFlag(text, &flag->value_, error)) {

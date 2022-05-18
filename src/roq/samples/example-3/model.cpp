@@ -26,7 +26,7 @@ void Model::reset() {
   buying_ = false;
 }
 
-Side Model::update(const Depth &depth) {
+Side Model::update(Depth const &depth) {
   auto result = Side::UNDEFINED;
 
   if (!validate(depth))
@@ -93,24 +93,24 @@ Side Model::update(const Depth &depth) {
   return result;
 }
 
-bool Model::validate(const Depth &depth) {  // require full depth
-  return std::accumulate(std::begin(depth), std::end(depth), true, [](bool value, const Layer &layer) {
+bool Model::validate(Depth const &depth) {  // require full depth
+  return std::accumulate(std::begin(depth), std::end(depth), true, [](bool value, Layer const &layer) {
     return value && utils::is_greater(layer.bid_quantity, 0.0) && utils::is_greater(layer.ask_quantity, 0.0);
   });
 }
 
-double Model::weighted_bid(const Depth &depth) {
+double Model::weighted_bid(Depth const &depth) {
   double sum_1 = 0.0, sum_2 = 0.0;
-  std::for_each(std::begin(depth), std::end(depth), [&](const Layer &layer) {
+  std::for_each(std::begin(depth), std::end(depth), [&](Layer const &layer) {
     sum_1 += layer.bid_quantity * layer.bid_price;
     sum_2 += layer.bid_quantity;
   });
   return sum_1 / sum_2;
 }
 
-double Model::weighted_ask(const Depth &depth) {
+double Model::weighted_ask(Depth const &depth) {
   double sum_1 = 0.0, sum_2 = 0.0;
-  std::for_each(std::begin(depth), std::end(depth), [&](const Layer &layer) {
+  std::for_each(std::begin(depth), std::end(depth), [&](Layer const &layer) {
     sum_1 += layer.ask_quantity * layer.ask_price;
     sum_2 += layer.ask_quantity;
   });

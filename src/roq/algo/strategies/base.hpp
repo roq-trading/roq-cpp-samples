@@ -19,17 +19,17 @@ namespace strategies {
 
 class Base : public framework::Handler {
  public:
-  Base(framework::Dispatcher &, const framework::State &, const std::string_view &routing_id, const CreateOrder &);
+  Base(framework::Dispatcher &, framework::State const &, std::string_view const &routing_id, CreateOrder const &);
 
   Base(Base &&) = default;
 
-  Base(const Base &) = delete;
+  Base(Base const &) = delete;
 
   bool ready() const { return ready_; }
 
   template <typename... Args>
   auto extract(size_t index, Args &&...args) const {
-    auto &market = static_cast<const cache::Market &>(state_.get_market(index));
+    auto &market = static_cast<cache::Market const &>(state_.get_market(index));
     return (*market.market_by_price).extract(std::forward<Args>(args)...);
   }
 
@@ -39,28 +39,28 @@ class Base : public framework::Handler {
   struct Ready final {};
   struct NotReady final {};
 
-  virtual void operator()(const Ready &) = 0;
-  virtual void operator()(const NotReady &) = 0;
+  virtual void operator()(Ready const &) = 0;
+  virtual void operator()(NotReady const &) = 0;
 
-  void operator()(const Event<Connected> &) override;
-  void operator()(const Event<Disconnected> &) override;
-  void operator()(const Event<DownloadBegin> &) override;
-  void operator()(const Event<DownloadEnd> &) override;
-  void operator()(const Event<GatewaySettings> &) override;
-  void operator()(const Event<GatewayStatus> &) override;
+  void operator()(Event<Connected> const &) override;
+  void operator()(Event<Disconnected> const &) override;
+  void operator()(Event<DownloadBegin> const &) override;
+  void operator()(Event<DownloadEnd> const &) override;
+  void operator()(Event<GatewaySettings> const &) override;
+  void operator()(Event<GatewayStatus> const &) override;
 
-  void operator()(const Event<ReferenceData> &) override;
-  void operator()(const Event<MarketStatus> &) override;
+  void operator()(Event<ReferenceData> const &) override;
+  void operator()(Event<MarketStatus> const &) override;
 
-  void operator()(const Event<OrderAck> &) override;
-  void operator()(const Event<OrderUpdate> &) override;
+  void operator()(Event<OrderAck> const &) override;
+  void operator()(Event<OrderUpdate> const &) override;
 
   template <typename T>
-  void dispatch(const Event<T> &);
+  void dispatch(Event<T> const &);
 
  public:
   framework::Dispatcher &dispatcher_;
-  const framework::State &state_;
+  framework::State const &state_;
   const RoutingId routing_id_;
   const Account account_;
   std::vector<OrderManager> order_managers_;
@@ -71,7 +71,7 @@ class Base : public framework::Handler {
 
  private:
   template <typename T>
-  void update(const Event<T> &);
+  void update(Event<T> const &);
 
   std::vector<bool> ready_by_instrument_;
   bool ready_ = false;

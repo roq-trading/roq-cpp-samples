@@ -16,12 +16,12 @@ class Strategy final : public client::Handler {
   explicit Strategy(client::Dispatcher &);
 
   Strategy(Strategy &&) = default;
-  Strategy(const Strategy &) = delete;
+  Strategy(Strategy const &) = delete;
 
  protected:
-  void operator()(const Event<Timer> &) override;
-  void operator()(const Event<MarketByPriceUpdate> &) override;
-  void operator()(const Event<TradeSummary> &) override;
+  void operator()(Event<Timer> const &) override;
+  void operator()(Event<MarketByPriceUpdate> const &) override;
+  void operator()(Event<TradeSummary> const &) override;
 
  private:
   client::Dispatcher &dispatcher_;

@@ -62,7 +62,7 @@ std::string_view Flags::symbol() {
 }
 
 bool Flags::simulation() {
-  static const bool result = absl::GetFlag(FLAGS_simulation);
+  static bool const result = absl::GetFlag(FLAGS_simulation);
   return result;
 }
 

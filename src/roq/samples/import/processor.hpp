@@ -16,10 +16,10 @@ namespace import {
 
 class Processor final {
  public:
-  explicit Processor(const std::string_view &path);
+  explicit Processor(std::string_view const &path);
 
   Processor(Processor &&) = default;
-  Processor(const Processor &) = delete;
+  Processor(Processor const &) = delete;
 
   ~Processor();
 

@@ -20,12 +20,12 @@ class Instrument final {
 
   using Depth = std::array<Layer, MAX_DEPTH>;
 
-  Instrument(const std::string_view &exchange, const std::string_view &symbol, const std::string_view &account);
+  Instrument(std::string_view const &exchange, std::string_view const &symbol, std::string_view const &account);
 
   Instrument(Instrument &&) = default;
-  Instrument(const Instrument &) = delete;
+  Instrument(Instrument const &) = delete;
 
-  operator const Depth &() const { return depth_; }
+  operator Depth const &() const { return depth_; }
 
   bool is_ready() const { return ready_; }
 
@@ -45,23 +45,23 @@ class Instrument final {
 
   bool can_trade(Side side) const;
 
-  void operator()(const Connected &);
-  void operator()(const Disconnected &);
-  void operator()(const DownloadBegin &);
-  void operator()(const DownloadEnd &);
-  void operator()(const GatewayStatus &);
-  void operator()(const ReferenceData &);
-  void operator()(const MarketStatus &);
-  void operator()(const MarketByPriceUpdate &);
-  void operator()(const OrderUpdate &);
-  void operator()(const PositionUpdate &);
+  void operator()(Connected const &);
+  void operator()(Disconnected const &);
+  void operator()(DownloadBegin const &);
+  void operator()(DownloadEnd const &);
+  void operator()(GatewayStatus const &);
+  void operator()(ReferenceData const &);
+  void operator()(MarketStatus const &);
+  void operator()(MarketByPriceUpdate const &);
+  void operator()(OrderUpdate const &);
+  void operator()(PositionUpdate const &);
 
  protected:
   void check_ready();
 
   void reset();
 
-  void validate(const Depth &);
+  void validate(Depth const &);
 
  private:
   const std::string_view exchange_;

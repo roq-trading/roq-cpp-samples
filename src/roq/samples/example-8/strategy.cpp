@@ -22,7 +22,7 @@ Strategy::Strategy(client::Dispatcher &dispatcher)
       market_by_price_(client::MarketByPriceFactory::create(Flags::exchange(), Flags::symbol())) {
 }
 
-void Strategy::operator()(const Event<Timer> &event) {
+void Strategy::operator()(Event<Timer> const &event) {
   auto &[message_info, timer] = event;
   if (active_ && next_info_ < timer.now) {
     next_info_ = timer.now + 5s;
@@ -36,7 +36,7 @@ void Strategy::operator()(const Event<Timer> &event) {
   }
 }
 
-void Strategy::operator()(const Event<MarketByPriceUpdate> &event) {
+void Strategy::operator()(Event<MarketByPriceUpdate> const &event) {
   (*market_by_price_)(event);
   auto bids = (*market_by_price_).bids();
   if (!std::empty(bids)) {
@@ -65,7 +65,7 @@ void Strategy::operator()(const Event<MarketByPriceUpdate> &event) {
   }
 }
 
-void Strategy::operator()(const Event<TradeSummary> &event) {
+void Strategy::operator()(Event<TradeSummary> const &event) {
   auto &[message_info, trade_summary] = event;
   log::info("trade_summary={}"sv, trade_summary);
   if (active_) {

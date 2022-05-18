@@ -18,7 +18,7 @@ class Application final : public Tool {
   using Tool::Tool;
 
  protected:
-  int main_helper(const std::span<std::string_view> &args);
+  int main_helper(std::span<std::string_view> const &args);
   int main(int argc, char **argv) override;
 };
 

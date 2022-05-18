@@ -12,9 +12,9 @@ class Dispatcher {
  public:
   virtual uint32_t next_order_id() const = 0;
 
-  virtual void operator()(const CreateOrder &) = 0;
-  virtual void operator()(const ModifyOrder &) = 0;
-  virtual void operator()(const CancelOrder &) = 0;
+  virtual void operator()(CreateOrder const &) = 0;
+  virtual void operator()(ModifyOrder const &) = 0;
+  virtual void operator()(CancelOrder const &) = 0;
 };
 
 }  // namespace framework

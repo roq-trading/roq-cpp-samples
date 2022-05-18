@@ -20,10 +20,10 @@ class Strategy final : public client::Handler {
   ~Strategy();
 
   Strategy(Strategy &&) = default;
-  Strategy(const Strategy &) = delete;
+  Strategy(Strategy const &) = delete;
 
  protected:
-  void operator()(const Event<TopOfBook> &) override;
+  void operator()(Event<TopOfBook> const &) override;
 
  private:
   client::Dispatcher &dispatcher_;

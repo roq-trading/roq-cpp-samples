@@ -12,25 +12,25 @@ class Handler {
  public:
   virtual ~Handler() = default;
 
-  virtual void operator()(const Event<Timer> &) = 0;
+  virtual void operator()(Event<Timer> const &) = 0;
 
-  virtual void operator()(const Event<Connected> &) = 0;
-  virtual void operator()(const Event<Disconnected> &) = 0;
-  virtual void operator()(const Event<DownloadBegin> &) = 0;
-  virtual void operator()(const Event<DownloadEnd> &) = 0;
-  virtual void operator()(const Event<GatewaySettings> &) = 0;
-  virtual void operator()(const Event<GatewayStatus> &) = 0;
+  virtual void operator()(Event<Connected> const &) = 0;
+  virtual void operator()(Event<Disconnected> const &) = 0;
+  virtual void operator()(Event<DownloadBegin> const &) = 0;
+  virtual void operator()(Event<DownloadEnd> const &) = 0;
+  virtual void operator()(Event<GatewaySettings> const &) = 0;
+  virtual void operator()(Event<GatewayStatus> const &) = 0;
 
-  virtual void operator()(const Event<ReferenceData> &) = 0;
-  virtual void operator()(const Event<MarketStatus> &) = 0;
+  virtual void operator()(Event<ReferenceData> const &) = 0;
+  virtual void operator()(Event<MarketStatus> const &) = 0;
 
-  virtual void operator()(const Event<TopOfBook> &) = 0;
-  virtual void operator()(const Event<MarketByPriceUpdate> &) = 0;
+  virtual void operator()(Event<TopOfBook> const &) = 0;
+  virtual void operator()(Event<MarketByPriceUpdate> const &) = 0;
 
-  virtual void operator()(const Event<OrderAck> &) = 0;
-  virtual void operator()(const Event<OrderUpdate> &) = 0;
+  virtual void operator()(Event<OrderAck> const &) = 0;
+  virtual void operator()(Event<OrderUpdate> const &) = 0;
 
-  virtual void operator()(const Event<PositionUpdate> &) = 0;
+  virtual void operator()(Event<PositionUpdate> const &) = 0;
 };
 
 }  // namespace framework

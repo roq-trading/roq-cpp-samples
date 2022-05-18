@@ -16,13 +16,13 @@ class Strategy final : public client::Handler {
   explicit Strategy(client::Dispatcher &);
 
   Strategy(Strategy &&) = delete;
-  Strategy(const Strategy &) = delete;
+  Strategy(Strategy const &) = delete;
 
  protected:
-  void operator()(const Event<Start> &) override;
-  void operator()(const Event<Stop> &) override;
-  void operator()(const Event<TopOfBook> &) override;
-  void operator()(const Event<client::CustomMessage> &) override;
+  void operator()(Event<Start> const &) override;
+  void operator()(Event<Stop> const &) override;
+  void operator()(Event<TopOfBook> const &) override;
+  void operator()(Event<client::CustomMessage> const &) override;
 
  private:
   client::Dispatcher &dispatcher_;

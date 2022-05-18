@@ -19,7 +19,7 @@ namespace {
 
 char const *const B64chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 
-const std::string b64encode(const void *data, const size_t &len) {
+const std::string b64encode(void const *data, size_t const &len) {
   std::string result((len + 2) / 3 * 4, '=');
   unsigned char const *p = reinterpret_cast<unsigned char const *>(data);
   char *str = &result[0];

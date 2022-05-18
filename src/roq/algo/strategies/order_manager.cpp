@@ -14,7 +14,7 @@ namespace strategies {
 
 // TODO(thraneh): Base -> shared (lookup + dispatcher + ...) + instrument
 
-OrderManager::OrderManager(Base &base, size_t index, const Side &side) : base_(base), index_(index), side_(side) {
+OrderManager::OrderManager(Base &base, size_t index, Side const &side) : base_(base), index_(index), side_(side) {
 }
 
 void OrderManager::set_target(double quantity, double price) {
@@ -72,19 +72,19 @@ void OrderManager::start() {
 void OrderManager::stop() {
 }
 
-void OrderManager::operator()(const Event<OrderAck> &event) {
+void OrderManager::operator()(Event<OrderAck> const &event) {
   auto &[message_info, order_ack] = event;
   log::debug("order_ack={}"sv, order_ack);
   // XXX rejected?
 }
 
-void OrderManager::operator()(const Event<OrderUpdate> &event) {
+void OrderManager::operator()(Event<OrderUpdate> const &event) {
   auto &[message_info, order_update] = event;
   log::debug("order_update={}"sv, order_update);
   // XXX finished?
 }
 
-void OrderManager::operator()(const Event<PositionUpdate> &) {
+void OrderManager::operator()(Event<PositionUpdate> const &) {
 }
 
 }  // namespace strategies

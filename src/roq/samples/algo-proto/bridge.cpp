@@ -19,7 +19,7 @@ namespace algo_proto {
 
 namespace {
 template <typename R>
-auto create_routes(const auto &config) {
+auto create_routes(auto const &config) {
   R result;
   uint32_t market_id = 0;
   for (auto &[exchange, symbols] : config.exchange_symbols) {
@@ -33,7 +33,7 @@ auto create_routes(const auto &config) {
 }
 
 template <typename Callback>
-bool find_route(auto &routes, const std::string_view &exchange, const std::string_view &symbol, Callback callback) {
+bool find_route(auto &routes, std::string_view const &exchange, std::string_view const &symbol, Callback callback) {
   auto iter_1 = routes.find(exchange);
   if (iter_1 == std::end(routes))
     return false;
@@ -47,10 +47,10 @@ bool find_route(auto &routes, const std::string_view &exchange, const std::strin
 }
 
 template <typename R>
-auto create_factories(const auto &config, const auto &routes, const auto &gateways) {
+auto create_factories(auto const &config, auto const &routes, auto const &gateways) {
   R result;
   for (auto &[symbol, strategy] : config.strategies) {
-    std::vector<const algo::framework::Market *> tmp;
+    std::vector<algo::framework::Market const *> tmp;
     tmp.reserve(std::size(strategy.instruments));
     for (auto &instrument : strategy.instruments) {
       if (find_route(routes, instrument.exchange, instrument.symbol, [&](auto &route) {
@@ -69,7 +69,7 @@ auto create_factories(const auto &config, const auto &routes, const auto &gatewa
 }
 }  // namespace
 
-Bridge::Bridge(client::Dispatcher &dispatcher, const Config &config, size_t size)
+Bridge::Bridge(client::Dispatcher &dispatcher, Config const &config, size_t size)
     : dispatcher_(dispatcher), routes_(create_routes<decltype(routes_)>(config)), gateways_(size),
       factories_(create_factories<decltype(factories_)>(config, routes_, gateways_)) {
   auto side = magic_enum::enum_cast<Side>(flags::Flags::side()).value_or(Side::UNDEFINED);
@@ -95,7 +95,7 @@ Bridge::Bridge(client::Dispatcher &dispatcher, const Config &config, size_t size
 
 // algo::framework::Dispatcher
 
-void Bridge::operator()(const CreateOrder &create_order) {
+void Bridge::operator()(CreateOrder const &create_order) {
   assert(!std::empty(create_order.routing_id));
   max_order_id_ = std::max(max_order_id_, create_order.order_id);
   if (find_route(routes_, create_order.exchange, create_order.symbol, [&](auto &route) {
@@ -109,7 +109,7 @@ void Bridge::operator()(const CreateOrder &create_order) {
   }
 }
 
-void Bridge::operator()(const ModifyOrder &modify_order) {
+void Bridge::operator()(ModifyOrder const &modify_order) {
   assert(!std::empty(modify_order.routing_id));
   max_order_id_ = std::max(max_order_id_, modify_order.order_id);
   if (find_source(modify_order.order_id, [&](auto source) { dispatcher_.send(modify_order, source); })) {
@@ -118,7 +118,7 @@ void Bridge::operator()(const ModifyOrder &modify_order) {
   }
 }
 
-void Bridge::operator()(const CancelOrder &cancel_order) {
+void Bridge::operator()(CancelOrder const &cancel_order) {
   assert(!std::empty(cancel_order.routing_id));
   max_order_id_ = std::max(max_order_id_, cancel_order.order_id);
   if (find_source(cancel_order.order_id, [&](auto source) { dispatcher_.send(cancel_order, source); })) {
@@ -129,12 +129,12 @@ void Bridge::operator()(const CancelOrder &cancel_order) {
 
 // client::Handler
 
-void Bridge::operator()(const Event<Timer> &event) {
+void Bridge::operator()(Event<Timer> const &event) {
   for (auto &[_, strategy] : strategies_)
     (*strategy)(event);
 }
 
-void Bridge::operator()(const Event<Connected> &event) {
+void Bridge::operator()(Event<Connected> const &event) {
   auto &[message_info, connected] = event;
   if (gateways_[message_info.source](event)) {
     for (auto &[_, strategy] : strategies_)
@@ -142,7 +142,7 @@ void Bridge::operator()(const Event<Connected> &event) {
   }
 }
 
-void Bridge::operator()(const Event<Disconnected> &event) {
+void Bridge::operator()(Event<Disconnected> const &event) {
   auto &[message_info, disconnected] = event;
   if (gateways_[message_info.source](event)) {
     for (auto &[_, strategy] : strategies_)
@@ -150,7 +150,7 @@ void Bridge::operator()(const Event<Disconnected> &event) {
   }
 }
 
-void Bridge::operator()(const Event<DownloadBegin> &event) {
+void Bridge::operator()(Event<DownloadBegin> const &event) {
   auto &[message_info, download_begin] = event;
   if (gateways_[message_info.source](event)) {
     for (auto &[_, strategy] : strategies_)
@@ -158,7 +158,7 @@ void Bridge::operator()(const Event<DownloadBegin> &event) {
   }
 }
 
-void Bridge::operator()(const Event<DownloadEnd> &event) {
+void Bridge::operator()(Event<DownloadEnd> const &event) {
   auto &[message_info, download_end] = event;
   max_order_id_ = std::max(max_order_id_, download_end.max_order_id);
   if (gateways_[message_info.source](event)) {
@@ -167,7 +167,7 @@ void Bridge::operator()(const Event<DownloadEnd> &event) {
   }
 }
 
-void Bridge::operator()(const Event<GatewaySettings> &event) {
+void Bridge::operator()(Event<GatewaySettings> const &event) {
   auto &[message_info, gateway_settings] = event;
   if (gateways_[message_info.source](event)) {
     for (auto &[_, strategy] : strategies_)
@@ -175,7 +175,7 @@ void Bridge::operator()(const Event<GatewaySettings> &event) {
   }
 }
 
-void Bridge::operator()(const Event<GatewayStatus> &event) {
+void Bridge::operator()(Event<GatewayStatus> const &event) {
   auto &[message_info, gateway_status] = event;
   if (gateways_[message_info.source](event)) {
     for (auto &[_, strategy] : strategies_)
@@ -183,23 +183,23 @@ void Bridge::operator()(const Event<GatewayStatus> &event) {
   }
 }
 
-void Bridge::operator()(const Event<ReferenceData> &event) {
+void Bridge::operator()(Event<ReferenceData> const &event) {
   dispatch(event);
 }
 
-void Bridge::operator()(const Event<MarketStatus> &event) {
+void Bridge::operator()(Event<MarketStatus> const &event) {
   dispatch(event);
 }
 
-void Bridge::operator()(const Event<TopOfBook> &event) {
+void Bridge::operator()(Event<TopOfBook> const &event) {
   dispatch(event);
 }
 
-void Bridge::operator()(const Event<MarketByPriceUpdate> &event) {
+void Bridge::operator()(Event<MarketByPriceUpdate> const &event) {
   dispatch(event);
 }
 
-void Bridge::operator()(const Event<OrderAck> &event) {
+void Bridge::operator()(Event<OrderAck> const &event) {
   auto &[message_info, order_ack] = event;
   max_order_id_ = std::max(max_order_id_, order_ack.order_id);
   if (find_strategy(order_ack.routing_id, [&](auto &strategy) { strategy(event); })) {
@@ -208,7 +208,7 @@ void Bridge::operator()(const Event<OrderAck> &event) {
   }
 }
 
-void Bridge::operator()(const Event<OrderUpdate> &event) {
+void Bridge::operator()(Event<OrderUpdate> const &event) {
   auto &[message_info, order_update] = event;
   max_order_id_ = std::max(max_order_id_, order_update.order_id);
   // XXX accumulate positions by strategy
@@ -218,16 +218,16 @@ void Bridge::operator()(const Event<OrderUpdate> &event) {
   }
 }
 
-void Bridge::operator()(const Event<TradeUpdate> &) {
+void Bridge::operator()(Event<TradeUpdate> const &) {
   // XXX maybe useful for correlating positions?
 }
 
-void Bridge::operator()(const Event<PositionUpdate> &) {
+void Bridge::operator()(Event<PositionUpdate> const &) {
   // XXX maybe useful for correlating positions?
 }
 
 template <typename T>
-void Bridge::dispatch(const Event<T> &event) {
+void Bridge::dispatch(Event<T> const &event) {
   auto &[message_info, value] = event;
   if (find_route(routes_, value.exchange, value.symbol, [&](auto &route) {
         route.dispatch(event, [&](auto strategy_id) {
@@ -245,7 +245,7 @@ void Bridge::dispatch(const Event<T> &event) {
   }
 }
 
-void Bridge::create_strategy(const CreateOrder &create_order) {
+void Bridge::create_strategy(CreateOrder const &create_order) {
   auto iter = factories_.find(create_order.symbol);
   if (iter != std::end(factories_)) {
     auto &factory = *(*iter).second;
@@ -256,7 +256,7 @@ void Bridge::create_strategy(const CreateOrder &create_order) {
     assert(!!strategy);
     auto res = strategies_.emplace(strategy_id, std::move(strategy));
     assert(res.second);
-    auto &state = static_cast<const algo::framework::State &>(factory);
+    auto &state = static_cast<algo::framework::State const &>(factory);
     state.dispatch([&](auto &instrument) {
       if (find_route(routes_, instrument.exchange, instrument.symbol, [&](auto &route) { route.add(strategy_id); })) {
       } else {
@@ -270,7 +270,7 @@ void Bridge::create_strategy(const CreateOrder &create_order) {
 }
 
 template <typename Callback>
-bool Bridge::find_strategy(const std::string_view &routing_id, Callback callback) {
+bool Bridge::find_strategy(std::string_view const &routing_id, Callback callback) {
   auto iter_1 = routing_id_to_strategy_.find(routing_id);
   if (iter_1 == std::end(routing_id_to_strategy_))
     return false;

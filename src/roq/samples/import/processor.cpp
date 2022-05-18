@@ -23,11 +23,11 @@ namespace samples {
 namespace import {
 
 namespace {
-const auto EXCHANGE = "CME"sv;
-const auto SYMBOL = "GEZ1"sv;
-const auto TICK_SIZE = 0.0025;
-const auto MULTIPLIER = 2500.0;
-const auto MIN_TRADE_VOL = 1.0;  // 1 lot
+auto const EXCHANGE = "CME"sv;
+auto const SYMBOL = "GEZ1"sv;
+auto const TICK_SIZE = 0.0025;
+auto const MULTIPLIER = 2500.0;
+auto const MIN_TRADE_VOL = 1.0;  // 1 lot
 }  // namespace
 
 namespace {
@@ -41,7 +41,7 @@ bool use_base64() {
 }
 }  // namespace
 
-Processor::Processor(const std::string_view &path)
+Processor::Processor(std::string_view const &path)
     : file_(std::string{path}, std::ios::out | std::ios::binary),
       encoding_(use_base64() ? Encoding::BASE64 : Encoding::BINARY) {
   if (!file_)

@@ -11,17 +11,17 @@ namespace strategies {
 class Base;
 
 struct OrderManager final {
-  OrderManager(Base &, size_t index, const Side &);
+  OrderManager(Base &, size_t index, Side const &);
 
   void set_target(double quantity, double price);
 
   void start();
   void stop();
 
-  void operator()(const Event<OrderAck> &);
-  void operator()(const Event<OrderUpdate> &);
+  void operator()(Event<OrderAck> const &);
+  void operator()(Event<OrderUpdate> const &);
 
-  void operator()(const Event<PositionUpdate> &);
+  void operator()(Event<PositionUpdate> const &);
 
  private:
   Base &base_;

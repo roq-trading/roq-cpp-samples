@@ -26,7 +26,7 @@ Strategy::Strategy(client::Dispatcher &dispatcher)
                                }} {
 }
 
-void Strategy::operator()(const Event<TopOfBook> &event) {
+void Strategy::operator()(Event<TopOfBook> const &event) {
   auto &[message_info, top_of_book] = event;
   log::info<1>("[{}:{}] TopOfBook={}"sv, message_info.source, message_info.source_name, top_of_book);
   measurements_[0].value = top_of_book.layer.bid_price;

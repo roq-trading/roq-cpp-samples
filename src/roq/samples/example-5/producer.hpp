@@ -18,10 +18,10 @@ class Producer final {
   explicit Producer(client::Dispatcher &);
 
   Producer(Producer &&) = delete;
-  Producer(const Producer &) = delete;
+  Producer(Producer const &) = delete;
 
-  void operator()(const Event<Start> &);
-  void operator()(const Event<Stop> &);
+  void operator()(Event<Start> const &);
+  void operator()(Event<Stop> const &);
 
  protected:
   void run();

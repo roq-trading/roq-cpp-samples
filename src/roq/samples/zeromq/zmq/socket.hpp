@@ -23,11 +23,11 @@ struct Socket final {
   operator value_type const *() const { return handle_.get(); }
 
   // XXX make type-safe
-  void setsockopt(int option_name, const void *option_value, size_t option_len);
+  void setsockopt(int option_name, void const *option_value, size_t option_len);
 
-  void bind(const std::string_view &endpoint);
+  void bind(std::string_view const &endpoint);
 
-  void connect(const std::string_view &endpoint);
+  void connect(std::string_view const &endpoint);
 
   size_t send(void const *buf, size_t len, int flags);
 

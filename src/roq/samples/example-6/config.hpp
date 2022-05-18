@@ -13,7 +13,7 @@ class Config final : public client::Config {
   Config() {}
 
   Config(Config &&) = default;
-  Config(const Config &) = delete;
+  Config(Config const &) = delete;
 
  protected:
   void dispatch(Handler &handler) const override;

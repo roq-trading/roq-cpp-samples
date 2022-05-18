@@ -19,18 +19,18 @@ namespace roq {
 namespace samples {
 namespace example_2 {
 
-Instrument::Instrument(const std::string_view &exchange, const std::string_view &symbol)
+Instrument::Instrument(std::string_view const &exchange, std::string_view const &symbol)
     : exchange_(exchange), symbol_(symbol), market_by_price_(client::MarketByPriceFactory::create(exchange, symbol)) {
 }
 
-void Instrument::operator()(const Connected &) {
+void Instrument::operator()(Connected const &) {
   if (utils::update(connected_, true)) {
     log::info("[{}:{}] connected={}"sv, exchange_, symbol_, connected_);
     check_ready();
   }
 }
 
-void Instrument::operator()(const Disconnected &) {
+void Instrument::operator()(Disconnected const &) {
   if (utils::update(connected_, false)) {
     log::info("[{}:{}] connected={}"sv, exchange_, symbol_, connected_);
     // reset all cached state - await download upon reconnection
@@ -38,7 +38,7 @@ void Instrument::operator()(const Disconnected &) {
   }
 }
 
-void Instrument::operator()(const DownloadBegin &download_begin) {
+void Instrument::operator()(DownloadBegin const &download_begin) {
   if (!std::empty(download_begin.account))  // we only care about market (not account)
     return;
   assert(!download_);
@@ -46,7 +46,7 @@ void Instrument::operator()(const DownloadBegin &download_begin) {
   log::info("[{}:{}] download={}"sv, exchange_, symbol_, download_);
 }
 
-void Instrument::operator()(const DownloadEnd &download_end) {
+void Instrument::operator()(DownloadEnd const &download_end) {
   if (!std::empty(download_end.account))  // we only care about market (not account)
     return;
   assert(download_);
@@ -56,7 +56,7 @@ void Instrument::operator()(const DownloadEnd &download_end) {
   check_ready();
 }
 
-void Instrument::operator()(const GatewayStatus &gateway_status) {
+void Instrument::operator()(GatewayStatus const &gateway_status) {
   if (!std::empty(gateway_status.account))  // we only care about market (not account)
     return;
   // bit-mask of required message types
@@ -78,7 +78,7 @@ void Instrument::operator()(const GatewayStatus &gateway_status) {
   check_ready();
 }
 
-void Instrument::operator()(const ReferenceData &reference_data) {
+void Instrument::operator()(ReferenceData const &reference_data) {
   assert(exchange_.compare(reference_data.exchange) == 0);
   assert(symbol_.compare(reference_data.symbol) == 0);
   // update our cache
@@ -95,7 +95,7 @@ void Instrument::operator()(const ReferenceData &reference_data) {
   check_ready();
 }
 
-void Instrument::operator()(const MarketStatus &market_status) {
+void Instrument::operator()(MarketStatus const &market_status) {
   assert(exchange_.compare(market_status.exchange) == 0);
   assert(symbol_.compare(market_status.symbol) == 0);
   // update our cache
@@ -106,7 +106,7 @@ void Instrument::operator()(const MarketStatus &market_status) {
   check_ready();
 }
 
-void Instrument::operator()(const MarketByPriceUpdate &market_by_price_update) {
+void Instrument::operator()(MarketByPriceUpdate const &market_by_price_update) {
   assert(exchange_.compare(market_by_price_update.exchange) == 0);
   assert(symbol_.compare(market_by_price_update.symbol) == 0);
   if (download_)

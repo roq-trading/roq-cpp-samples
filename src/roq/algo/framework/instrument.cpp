@@ -22,7 +22,7 @@ const Mask REQUIRED_ORDER_MANAGEMENT{
 }  // namespace
 
 bool Instrument::ready(
-    const cache::Gateway &gateway, const cache::Market &market, const std::string_view &account) const {
+    cache::Gateway const &gateway, cache::Market const &market, std::string_view const &account) const {
   if (!gateway.ready(REQUIRED_MARKET_DATA))
     return false;
   if (utils::is_zero(market.reference_data.tick_size))

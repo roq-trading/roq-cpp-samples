@@ -26,47 +26,47 @@ namespace algo_proto {
 
 class Bridge final : public client::Handler, public algo::framework::Dispatcher {
  public:
-  Bridge(client::Dispatcher &, const Config &, size_t size);
+  Bridge(client::Dispatcher &, Config const &, size_t size);
 
   Bridge(Bridge &&) = default;
-  Bridge(const Bridge &) = delete;
+  Bridge(Bridge const &) = delete;
 
  protected:
   uint32_t next_order_id() const override { return max_order_id_ + 1; }
 
-  void operator()(const CreateOrder &) override;
-  void operator()(const ModifyOrder &) override;
-  void operator()(const CancelOrder &) override;
+  void operator()(CreateOrder const &) override;
+  void operator()(ModifyOrder const &) override;
+  void operator()(CancelOrder const &) override;
 
  protected:
-  void operator()(const Event<Timer> &) override;
+  void operator()(Event<Timer> const &) override;
 
-  void operator()(const Event<Connected> &) override;
-  void operator()(const Event<Disconnected> &) override;
-  void operator()(const Event<DownloadBegin> &) override;
-  void operator()(const Event<DownloadEnd> &) override;
-  void operator()(const Event<GatewaySettings> &) override;
-  void operator()(const Event<GatewayStatus> &) override;
+  void operator()(Event<Connected> const &) override;
+  void operator()(Event<Disconnected> const &) override;
+  void operator()(Event<DownloadBegin> const &) override;
+  void operator()(Event<DownloadEnd> const &) override;
+  void operator()(Event<GatewaySettings> const &) override;
+  void operator()(Event<GatewayStatus> const &) override;
 
-  void operator()(const Event<ReferenceData> &) override;
-  void operator()(const Event<MarketStatus> &) override;
+  void operator()(Event<ReferenceData> const &) override;
+  void operator()(Event<MarketStatus> const &) override;
 
-  void operator()(const Event<TopOfBook> &) override;
-  void operator()(const Event<MarketByPriceUpdate> &) override;
+  void operator()(Event<TopOfBook> const &) override;
+  void operator()(Event<MarketByPriceUpdate> const &) override;
 
-  void operator()(const Event<OrderAck> &) override;
-  void operator()(const Event<OrderUpdate> &) override;
-  void operator()(const Event<TradeUpdate> &) override;
+  void operator()(Event<OrderAck> const &) override;
+  void operator()(Event<OrderUpdate> const &) override;
+  void operator()(Event<TradeUpdate> const &) override;
 
-  void operator()(const Event<PositionUpdate> &) override;
+  void operator()(Event<PositionUpdate> const &) override;
 
   template <typename T>
-  void dispatch(const Event<T> &);
+  void dispatch(Event<T> const &);
 
-  void create_strategy(const CreateOrder &);
+  void create_strategy(CreateOrder const &);
 
   template <typename Callback>
-  bool find_strategy(const std::string_view &routing_id, Callback);
+  bool find_strategy(std::string_view const &routing_id, Callback);
 
   template <typename Callback>
   bool find_source(uint32_t order_id, Callback);

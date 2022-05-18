@@ -14,20 +14,20 @@ class Market final {
   template <typename MarketByPriceFactory>
   Market(
       uint32_t market_id,
-      const std::string_view &exchange,
-      const std::string_view &symbol,
+      std::string_view const &exchange,
+      std::string_view const &symbol,
       MarketByPriceFactory create_market_by_price)
       : market_(market_id, exchange, symbol, create_market_by_price) {}
 
   Market(Market &&) = default;
-  Market(const Market &) = delete;
+  Market(Market const &) = delete;
 
   uint8_t get_source() const { return source_; }
 
-  operator const cache::Market &() const { return market_; }
+  operator cache::Market const &() const { return market_; }
 
   template <typename T>
-  bool operator()(const Event<T> &event) {
+  bool operator()(Event<T> const &event) {
     if (source_ == SOURCE_SELF)
       source_ = event.message_info.source;
     return market_(event);

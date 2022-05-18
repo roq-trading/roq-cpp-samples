@@ -7,7 +7,7 @@
 using namespace std::literals;
 
 namespace {
-const auto DESCRIPTION = "Republish (Roq Samples)"sv;
+auto const DESCRIPTION = "Republish (Roq Samples)"sv;
 }  // namespace
 
 int main(int argc, char **argv) {
