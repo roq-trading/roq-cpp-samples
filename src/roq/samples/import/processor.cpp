@@ -115,22 +115,25 @@ void Processor::dispatch() {
           .price = 99.785,
           .quantity = 3.0,
           .implied_quantity = NaN,
-          .price_level = {},
           .number_of_orders = {},
+          .update_action = {},
+          .price_level = {},
       },
       {
           .price = 99.780,
           .quantity = 2.0,
           .implied_quantity = NaN,
-          .price_level = {},
           .number_of_orders = {},
+          .update_action = {},
+          .price_level = {},
       },
       {
           .price = 99.775,
           .quantity = 1.0,
           .implied_quantity = NaN,
-          .price_level = {},
           .number_of_orders = {},
+          .update_action = {},
+          .price_level = {},
       },
   };
   // ... prefer to sort asks asscending
@@ -139,22 +142,25 @@ void Processor::dispatch() {
           .price = 99.800,
           .quantity = 3.0,
           .implied_quantity = NaN,
-          .price_level = {},
           .number_of_orders = {},
+          .update_action = {},
+          .price_level = {},
       },
       {
           .price = 99.805,
           .quantity = 2.0,
           .implied_quantity = NaN,
-          .price_level = {},
           .number_of_orders = {},
+          .update_action = {},
+          .price_level = {},
       },
       {
           .price = 99.810,
           .quantity = 1.0,
           .implied_quantity = NaN,
-          .price_level = {},
           .number_of_orders = {},
+          .update_action = {},
+          .price_level = {},
       },
   };
   process(
@@ -180,16 +186,18 @@ void Processor::dispatch() {
           .price = 99.785,
           .quantity = 0.0,
           .implied_quantity = NaN,
-          .price_level = {},
           .number_of_orders = {},
+          .update_action = {},
+          .price_level = {},
       },
       // ... then introduce new price
       {
           .price = 99.770,
           .quantity = 2.0,
           .implied_quantity = NaN,
-          .price_level = {},
           .number_of_orders = {},
+          .update_action = {},
+          .price_level = {},
       },
   };
   process(
