@@ -122,7 +122,7 @@ void Instrument::operator()(MarketByPriceUpdate const &market_by_price_update) {
   (*market_by_price_)(market_by_price_update);
   auto depth = market_by_price_->extract(depth_, true);
   log::info<1>("[{}:{}] depth=[{}]"sv, exchange_, symbol_, fmt::join(depth_, ", "sv));
-  if (depth > 0 && is_ready())
+  if (std::size(depth) > 0 && is_ready())
     update_model();
 }
 

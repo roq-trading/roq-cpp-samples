@@ -74,7 +74,9 @@ void Spread::update() {
   if (!ready())
     return;
   std::array<Layer, 2> best;
-  if (extract(0, std::span{&best[0], 1}) == 0 || extract(1, std::span{&best[1], 1}) == 0)
+  auto depth_0 = extract(0, std::span{&best[0], 1});
+  auto depth_1 = extract(1, std::span{&best[1], 1});
+  if (std::size(depth_0) == 0 || std::size(depth_1) == 0)
     return;
   auto price = NaN;
   switch (side_) {
@@ -97,7 +99,9 @@ void Spread::update() {
 
 double Spread::current_spread() const {
   std::array<Layer, 2> best;
-  if (extract(0, std::span{&best[0], 1}) == 0 || extract(1, std::span{&best[1], 1}) == 0)
+  auto depth_0 = extract(0, std::span{&best[0], 1});
+  auto depth_1 = extract(1, std::span{&best[1], 1});
+  if (std::size(depth_0) == 0 || std::size(depth_1) == 0)
     return NaN;
   // log::debug("{} {}"sv, best[0], best[1]);
   switch (side_) {
