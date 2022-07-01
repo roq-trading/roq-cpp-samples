@@ -11,7 +11,3 @@ add_subdirectory(event-log)
 add_subdirectory(bridge)
 add_subdirectory(algo-proto)
 add_subdirectory(republish)
-
-if(BUILD_ZEROMQ)
-  add_subdirectory(zeromq)
-endif(BUILD_ZEROMQ)

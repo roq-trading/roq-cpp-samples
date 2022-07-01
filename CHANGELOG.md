@@ -6,7 +6,11 @@ All notable changes will be documented in this file.
 
 ### Changed
 
-* return `span<MBPUpdate>` from `cache::MarketByPrice` (#241)
+* Return `span<MBPUpdate>` from `cache::MarketByPrice` (#241)
+
+### Deleted
+
+* Removed zeromq/zmq dependency (new project on GitHub)
 
 ## 0.8.5 &ndash; 2022-06-06
 
