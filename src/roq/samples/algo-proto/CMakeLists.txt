@@ -12,7 +12,7 @@ target_link_libraries(
           ${PROJECT_NAME}-algo-framework
           roq-client::roq-client
           tomlplusplus::tomlplusplus
-          absl::flags
+          absl::flags_parse
           fmt::fmt)
 
 target_compile_features("${TARGET_NAME}" PUBLIC cxx_std_20)
