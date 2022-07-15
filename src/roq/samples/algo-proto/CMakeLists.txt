@@ -6,14 +6,15 @@ add_executable("${TARGET_NAME}" application.cpp bridge.cpp config.cpp route.cpp 
 
 target_link_libraries(
   "${TARGET_NAME}"
-  PUBLIC roq-api::roq-api roq-logging::roq-logging
   PRIVATE ${TARGET_NAME}-flags
           ${PROJECT_NAME}-algo-strategies
           ${PROJECT_NAME}-algo-framework
           roq-client::roq-client
+          roq-logging::roq-logging
+          roq-api::roq-api
           tomlplusplus::tomlplusplus
-          absl::flags_parse
-          fmt::fmt)
+          fmt::fmt
+          absl::flags)
 
 target_compile_features("${TARGET_NAME}" PUBLIC cxx_std_20)
 

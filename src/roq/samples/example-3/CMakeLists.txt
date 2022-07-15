@@ -13,9 +13,8 @@ add_executable(
   main.cpp)
 
 target_link_libraries(
-  "${TARGET_NAME}"
-  PUBLIC roq-api::roq-api roq-logging::roq-logging
-  PRIVATE ${TARGET_NAME}-flags roq-client::roq-client absl::flags_parse fmt::fmt)
+  "${TARGET_NAME}" PRIVATE ${TARGET_NAME}-flags roq-client::roq-client roq-logging::roq-logging
+                           roq-api::roq-api fmt::fmt absl::flags)
 
 target_compile_features("${TARGET_NAME}" PUBLIC cxx_std_20)
 
