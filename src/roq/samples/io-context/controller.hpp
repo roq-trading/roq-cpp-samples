@@ -5,6 +5,7 @@
 #include <absl/container/flat_hash_map.h>
 
 #include <memory>
+#include <vector>
 
 #include "roq/client.hpp"
 
@@ -35,8 +36,10 @@ class Controller final : public client::Handler,
   void operator()(Event<Timer> const &) override;
   void operator()(Event<TopOfBook> const &) override;
 
+  template <typename... Args>
+  void send(fmt::format_string<Args...> const &, Args &&...);
+
  protected:
-  void operator()(io::net::udp::Sender::Write const &) override;
   void operator()(io::net::udp::Sender::Error const &) override;
 
  protected:
@@ -47,9 +50,11 @@ class Controller final : public client::Handler,
   io::Context &context_;
   std::unique_ptr<io::net::tcp::Listener> listener_;
   Shared shared_;
+  std::chrono::nanoseconds next_garbage_collection_ = {};
   uint64_t next_session_id_ = {};
   absl::flat_hash_map<uint64_t, std::unique_ptr<Session> > sessions_;
   std::unique_ptr<io::Sender> sender_;
+  std::vector<char> buffer_;
 };
 
 }  // namespace io_context

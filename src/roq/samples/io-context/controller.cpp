@@ -8,6 +8,8 @@
 
 #include "roq/logging.hpp"
 
+#include "roq/json/top_of_book.hpp"
+
 #include "roq/samples/io-context/flags/flags.hpp"
 
 using namespace std::literals;
@@ -17,48 +19,46 @@ namespace samples {
 namespace io_context {
 
 Controller::Controller(client::Dispatcher &dispatcher, io::Context &context)
-    : dispatcher_(dispatcher), context_(context), sender_(context_.create_udp_sender(*this, flags::Flags::port())) {
+    : dispatcher_(dispatcher), context_(context),
+      listener_(context_.create_tcp_listener(*this, io::NetworkAddress{flags::Flags::ws_port()})),
+      sender_(context_.create_udp_sender(*this, io::NetworkAddress{flags::Flags::udp_port()})) {
 }
 
-void Controller::operator()(Event<Timer> const &) {
+void Controller::operator()(Event<Timer> const &event) {
+  // drain enqueued events
   context_.drain();
-  // garbage collection
-  for (auto session_id : shared_.sessions_to_remove)
-    sessions_.erase(session_id);
-  shared_.sessions_to_remove.clear();
+  // garbage collect disconnected sessions
+  if (next_garbage_collection_ < event.value.now) {
+    next_garbage_collection_ = event.value.now + 1s;
+    for (auto session_id : shared_.sessions_to_remove) {
+      log::info("Removing session_id={}..."sv, session_id);
+      sessions_.erase(session_id);
+    }
+    shared_.sessions_to_remove.clear();
+  }
 }
 
 void Controller::operator()(Event<TopOfBook> const &event) {
-  if (!sender_)
-    return;
-  auto &[message_info, top_of_book] = event;
-  auto &layer = top_of_book.layer;
-  // json message
-  // note! you can optimize this by pre-allocating a buffer and use fmt::format_to
-  auto message = fmt::format(
-      R"(["{}",{},{},{},{}])"sv,
-      top_of_book.symbol,
-      layer.bid_price,
-      layer.bid_quantity,
-      layer.ask_price,
-      layer.ask_quantity);
-  // note! you should use a higher verbosity level here to make it possible to avoid some logging
-  log::info<0>("{}"sv, message);
-  // broadcast
-  // note! messages could be dropped here if the send buffer becomes full
+  // send json encoded update + line feed
+  send("{}\n"sv, json::TopOfBook{event});
+}
+
+template <typename... Args>
+void Controller::send(fmt::format_string<Args...> const &fmt, Args &&...args) {
+  buffer_.clear();
+  fmt::format_to(std::back_inserter(buffer_), fmt, std::forward<Args>(args)...);
+  std::string_view message{std::data(buffer_), std::size(buffer_)};
+  log::info<3>("{}"sv, message);
   (*sender_).send({reinterpret_cast<std::byte const *>(std::data(message)), std::size(message)});
 }
 
-void Controller::operator()(io::net::udp::Sender::Write const &) {
-  // note! only useful when we have to deal with send buffer again having space
-}
-
 void Controller::operator()(io::net::udp::Sender::Error const &) {
-  log::fatal("UDP socket was closed..."sv);
+  log::fatal("Unexpected"sv);
 }
 
 void Controller::operator()(io::net::tcp::Connection::Factory &factory) {
   auto session_id = ++next_session_id_;
+  log::info("Adding session_id={}..."sv, session_id);
   auto session = std::make_unique<Session>(session_id, factory, shared_);
   sessions_.try_emplace(session_id, std::move(session));
 }

@@ -12,7 +12,8 @@ namespace flags {
 struct Flags final {
   static std::string_view exchange();
   static std::string_view symbol();
-  static uint16_t port();
+  static uint16_t ws_port();
+  static uint16_t udp_port();
 };
 
 }  // namespace flags

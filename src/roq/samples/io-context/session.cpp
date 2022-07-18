@@ -14,8 +14,15 @@ namespace roq {
 namespace samples {
 namespace io_context {
 
+namespace {
+constexpr auto READ_BUFFER_SIZE = 1024 * 1024;
+constexpr auto ENCODE_BUFFER_SIZE = 1024 * 1024;
+}  // namespace
+
 Session::Session(uint64_t session_id, io::net::tcp::Connection::Factory &factory, Shared &shared)
-    : session_id_(session_id), server_(web::socket::ServerFactory::create(*this, factory, 0, 0)), shared_(shared) {
+    : session_id_(session_id),
+      server_(web::socket::ServerFactory::create(*this, factory, READ_BUFFER_SIZE, ENCODE_BUFFER_SIZE)),
+      shared_(shared) {
 }
 
 void Session::operator()(web::socket::Server::Disconnected const &) {
@@ -27,7 +34,6 @@ void Session::operator()(web::socket::Server::Ready const &) {
 }
 
 void Session::operator()(web::socket::Server::Close const &) {
-  (*server_).close();
 }
 
 void Session::operator()(web::socket::Server::Latency const &) {
@@ -37,7 +43,7 @@ void Session::operator()(web::socket::Server::Text const &text) {
   log::info(R"(message="{})"sv, text.payload);
   auto json = nlohmann::json::parse(text.payload);
   auto greeting = json.value("hello"s, ""s);
-  (*server_).send_text(R"({"hello":"world"})"sv);
+  (*server_).send_text(R"({"hello":"world!"})"sv);
 }
 
 void Session::operator()(web::socket::Server::Binary const &) {

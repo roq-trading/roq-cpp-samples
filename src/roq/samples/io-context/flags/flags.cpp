@@ -20,8 +20,14 @@ ABSL_FLAG(  //
 
 ABSL_FLAG(  //
     uint16_t,
-    port,
-    8888,
+    udp_port,
+    1234,
+    "port");
+
+ABSL_FLAG(  //
+    uint16_t,
+    ws_port,
+    2345,
     "port");
 
 namespace roq {
@@ -39,8 +45,13 @@ std::string_view Flags::symbol() {
   return result;
 }
 
-uint16_t Flags::port() {
-  static const uint16_t result = absl::GetFlag(FLAGS_port);
+uint16_t Flags::ws_port() {
+  static const uint16_t result = absl::GetFlag(FLAGS_ws_port);
+  return result;
+}
+
+uint16_t Flags::udp_port() {
+  static const uint16_t result = absl::GetFlag(FLAGS_udp_port);
   return result;
 }
 
