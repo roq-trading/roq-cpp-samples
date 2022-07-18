@@ -17,9 +17,7 @@ namespace samples {
 namespace io_context {
 
 Controller::Controller(client::Dispatcher &dispatcher, io::Context &context)
-    : dispatcher_(dispatcher), context_(context)
-// XXX TODO sender_(context_.create_udp_sender())
-{
+    : dispatcher_(dispatcher), context_(context), sender_(context_.create_udp_sender(*this, flags::Flags::port())) {
 }
 
 void Controller::operator()(Event<Timer> const &) {
@@ -47,7 +45,16 @@ void Controller::operator()(Event<TopOfBook> const &event) {
   // note! you should use a higher verbosity level here to make it possible to avoid some logging
   log::info<0>("{}"sv, message);
   // broadcast
+  // note! messages could be dropped here if the send buffer becomes full
   (*sender_).send({reinterpret_cast<std::byte const *>(std::data(message)), std::size(message)});
+}
+
+void Controller::operator()(io::net::udp::Sender::Write const &) {
+  // note! only useful when we have to deal with send buffer again having space
+}
+
+void Controller::operator()(io::net::udp::Sender::Error const &) {
+  log::fatal("UDP socket was closed..."sv);
 }
 
 void Controller::operator()(io::net::tcp::Connection::Factory &factory) {

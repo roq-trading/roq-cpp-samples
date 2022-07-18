@@ -13,6 +13,8 @@
 #include "roq/io/net/tcp/connection.hpp"
 #include "roq/io/net/tcp/listener.hpp"
 
+#include "roq/io/net/udp/sender.hpp"
+
 #include "roq/samples/io-context/session.hpp"
 #include "roq/samples/io-context/shared.hpp"
 
@@ -20,7 +22,9 @@ namespace roq {
 namespace samples {
 namespace io_context {
 
-class Controller final : public client::Handler, public io::net::tcp::Listener::Handler {
+class Controller final : public client::Handler,
+                         public io::net::udp::Sender::Handler,
+                         public io::net::tcp::Listener::Handler {
  public:
   explicit Controller(client::Dispatcher &, io::Context &);
 
@@ -32,16 +36,20 @@ class Controller final : public client::Handler, public io::net::tcp::Listener::
   void operator()(Event<TopOfBook> const &) override;
 
  protected:
+  void operator()(io::net::udp::Sender::Write const &) override;
+  void operator()(io::net::udp::Sender::Error const &) override;
+
+ protected:
   void operator()(io::net::tcp::Connection::Factory &) override;
 
  private:
   client::Dispatcher &dispatcher_;
   io::Context &context_;
-  std::unique_ptr<roq::io::net::tcp::Listener> listener_;
+  std::unique_ptr<io::net::tcp::Listener> listener_;
   Shared shared_;
   uint64_t next_session_id_ = {};
   absl::flat_hash_map<uint64_t, std::unique_ptr<Session> > sessions_;
-  std::unique_ptr<roq::io::Sender> sender_;
+  std::unique_ptr<io::Sender> sender_;
 };
 
 }  // namespace io_context
