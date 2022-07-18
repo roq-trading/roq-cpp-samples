@@ -23,6 +23,7 @@ Reason can be found [here](https://devblogs.microsoft.com/commandline/windowswsl
 * [span-lite](https://github.com/martinmoene/span-lite) (BSL 1.0 License)
 * [roq-api](https://github.com/roq-trading/roq-api) (MIT License)
 * [roq-logging](https://github.com/roq-trading/roq-api) (MIT License)
+* roq-web (Commerical License, free to use)
 * roq-client (Commerical License, free to use)
 
 Optional
@@ -92,9 +93,11 @@ conda install -y \
     cmake \
     abseil-cpp \
     flatbuffers \
+    nlohmann_json \
     tomlplusplus
 
 conda install -y --channel https://roq-trading.com/conda/stable \
+    roq-web \
     roq-client
 ```
 
