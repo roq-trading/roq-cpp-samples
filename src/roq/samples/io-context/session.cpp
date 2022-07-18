@@ -43,7 +43,7 @@ void Session::operator()(web::socket::Server::Text const &text) {
   log::info(R"(message="{})"sv, text.payload);
   auto json = nlohmann::json::parse(text.payload);
   auto greeting = json.value("hello"s, ""s);
-  // XXX (*server_).send_text(R"({"hello":"world!"})"sv);
+  (*server_).send_text(R"({"hello":"world!"})"sv);
 }
 
 void Session::operator()(web::socket::Server::Binary const &) {
