@@ -14,6 +14,7 @@ struct Flags final {
   static std::string_view symbol();
   static uint16_t ws_port();
   static uint16_t udp_port();
+  static bool filter_symbols();
 };
 
 }  // namespace flags

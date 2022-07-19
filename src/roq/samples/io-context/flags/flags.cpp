@@ -30,6 +30,12 @@ ABSL_FLAG(  //
     2345,
     "port");
 
+ABSL_FLAG(  //
+    bool,
+    filter_symbols,
+    false,
+    "set to true to enable ws managed subscribe/unsubscribe");
+
 namespace roq {
 namespace samples {
 namespace io_context {
@@ -52,6 +58,11 @@ uint16_t Flags::ws_port() {
 
 uint16_t Flags::udp_port() {
   static const uint16_t result = absl::GetFlag(FLAGS_udp_port);
+  return result;
+}
+
+bool Flags::filter_symbols() {
+  static bool const result = absl::GetFlag(FLAGS_filter_symbols);
   return result;
 }
 

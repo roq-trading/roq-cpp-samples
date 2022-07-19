@@ -8,7 +8,7 @@ import websockets
 async def hello():
     async with websockets.connect('ws://localhost:2345') as websocket:
         try:
-            await websocket.send('{"hello":"roq!"}')
+            await websocket.send('{"action":"subscribe","symbol":"BTC-PERPETUAL"}')
             msg = await websocket.recv()
             print(msg)
         except websockets.ConnectionClosedOK:
