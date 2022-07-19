@@ -22,10 +22,9 @@ class Session final : public web::socket::Server::Handler {
   Session(Session const &) = delete;
 
  protected:
+  // web::socket::Server::Handler
   void operator()(web::socket::Server::Disconnected const &) override;
   void operator()(web::socket::Server::Ready const &) override;
-  void operator()(web::socket::Server::Close const &) override;
-  void operator()(web::socket::Server::Latency const &) override;
   void operator()(web::socket::Server::Text const &) override;
   void operator()(web::socket::Server::Binary const &) override;
 

@@ -4,6 +4,9 @@
 
 #include <absl/container/flat_hash_map.h>
 
+#include <fmt/format.h>
+
+#include <chrono>
 #include <memory>
 #include <vector>
 
@@ -33,27 +36,32 @@ class Controller final : public client::Handler,
   Controller(Controller const &) = delete;
 
  protected:
+  // client::Handler
   void operator()(Event<Timer> const &) override;
   void operator()(Event<TopOfBook> const &) override;
+
+  // io::net::udp::Sender::Handler
+  void operator()(io::net::udp::Sender::Error const &) override;
+
+  // io::net::tcp::Listener::Handler
+  void operator()(io::net::tcp::Connection::Factory &) override;
+
+  // utilities
+
+  void remove_zombies(std::chrono::nanoseconds now);
 
   template <typename... Args>
   void send(fmt::format_string<Args...> const &, Args &&...);
 
- protected:
-  void operator()(io::net::udp::Sender::Error const &) override;
-
- protected:
-  void operator()(io::net::tcp::Connection::Factory &) override;
-
  private:
   client::Dispatcher &dispatcher_;
   io::Context &context_;
-  std::unique_ptr<io::net::tcp::Listener> listener_;
-  Shared shared_;
+  const std::unique_ptr<io::Sender> sender_;
+  const std::unique_ptr<io::net::tcp::Listener> listener_;
+  absl::flat_hash_map<uint64_t, std::unique_ptr<Session> > sessions_;
   std::chrono::nanoseconds next_garbage_collection_ = {};
   uint64_t next_session_id_ = {};
-  absl::flat_hash_map<uint64_t, std::unique_ptr<Session> > sessions_;
-  std::unique_ptr<io::Sender> sender_;
+  Shared shared_;
   std::vector<char> buffer_;
 };
 
