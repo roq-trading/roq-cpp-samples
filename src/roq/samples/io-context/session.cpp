@@ -4,6 +4,7 @@
 
 #include <nlohmann/json.hpp>
 
+#include "roq/exceptions.hpp"
 #include "roq/logging.hpp"
 
 #include "roq/web/socket/server_factory.hpp"
@@ -28,9 +29,36 @@ void Session::operator()(web::socket::Server::Ready const &) {
 
 void Session::operator()(web::socket::Server::Text const &text) {
   log::info(R"(message="{})"sv, text.payload);
-  auto json = nlohmann::json::parse(text.payload);
-  auto greeting = json.value("hello"s, ""s);
-  (*server_).send_text(R"({"hello":"world!"})"sv);
+  try {
+    auto json = nlohmann::json::parse(text.payload);
+    auto action = json.value("action"s, ""s);
+    auto symbol = json.value("symbol"s, ""s);
+    if (std::empty(action)) {
+      (*server_).send_text(R"({)"
+                           R"("status":"error",)"
+                           R"("message":"missing 'action'")"
+                           R"(})"sv);
+    } else if (action == "subscribe"sv) {
+      (*server_).send_text(R"({)"
+                           R"("status":"successs")"
+                           R"(})"sv);
+    } else if (action == "unsubscribe"sv) {
+      (*server_).send_text(R"({)"
+                           R"("status":"successs")"
+                           R"(})"sv);
+    } else {
+      (*server_).send_text(R"({)"
+                           R"("status":"error",)"
+                           R"("message":"unknown 'action'")"
+                           R"(})"sv);
+    }
+    return;
+  } catch (roq::RuntimeError &e) {
+    log::error("Error: {}"sv, e);
+  } catch (std::exception &e) {
+    log::error("Error: {}"sv, e.what());
+  }
+  (*server_).close();
 }
 
 void Session::operator()(web::socket::Server::Binary const &) {
