@@ -53,14 +53,14 @@ void Controller::operator()(io::net::tcp::Connection::Factory &factory) {
 // utilities
 
 void Controller::remove_zombies(std::chrono::nanoseconds now) {
-  if (next_garbage_collection_ < now) {
-    next_garbage_collection_ = now + 1s;
-    for (auto session_id : shared_.sessions_to_remove) {
-      log::info("Removing session_id={}..."sv, session_id);
-      sessions_.erase(session_id);
-    }
-    shared_.sessions_to_remove.clear();
+  if (now < next_garbage_collection_)
+    return;
+  next_garbage_collection_ = now + 1s;
+  for (auto session_id : shared_.sessions_to_remove) {
+    log::info("Removing session_id={}..."sv, session_id);
+    sessions_.erase(session_id);
   }
+  shared_.sessions_to_remove.clear();
 }
 
 template <typename... Args>
