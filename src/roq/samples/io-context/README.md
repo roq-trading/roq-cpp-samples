@@ -7,7 +7,7 @@ Broadcast everything
   ~/run/deribit.sock
 ```
 
-Broadcast controlled from WS subscribe/unsubscribe
+List of symbols controlled by Rest/WS subscribe/unsubscribe requests
 ```bash
 ./roq-samples-io-context \
   --name trader \
@@ -22,7 +22,12 @@ Listen to UDP
 nc -u -l 1234
 ```
 
-WS request (you should modify to your needs)
+Send WS requests (modify to your needs)
 ```bash
-./test.py
+./test_ws.py
+```
+
+Send Rest requests (modify to your needs)
+```bash
+./test_rest.sh
 ```
