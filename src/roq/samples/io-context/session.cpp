@@ -9,7 +9,7 @@
 #include "roq/exceptions.hpp"
 #include "roq/logging.hpp"
 
-#include "roq/web/socket/server_factory.hpp"
+#include "roq/web/rest/server_factory.hpp"
 
 using namespace std::literals;
 
@@ -18,82 +18,109 @@ namespace samples {
 namespace io_context {
 
 Session::Session(uint64_t session_id, io::net::tcp::Connection::Factory &factory, Shared &shared)
-    : session_id_(session_id), server_(web::socket::ServerFactory::create(*this, factory)), shared_(shared) {
+    : session_id_(session_id), server_(web::rest::ServerFactory::create(*this, factory)), shared_(shared) {
 }
 
-// web::socket::Server::Handler
+// web::rest::Server::Handler
 
-void Session::operator()(web::socket::Server::Disconnected const &) {
+void Session::operator()(web::rest::Server::Disconnected const &) {
   shared_.sessions_to_remove.emplace(session_id_);
 }
 
-void Session::operator()(web::socket::Server::Ready const &) {
-  log::info("Ready!"sv);
+void Session::operator()(web::rest::Server::Request const &request) {
+  if (request.connection == web::http::Connection::UPGRADE) {
+    log::info("Upgrading session_id={} to websocket..."sv, session_id_);
+    (*server_).upgrade(request);
+  } else {
+    log::info("request={}"sv, request);
+    try {
+      // XXX expect POST
+      auto result = process_request(request.body);
+      web::rest::Server::Response response{
+          .status = web::http::Status::OK,  // XXX should depend on result type
+          .server = "roq"sv,
+          .connection = request.connection,
+          .sec_websocket_accept = {},
+          .content_type = web::http::ContentType::JSON,
+          .body = result,
+      };
+      (*server_).send(response);
+    } catch (roq::RuntimeError &e) {
+      log::error("Error: {}"sv, e);
+      (*server_).close();
+    } catch (std::exception &e) {
+      log::error("Error: {}"sv, e.what());
+      (*server_).close();
+    }
+  }
 }
 
-void Session::operator()(web::socket::Server::Text const &text) {
+void Session::operator()(web::rest::Server::Text const &text) {
   log::info(R"(message="{})"sv, text.payload);
   try {
-    process_request(text.payload);
-    return;  // note!
+    auto result = process_request(text.payload);
+    (*server_).send_text(result);
   } catch (roq::RuntimeError &e) {
     log::error("Error: {}"sv, e);
+    (*server_).close();
   } catch (std::exception &e) {
     log::error("Error: {}"sv, e.what());
+    (*server_).close();
   }
-  (*server_).close();  // note!
 }
 
-void Session::operator()(web::socket::Server::Binary const &) {
+void Session::operator()(web::rest::Server::Binary const &) {
   log::warn("Unexpected"sv);
   (*server_).close();
 }
 
 // utilities
 
-void Session::process_request(std::string_view const &message) {
+std::string_view Session::process_request(std::string_view const &message) {
   auto json = nlohmann::json::parse(message);
   auto action = json.value("action"s, ""s);
   auto symbol = json.value("symbol"s, ""s);
   if (std::empty(action)) {
-    send_error("missing 'action'"sv);
+    return error("missing 'action'"sv);
   } else if (action == "subscribe"sv) {
     if (validate_symbol(symbol)) {
       // XXX maybe check if symbol already exists?
       shared_.symbols.emplace(symbol);
-      send_success();
+      return success();
+    } else {
+      return error("invalid symbol"sv);
     }
   } else if (action == "unsubscribe"sv) {
     if (validate_symbol(symbol)) {
       // XXX maybe check if symbol exists?
       shared_.symbols.erase(symbol);
-      send_success();
+      return success();
+    } else {
+      return error("invalid symbol"sv);
     }
   } else {
-    send_error("unknown 'action'"sv);
+    return error("unknown 'action'"sv);
   }
 }
 
 bool Session::validate_symbol(std::string_view const &symbol) {
   if (std::empty(symbol)) {
-    send_error("expected 'symbol'"sv);
     return false;
   } else if (std::size(symbol) > sizeof(decltype(Shared::symbols)::value_type)) {
-    send_error("symbol length exceeds maximum"sv);
     return false;
   } else {
     return true;
   }
 }
 
-void Session::send_success() {
-  send(R"({{)"
-       R"("status":"successs")"
-       R"(}})"sv);
+std::string_view Session::success() {
+  return format(R"({{)"
+                R"("status":"successs")"
+                R"(}})"sv);
 }
 
-void Session::send_error(std::string_view const &text) {
-  send(
+std::string_view Session::error(std::string_view const &text) {
+  return format(
       R"({{)"
       R"("status":"error",)"
       R"("text":"{}")"
@@ -102,12 +129,10 @@ void Session::send_error(std::string_view const &text) {
 }
 
 template <typename... Args>
-void Session::send(fmt::format_string<Args...> const &fmt, Args &&...args) {
+std::string_view Session::format(fmt::format_string<Args...> const &fmt, Args &&...args) {
   buffer_.clear();
   fmt::format_to(std::back_inserter(buffer_), fmt, std::forward<Args>(args)...);
-  std::string_view message{std::data(buffer_), std::size(buffer_)};
-  log::info<3>("{}"sv, message);
-  (*server_).send_text(message);
+  return std::string_view{std::data(buffer_), std::size(buffer_)};
 }
 
 }  // namespace io_context

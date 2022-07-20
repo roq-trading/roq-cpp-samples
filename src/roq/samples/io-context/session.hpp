@@ -9,6 +9,8 @@
 
 #include "roq/io/net/tcp/connection.hpp"
 
+#include "roq/web/rest/server.hpp"
+
 #include "roq/web/socket/server.hpp"
 
 #include "roq/samples/io-context/shared.hpp"
@@ -17,32 +19,34 @@ namespace roq {
 namespace samples {
 namespace io_context {
 
-class Session final : public web::socket::Server::Handler {
+// note! supports both rest and websocket
+
+class Session final : public web::rest::Server::Handler {
  public:
   Session(uint64_t session_id, io::net::tcp::Connection::Factory &, Shared &shared);
 
  protected:
-  // web::socket::Server::Handler
-  void operator()(web::socket::Server::Disconnected const &) override;
-  void operator()(web::socket::Server::Ready const &) override;
-  void operator()(web::socket::Server::Text const &) override;
-  void operator()(web::socket::Server::Binary const &) override;
+  // web::rest::Server::Handler
+  void operator()(web::rest::Server::Disconnected const &) override;
+  void operator()(web::rest::Server::Request const &) override;
+  void operator()(web::rest::Server::Text const &) override;
+  void operator()(web::rest::Server::Binary const &) override;
 
   // utilities
 
-  void process_request(std::string_view const &message);
+  std::string_view process_request(std::string_view const &message);
 
   bool validate_symbol(std::string_view const &symbol);
 
-  void send_success();
-  void send_error(std::string_view const &text);
+  std::string_view success();
+  std::string_view error(std::string_view const &text);
 
   template <typename... Args>
-  void send(fmt::format_string<Args...> const &, Args &&...);
+  std::string_view format(fmt::format_string<Args...> const &, Args &&...);
 
  private:
   const uint64_t session_id_;
-  const std::unique_ptr<roq::web::socket::Server> server_;
+  std::unique_ptr<roq::web::rest::Server> server_;
   Shared &shared_;
   std::vector<char> buffer_;
 };
