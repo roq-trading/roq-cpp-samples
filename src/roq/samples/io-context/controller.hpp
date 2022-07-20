@@ -32,9 +32,6 @@ class Controller final : public client::Handler,
  public:
   explicit Controller(client::Dispatcher &, io::Context &);
 
-  Controller(Controller &&) = default;
-  Controller(Controller const &) = delete;
-
  protected:
   // client::Handler
   void operator()(Event<Timer> const &) override;

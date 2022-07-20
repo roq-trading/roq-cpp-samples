@@ -21,9 +21,6 @@ class Session final : public web::socket::Server::Handler {
  public:
   Session(uint64_t session_id, io::net::tcp::Connection::Factory &, Shared &shared);
 
-  Session(Session &&) = default;
-  Session(Session const &) = delete;
-
  protected:
   // web::socket::Server::Handler
   void operator()(web::socket::Server::Disconnected const &) override;
