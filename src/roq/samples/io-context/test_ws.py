@@ -11,6 +11,9 @@ async def hello():
             await websocket.send('{"action":"subscribe","symbol":"BTC-PERPETUAL"}')
             msg = await websocket.recv()
             print(msg)
+            await websocket.send('{"action":"subscribe","symbol":"ETH-PERPETUAL"}')
+            msg = await websocket.recv()
+            print(msg)
         except websockets.ConnectionClosedOK:
             print("closed ok")
         except websockets.ConnectionClosedError:
