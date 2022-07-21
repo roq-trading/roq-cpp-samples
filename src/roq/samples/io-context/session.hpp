@@ -11,8 +11,6 @@
 
 #include "roq/web/rest/server.hpp"
 
-#include "roq/web/socket/server.hpp"
-
 #include "roq/samples/io-context/shared.hpp"
 
 namespace roq {
