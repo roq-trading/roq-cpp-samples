@@ -83,8 +83,9 @@ void Processor::dispatch() {
           .quote_currency = {},
           .margin_currency = {},
           .commission_currency = {},
-          .tick_size = TICK_SIZE,          // strongly recommended
-          .multiplier = MULTIPLIER,        // useful
+          .tick_size = TICK_SIZE,    // strongly recommended
+          .multiplier = MULTIPLIER,  // useful
+          .min_notional = NaN,
           .min_trade_vol = MIN_TRADE_VOL,  // strongly recommended
           .max_trade_vol = NaN,
           .trade_vol_step_size = NaN,
