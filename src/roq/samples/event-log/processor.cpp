@@ -122,6 +122,10 @@ void Processor::operator()(Event<CustomMetricsUpdate> const &event) {
   log::info("{}"sv, event);
 }
 
+void Processor::operator()(Event<ParameterUpdate> const &event) {
+  log::info("{}"sv, event);
+}
+
 }  // namespace event_log
 }  // namespace samples
 }  // namespace roq
