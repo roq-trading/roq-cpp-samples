@@ -41,7 +41,7 @@ void Session::operator()(web::rest::Server::Request const &request) {
           .server = "roq"sv,
           .connection = request.connection,
           .sec_websocket_accept = {},
-          .content_type = web::http::ContentType::JSON,
+          .content_type = web::http::ContentType::APPLICATION_JSON,
           .body = result,
       };
       (*server_).send(response);
