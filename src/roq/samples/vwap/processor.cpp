@@ -19,7 +19,6 @@ namespace vwap {
 
 void Processor::dispatch(std::string_view const &path) {
   Processor processor;
-  log::info("path={}"sv, path);
   auto reader = client::EventLogReaderFactory::create(path);
   (*reader).dispatch(processor);
 }
