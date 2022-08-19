@@ -4,6 +4,10 @@ All notable changes will be documented in this file.
 
 ## Head
 
+### Removed
+
+* example-8: tracking market fills at price level (#267)
+
 ## 0.8.6 &ndash; 2022-07-18
 
 ### Changed
