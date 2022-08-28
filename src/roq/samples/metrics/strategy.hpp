@@ -15,7 +15,7 @@ class Strategy final : public client::Handler {
  public:
   explicit Strategy(client::Dispatcher &);
 
-  Strategy(Strategy &&) = default;
+  Strategy(Strategy &&) = delete;
   Strategy(Strategy const &) = delete;
 
  protected:
