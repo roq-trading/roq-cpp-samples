@@ -24,8 +24,8 @@ int Application::main_helper(std::span<std::string_view> const &args) {
   assert(!std::empty(args));
   if (std::size(args) == 1)
     log::fatal("Expected arguments"sv);
-  if (std::size(args) != 2)
-    log::fatal("Expected exactly one argument"sv);
+  if (std::size(args) < 2)
+    log::fatal("Expected at least one argument"sv);
   Config config;
   // note!
   //   absl::flags will have removed all flags and we're left with arguments

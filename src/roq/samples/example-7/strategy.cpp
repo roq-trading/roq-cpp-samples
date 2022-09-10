@@ -37,8 +37,12 @@ void Strategy::operator()(Event<TopOfBook> const &event) {
       .exchange = top_of_book.exchange,
       .symbol = top_of_book.symbol,
       .measurements = measurements_,
+      .update_type = UpdateType::INCREMENTAL,
   };
-  dispatcher_.send(custom_metrics, 0);
+  try {
+    dispatcher_.send(custom_metrics, 0);
+  } catch (NotConnected &) {
+  }
 }
 
 }  // namespace example_7
