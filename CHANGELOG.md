@@ -4,6 +4,10 @@ All notable changes will be documented in this file.
 
 ## Head
 
+### Changed
+
+* UDP sender/receiver now requires explicit socket options
+
 ## 0.8.7 &ndash; 2022-08-22
 
 ### Removed
