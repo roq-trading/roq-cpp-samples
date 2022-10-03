@@ -94,11 +94,13 @@ conda install -y \
     abseil-cpp \
     flatbuffers \
     nlohmann_json \
-    tomlplusplus
+    tomlplusplus \
+    libevent
 
 conda install -y --channel https://roq-trading.com/conda/stable \
+    roq-client \
     roq-web \
-    roq-client
+    roq-oss-range-v3
 ```
 
 ## Building
