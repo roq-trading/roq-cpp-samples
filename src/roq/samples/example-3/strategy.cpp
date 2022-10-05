@@ -46,7 +46,10 @@ void Strategy::operator()(Event<DownloadBegin> const &event) {
 
 void Strategy::operator()(Event<DownloadEnd> const &event) {
   dispatch(event);
-  if (utils::update(max_order_id_, event.value.max_order_id)) {
+  // note!
+  // never recycle order_id's
+  // by updating to the maximum of both, we guarantee not to recycle while either side is alive
+  if (utils::update_max(max_order_id_, event.value.max_order_id)) {
     log::info("max_order_id={}"sv, max_order_id_);
   }
 }

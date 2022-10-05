@@ -4,6 +4,10 @@ All notable changes will be documented in this file.
 
 ## Head
 
+### Fixed
+
+* Use maximum of last known and gateway max_order_id after receonnect.
+
 ## 0.8.8 &ndash; 2022-10-04
 
 ### Changed
