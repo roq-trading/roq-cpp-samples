@@ -15,6 +15,8 @@ namespace roq {
 namespace samples {
 namespace vwap {
 
+// === IMPLEMENTATION ===
+
 int Application::main_helper(std::span<std::string_view> const &args) {
   if (std::size(args) < 2)
     log::fatal("Expected at least 1 argument"sv);

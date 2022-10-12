@@ -16,6 +16,8 @@ namespace roq {
 namespace samples {
 namespace bridge {
 
+// === IMPLEMENTATION ===
+
 int Application::main_helper(std::span<std::string_view> const &args) {
   assert(!std::empty(args));
   if (std::size(args) == 1)
@@ -25,7 +27,7 @@ int Application::main_helper(std::span<std::string_view> const &args) {
   Config config;
   auto connections = args.subspan(1);
   // this is where you start the dispatch loop
-  client::Bridge(config, connections).dispatch<Bridge>();
+  client::Bridge{config, connections}.dispatch<Bridge>();
   return EXIT_SUCCESS;
 }
 

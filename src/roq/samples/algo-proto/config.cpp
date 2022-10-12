@@ -19,9 +19,11 @@ namespace roq {
 namespace samples {
 namespace algo_proto {
 
+// === HELPERS ===
+
 namespace {
 template <typename Callback>
-bool find(auto &node, std::string_view const &key, Callback callback) {
+auto find(auto &node, auto const &key, Callback callback) {
   if (!node.is_table()) {
     log::warn("Unexpected: node is not a table"sv);
     return false;
@@ -85,6 +87,8 @@ auto parse_strategy(auto &node) {
   return strategy;
 }
 }  // namespace
+
+// === IMPLEMENTATION ===
 
 Config::Config(std::string_view const &path) {
   auto root = toml::parse_file(path);

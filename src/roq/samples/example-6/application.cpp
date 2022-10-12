@@ -21,6 +21,19 @@ namespace roq {
 namespace samples {
 namespace example_6 {
 
+// === CONSTANTS ===
+
+namespace {
+auto const SNAPSHOT_FREQUENCY = 1s;
+auto const MATCHER = "simple"sv;
+auto const MARKET_DATA_LATENCY_1 = 1ms;
+auto const ORDER_MANAGEMENT_LATENCY_1 = 5ms;
+auto const MARKET_DATA_LATENCY_2 = 100ms;
+auto const ORDER_MANAGEMENT_LATENCY_2 = 150ms;
+}  // namespace
+
+// === IMPLEMENTATION ===
+
 int Application::main_helper(std::span<std::string_view> const &args) {
   assert(!std::empty(args));
   if (std::size(args) != 3)
@@ -29,33 +42,32 @@ int Application::main_helper(std::span<std::string_view> const &args) {
   auto connections = args.subspan(1);
   if (Flags::simulation()) {
     // collector
-    auto snapshot_frequency = 1s;
-    auto collector = client::detail::SimulationFactory::create_collector(snapshot_frequency);
+    auto collector = client::detail::SimulationFactory::create_collector(SNAPSHOT_FREQUENCY);
     // simulator
     auto create_generator = [&connections](auto source_id) {
       return client::detail::SimulationFactory::create_generator(connections[source_id], source_id);
     };
     auto create_matcher = [](auto &dispatcher) {
-      return client::detail::SimulationFactory::create_matcher(dispatcher, "simple"sv);
+      return client::detail::SimulationFactory::create_matcher(dispatcher, MATCHER);
     };
     client::Simulator::Factory factories[] = {
         {
             .create_generator = create_generator,
             .create_matcher = create_matcher,
-            .market_data_latency = 1ms,
-            .order_management_latency = 5ms,
+            .market_data_latency = MARKET_DATA_LATENCY_1,
+            .order_management_latency = ORDER_MANAGEMENT_LATENCY_1,
         },
         {
             .create_generator = create_generator,
             .create_matcher = create_matcher,
-            .market_data_latency = 100ms,
-            .order_management_latency = 150ms,
+            .market_data_latency = MARKET_DATA_LATENCY_2,
+            .order_management_latency = ORDER_MANAGEMENT_LATENCY_2,
         },
     };
-    client::Simulator(config, factories).dispatch<Strategy>();
+    client::Simulator{config, factories}.dispatch<Strategy>();
   } else {
     // trader
-    client::Trader(config, connections).dispatch<Strategy>();
+    client::Trader{config, connections}.dispatch<Strategy>();
   }
   return EXIT_SUCCESS;
 }

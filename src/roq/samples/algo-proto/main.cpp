@@ -6,18 +6,18 @@
 
 using namespace std::literals;
 
+// === CONSTANTS ===
+
 namespace {
-auto const DESCRIPTION = "Roq Samples Algo Prototype"sv;
+roq::Service::Info const INFO{
+    .description = "Roq Samples Algo Prototype"sv,
+    .package_name = ROQ_PACKAGE_NAME,
+    .build_version = ROQ_VERSION,
+};
 }  // namespace
 
+// === IMPLEMENTATION ===
+
 int main(int argc, char **argv) {
-  return roq::samples::algo_proto::Application(
-             argc,
-             argv,
-             {
-                 .description = DESCRIPTION,
-                 .package_name = ROQ_PACKAGE_NAME,
-                 .build_version = ROQ_VERSION,
-             })
-      .run();
+  return roq::samples::algo_proto::Application{argc, argv, INFO}.run();
 }

@@ -8,6 +8,8 @@ namespace roq {
 namespace samples {
 namespace example_6 {
 
+// === IMPLEMENTATION ===
+
 void Config::dispatch(Handler &handler) const {
   // settings
   handler(client::Settings{

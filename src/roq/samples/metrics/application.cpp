@@ -16,6 +16,8 @@ namespace roq {
 namespace samples {
 namespace metrics {
 
+// === IMPLEMENTATION ===
+
 int Application::main_helper(std::span<std::string_view> const &args) {
   assert(!std::empty(args));
   if (std::size(args) == 1)
@@ -27,7 +29,7 @@ int Application::main_helper(std::span<std::string_view> const &args) {
   auto connections = args.subspan(1);
   // this strategy factory uses direct connectivity to one or more
   // market access gateways
-  client::Trader(config, connections).dispatch<Strategy>();
+  client::Trader{config, connections}.dispatch<Strategy>();
   return EXIT_SUCCESS;
 }
 

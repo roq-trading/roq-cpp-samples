@@ -17,6 +17,8 @@ namespace roq {
 namespace samples {
 namespace io_context {
 
+// === IMPLEMENTATION ===
+
 int Application::main_helper(std::span<std::string_view> const &args, io::Context &context) {
   assert(!std::empty(args));
   if (std::size(args) == 1)
@@ -28,7 +30,7 @@ int Application::main_helper(std::span<std::string_view> const &args, io::Contex
   auto connections = args.subspan(1);
   // note!
   //   using client::Bridge so we can dispatch events through the Timer event
-  client::Bridge(config, connections).dispatch<Controller>(context);
+  client::Bridge{config, connections}.dispatch<Controller>(context);
   return EXIT_SUCCESS;
 }
 

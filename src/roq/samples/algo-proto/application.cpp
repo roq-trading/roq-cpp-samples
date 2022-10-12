@@ -17,6 +17,8 @@ namespace roq {
 namespace samples {
 namespace algo_proto {
 
+// === IMPLEMENTATION ===
+
 int Application::main(int argc, char **argv) {
   // wrap arguments (prefer to not work with raw pointers)
   std::vector<std::string_view> args;
@@ -34,7 +36,7 @@ int Application::main_helper(std::span<std::string_view> const &args) {
     log::fatal("Expected exactly one argument"sv);
   Config config{flags::Flags::config_file()};
   auto connections = args.subspan(1);
-  client::Trader(config, connections).dispatch<Bridge>(config, std::size(connections));
+  client::Trader{config, connections}.dispatch<Bridge>(config, std::size(connections));
   return EXIT_SUCCESS;
 }
 

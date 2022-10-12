@@ -15,10 +15,12 @@ namespace roq {
 namespace samples {
 namespace import {
 
+// === IMPLEMENTATION ===
+
 int Application::main_helper(std::span<std::string_view> const &args) {
   if (std::size(args) != 2)
     log::fatal("Expected exactly 1 argument, got {}"sv, std::size(args) - 1);
-  Processor(args[1]).dispatch();
+  Processor{args[1]}.dispatch();
   return EXIT_SUCCESS;
 }
 
