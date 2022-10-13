@@ -55,7 +55,7 @@ class Controller final : public client::Handler,
   io::Context &context_;
   const std::unique_ptr<io::Sender> sender_;
   const std::unique_ptr<io::net::tcp::Listener> listener_;
-  absl::flat_hash_map<uint64_t, std::unique_ptr<Session> > sessions_;
+  absl::flat_hash_map<uint64_t, std::unique_ptr<Session>> sessions_;
   std::chrono::nanoseconds next_garbage_collection_ = {};
   uint64_t next_session_id_ = {};
   Shared shared_;
