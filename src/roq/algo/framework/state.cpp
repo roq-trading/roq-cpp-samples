@@ -9,7 +9,7 @@ namespace algo {
 namespace framework {
 
 State::State(
-    std::span<const Instrument> const &instruments,
+    std::span<Instrument const> const &instruments,
     std::span<Market const *> const &markets,
     std::span<const cache::Gateway> const &gateways)
     : instruments_(std::begin(instruments), std::end(instruments)), markets_(std::begin(markets), std::end(markets)),

@@ -32,7 +32,7 @@ class Strategy final : public client::Handler {
 
   // helper - dispatch event to the relevant instrument
   template <typename T>
-  void dispatch(const T &event);
+  void dispatch(T const &event);
 
  private:
   client::Dispatcher &dispatcher_;

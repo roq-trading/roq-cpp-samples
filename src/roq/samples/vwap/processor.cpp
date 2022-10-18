@@ -39,7 +39,7 @@ void Processor::operator()(Event<MarketByPriceUpdate> const &event) {
 }
 
 template <typename T>
-cache::MarketByPrice &Processor::get_market_by_price(const T &value) {
+cache::MarketByPrice &Processor::get_market_by_price(T const &value) {
   auto iter = market_by_price_.find(value.symbol);
   if (iter == std::end(market_by_price_)) {
     auto market_by_price = client::MarketByPriceFactory::create(value.exchange, value.symbol);

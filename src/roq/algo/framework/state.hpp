@@ -20,7 +20,7 @@ namespace framework {
 class State final {
  public:
   State(
-      std::span<const Instrument> const &, std::span<Market const *> const &, std::span<const cache::Gateway> const &);
+      std::span<Instrument const> const &, std::span<Market const *> const &, std::span<const cache::Gateway> const &);
 
   State(State &&) = default;
   State(State const &) = default;

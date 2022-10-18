@@ -29,7 +29,7 @@ class Processor final {
   MessageInfo create_message_info(std::chrono::nanoseconds timestamp_utc);
 
   template <typename T>
-  void process(const T &value, std::chrono::nanoseconds timestamp_utc);
+  void process(T const &value, std::chrono::nanoseconds timestamp_utc);
 
  private:
   uint64_t seqno_ = {};

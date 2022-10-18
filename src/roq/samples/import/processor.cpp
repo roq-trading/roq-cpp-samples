@@ -238,7 +238,7 @@ MessageInfo Processor::create_message_info(std::chrono::nanoseconds timestamp_ut
 }
 
 template <typename T>
-void Processor::process(const T &value, std::chrono::nanoseconds timestamp_utc) {
+void Processor::process(T const &value, std::chrono::nanoseconds timestamp_utc) {
   builder_.Clear();
   auto message_info = create_message_info(timestamp_utc);
   Event<T> event(message_info, value);

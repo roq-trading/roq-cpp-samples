@@ -50,7 +50,7 @@ void Strategy::operator()(Event<MarketByPriceUpdate> const &event) {
 
 // helper - dispatch event to the relevant instrument
 template <typename T>
-void Strategy::dispatch(const T &event) {
+void Strategy::dispatch(T const &event) {
   switch (event.message_info.source) {
     case 0:
       futures_(event.value);

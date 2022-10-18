@@ -45,7 +45,7 @@ struct Processor final : public client::EventLogReader::Handler {
   void operator()(Event<ParameterUpdate> const &) override {}
 
   template <typename T>
-  cache::MarketByPrice &get_market_by_price(const T &);
+  cache::MarketByPrice &get_market_by_price(T const &);
 
  private:
   absl::node_hash_map<Symbol, std::unique_ptr<cache::MarketByPrice>> market_by_price_;
