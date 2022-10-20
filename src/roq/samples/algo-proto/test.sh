@@ -16,16 +16,16 @@ if [ "$1" == "debug" ]; then
   esac
   shift 1
 else
-	PREFIX=
+  PREFIX=
 fi
 
 # launch
 
 $PREFIX "./roq-samples-algo-proto" \
-	--name "trader" \
-	--config_file "$CONFIG_FILE" \
+  --name "trader" \
+  --config_file "$CONFIG_FILE" \
   --strategy "spread_btc" \
   --side BUY \
   --quantity 1 \
   --price 100 \
-	$@
+  $@
