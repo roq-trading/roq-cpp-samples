@@ -29,8 +29,8 @@ auto find(auto &node, auto const &key, Callback callback) {
     return false;
   }
   auto table = node.as_table();
-  auto iter = table->find(key);
-  if (iter == table->end())
+  auto iter = (*table).find(key);
+  if (iter == (*table).end())
     return false;
   callback((*iter).second);
   return true;

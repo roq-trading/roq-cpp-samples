@@ -15,7 +15,9 @@ namespace roq {
 namespace samples {
 namespace example_5 {
 
-Producer::Producer(client::Dispatcher &dispatcher) : dispatcher_(dispatcher) {
+// === IMPLEMENTATION ===
+
+Producer::Producer(client::Dispatcher &dispatcher) : dispatcher_{dispatcher} {
 }
 
 void Producer::operator()(Event<Start> const &) {
@@ -26,14 +28,14 @@ void Producer::operator()(Event<Start> const &) {
 void Producer::operator()(Event<Stop> const &) {
   assert(static_cast<bool>(thread_) && !terminating_);
   terminating_ = true;
-  thread_->join();
+  (*thread_).join();
 }
 
 void Producer::run() {
   log::info("producer was started"sv);
   while (!terminating_) {
-    std::string text = "hello world"s;
-    std::span message{
+    auto text = "hello world"s;  // note! std::string
+    auto message = std::span{
         reinterpret_cast<std::byte const *>(std::data(text)),
         std::size(text) + 1,  // including trailing null
     };

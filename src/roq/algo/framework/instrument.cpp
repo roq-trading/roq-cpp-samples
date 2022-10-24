@@ -8,18 +8,22 @@ namespace roq {
 namespace algo {
 namespace framework {
 
+// === CONSTANTS ===
+
 namespace {
-const Mask REQUIRED_MARKET_DATA{
+auto const REQUIRED_MARKET_DATA = Mask{
     SupportType::REFERENCE_DATA,
     SupportType::MARKET_STATUS,
     SupportType::MARKET_BY_PRICE,
 };
 
-const Mask REQUIRED_ORDER_MANAGEMENT{
+auto const REQUIRED_ORDER_MANAGEMENT = Mask{
     SupportType::CREATE_ORDER,
     SupportType::CANCEL_ORDER,
 };
 }  // namespace
+
+// === IMPLEMENTATION ===
 
 bool Instrument::ready(
     cache::Gateway const &gateway, cache::Market const &market, std::string_view const &account) const {

@@ -22,7 +22,7 @@ class Config final : public client::Config {
   Config(Config const &) = delete;
 
  protected:
-  void dispatch(Handler &handler) const override;
+  void dispatch(Handler &) const override;
 };
 
 }  // namespace example_1

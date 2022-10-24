@@ -8,6 +8,8 @@ namespace roq {
 namespace samples {
 namespace example_7 {
 
+// === IMPLEMENTATION ===
+
 void Config::dispatch(Handler &handler) const {
   handler(client::Symbol{
       .regex = Flags::symbol(),

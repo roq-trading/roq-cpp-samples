@@ -18,6 +18,8 @@ namespace roq {
 namespace samples {
 namespace republish {
 
+// === HELPERS ===
+
 // convenience wrappers around some libc socket functions
 // note! not very generic -- just for the example
 namespace {
@@ -41,10 +43,12 @@ auto create_socket(auto &address) {
     log::system_error("Failed to set flags"sv);
   return fd;
 }
+
 void close_socket(auto fd) {
   if (fd > 0)
     ::close(fd);
 }
+
 void socket_sendto(auto const socket, auto const &address, auto const &message) {
   auto res = ::sendto(
       socket,
@@ -58,7 +62,9 @@ void socket_sendto(auto const socket, auto const &address, auto const &message) 
 }
 }  // namespace
 
-Strategy::Strategy(client::Dispatcher &dispatcher) : dispatcher_(dispatcher), socket_(create_socket(address_)) {
+// === IMPLEMENTATION ===
+
+Strategy::Strategy(client::Dispatcher &dispatcher) : dispatcher_{dispatcher}, socket_{create_socket(address_)} {
 }
 
 Strategy::~Strategy() {

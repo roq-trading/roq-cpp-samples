@@ -61,8 +61,8 @@ class Base : public framework::Handler {
  public:
   framework::Dispatcher &dispatcher_;
   framework::State const &state_;
-  const RoutingId routing_id_;
-  const Account account_;
+  RoutingId const routing_id_;
+  Account const account_;
   std::vector<OrderManager> order_managers_;
 
  protected:

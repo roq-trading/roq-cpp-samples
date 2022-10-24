@@ -42,8 +42,8 @@ class Instrument final {
  private:
   static constexpr size_t MAX_DEPTH = 2;
 
-  const std::string_view exchange_;
-  const std::string_view symbol_;
+  std::string_view const exchange_;
+  std::string_view const symbol_;
   bool connected_ = false;
   bool download_ = false;
   double tick_size_ = NaN;

@@ -14,7 +14,7 @@ namespace example_3 {
 
 class Model final {
  public:
-  static const constexpr size_t MAX_DEPTH = 3;
+  static constexpr size_t const MAX_DEPTH = 3;
 
   using Depth = std::array<Layer, MAX_DEPTH>;
 

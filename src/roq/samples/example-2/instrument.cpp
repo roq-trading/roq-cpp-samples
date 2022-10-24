@@ -19,8 +19,10 @@ namespace roq {
 namespace samples {
 namespace example_2 {
 
+// === IMPLEMENTATION ===
+
 Instrument::Instrument(std::string_view const &exchange, std::string_view const &symbol)
-    : exchange_(exchange), symbol_(symbol), market_by_price_(client::MarketByPriceFactory::create(exchange, symbol)) {
+    : exchange_{exchange}, symbol_{symbol}, market_by_price_{client::MarketByPriceFactory::create(exchange, symbol)} {
 }
 
 void Instrument::operator()(Connected const &) {
@@ -120,7 +122,7 @@ void Instrument::operator()(MarketByPriceUpdate const &market_by_price_update) {
   //   the depth builder helps you maintain a correct view of
   //   the order book.
   (*market_by_price_)(market_by_price_update);
-  auto depth = market_by_price_->extract(depth_, true);
+  auto depth = (*market_by_price_).extract(depth_, true);
   log::info<1>("[{}:{}] depth=[{}]"sv, exchange_, symbol_, fmt::join(depth_, ", "sv));
   if (std::size(depth) > 0 && is_ready())
     update_model();
@@ -171,7 +173,7 @@ void Instrument::reset() {
   min_trade_vol_ = NaN;
   trading_status_ = {};
   market_data_ = {};
-  market_by_price_->clear();
+  (*market_by_price_).clear();
   mid_price_ = NaN;
   avg_price_ = NaN;
   ready_ = false;

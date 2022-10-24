@@ -36,10 +36,7 @@ class Strategy final : public client::Handler {
 
   // helper - dispatch event to instrument
   template <typename T>
-  void dispatch(T const &event) {
-    assert(event.message_info.source == 0);
-    instrument_(event.value);
-  }
+  void dispatch(Event<T> const &);
 
   void update_model();
 

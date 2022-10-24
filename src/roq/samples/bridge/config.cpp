@@ -28,6 +28,7 @@ void Config::dispatch(Handler &handler) const {
   // currencies
   handler(client::Symbol{
       .regex = Flags::currencies(),
+      .exchange = {},
   });
 }
 

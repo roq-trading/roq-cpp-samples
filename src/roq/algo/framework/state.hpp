@@ -41,10 +41,10 @@ class State final {
   bool supports(size_t index, SupportType const &) const;
 
  private:
-  const std::string type_;
-  const std::vector<Instrument> instruments_;
-  const std::vector<Market const *> markets_;
-  const std::span<const cache::Gateway> gateways_;
+  std::string const type_;
+  std::vector<Instrument> const instruments_;
+  std::vector<Market const *> const markets_;
+  std::span<const cache::Gateway> const gateways_;
 };
 
 }  // namespace framework

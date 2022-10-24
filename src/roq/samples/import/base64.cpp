@@ -5,8 +5,6 @@
 #include <cassert>
 #include <cstring>
 
-namespace {
-
 // https://stackoverflow.com/a/37109258
 // https://creativecommons.org/licenses/by-sa/4.0/
 // changes:
@@ -17,8 +15,19 @@ namespace {
 // - removed functions and tables not needed here
 // - clang-format
 
-char const *const B64chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+namespace roq {
+namespace samples {
+namespace import {
 
+// === CONSTANTS ===
+
+namespace {
+char const *const B64chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+}
+
+// === HELPERS ===
+
+namespace {
 const std::string b64encode(void const *data, size_t const &len) {
   std::string result((len + 2) / 3 * 4, '=');
   unsigned char const *p = reinterpret_cast<unsigned char const *>(data);
@@ -44,15 +53,12 @@ const std::string b64encode(void const *data, size_t const &len) {
   }
   return result;
 }
-
 }  // namespace
 
-namespace roq {
-namespace samples {
-namespace import {
+// === IMPLEMENTATION ===
 
 std::string Base64::encode(void const *data, size_t length) {
-  auto result = ::b64encode(data, length);
+  auto result = b64encode(data, length);
   assert(std::size(result) == std::strlen(result.c_str()));
   return result;
 }

@@ -16,6 +16,8 @@ namespace roq {
 namespace samples {
 namespace io_context {
 
+// === HELPERS ===
+
 namespace {
 auto create_sender(auto &handler, auto &context) {
   auto network_address = io::NetworkAddress{flags::Flags::udp_port()};
@@ -24,15 +26,18 @@ auto create_sender(auto &handler, auto &context) {
   };
   return context.create_udp_sender(handler, network_address, socket_options);
 }
+
 auto create_listener(auto &handler, auto &context) {
   auto network_address = io::NetworkAddress{flags::Flags::ws_port()};
   return context.create_tcp_listener(handler, network_address);
 }
 }  // namespace
 
+// === IMPLEMENTATION ===
+
 Controller::Controller(client::Dispatcher &dispatcher, io::Context &context)
-    : dispatcher_(dispatcher), context_(context), sender_(create_sender(*this, context)),
-      listener_(create_listener(*this, context_)) {
+    : dispatcher_{dispatcher}, context_{context}, sender_{create_sender(*this, context)}, listener_{create_listener(
+                                                                                              *this, context_)} {
 }
 
 // client::Handler

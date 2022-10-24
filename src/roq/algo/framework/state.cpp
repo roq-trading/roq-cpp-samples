@@ -8,6 +8,8 @@ namespace roq {
 namespace algo {
 namespace framework {
 
+// === IMPLEMENTATION ===
+
 State::State(
     std::span<Instrument const> const &instruments,
     std::span<Market const *> const &markets,

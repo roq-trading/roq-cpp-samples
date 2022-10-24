@@ -9,7 +9,7 @@ using namespace std::literals;
 // === CONSTANTS ===
 
 namespace {
-roq::Service::Info const INFO{
+auto const INFO = roq::Service::Info{
     .description = "Roq Samples Algo Prototype"sv,
     .package_name = ROQ_PACKAGE_NAME,
     .build_version = ROQ_VERSION,

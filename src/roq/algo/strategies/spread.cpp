@@ -15,13 +15,15 @@ namespace strategies {
 // OrderUpdate (to user)
 // stale order update -=> fail (how?)
 
+// === IMPLEMENTATION ===
+
 Spread::Spread(
     framework::Dispatcher &dispatcher,
     framework::State const &state,
     std::string_view const &routing_id,
     CreateOrder const &create_order)
-    : Base(dispatcher, state, routing_id, create_order), side_(create_order.side), quantity_(create_order.quantity),
-      price_(create_order.price) {
+    : Base{dispatcher, state, routing_id, create_order}, side_{create_order.side}, quantity_{create_order.quantity},
+      price_{create_order.price} {
   // XXX tick size + min trade vol
   // XXX md ready
 }

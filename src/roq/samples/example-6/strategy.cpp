@@ -10,7 +10,9 @@ namespace roq {
 namespace samples {
 namespace example_6 {
 
-Strategy::Strategy(client::Dispatcher &dispatcher) : dispatcher_(dispatcher) {
+// === IMPLEMENTATION ===
+
+Strategy::Strategy(client::Dispatcher &dispatcher) : dispatcher_{dispatcher} {
 }
 
 void Strategy::operator()(Event<Timer> const &event) {

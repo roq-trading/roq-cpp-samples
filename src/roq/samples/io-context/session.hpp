@@ -21,7 +21,7 @@ namespace io_context {
 
 class Session final : public web::rest::Server::Handler {
  public:
-  Session(uint64_t session_id, io::net::tcp::Connection::Factory &, Shared &shared);
+  Session(uint64_t session_id, io::net::tcp::Connection::Factory &, Shared &);
 
  protected:
   // web::rest::Server::Handler
@@ -43,7 +43,7 @@ class Session final : public web::rest::Server::Handler {
   std::string_view format(fmt::format_string<Args...> const &, Args &&...);
 
  private:
-  const uint64_t session_id_;
+  uint64_t const session_id_;
   std::unique_ptr<roq::web::rest::Server> server_;
   Shared &shared_;
   std::vector<char> buffer_;

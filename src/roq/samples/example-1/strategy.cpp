@@ -10,6 +10,8 @@ namespace roq {
 namespace samples {
 namespace example_1 {
 
+// === IMPLEMENTATION ===
+
 Strategy::Strategy(client::Dispatcher &dispatcher) : dispatcher_(dispatcher) {
 }
 

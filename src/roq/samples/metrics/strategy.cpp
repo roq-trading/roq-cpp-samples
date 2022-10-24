@@ -10,12 +10,16 @@ namespace roq {
 namespace samples {
 namespace metrics {
 
+// === CONSTANTS ===
+
 namespace {
 // note! labels are optional
-auto LABELS = R"(foo="bar", baz="123")"sv;  // note! all values should be quoted
+auto const LABELS = R"(foo="bar", baz="123")"sv;  // note! all values should be quoted
 }  // namespace
 
-Strategy::Strategy(client::Dispatcher &dispatcher) : dispatcher_(dispatcher), counter_(LABELS), histogram_(LABELS) {
+// === IMPLEMENTATION ===
+
+Strategy::Strategy(client::Dispatcher &dispatcher) : dispatcher_{dispatcher}, counter_{LABELS}, histogram_{LABELS} {
 }
 
 void Strategy::operator()(Event<Disconnected> const &) {

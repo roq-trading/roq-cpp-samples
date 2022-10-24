@@ -16,7 +16,7 @@ namespace example_3 {
 
 class Instrument final {
  public:
-  static const constexpr size_t MAX_DEPTH = 3;
+  static constexpr size_t const MAX_DEPTH = 3;
 
   using Depth = std::array<Layer, MAX_DEPTH>;
 
@@ -64,9 +64,9 @@ class Instrument final {
   void validate(Depth const &);
 
  private:
-  const std::string_view exchange_;
-  const std::string_view symbol_;
-  const std::string_view account_;
+  std::string_view const exchange_;
+  std::string_view const symbol_;
+  std::string_view const account_;
   bool connected_ = false;
   bool download_ = false;
   double tick_size_ = NaN;

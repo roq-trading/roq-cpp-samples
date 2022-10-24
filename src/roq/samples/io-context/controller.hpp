@@ -30,7 +30,7 @@ class Controller final : public client::Handler,
                          public io::net::udp::Sender::Handler,
                          public io::net::tcp::Listener::Handler {
  public:
-  explicit Controller(client::Dispatcher &, io::Context &);
+  Controller(client::Dispatcher &, io::Context &);
 
  protected:
   // client::Handler
@@ -53,8 +53,8 @@ class Controller final : public client::Handler,
  private:
   client::Dispatcher &dispatcher_;
   io::Context &context_;
-  const std::unique_ptr<io::Sender> sender_;
-  const std::unique_ptr<io::net::tcp::Listener> listener_;
+  std::unique_ptr<io::Sender> const sender_;
+  std::unique_ptr<io::net::tcp::Listener> const listener_;
   absl::flat_hash_map<uint64_t, std::unique_ptr<Session>> sessions_;
   std::chrono::nanoseconds next_garbage_collection_ = {};
   uint64_t next_session_id_ = {};

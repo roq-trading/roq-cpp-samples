@@ -10,6 +10,8 @@ namespace roq {
 namespace samples {
 namespace example_7 {
 
+// === IMPLEMENTATION ===
+
 void Collector::operator()(Event<CustomMetricsUpdate> const &event) {
   auto &[message_info, custom_metrics_update] = event;
   log::info("[{}:{}] CustomMetricsUpdate={}"sv, message_info.source, message_info.source_name, custom_metrics_update);

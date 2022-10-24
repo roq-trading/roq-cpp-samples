@@ -22,6 +22,8 @@ namespace roq {
 namespace samples {
 namespace import {
 
+// === CONSTANTS ===
+
 namespace {
 auto const EXCHANGE = "CME"sv;
 auto const SYMBOL = "GEZ1"sv;
@@ -30,22 +32,27 @@ auto const MULTIPLIER = 2500.0;
 auto const MIN_TRADE_VOL = 1.0;  // 1 lot
 }  // namespace
 
+// === HELPERS ===
+
 namespace {
-bool use_base64() {
+auto use_base64() {
   auto encoding = Flags::encoding();
   if (utils::case_insensitive_compare(encoding, "binary"sv) == 0)
     return false;
   if (utils::case_insensitive_compare(encoding, "base64"sv) == 0)
     return true;
-  throw RuntimeError(R"(Unknown encoding="{}")"sv, encoding);
+  throw RuntimeError{R"(Unknown encoding="{}")"sv, encoding};
 }
 }  // namespace
 
+// === IMPLEMENTATION ===
+
 Processor::Processor(std::string_view const &path)
-    : file_(std::string{path}, std::ios::out | std::ios::binary),
-      encoding_(use_base64() ? Encoding::BASE64 : Encoding::BINARY) {
+    : file_{std::string{path}, std::ios::out | std::ios::binary}, encoding_{
+                                                                      use_base64() ? Encoding::BASE64
+                                                                                   : Encoding::BINARY} {
   if (!file_)
-    throw RuntimeError(R"(Unable to open file for writing: path="{}")"sv, path);
+    throw RuntimeError{R"(Unable to open file for writing: path="{}")"sv, path};
 }
 
 Processor::~Processor() {
@@ -221,7 +228,7 @@ void Processor::dispatch() {
 
 MessageInfo Processor::create_message_info(std::chrono::nanoseconds timestamp_utc) {
   // note! just re-use the same timestamp for all trace points
-  return MessageInfo{
+  return {
       .source = {},             // not encoded
       .source_name = {},        // not encoded
       .source_session_id = {},  // not encoded
@@ -241,7 +248,7 @@ template <typename T>
 void Processor::process(T const &value, std::chrono::nanoseconds timestamp_utc) {
   builder_.Clear();
   auto message_info = create_message_info(timestamp_utc);
-  Event<T> event(message_info, value);
+  Event<T> event{message_info, value};
   auto root = fbs::encode(builder_, event);
   builder_.FinishSizePrefixed(root);  // note! *must* include size
   auto data = builder_.GetBufferPointer();

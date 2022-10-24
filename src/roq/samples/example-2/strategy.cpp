@@ -8,9 +8,12 @@ namespace roq {
 namespace samples {
 namespace example_2 {
 
+// === IMPLEMENTATION ===
+
 Strategy::Strategy(client::Dispatcher &dispatcher)
-    : dispatcher_(dispatcher), futures_(Flags::futures_exchange(), Flags::futures_symbol()),
-      cash_(Flags::cash_exchange(), Flags::cash_symbol()) {
+    : dispatcher_{dispatcher}, futures_{Flags::futures_exchange(), Flags::futures_symbol()}, cash_{
+                                                                                                 Flags::cash_exchange(),
+                                                                                                 Flags::cash_symbol()} {
 }
 
 void Strategy::operator()(Event<Connected> const &event) {
@@ -50,7 +53,7 @@ void Strategy::operator()(Event<MarketByPriceUpdate> const &event) {
 
 // helper - dispatch event to the relevant instrument
 template <typename T>
-void Strategy::dispatch(T const &event) {
+void Strategy::dispatch(Event<T> const &event) {
   switch (event.message_info.source) {
     case 0:
       futures_(event.value);

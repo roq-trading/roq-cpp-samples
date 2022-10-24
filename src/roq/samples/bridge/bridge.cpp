@@ -8,7 +8,9 @@ namespace roq {
 namespace samples {
 namespace bridge {
 
-Bridge::Bridge(client::Dispatcher &dispatcher) : dispatcher_(dispatcher) {
+// === IMPLEMENTATION ===
+
+Bridge::Bridge(client::Dispatcher &dispatcher) : dispatcher_{dispatcher} {
 }
 
 void Bridge::operator()(Event<Start> const &) {

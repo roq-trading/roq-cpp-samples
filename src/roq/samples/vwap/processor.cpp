@@ -17,6 +17,8 @@ namespace roq {
 namespace samples {
 namespace vwap {
 
+// === IMPLEMENTATION ===
+
 void Processor::dispatch(std::string_view const &path) {
   Processor processor;
   auto reader = client::EventLogReaderFactory::create(path);
@@ -38,8 +40,7 @@ void Processor::operator()(Event<MarketByPriceUpdate> const &event) {
       layer.ask_quantity);
 }
 
-template <typename T>
-cache::MarketByPrice &Processor::get_market_by_price(T const &value) {
+cache::MarketByPrice &Processor::get_market_by_price(auto const &value) {
   auto iter = market_by_price_.find(value.symbol);
   if (iter == std::end(market_by_price_)) {
     auto market_by_price = client::MarketByPriceFactory::create(value.exchange, value.symbol);

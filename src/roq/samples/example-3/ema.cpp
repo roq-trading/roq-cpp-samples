@@ -11,7 +11,9 @@ namespace roq {
 namespace samples {
 namespace example_3 {
 
-EMA::EMA(double alpha) : alpha_(alpha), countdown_(Flags::warmup()) {
+// === IMPLEMENTATION ===
+
+EMA::EMA(double alpha) : alpha_{alpha}, countdown_{Flags::warmup()} {
 }
 
 void EMA::reset() {

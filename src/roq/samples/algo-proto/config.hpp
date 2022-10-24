@@ -21,7 +21,7 @@ class Config final : public client::Config {
   Config(Config const &) = delete;
 
  protected:
-  void dispatch(Handler &handler) const override;
+  void dispatch(Handler &) const override;
 
  public:
   absl::flat_hash_map<Symbol, algo::framework::Config> strategies;

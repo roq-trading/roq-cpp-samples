@@ -15,13 +15,15 @@ namespace roq {
 namespace samples {
 namespace event_log {
 
-Processor::Processor(std::string_view const &path) : reader_(client::EventLogReaderFactory::create(path)) {
+// === IMPLEMENTATION ===
+
+Processor::Processor(std::string_view const &path) : reader_{client::EventLogReaderFactory::create(path)} {
 }
 
 void Processor::dispatch() {
-  while (!reader_->finished()) {
+  while (!(*reader_).finished()) {
     auto updates = false;
-    while (reader_->dispatch(*this)) {
+    while ((*reader_).dispatch(*this)) {
       updates = true;
     }
     if (updates)

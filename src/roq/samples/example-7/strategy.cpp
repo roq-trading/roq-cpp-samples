@@ -12,17 +12,24 @@ namespace roq {
 namespace samples {
 namespace example_7 {
 
-/*
- * note!
- * Measurement.name is a string *buffer*
- * This means that every assignment is a copy
- * For smaller strings that's fine, but unnecessary
- * We therefore pre-allocate the array here at construction time
- */
+// === IMPLEMENTATION ===
+
+// note!
+// Measurement.name is a string *buffer*
+// This means that every assignment is a copy
+// For smaller strings that's fine, but unnecessary
+// We therefore pre-allocate the array here at construction time
+
 Strategy::Strategy(client::Dispatcher &dispatcher)
-    : dispatcher_(dispatcher), measurements_{{
-                                   {.name = "bp"sv, .value = NaN},
-                                   {.name = "ap"sv, .value = NaN},
+    : dispatcher_{dispatcher}, measurements_{{
+                                   {
+                                       .name = "bp"sv,
+                                       .value = NaN,
+                                   },
+                                   {
+                                       .name = "ap"sv,
+                                       .value = NaN,
+                                   },
                                }} {
 }
 

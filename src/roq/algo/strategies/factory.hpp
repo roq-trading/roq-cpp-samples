@@ -38,8 +38,8 @@ class Factory final : public framework::Factory {
       framework::Dispatcher &, std::string_view const &routing_id, CreateOrder const &) override;
 
  private:
-  const std::string type_;
-  const framework::State state_;
+  std::string const type_;
+  framework::State const state_;
 };
 
 }  // namespace strategies

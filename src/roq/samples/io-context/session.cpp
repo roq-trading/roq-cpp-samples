@@ -17,8 +17,10 @@ namespace roq {
 namespace samples {
 namespace io_context {
 
+// === IMPLEMENTATION ===
+
 Session::Session(uint64_t session_id, io::net::tcp::Connection::Factory &factory, Shared &shared)
-    : session_id_(session_id), server_(web::rest::ServerFactory::create(*this, factory)), shared_(shared) {
+    : session_id_{session_id}, server_{web::rest::ServerFactory::create(*this, factory)}, shared_{shared} {
 }
 
 // web::rest::Server::Handler

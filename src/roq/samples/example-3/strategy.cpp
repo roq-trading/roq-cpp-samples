@@ -17,8 +17,10 @@ namespace roq {
 namespace samples {
 namespace example_3 {
 
+// === IMPLEMENTATION ===
+
 Strategy::Strategy(client::Dispatcher &dispatcher)
-    : dispatcher_(dispatcher), instrument_(Flags::exchange(), Flags::symbol(), Flags::account()) {
+    : dispatcher_{dispatcher}, instrument_{Flags::exchange(), Flags::symbol(), Flags::account()} {
 }
 
 void Strategy::operator()(Event<Timer> const &event) {
@@ -98,6 +100,13 @@ void Strategy::operator()(Event<PositionUpdate> const &event) {
 
 void Strategy::operator()(Event<FundsUpdate> const &event) {
   log::info("FundsUpdate={}"sv, event.value);
+}
+
+// helper - dispatch event to instrument
+template <typename T>
+void Strategy::dispatch(Event<T> const &event) {
+  assert(event.message_info.source == 0);
+  instrument_(event.value);
 }
 
 void Strategy::update_model() {

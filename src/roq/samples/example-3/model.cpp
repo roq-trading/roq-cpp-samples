@@ -16,7 +16,9 @@ namespace roq {
 namespace samples {
 namespace example_3 {
 
-Model::Model() : bid_ema_(Flags::ema_alpha()), ask_ema_(Flags::ema_alpha()) {
+// === IMPLEMENTATION ===
+
+Model::Model() : bid_ema_{Flags::ema_alpha()}, ask_ema_{Flags::ema_alpha()} {
 }
 
 void Model::reset() {

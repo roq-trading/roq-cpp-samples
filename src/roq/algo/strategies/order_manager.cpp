@@ -14,7 +14,9 @@ namespace strategies {
 
 // TODO(thraneh): Base -> shared (lookup + dispatcher + ...) + instrument
 
-OrderManager::OrderManager(Base &base, size_t index, Side const &side) : base_(base), index_(index), side_(side) {
+// === IMPLEMENTATION ===
+
+OrderManager::OrderManager(Base &base, size_t index, Side const &side) : base_{base}, index_{index}, side_{side} {
 }
 
 void OrderManager::set_target(double quantity, double price) {
