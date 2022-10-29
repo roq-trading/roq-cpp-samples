@@ -124,7 +124,7 @@ void Processor::operator()(Event<CustomMetricsUpdate> const &event) {
   log::info("{}"sv, event);
 }
 
-void Processor::operator()(Event<ParameterUpdate> const &event) {
+void Processor::operator()(Event<ParametersUpdate> const &event) {
   log::info("{}"sv, event);
 }
 

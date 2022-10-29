@@ -59,7 +59,7 @@ class Processor final : public client::EventLogReader::Handler {
   void operator()(Event<CustomMetricsUpdate> const &) override;
 
   // parameters
-  void operator()(Event<ParameterUpdate> const &) override;
+  void operator()(Event<ParametersUpdate> const &) override;
 
  private:
   std::unique_ptr<client::EventLogReader> reader_;

@@ -23,5 +23,5 @@ fi
 
 $PREFIX "./roq-samples-metrics" \
   --name "$NAME" \
-  --metrics_listen_address 6789 \
+  --service_listen_address 6789 \
   $@
