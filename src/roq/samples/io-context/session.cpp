@@ -30,7 +30,7 @@ void Session::operator()(web::rest::Server::Disconnected const &) {
 }
 
 void Session::operator()(web::rest::Server::Request const &request) {
-  if (request.connection == web::http::Connection::UPGRADE) {
+  if (request.headers.connection == web::http::Connection::UPGRADE) {
     log::info("Upgrading session_id={} to websocket..."sv, session_id_);
     (*server_).upgrade(request);
   } else {
@@ -41,7 +41,7 @@ void Session::operator()(web::rest::Server::Request const &request) {
       web::rest::Server::Response response{
           .status = web::http::Status::OK,  // XXX should depend on result type
           .server = "roq"sv,
-          .connection = request.connection,
+          .connection = request.headers.connection,
           .sec_websocket_accept = {},
           .content_type = web::http::ContentType::APPLICATION_JSON,
           .body = result,
