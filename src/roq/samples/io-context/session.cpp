@@ -40,9 +40,9 @@ void Session::operator()(web::rest::Server::Request const &request) {
       auto result = process_request(request.body);
       web::rest::Server::Response response{
           .status = web::http::Status::OK,  // XXX should depend on result type
-          .server = "roq"sv,
           .connection = request.headers.connection,
           .sec_websocket_accept = {},
+          .cache_control = {},
           .content_type = web::http::ContentType::APPLICATION_JSON,
           .body = result,
       };
