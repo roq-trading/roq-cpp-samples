@@ -50,7 +50,8 @@ void Controller::operator()(Event<Timer> const &event) {
 void Controller::operator()(Event<TopOfBook> const &event) {
   if (flags::Flags::filter_symbols() && shared_.symbols.find(event.value.symbol) == std::end(shared_.symbols))
     return;
-  send("{}\n"sv, json::TopOfBook{event});
+  json::Context context;  // note! a better implementation would get decimals from reference data
+  send("{}\n"sv, json::TopOfBook{context, event});
 }
 
 // io::net::udp::Sender::Handler
