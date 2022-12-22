@@ -48,24 +48,23 @@ void Strategy::operator()(Event<ReferenceData> const &event) {
 
 void Strategy::operator()(Event<MarketByPriceUpdate> const &event) {
   auto &[message_info, market_by_price_update] = event;
-  // log::info("LATENCY={}"sv, message_info.receive_time - message_info.origin_create_time);
-  // log::info("message_info={}"sv, message_info);
-  (*market_by_price_)(market_by_price_update);
-  // warmup?
-  if (wait_.count()) {
-    if (message_info.receive_time < wait_)
-      return;
-  } else {
-    wait_ = message_info.receive_time + 30s;
-    return;
-  }
   // done?
   if (countdown_ == 0)
     return;
+  // apply mbp update
+  (*market_by_price_)(market_by_price_update);
   // incremental?
   if (market_by_price_update.update_type != UpdateType::INCREMENTAL)
     return;
   // ready?
+  if (next_request_.count()) {
+    if (message_info.receive_time < next_request_)
+      return;
+  } else {
+    next_request_ = message_info.receive_time + 30s;  // warmup
+    return;
+  }
+  // tick size ?
   if (utils::compare(tick_size_, 0.0) == 0)
     return;
   // extract top of book
@@ -94,8 +93,10 @@ void Strategy::operator()(Event<MarketByPriceUpdate> const &event) {
   };
   log::info<1>("create_order={}"sv, create_order);
   dispatcher_.send(create_order, 0u, true);
+  // update
   assert(countdown_ > 0);
   --countdown_;
+  next_request_ = message_info.receive_time + 100ms;
 }
 
 void Strategy::operator()(Event<OrderAck> const &event) {
