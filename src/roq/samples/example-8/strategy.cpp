@@ -11,6 +11,7 @@
 #include "roq/samples/example-8/flags.hpp"
 
 using namespace std::literals;
+using namespace std::chrono_literals;
 
 namespace roq {
 namespace samples {
@@ -47,8 +48,21 @@ void Strategy::operator()(Event<ReferenceData> const &event) {
 
 void Strategy::operator()(Event<MarketByPriceUpdate> const &event) {
   auto &[message_info, market_by_price_update] = event;
+  // log::info("LATENCY={}"sv, message_info.receive_time - message_info.origin_create_time);
+  // log::info("message_info={}"sv, message_info);
   (*market_by_price_)(market_by_price_update);
-  // snapshot is expensive
+  // warmup?
+  if (wait_.count()) {
+    if (message_info.receive_time < wait_)
+      return;
+  } else {
+    wait_ = message_info.receive_time + 30s;
+    return;
+  }
+  // order already sent?
+  if (done_)
+    return;
+  // incremental?
   if (market_by_price_update.update_type != UpdateType::INCREMENTAL)
     return;
   // ready?
@@ -80,12 +94,15 @@ void Strategy::operator()(Event<MarketByPriceUpdate> const &event) {
   };
   log::info("create_order={}"sv, create_order);
   dispatcher_.send(create_order, 0u, true);
+  done_ = true;
 }
 
 void Strategy::operator()(Event<OrderAck> const &event) {
   auto &[message_info, order_ack] = event;
   log::info("LATENCY={}"sv, message_info.receive_time - message_info.origin_create_time);
-  log::fatal("order_ack={}"sv, order_ack);
+  log::info("message_info={}"sv, message_info);
+  log::info("order_ack={}"sv, order_ack);
+  log::fatal("STOP"sv);
 }
 
 }  // namespace example_8
