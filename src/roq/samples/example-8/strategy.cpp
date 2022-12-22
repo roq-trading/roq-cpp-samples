@@ -59,8 +59,8 @@ void Strategy::operator()(Event<MarketByPriceUpdate> const &event) {
     wait_ = message_info.receive_time + 30s;
     return;
   }
-  // order already sent?
-  if (done_)
+  // done?
+  if (countdown_ == 0)
     return;
   // incremental?
   if (market_by_price_update.update_type != UpdateType::INCREMENTAL)
@@ -92,17 +92,15 @@ void Strategy::operator()(Event<MarketByPriceUpdate> const &event) {
       .stop_price = NaN,
       .routing_id = {},
   };
-  log::info("create_order={}"sv, create_order);
+  log::info<1>("create_order={}"sv, create_order);
   dispatcher_.send(create_order, 0u, true);
-  done_ = true;
+  assert(countdown_ > 0);
+  --countdown_;
 }
 
 void Strategy::operator()(Event<OrderAck> const &event) {
   auto &[message_info, order_ack] = event;
   log::info("LATENCY={}"sv, message_info.receive_time - message_info.origin_create_time);
-  log::info("message_info={}"sv, message_info);
-  log::info("order_ack={}"sv, order_ack);
-  log::fatal("STOP"sv);
 }
 
 }  // namespace example_8

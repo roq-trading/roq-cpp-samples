@@ -35,7 +35,7 @@ class Strategy final : public client::Handler {
   double tick_size_ = NaN;
   std::unique_ptr<cache::MarketByPrice> market_by_price_;
   std::chrono::nanoseconds wait_ = {};
-  bool done_ = false;
+  uint32_t countdown_ = 32;
 };
 
 }  // namespace example_8
