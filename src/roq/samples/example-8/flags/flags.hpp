@@ -15,6 +15,7 @@ struct Flags final {
   static std::string_view symbol();
   static double quantity();
   static int32_t tick_offset();
+  static bool top_of_book();
 };
 
 }  // namespace flags

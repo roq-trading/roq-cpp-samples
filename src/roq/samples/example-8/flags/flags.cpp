@@ -36,6 +36,12 @@ ABSL_FLAG(  //
     100,
     "offset as number of ticks");
 
+ABSL_FLAG(  //
+    bool,
+    top_of_book,
+    false,
+    "use top of book as trigger?");
+
 namespace roq {
 namespace samples {
 namespace example_8 {
@@ -63,6 +69,11 @@ double Flags::quantity() {
 
 int32_t Flags::tick_offset() {
   static const int32_t result = absl::GetFlag(FLAGS_tick_offset);
+  return result;
+}
+
+bool Flags::top_of_book() {
+  static bool const result = absl::GetFlag(FLAGS_top_of_book);
   return result;
 }
 

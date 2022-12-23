@@ -21,8 +21,8 @@ namespace example_8 {
 
 Strategy::Strategy(client::Dispatcher &dispatcher)
     : dispatcher_{dispatcher}, account_{Flags::account()}, exchange_{Flags::exchange()}, symbol_{Flags::symbol()},
-      quantity_{Flags::quantity()}, tick_offset_{Flags::tick_offset()},
-      market_by_price_(client::MarketByPriceFactory::create(exchange_, symbol_)) {
+      use_top_of_book_{Flags::top_of_book()}, use_market_by_price_{!use_top_of_book_}, quantity_{Flags::quantity()},
+      tick_offset_{Flags::tick_offset()}, market_by_price_(client::MarketByPriceFactory::create(exchange_, symbol_)) {
 }
 
 void Strategy::operator()(Event<DownloadBegin> const &event) {
@@ -46,15 +46,41 @@ void Strategy::operator()(Event<ReferenceData> const &event) {
   tick_size_ = reference_data.tick_size;
 }
 
+void Strategy::operator()(Event<TopOfBook> const &event) {
+  auto &[message_info, top_of_book] = event;
+  // trigger?
+  if (!use_top_of_book_)
+    return;
+  // order action
+  create_order(message_info, top_of_book.layer);
+}
+
 void Strategy::operator()(Event<MarketByPriceUpdate> const &event) {
   auto &[message_info, market_by_price_update] = event;
-  // done?
-  if (countdown_ == 0)
+  // trigger?
+  if (!use_market_by_price_)
     return;
   // apply mbp update
   (*market_by_price_)(market_by_price_update);
   // incremental?
   if (market_by_price_update.update_type != UpdateType::INCREMENTAL)
+    return;
+  // extract top of book
+  auto layers = (*market_by_price_).extract(buffer_, true);
+  if (std::empty(layers))
+    return;
+  // order action
+  create_order(message_info, layers[0]);
+}
+
+void Strategy::operator()(Event<OrderAck> const &event) {
+  auto &[message_info, order_ack] = event;
+  log::info("LATENCY={}"sv, message_info.receive_time - message_info.origin_create_time);
+}
+
+void Strategy::create_order(MessageInfo const &message_info, Layer const &layer) {
+  // done?
+  if (countdown_ == 0)
     return;
   // ready?
   if (next_request_.count()) {
@@ -67,13 +93,8 @@ void Strategy::operator()(Event<MarketByPriceUpdate> const &event) {
   // tick size ?
   if (utils::compare(tick_size_, 0.0) == 0)
     return;
-  // extract top of book
-  std::array<Layer, 1> tmp;
-  auto top_of_book = (*market_by_price_).extract(tmp, true);
-  if (std::empty(top_of_book))
-    return;
   // send order
-  auto price = top_of_book[0].bid_price - tick_offset_ * tick_size_;
+  auto price = layer.bid_price - tick_offset_ * tick_size_;
   CreateOrder create_order{
       .account = account_,
       .order_id = ++order_id_,
@@ -97,11 +118,6 @@ void Strategy::operator()(Event<MarketByPriceUpdate> const &event) {
   assert(countdown_ > 0);
   --countdown_;
   next_request_ = message_info.receive_time + 100ms;
-}
-
-void Strategy::operator()(Event<OrderAck> const &event) {
-  auto &[message_info, order_ack] = event;
-  log::info("LATENCY={}"sv, message_info.receive_time - message_info.origin_create_time);
 }
 
 }  // namespace example_8
