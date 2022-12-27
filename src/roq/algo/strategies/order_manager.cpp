@@ -50,7 +50,7 @@ void OrderManager::set_target(double quantity, double price) {
     };
     base_.dispatcher_(create_order);
     order_id_ = order_id;
-    auto res = base_.order_id_to_order_manager_index_.try_emplace(order_id, index_);
+    [[maybe_unused]] auto res = base_.order_id_to_order_manager_index_.try_emplace(order_id, index_);
     assert(res.second);
   } else {
     log::debug("MODIFY_ORDER"sv);

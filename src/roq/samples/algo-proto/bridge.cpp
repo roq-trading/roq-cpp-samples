@@ -27,7 +27,7 @@ auto create_routes(auto const &config) {
   for (auto &[exchange, symbols] : config.exchange_symbols) {
     auto &tmp = result[exchange];
     for (auto &symbol : symbols) {
-      auto res = tmp.try_emplace(symbol, ++market_id, exchange, symbol);
+      [[maybe_unused]] auto res = tmp.try_emplace(symbol, ++market_id, exchange, symbol);
       assert(res.second);
     }
   }
@@ -258,7 +258,7 @@ void Bridge::create_strategy(CreateOrder const &create_order) {
         client::Base64::encode({reinterpret_cast<std::byte const *>(&strategy_id), sizeof(strategy_id)}, true);
     auto strategy = factory.create(*this, routing_id, create_order);
     assert(!!strategy);
-    auto res = strategies_.emplace(strategy_id, std::move(strategy));
+    [[maybe_unused]] auto res = strategies_.emplace(strategy_id, std::move(strategy));
     assert(res.second);
     auto &state = static_cast<algo::framework::State const &>(factory);
     state.dispatch([&](auto &instrument) {

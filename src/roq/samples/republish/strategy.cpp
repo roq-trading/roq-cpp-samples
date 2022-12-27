@@ -14,6 +14,8 @@
 
 using namespace std::literals;
 
+using namespace fmt::literals;
+
 namespace roq {
 namespace samples {
 namespace republish {
@@ -81,7 +83,7 @@ void Strategy::operator()(Event<TopOfBook> const &event) {
   // json message
   // note! you can optimize this by pre-allocating a buffer and use fmt::format_to
   auto message = fmt::format(
-      R"(["{}",{},{},{},{}])"sv,
+      R"(["{}",{},{},{},{}])"_cf,
       top_of_book.symbol,
       layer.bid_price,
       layer.bid_quantity,
