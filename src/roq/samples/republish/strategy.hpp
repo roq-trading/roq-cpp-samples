@@ -26,7 +26,7 @@ class Strategy final : public client::Handler {
   void operator()(Event<TopOfBook> const &) override;
 
  private:
-  client::Dispatcher &dispatcher_;
+  [[maybe_unused]] client::Dispatcher &dispatcher_;
   struct sockaddr_in address_ = {};
   int socket_ = {};
 };

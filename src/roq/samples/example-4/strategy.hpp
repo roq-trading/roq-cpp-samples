@@ -29,7 +29,7 @@ class Strategy final : public client::Handler {
   void operator()(Event<TradeSummary> const &) override;
 
  private:
-  client::Dispatcher &dispatcher_;
+  [[maybe_unused]] client::Dispatcher &dispatcher_;
 };
 
 }  // namespace example_4

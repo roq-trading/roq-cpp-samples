@@ -24,7 +24,7 @@ class Strategy final : public client::Handler {
   void operator()(roq::metrics::Writer &) const override;
 
  private:
-  client::Dispatcher &dispatcher_;
+  [[maybe_unused]] client::Dispatcher &dispatcher_;
   // note! following variables are each aligned to a cache line
   roq::metrics::Counter<uint64_t> counter_;
   roq::metrics::external_latency_t histogram_;  // note! or internal_latency_t or your own...

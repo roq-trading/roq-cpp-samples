@@ -26,7 +26,7 @@ class Bridge final : public client::Handler {
   // ... etc.
 
  private:
-  client::Dispatcher &dispatcher_;
+  [[maybe_unused]] client::Dispatcher &dispatcher_;
 };
 
 }  // namespace bridge

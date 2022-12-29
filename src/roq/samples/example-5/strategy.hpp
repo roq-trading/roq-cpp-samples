@@ -25,7 +25,7 @@ class Strategy final : public client::Handler {
   void operator()(Event<client::CustomMessage> const &) override;
 
  private:
-  client::Dispatcher &dispatcher_;
+  [[maybe_unused]] client::Dispatcher &dispatcher_;
   Producer producer_;
 };
 

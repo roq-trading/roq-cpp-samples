@@ -56,7 +56,7 @@ class Strategy final : public client::Handler {
   void check(Event<T> const &);
 
  private:
-  client::Dispatcher &dispatcher_;
+  [[maybe_unused]] client::Dispatcher &dispatcher_;
   std::chrono::nanoseconds prev_receive_time_ = {};
 };
 

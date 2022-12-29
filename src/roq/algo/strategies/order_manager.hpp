@@ -27,7 +27,6 @@ struct OrderManager final {
   Base &base_;
   size_t const index_;
   Side const side_;
-  double traded_quantity_ = 0.0;
   //
   double target_quantity_ = NaN;
   double target_price_ = NaN;

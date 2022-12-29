@@ -35,7 +35,7 @@ class Strategy final : public client::Handler {
   void dispatch(Event<T> const &);
 
  private:
-  client::Dispatcher &dispatcher_;
+  [[maybe_unused]] client::Dispatcher &dispatcher_;
   Instrument futures_;
   Instrument cash_;
 };
