@@ -6,6 +6,7 @@
 #include <sys/socket.h>
 #include <unistd.h>
 
+#include <fmt/compile.h>
 #include <fmt/format.h>
 
 #include "roq/samples/republish/flags/flags.hpp"
