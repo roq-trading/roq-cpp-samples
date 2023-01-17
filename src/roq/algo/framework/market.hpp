@@ -9,8 +9,7 @@ namespace algo {
 namespace framework {
 
 // note! intercept source
-class Market final {
- public:
+struct Market final {
   template <typename MarketByPriceFactory>
   Market(
       uint32_t market_id,

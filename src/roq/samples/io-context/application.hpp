@@ -14,8 +14,7 @@ namespace io_context {
 
 // application
 
-class Application final : public Service {
- public:
+struct Application final : public Service {
   using Service::Service;
 
  protected:

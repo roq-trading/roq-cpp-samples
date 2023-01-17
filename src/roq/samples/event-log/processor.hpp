@@ -10,8 +10,7 @@ namespace roq {
 namespace samples {
 namespace event_log {
 
-class Processor final : public client::EventLogReader::Handler {
- public:
+struct Processor final : public client::EventLogReader::Handler {
   explicit Processor(std::string_view const &path);
 
   Processor(Processor &&) = default;

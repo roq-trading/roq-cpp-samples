@@ -17,8 +17,7 @@ namespace example_1 {
 // the construct *may* accept more arguments from the 2nd position
 // event handlers *may* be overriden
 
-class Strategy final : public client::Handler {
- public:
+struct Strategy final : public client::Handler {
   explicit Strategy(client::Dispatcher &);
 
   Strategy(Strategy &&) = default;

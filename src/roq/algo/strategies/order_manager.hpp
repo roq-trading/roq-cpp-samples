@@ -8,7 +8,7 @@ namespace roq {
 namespace algo {
 namespace strategies {
 
-class Base;
+struct Base;
 
 struct OrderManager final {
   OrderManager(Base &, size_t index, Side const &);

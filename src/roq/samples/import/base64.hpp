@@ -12,8 +12,7 @@ namespace import {
 // this implementation is a bit wasteful since it allocates a std::string
 // on each invocation
 
-class Base64 final {
- public:
+struct Base64 final {
   static std::string encode(void const *data, size_t length);
 };
 

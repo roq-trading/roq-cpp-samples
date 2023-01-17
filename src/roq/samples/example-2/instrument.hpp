@@ -14,8 +14,7 @@ namespace example_2 {
 
 // helper class caching instrument specific information
 
-class Instrument final {
- public:
+struct Instrument final {
   Instrument(std::string_view const &exchange, std::string_view const &symbol);
 
   Instrument(Instrument &&) = default;

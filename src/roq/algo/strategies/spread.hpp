@@ -11,8 +11,7 @@ namespace roq {
 namespace algo {
 namespace strategies {
 
-class Spread final : public Base {
- public:
+struct Spread final : public Base {
   Spread(framework::Dispatcher &, framework::State const &, std::string_view const &routing_id, CreateOrder const &);
 
   void operator()(ModifyOrder const &);

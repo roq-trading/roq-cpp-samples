@@ -8,8 +8,7 @@ namespace roq {
 namespace algo {
 namespace framework {
 
-class Handler {
- public:
+struct Handler {
   virtual ~Handler() = default;
 
   virtual void operator()(Event<Timer> const &) = 0;

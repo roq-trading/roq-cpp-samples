@@ -12,8 +12,7 @@ namespace example_2 {
 
 // application
 
-class Application final : public Service {
- public:
+struct Application final : public Service {
   using Service::Service;
 
  protected:

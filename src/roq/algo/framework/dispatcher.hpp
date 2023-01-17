@@ -8,8 +8,7 @@ namespace roq {
 namespace algo {
 namespace framework {
 
-class Dispatcher {
- public:
+struct Dispatcher {
   virtual uint32_t next_order_id() const = 0;
 
   virtual void operator()(CreateOrder const &) = 0;

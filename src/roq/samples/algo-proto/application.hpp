@@ -11,8 +11,7 @@ namespace roq {
 namespace samples {
 namespace algo_proto {
 
-class Application final : public roq::Service {
- public:
+struct Application final : public roq::Service {
   using Service::Service;
 
  protected:

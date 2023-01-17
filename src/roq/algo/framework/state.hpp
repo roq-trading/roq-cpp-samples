@@ -17,8 +17,7 @@ namespace roq {
 namespace algo {
 namespace framework {
 
-class State final {
- public:
+struct State final {
   State(
       std::span<Instrument const> const &, std::span<Market const *> const &, std::span<const cache::Gateway> const &);
 

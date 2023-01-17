@@ -13,8 +13,7 @@ namespace example_2 {
 
 // strategy implementation
 
-class Strategy final : public client::Handler {
- public:
+struct Strategy final : public client::Handler {
   explicit Strategy(client::Dispatcher &);
 
   Strategy(Strategy &&) = default;

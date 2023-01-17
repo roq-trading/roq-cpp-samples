@@ -14,8 +14,7 @@ namespace example_1 {
 // the design uses dispatch to allow the factory to use interfaces
 // without imposing any kind of requirement on containers and storage
 
-class Config final : public client::Config {
- public:
+struct Config final : public client::Config {
   Config() {}
 
   Config(Config &&) = default;

@@ -9,8 +9,7 @@ namespace roq {
 namespace samples {
 namespace example_7 {
 
-class Collector final : public client::Collector {
- public:
+struct Collector final : public client::Collector {
   void operator()(Event<CustomMetricsUpdate> const &) override;
 };
 

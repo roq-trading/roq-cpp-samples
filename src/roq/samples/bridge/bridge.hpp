@@ -8,8 +8,7 @@ namespace roq {
 namespace samples {
 namespace bridge {
 
-class Bridge final : public client::Handler {
- public:
+struct Bridge final : public client::Handler {
   explicit Bridge(client::Dispatcher &);
 
   Bridge(Bridge &&) = default;

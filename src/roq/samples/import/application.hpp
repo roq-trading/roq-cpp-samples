@@ -13,8 +13,7 @@ namespace import {
 // Service is a base class used to initialize the environment
 // it is not required, only for your convenience
 
-class Application final : public Tool {
- public:
+struct Application final : public Tool {
   using Tool::Tool;
 
  protected:

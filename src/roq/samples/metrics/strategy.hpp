@@ -11,8 +11,7 @@ namespace roq {
 namespace samples {
 namespace metrics {
 
-class Strategy final : public client::Handler {
- public:
+struct Strategy final : public client::Handler {
   explicit Strategy(client::Dispatcher &);
 
   Strategy(Strategy &&) = delete;

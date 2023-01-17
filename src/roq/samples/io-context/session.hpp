@@ -19,8 +19,7 @@ namespace io_context {
 
 // note! supports both rest and websocket
 
-class Session final : public web::rest::Server::Handler {
- public:
+struct Session final : public web::rest::Server::Handler {
   Session(uint64_t session_id, io::net::tcp::Connection::Factory &, Shared &);
 
  protected:

@@ -21,8 +21,7 @@ namespace roq {
 namespace algo {
 namespace strategies {
 
-class Factory final : public framework::Factory {
- public:
+struct Factory final : public framework::Factory {
   Factory(
       std::string_view const &type,
       std::span<const framework::Instrument> const &,

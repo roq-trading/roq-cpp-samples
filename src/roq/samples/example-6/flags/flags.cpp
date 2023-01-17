@@ -9,8 +9,7 @@
 using namespace std::chrono_literals;  // NOLINT
 
 namespace {
-class TimePeriod final {
- public:
+struct TimePeriod final {
   TimePeriod() = default;
 
   TimePeriod(const std::chrono::nanoseconds value) : value_(absl::FromChrono(value)) {}  // NOLINT (allow implicit)

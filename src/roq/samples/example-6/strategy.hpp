@@ -8,8 +8,7 @@ namespace roq {
 namespace samples {
 namespace example_6 {
 
-class Strategy final : public client::Handler {
- public:
+struct Strategy final : public client::Handler {
   explicit Strategy(client::Dispatcher &);
 
   Strategy(Strategy &&) = default;

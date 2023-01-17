@@ -13,8 +13,7 @@ namespace example_5 {
 // Service is a base class used to initialize the environment
 // it is not required, only for your convenience
 
-class Application final : public Service {
- public:
+struct Application final : public Service {
   using Service::Service;
 
  protected:

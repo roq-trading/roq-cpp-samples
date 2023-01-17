@@ -14,8 +14,7 @@ namespace roq {
 namespace samples {
 namespace example_3 {
 
-class Instrument final {
- public:
+struct Instrument final {
   static constexpr size_t const MAX_DEPTH = 3;
 
   using Depth = std::array<Layer, MAX_DEPTH>;

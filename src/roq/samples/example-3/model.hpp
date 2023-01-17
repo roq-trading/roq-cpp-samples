@@ -12,8 +12,7 @@ namespace roq {
 namespace samples {
 namespace example_3 {
 
-class Model final {
- public:
+struct Model final {
   static constexpr size_t const MAX_DEPTH = 3;
 
   using Depth = std::array<Layer, MAX_DEPTH>;

@@ -24,8 +24,7 @@ namespace roq {
 namespace samples {
 namespace algo_proto {
 
-class Bridge final : public client::Handler, public algo::framework::Dispatcher {
- public:
+struct Bridge final : public client::Handler, public algo::framework::Dispatcher {
   Bridge(client::Dispatcher &, Config const &, size_t size);
 
   Bridge(Bridge &&) = default;

@@ -9,8 +9,7 @@ namespace roq {
 namespace samples {
 namespace io_context {
 
-class Config final : public client::Config {
- public:
+struct Config final : public client::Config {
   Config() {}
 
   Config(Config &&) = default;

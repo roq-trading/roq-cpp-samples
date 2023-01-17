@@ -14,8 +14,7 @@ namespace roq {
 namespace samples {
 namespace import {
 
-class Processor final {
- public:
+struct Processor final {
   explicit Processor(std::string_view const &path);
 
   Processor(Processor &&) = default;

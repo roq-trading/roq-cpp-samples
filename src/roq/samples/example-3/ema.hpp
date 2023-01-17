@@ -11,8 +11,7 @@ namespace roq {
 namespace samples {
 namespace example_3 {
 
-class EMA final {
- public:
+struct EMA final {
   explicit EMA(double alpha);
 
   EMA(EMA &&) = default;

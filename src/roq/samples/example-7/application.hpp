@@ -10,8 +10,7 @@ namespace roq {
 namespace samples {
 namespace example_7 {
 
-class Application final : public Service {
- public:
+struct Application final : public Service {
   using Service::Service;
 
  protected:

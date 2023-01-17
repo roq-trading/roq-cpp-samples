@@ -13,8 +13,7 @@ namespace roq {
 namespace samples {
 namespace algo_proto {
 
-class Config final : public client::Config {
- public:
+struct Config final : public client::Config {
   Config(std::string_view const &path);
 
   Config(Config &&) = default;

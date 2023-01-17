@@ -11,8 +11,7 @@ namespace roq {
 namespace samples {
 namespace bridge {
 
-class Application final : public Service {
- public:
+struct Application final : public Service {
   using Service::Service;
 
  protected:

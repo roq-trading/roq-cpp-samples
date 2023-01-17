@@ -17,8 +17,7 @@ namespace roq {
 namespace algo {
 namespace strategies {
 
-class Base : public framework::Handler {
- public:
+struct Base : public framework::Handler {
   Base(framework::Dispatcher &, framework::State const &, std::string_view const &routing_id, CreateOrder const &);
 
   Base(Base &&) = default;

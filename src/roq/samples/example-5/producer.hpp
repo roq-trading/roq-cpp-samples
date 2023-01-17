@@ -13,8 +13,7 @@ namespace roq {
 namespace samples {
 namespace example_5 {
 
-class Producer final {
- public:
+struct Producer final {
   explicit Producer(client::Dispatcher &);
 
   Producer(Producer &&) = delete;

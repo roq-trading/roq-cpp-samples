@@ -9,8 +9,7 @@ namespace roq {
 namespace samples {
 namespace republish {
 
-class Config final : public client::Config {
- public:
+struct Config final : public client::Config {
   Config() {}
 
   Config(Config &&) = default;

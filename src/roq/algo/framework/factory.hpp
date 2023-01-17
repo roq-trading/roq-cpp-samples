@@ -15,8 +15,7 @@ namespace roq {
 namespace algo {
 namespace framework {
 
-class Factory {
- public:
+struct Factory {
   virtual ~Factory() = default;
 
   virtual operator framework::State const &() const = 0;
