@@ -65,6 +65,18 @@ void Strategy::operator()(Event<MarketByPriceUpdate> const &event) {
   // incremental?
   if (market_by_price_update.update_type != UpdateType::INCREMENTAL)
     return;
+  // only trigger on change
+  auto is_change = [](auto &depth) {
+    auto result = true;
+    for (auto &item : depth) {
+      if (!result)
+        break;
+      result = item.update_action != UpdateAction::CHANGE;
+    }
+    return result;
+  };
+  if (!(is_change(market_by_price_update.bids) && is_change(market_by_price_update.asks)))
+    return;
   // extract top of book
   auto layers = (*market_by_price_).extract(buffer_, true);
   if (std::empty(layers))
@@ -95,7 +107,7 @@ void Strategy::create_order(MessageInfo const &message_info, Layer const &layer)
     return;
   // send order
   auto price = layer.bid_price - tick_offset_ * tick_size_;
-  CreateOrder create_order{
+  auto create_order = CreateOrder{
       .account = account_,
       .order_id = ++order_id_,
       .exchange = exchange_,
