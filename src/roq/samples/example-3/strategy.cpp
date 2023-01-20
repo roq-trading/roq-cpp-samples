@@ -144,15 +144,14 @@ void Strategy::try_trade(Side side, double price) {
     log::info("*** ANOTHER ORDER IS WORKING ***"sv);
     if (side != working_side_) {
       log::info("*** CANCEL WORKING ORDER ***"sv);
-      dispatcher_.send(
-          CancelOrder{
-              .account = Flags::account(),
-              .order_id = working_order_id_,
-              .routing_id = {},
-              .version = {},
-              .conditional_on_version = {},
-          },
-          0);
+      auto cancel_order = CancelOrder{
+          .account = Flags::account(),
+          .order_id = working_order_id_,
+          .routing_id = {},
+          .version = {},
+          .conditional_on_version = {},
+      };
+      dispatcher_.send(cancel_order, 0);
     }
     return;
   }
@@ -161,25 +160,24 @@ void Strategy::try_trade(Side side, double price) {
     return;
   }
   auto order_id = ++max_order_id_;
-  dispatcher_.send(
-      CreateOrder{
-          .account = Flags::account(),
-          .order_id = order_id,
-          .exchange = Flags::exchange(),
-          .symbol = Flags::symbol(),
-          .side = side,
-          .position_effect = {},
-          .max_show_quantity = NaN,
-          .order_type = OrderType::LIMIT,
-          .time_in_force = TimeInForce::GTC,
-          .execution_instructions = {},
-          .order_template = {},
-          .quantity = instrument_.min_trade_vol(),
-          .price = price,
-          .stop_price = NaN,
-          .routing_id = {},
-      },
-      0);
+  auto create_order = CreateOrder{
+      .account = Flags::account(),
+      .order_id = order_id,
+      .exchange = Flags::exchange(),
+      .symbol = Flags::symbol(),
+      .side = side,
+      .position_effect = {},
+      .max_show_quantity = NaN,
+      .order_type = OrderType::LIMIT,
+      .time_in_force = TimeInForce::GTC,
+      .execution_instructions = {},
+      .order_template = {},
+      .quantity = instrument_.min_trade_vol(),
+      .price = price,
+      .stop_price = NaN,
+      .routing_id = {},
+  };
+  dispatcher_.send(create_order, 0);
   working_order_id_ = order_id;
   working_side_ = side;
   // possible extension: monitor for request timeout

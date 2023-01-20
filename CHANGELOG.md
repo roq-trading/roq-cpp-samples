@@ -4,6 +4,10 @@ All notable changes will be documented in this file.
 
 ## Head
 
+### Changes
+
+* `cache::MarketByPrice` did not expose the `allow_price_inversion` flag (#310)
+
 ## 0.9.1 &ndash; 2023-01-12
 
 ## 0.9.0 &ndash; 2022-12-22

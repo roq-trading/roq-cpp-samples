@@ -17,12 +17,25 @@ namespace roq {
 namespace samples {
 namespace example_3 {
 
+// === HELPERS ===
+
+namespace {
+auto create_market_by_price(auto &exchange, auto &symbol) {
+  // note! default options are somewhat conservative and not always appropriate
+  auto options = client::MarketByPriceFactory::Options{
+      .disable_checksum_validation = true,
+      .allow_price_inversion = false,
+  };
+  return client::MarketByPriceFactory::create(exchange, symbol, options);
+}
+}  // namespace
+
 // === IMPLEMENTATION ===
 
 Instrument::Instrument(
     std::string_view const &exchange, std::string_view const &symbol, std::string_view const &account)
-    : exchange_{exchange}, symbol_{symbol}, account_{account}, market_by_price_{client::MarketByPriceFactory::create(
-                                                                   exchange, symbol)} {
+    : exchange_{exchange}, symbol_{symbol}, account_{account}, market_by_price_{
+                                                                   create_market_by_price(exchange, symbol)} {
 }
 
 double Instrument::position() const {
@@ -78,7 +91,7 @@ void Instrument::operator()(DownloadEnd const &download_end) {
 void Instrument::operator()(GatewayStatus const &gateway_status) {
   if (std::empty(gateway_status.account)) {
     // bit-mask of required message types
-    static const Mask required{
+    static auto const required = Mask{
         SupportType::REFERENCE_DATA,
         SupportType::MARKET_STATUS,
         SupportType::MARKET_BY_PRICE,
@@ -94,7 +107,7 @@ void Instrument::operator()(GatewayStatus const &gateway_status) {
     }
   } else if (gateway_status.account.compare(account_) == 0) {
     // bit-mask of required message types
-    static const Mask required{
+    static auto const required = Mask{
         SupportType::CREATE_ORDER,
         SupportType::CANCEL_ORDER,
         SupportType::ORDER,
