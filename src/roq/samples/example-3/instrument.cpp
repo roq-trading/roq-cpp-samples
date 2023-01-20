@@ -26,7 +26,7 @@ auto create_market_by_price(auto &exchange, auto &symbol) {
       .disable_checksum_validation = true,
       .allow_price_inversion = false,
   };
-  return client::MarketByPriceFactory::create(exchange, symbol, options);
+  return client::MarketByPriceFactory::create_new(exchange, symbol, options);
 }
 }  // namespace
 
