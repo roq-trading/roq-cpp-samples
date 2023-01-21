@@ -36,61 +36,22 @@ Optional
 
 The project is primarily designed to be compatible with the conda package manager.
 
-### Download and Install Miniforge
-
-#### Linux / x86\_64
+### Create environment (Miniforge)
 
 ```bash
-wget -N https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-Linux-x86_64.sh
-
-bash Miniforge3-Linux-x86_64.sh -b -u -p ~/conda
-
-~/conda/bin/conda install -y \
-    'gxx_linux-64>=12'
+scripts/create_conda_env.sh debug
 ```
 
-#### Linux / aarch64
+### Activate environment
 
 ```bash
-wget -N https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-Linux-aarch64.sh
-
-bash Miniforge3-Linux-aarch64.sh -b -u -p ~/conda
-
-~/conda/bin/conda install -y \
-    'gxx_linux-aarch64>=12'
+source opt/conda/bin/activate
 ```
 
-#### macOS / x86\_64
+### Install Dependencies (for this project)
 
 ```bash
-wget -N https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-MacOSX-x86_64.sh
-
-bash Miniforge3-MacOSX-x86_64.sh -b -u -p ~/conda
-
-~/conda/bin/conda install -y \
-   'clang_osx-64>=14'
-```
-
-#### macOS / arm64
-
-```bash
-wget -N https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-MacOSX-arm64.sh
-
-bash Miniforge3-MacOSX-arm64.sh -b -u -p ~/conda
-
-~/conda/bin/conda install -y \
-   'clang_osx-arm64>=14'
-```
-
-### Install Dependencies
-
-```bash
-source ~/conda/bin/activate
-
 conda install -y \
-    git \
-    make \
-    cmake \
     abseil-cpp \
     flatbuffers \
     nlohmann_json \
