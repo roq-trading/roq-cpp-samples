@@ -24,3 +24,5 @@ _CPack_Packages/
 
 # debian
 *.deb
+
+opt/
