@@ -20,6 +20,7 @@ struct Flags final {
   static uint32_t warmup();
   static bool enable_trading();
   static bool simulation();
+  static bool allow_price_inversion();
 };
 
 }  // namespace flags

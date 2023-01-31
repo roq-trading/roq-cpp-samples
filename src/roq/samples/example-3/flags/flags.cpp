@@ -96,6 +96,12 @@ ABSL_FLAG(  //
     false,
     "requires an event-log");
 
+ABSL_FLAG(  //
+    bool,
+    allow_price_inversion,
+    false,
+    "allow price-inversion?");
+
 namespace roq {
 namespace samples {
 namespace example_3 {
@@ -143,6 +149,11 @@ bool Flags::enable_trading() {
 
 bool Flags::simulation() {
   static bool const result = absl::GetFlag(FLAGS_simulation);
+  return result;
+}
+
+bool Flags::allow_price_inversion() {
+  static bool const result = absl::GetFlag(FLAGS_allow_price_inversion);
   return result;
 }
 
