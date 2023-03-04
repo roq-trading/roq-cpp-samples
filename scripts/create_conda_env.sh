@@ -12,10 +12,28 @@ if [[ -d "$CONDA_DIR" ]]; then
 fi
 
 if [[ -z $1 ]]; then
-  (>&2 echo -e "\033[1;31mERROR: Expected first argument to be a target. Use 'debug' or 'release'..\033[0m") && exit 1
+  (>&2 echo -e "\033[1;31mERROR: Expected first argument to be a build. Use 'stable' or 'unstable'..\033[0m") && exit 1
 fi
 
-TARGET="$1"
+BUILD="$1"
+
+echo "BUILD=$BUILD"
+
+case "$BUILD" in
+  stable)
+    ;;
+  unstable)
+    ;;
+  *)
+    (>&2 echo -e "\033[1;31mERROR: Unknown build. Should be 'stable' or 'unstable'.\033[0m") && exit 1
+    ;;
+esac
+
+if [[ -z $2 ]]; then
+  (>&2 echo -e "\033[1;31mERROR: Expected second argument to be a target. Use 'debug' or 'release'..\033[0m") && exit 1
+fi
+
+TARGET="$2"
 
 echo "TARGET=$TARGET"
 
@@ -109,11 +127,20 @@ esac
 echo -e "\033[1;34mInstall toolchain...\033[0m"
 
 "$CONDA_DIR/bin/conda" install -y \
+  benchmark \
+  catch2 \
   clangdev \
   cmake \
+  conda-build \
   jinja2 \
   make \
   pkg-config
+
+echo -e "\033[1;34mInstall dependencies from $BUILD...\033[0m"
+
+"$CONDA_DIR/bin/conda" install -y --channel "https://roq-trading.com/conda/$BUILD" \
+  roq-client \
+  roq-tools
 
 echo -e "\033[1;34mInstall conda activation script...\033[0m"
 
