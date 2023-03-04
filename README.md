@@ -36,6 +36,9 @@ Optional
 
 The project is primarily designed to be compatible with the conda package manager.
 
+> Use `stable` for (the approx. monthly) release build.
+> Use `unstable` for the more regularly updated development builds.
+
 ### Create environment (Miniforge)
 
 ```bash
@@ -53,9 +56,7 @@ source opt/conda/bin/activate
 > Sometimes you may need to delete CMakeCache.txt if CMake has cached an incorrect configuration.
 
 ```bash
-cmake .
-
-make -j4
+cmake . && make -j4
 ```
 
 
