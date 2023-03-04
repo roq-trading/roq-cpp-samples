@@ -131,14 +131,21 @@ echo -e "\033[1;34mWORKAROUND\033[0m"
 echo -e "\033[1;34mInstall toolchain...\033[0m"
 
 "$CONDA_DIR/bin/conda" install -y \
-  benchmark \
-  catch2 \
   clangdev \
   cmake \
   conda-build \
-  jinja2 \
   make \
   pkg-config
+
+echo -e "\033[1;34mInstall dependencies...\033[0m"
+
+"$CONDA_DIR/bin/conda" install -y \
+  benchmark \
+  catch2 \
+  jinja2 \
+  libevent \
+  nlohmann_json \
+  tomlplusplus
 
 echo -e "\033[1;34mWORKAROUND\033[0m"
 
@@ -148,7 +155,8 @@ echo -e "\033[1;34mInstall dependencies from $BUILD...\033[0m"
 
 "$CONDA_DIR/bin/conda" install -y --channel "https://roq-trading.com/conda/$BUILD" \
   roq-client \
-  roq-tools
+  roq-tools \
+  roq-oss-range-v3
 
 echo -e "\033[1;34mInstall conda activation script...\033[0m"
 
