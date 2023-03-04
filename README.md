@@ -39,7 +39,7 @@ The project is primarily designed to be compatible with the conda package manage
 ### Create environment (Miniforge)
 
 ```bash
-scripts/create_conda_env.sh debug
+scripts/create_conda_env.sh stable debug
 ```
 
 ### Activate environment
@@ -48,23 +48,9 @@ scripts/create_conda_env.sh debug
 source opt/conda/bin/activate
 ```
 
-### Install Dependencies (for this project)
-
-```bash
-conda install -y \
-    abseil-cpp \
-    flatbuffers \
-    nlohmann_json \
-    tomlplusplus \
-    libevent
-
-conda install -y --channel https://roq-trading.com/conda/stable \
-    roq-client \
-    roq-web \
-    roq-oss-range-v3
-```
-
 ## Building
+
+> Sometimes you may need to delete CMakeCache.txt if CMake has cached an incorrect configuration.
 
 ```bash
 cmake .
