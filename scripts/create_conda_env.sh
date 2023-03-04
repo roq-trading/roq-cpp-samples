@@ -113,10 +113,6 @@ echo -e "\033[1;34mInstall conda...\033[0m"
 
 bash "$OPT_DIR/$CONDA_INSTALLER" -b -p "$CONDA_DIR" -u
 
-echo -e "\033[1;34mWORKAROUND: clangdev...\033[0m"
-
-"$CONDA_DIR/bin/conda" install -y 'conda==22.11.1'
-
 echo -e "\033[1;34mInstall compiler...\033[0m"
 
 case "$KERNEL" in
@@ -127,6 +123,10 @@ case "$KERNEL" in
     "$CONDA_DIR/bin/conda" install -y "clang_osx-$CONDA_PKG_EXT>=14"
     ;;
 esac
+
+echo -e "\033[1;34mWORKAROUND\033[0m"
+
+"$CONDA_DIR/bin/conda" install -y 'conda==22.11.1'
 
 echo -e "\033[1;34mInstall toolchain...\033[0m"
 
@@ -139,6 +139,10 @@ echo -e "\033[1;34mInstall toolchain...\033[0m"
   jinja2 \
   make \
   pkg-config
+
+echo -e "\033[1;34mWORKAROUND\033[0m"
+
+"$CONDA_DIR/bin/conda" install -y 'conda==22.11.1'
 
 echo -e "\033[1;34mInstall dependencies from $BUILD...\033[0m"
 
