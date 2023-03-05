@@ -155,8 +155,7 @@ echo -e "\033[1;34mInstall dependencies from $BUILD...\033[0m"
 
 "$CONDA_DIR/bin/conda" install -y --channel "https://roq-trading.com/conda/$BUILD" \
   roq-client \
-  roq-tools \
-  roq-oss-range-v3
+  roq-tools
 
 echo -e "\033[1;34mInstall conda activation script...\033[0m"
 
