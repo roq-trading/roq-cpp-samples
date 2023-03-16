@@ -199,13 +199,14 @@ EOF
   esac
 fi
 
+# note! -Wno-deprecated-builtins due to abseil-cpp and clang 15
 if [[ "$KERNEL" =~ .*Darwin.* ]]; then
   case "$TARGET" in
     release)
       cat > "$CONDA_ACTIVATION_SCRIPT" << 'EOF'
 export PREFIX="$CONDA_PREFIX"
 export CFLAGS="$CFLAGS"
-export CPPFLAGS="$CPPFLAGS -Wall -Wextra -I$PREFIX/include"
+export CPPFLAGS="$CPPFLAGS -Wall -Wextra -Wno-deprecated-builtins -I$PREFIX/include"
 export CXXFLAGS="$CXXFLAGS $CPPFLAGS"
 export LDFLAGS="$LDFLAGS -L$PREFIX/lib"
 export PKG_CONFIG_PATH="$PREFIX/lib/pkgconfig"
@@ -219,7 +220,7 @@ EOF
       cat > "$CONDA_ACTIVATION_SCRIPT" << 'EOF'
 export PREFIX="$CONDA_PREFIX"
 export CFLAGS="$DEBUG_CFLAGS"
-export CPPFLAGS="$DEBUG_CPPFLAGS -Wall -Wextra -I$PREFIX/include"
+export CPPFLAGS="$DEBUG_CPPFLAGS -Wall -Wextra -Wno-deprecated-builtins -I$PREFIX/include"
 export CXXFLAGS="$DEBUG_CXXFLAGS $CPPFLAGS"
 export LDFLAGS="$LDFLAGS -L$PREFIX/lib"
 export PKG_CONFIG_PATH="$PREFIX/lib/pkgconfig"
