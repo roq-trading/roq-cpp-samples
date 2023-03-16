@@ -120,7 +120,7 @@ case "$KERNEL" in
     "$CONDA_DIR/bin/conda" install -y "gxx_linux-$CONDA_PKG_EXT>=12"
     ;;
   Darwin*)
-    "$CONDA_DIR/bin/conda" install -y "clang_osx-$CONDA_PKG_EXT>=14"
+    "$CONDA_DIR/bin/conda" install -y "clang_osx-$CONDA_PKG_EXT>=15"
     ;;
 esac
 
