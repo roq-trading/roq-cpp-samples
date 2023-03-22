@@ -147,6 +147,7 @@ void Strategy::try_trade(Side side, double price) {
       auto cancel_order = CancelOrder{
           .account = Flags::account(),
           .order_id = working_order_id_,
+          .request_template = {},
           .routing_id = {},
           .version = {},
           .conditional_on_version = {},
@@ -171,7 +172,7 @@ void Strategy::try_trade(Side side, double price) {
       .order_type = OrderType::LIMIT,
       .time_in_force = TimeInForce::GTC,
       .execution_instructions = {},
-      .order_template = {},
+      .request_template = {},
       .quantity = instrument_.min_trade_vol(),
       .price = price,
       .stop_price = NaN,

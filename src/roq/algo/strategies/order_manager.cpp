@@ -42,7 +42,7 @@ void OrderManager::set_target(double quantity, double price) {
         .order_type = OrderType::LIMIT,
         .time_in_force = TimeInForce::GTC,
         .execution_instructions = {},
-        .order_template = {},
+        .request_template = {},
         .quantity = target_quantity_,
         .price = target_price_,
         .stop_price = NaN,
@@ -58,6 +58,7 @@ void OrderManager::set_target(double quantity, double price) {
     ModifyOrder modify_order{
         .account = base_.account_,
         .order_id = order_id_,
+        .request_template = {},
         .quantity = NaN,
         .price = target_price_,
         .routing_id = base_.routing_id_,
