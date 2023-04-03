@@ -36,8 +36,8 @@ auto create_market_by_price(auto &exchange, auto &symbol) {
 
 Instrument::Instrument(
     std::string_view const &exchange, std::string_view const &symbol, std::string_view const &account)
-    : exchange_{exchange}, symbol_{symbol}, account_{account}, market_by_price_{
-                                                                   create_market_by_price(exchange, symbol)} {
+    : exchange_{exchange}, symbol_{symbol}, account_{account},
+      market_by_price_{create_market_by_price(exchange, symbol)} {
 }
 
 double Instrument::position() const {

@@ -48,9 +48,8 @@ auto use_base64() {
 // === IMPLEMENTATION ===
 
 Processor::Processor(std::string_view const &path)
-    : file_{std::string{path}, std::ios::out | std::ios::binary}, encoding_{
-                                                                      use_base64() ? Encoding::BASE64
-                                                                                   : Encoding::BINARY} {
+    : file_{std::string{path}, std::ios::out | std::ios::binary},
+      encoding_{use_base64() ? Encoding::BASE64 : Encoding::BINARY} {
   if (!file_)
     throw RuntimeError{R"(Unable to open file for writing: path="{}")"sv, path};
 }

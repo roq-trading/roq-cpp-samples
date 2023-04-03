@@ -11,9 +11,8 @@ namespace example_2 {
 // === IMPLEMENTATION ===
 
 Strategy::Strategy(client::Dispatcher &dispatcher)
-    : dispatcher_{dispatcher}, futures_{Flags::futures_exchange(), Flags::futures_symbol()}, cash_{
-                                                                                                 Flags::cash_exchange(),
-                                                                                                 Flags::cash_symbol()} {
+    : dispatcher_{dispatcher}, futures_{Flags::futures_exchange(), Flags::futures_symbol()},
+      cash_{Flags::cash_exchange(), Flags::cash_symbol()} {
 }
 
 void Strategy::operator()(Event<Connected> const &event) {

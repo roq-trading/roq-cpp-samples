@@ -74,8 +74,8 @@ auto create_factories(auto const &config, auto const &routes, auto const &gatewa
 // === IMPLEMENTATION ===
 
 Bridge::Bridge(client::Dispatcher &dispatcher, Config const &config, size_t size)
-    : dispatcher_{dispatcher}, routes_{create_routes<decltype(routes_)>(config)},
-      gateways_(size), factories_{create_factories<decltype(factories_)>(config, routes_, gateways_)} {
+    : dispatcher_{dispatcher}, routes_{create_routes<decltype(routes_)>(config)}, gateways_(size),
+      factories_{create_factories<decltype(factories_)>(config, routes_, gateways_)} {
   auto side = magic_enum::enum_cast<Side>(flags::Flags::side()).value_or(Side::UNDEFINED);
   CreateOrder create_order{
       .account = flags::Flags::account(),

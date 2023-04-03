@@ -36,8 +36,8 @@ auto create_listener(auto &handler, auto &context) {
 // === IMPLEMENTATION ===
 
 Controller::Controller(client::Dispatcher &dispatcher, io::Context &context)
-    : dispatcher_{dispatcher}, context_{context}, sender_{create_sender(*this, context)}, listener_{create_listener(
-                                                                                              *this, context_)} {
+    : dispatcher_{dispatcher}, context_{context}, sender_{create_sender(*this, context)},
+      listener_{create_listener(*this, context_)} {
 }
 
 // client::Handler
