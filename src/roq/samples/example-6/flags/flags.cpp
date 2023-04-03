@@ -3,6 +3,11 @@
 #include "roq/samples/example-6/flags/flags.hpp"
 
 #include <absl/flags/flag.h>
+#include <absl/flags/marshalling.h>
+
+#include <absl/strings/string_view.h>
+
+#include <absl/time/time.h>
 
 #include <string>
 

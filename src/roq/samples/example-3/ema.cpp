@@ -5,7 +5,9 @@
 #include <algorithm>
 #include <cmath>
 
-#include "roq/samples/example-3/flags.hpp"
+#include <roq/numbers.hpp>
+
+#include "roq/samples/example-3/flags/flags.hpp"
 
 namespace roq {
 namespace samples {
@@ -13,12 +15,12 @@ namespace example_3 {
 
 // === IMPLEMENTATION ===
 
-EMA::EMA(double alpha) : alpha_{alpha}, countdown_{Flags::warmup()} {
+EMA::EMA(double alpha) : alpha_{alpha}, countdown_{flags::Flags::warmup()} {
 }
 
 void EMA::reset() {
   value_ = NaN;
-  countdown_ = Flags::warmup();
+  countdown_ = flags::Flags::warmup();
 }
 
 double EMA::update(double value) {

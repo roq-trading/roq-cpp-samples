@@ -4,6 +4,7 @@
 
 #include <cassert>
 #include <cstring>
+#include <iterator>
 
 // https://stackoverflow.com/a/37109258
 // https://creativecommons.org/licenses/by-sa/4.0/
