@@ -4,7 +4,7 @@
 
 #include <absl/flags/flag.h>
 
-#include <chrono>  // IWYU pragma: keep
+#include <chrono>
 #include <string>
 
 using namespace std::chrono_literals;  // NOLINT
