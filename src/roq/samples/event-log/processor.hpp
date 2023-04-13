@@ -60,6 +60,9 @@ struct Processor final : public client::EventLogReader::Handler {
   // parameters
   void operator()(Event<ParametersUpdate> const &) override;
 
+  // position manager
+  void operator()(Event<PortfolioUpdate> const &) override;
+
  private:
   std::unique_ptr<client::EventLogReader> reader_;
 };
