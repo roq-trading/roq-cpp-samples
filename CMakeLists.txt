@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 3.12)
 
 project(roq-samples)
 
+set(CMAKE_CXX_STANDARD 20)
+
 # conda
 
 if(DEFINED ENV{CONDA_PREFIX} AND NOT DEFINED ENV{CONDA_BUILD})
