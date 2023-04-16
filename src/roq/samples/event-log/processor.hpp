@@ -56,6 +56,7 @@ struct Processor final : public client::EventLogReader::Handler {
 
   // broadcast
   void operator()(Event<CustomMetricsUpdate> const &) override;
+  void operator()(Event<CustomMatrixUpdate> const &) override;
 
   // parameters
   void operator()(Event<ParametersUpdate> const &) override;

@@ -8,6 +8,10 @@ All notable changes will be documented in this file.
 
 * All order requests must support `request_template` (#329)
 
+### Added
+
+* Add `CustomMatrix` (#344)
+
 ## 0.9.3 &ndash; 2023-03-20
 
 ## 0.9.2 &ndash; 2023-02-22
