@@ -2,6 +2,8 @@
 
 #pragma once
 
+#include <array>
+
 #include "roq/api.hpp"
 #include "roq/client.hpp"
 
@@ -21,6 +23,9 @@ struct Strategy final : public client::Handler {
  private:
   client::Dispatcher &dispatcher_;
   std::array<Measurement, 2> measurements_;
+  std::array<MatrixKey, 3> rows_;
+  std::array<double, 3> data_;
+  uint32_t version_ = {};
 };
 
 }  // namespace example_7
