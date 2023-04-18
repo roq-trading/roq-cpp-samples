@@ -40,9 +40,23 @@ Strategy::Strategy(client::Dispatcher &dispatcher)
       }} {
 }
 
+void Strategy::operator()(Event<DownloadBegin> const &) {
+  downloading_ = true;
+}
+
+void Strategy::operator()(Event<DownloadEnd> const &) {
+  downloading_ = false;
+}
+
 void Strategy::operator()(Event<TopOfBook> const &event) {
+  // note! the subscriber shouldn't do anything here
+  if (flags::Flags::subscriber())
+    return;
   auto &[message_info, top_of_book] = event;
-  log::info<0>("[{}:{}] TopOfBook={}"sv, message_info.source, message_info.source_name, top_of_book);
+  log::info<1>("[{}:{}] TopOfBook={}"sv, message_info.source, message_info.source_name, top_of_book);
+  // note! we're not allowed to publish during download
+  if (downloading_)
+    return;
   //  metrics
   measurements_[0].value = top_of_book.layer.bid_price;
   measurements_[1].value = top_of_book.layer.ask_price;
@@ -75,6 +89,14 @@ void Strategy::operator()(Event<TopOfBook> const &event) {
     dispatcher_.send(custom_matrix, 0);
   } catch (NotConnected &) {
   }
+}
+
+void Strategy::operator()(Event<CustomMetricsUpdate> const &event) {
+  log::debug("event={}"sv, event);
+}
+
+void Strategy::operator()(Event<CustomMatrixUpdate> const &event) {
+  log::debug("event={}"sv, event);
 }
 
 }  // namespace example_7

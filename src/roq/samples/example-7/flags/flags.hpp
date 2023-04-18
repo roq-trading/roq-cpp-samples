@@ -15,6 +15,7 @@ struct Flags final {
   static std::string_view exchange();
   static std::string_view symbol();
   static bool simulation();
+  static bool subscriber();
 };
 
 }  // namespace flags

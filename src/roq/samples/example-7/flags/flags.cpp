@@ -36,6 +36,12 @@ ABSL_FLAG(  //
     false,
     "requires an event-log");
 
+ABSL_FLAG(  //
+    bool,
+    subscriber,
+    false,
+    "subscriber?");
+
 namespace roq {
 namespace samples {
 namespace example_7 {
@@ -63,6 +69,11 @@ std::string_view Flags::symbol() {
 
 bool Flags::simulation() {
   static bool const result = absl::GetFlag(FLAGS_simulation);
+  return result;
+}
+
+bool Flags::subscriber() {
+  static bool const result = absl::GetFlag(FLAGS_subscriber);
   return result;
 }
 

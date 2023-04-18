@@ -18,7 +18,12 @@ struct Strategy final : public client::Handler {
   Strategy(Strategy const &) = delete;
 
  protected:
+  void operator()(Event<DownloadBegin> const &) override;
+  void operator()(Event<DownloadEnd> const &) override;
   void operator()(Event<TopOfBook> const &) override;
+
+  void operator()(Event<CustomMetricsUpdate> const &) override;
+  void operator()(Event<CustomMatrixUpdate> const &) override;
 
  private:
   client::Dispatcher &dispatcher_;
@@ -26,6 +31,7 @@ struct Strategy final : public client::Handler {
   std::array<MatrixKey, 3> rows_;
   std::array<double, 3> data_;
   uint32_t version_ = {};
+  bool downloading_ = false;
 };
 
 }  // namespace example_7
