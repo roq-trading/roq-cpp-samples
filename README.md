@@ -19,8 +19,6 @@ Reason can be found [here](https://devblogs.microsoft.com/commandline/windowswsl
 * [Abseil-C++](https://github.com/abseil/abseil-cpp) (Apache 2.0 License)
 * [FlatBuffers](https://github.com/google/flatbuffers) (Apache 2.0 License)
 * [fmt](https://github.com/fmtlib/fmt) (MIT License)
-* [range-v3](https://github.com/ericniebler/range-v3) (BSL 1.0 License)
-* [span-lite](https://github.com/martinmoene/span-lite) (BSL 1.0 License)
 * [roq-api](https://github.com/roq-trading/roq-api) (MIT License)
 * [roq-logging](https://github.com/roq-trading/roq-api) (MIT License)
 * roq-web (Commerical License, free to use)
@@ -28,8 +26,8 @@ Reason can be found [here](https://devblogs.microsoft.com/commandline/windowswsl
 
 Optional
 
+* [Catch2](https://github.com/catchorg/Catch2) (Boost Software License 1.0 License)
 * [Google Benchmark](https://github.com/google/benchmark) (Apache 2.0 License)
-* [Google Test](https://github.com/google/googletest) (BSD 3-Clause License)
 
 
 ## Prerequisites
