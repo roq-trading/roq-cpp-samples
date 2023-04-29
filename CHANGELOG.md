@@ -6,6 +6,7 @@ All notable changes will be documented in this file.
 
 ### Changes
 
+* Install Mambaforge (#351)
 * All order requests must support `request_template` (#329)
 
 ### Added
