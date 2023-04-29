@@ -111,7 +111,7 @@ fi
 
 echo -e "\033[1;34mInstall conda...\033[0m"
 
-bash "$OPT_DIR/$CONDA_INSTALLER" -b -p "$CONDA_DIR" -u
+bash "$OPT_DIR/$CONDA_INSTALLER" -b -p "$CONDA_DIR"
 
 echo -e "\033[1;34mInstall compiler...\033[0m"
 
@@ -124,15 +124,11 @@ case "$KERNEL" in
     ;;
 esac
 
-echo -e "\033[1;34mWORKAROUND\033[0m"
-
-"$CONDA_DIR/bin/mamba" install -y 'conda==22.11.1'
-
 echo -e "\033[1;34mInstall toolchain...\033[0m"
 
 "$CONDA_DIR/bin/mamba" install -y \
-  clangdev \
-  cmake \
+  'clangdev>=16' \
+  'cmake>=3.25' \
   conda-build \
   make \
   pkg-config
@@ -141,15 +137,11 @@ echo -e "\033[1;34mInstall dependencies...\033[0m"
 
 "$CONDA_DIR/bin/mamba" install -y \
   benchmark \
-  catch2 \
+  'catch2>=3.3' \
   jinja2 \
   libevent \
   nlohmann_json \
   tomlplusplus
-
-echo -e "\033[1;34mWORKAROUND\033[0m"
-
-"$CONDA_DIR/bin/mamba" install -y 'conda==22.11.1'
 
 echo -e "\033[1;34mInstall dependencies from $BUILD...\033[0m"
 
