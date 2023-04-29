@@ -37,7 +37,7 @@ The project is primarily designed to be compatible with the conda package manage
 > Use `stable` for (the approx. monthly) release build.
 > Use `unstable` for the more regularly updated development builds.
 
-### Create environment (Miniforge)
+### Create environment (Mambaforge)
 
 ```bash
 scripts/create_conda_env.sh stable debug
@@ -89,7 +89,7 @@ Simulation requires you to either use your own event logs (automatically
 captured when you're running a gateway) or use sample data
 
 ```bash
-conda install -y --channel https://roq-trading.com/conda/stable \
+mamba install -y --channel https://roq-trading.com/conda/stable \
     roq-data
 ```
 
@@ -102,7 +102,7 @@ Data can now be found in the `$CONDA_PREFIX/share/roq-data/` directory.
 #### [Deribit](https://roq-trading.com/docs/reference/gateways/roq-deribit/)
 
 ```bash
-conda install -y --channel https://roq-trading.com/conda/stable \
+mamba install -y --channel https://roq-trading.com/conda/stable \
     roq-deribit
 ```
 
@@ -134,7 +134,7 @@ roq-deribit \
 #### [Coinbase Pro](https://roq-trading.com/docs/reference/gateways/roq-coinbase-pro/)
 
 ```bash
-conda install -y --channel https://roq-trading.com/conda/stable \
+mamba install -y --channel https://roq-trading.com/conda/stable \
     roq-coinbase-pro
 ```
 
