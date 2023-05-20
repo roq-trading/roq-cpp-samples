@@ -144,6 +144,7 @@ echo -e "\033[1;34mInstall dependencies...\033[0m"
   jinja2 \
   libevent \
   nlohmann_json \
+  pybind11 \
   tomlplusplus
 
 echo -e "\033[1;34mInstall dependencies from $BUILD...\033[0m"
@@ -185,8 +186,7 @@ export PREFIX="$CONDA_PREFIX"
 export CFLAGS="$DEBUG_CFLAGS -fsanitize=address"
 export CPPFLAGS="$DEBUG_CPPFLAGS -fsanitize=address -Wall -Wextra -I$PREFIX/include"
 export CXXFLAGS="$DEBUG_CXXFLAGS $CPPFLAGS"
-export LDFLAGS="$LDFLAGS -L$PREFIX/lib"
-export PKG_CONFIG_PATH="$PREFIX/lib/pkgconfig"
+export LDFLAGS="$LDFLAGS -L$PREFIX/lib"export PKG_CONFIG_PATH="$PREFIX/lib/pkgconfig"
 export ROQ_BUILD_TYPE="debug"
 export ASAN_OPTIONS="strict_string_checks=1:detect_stack_use_after_return=1:check_initialization_order=1:strict_init_order=1:detect_leaks=1"
 EOF

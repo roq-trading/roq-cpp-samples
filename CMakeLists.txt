@@ -29,6 +29,7 @@ find_package(roq-io REQUIRED)
 find_package(roq-logging REQUIRED)
 find_package(roq-web REQUIRED)
 find_package(tomlplusplus REQUIRED)
+find_package(pybind11 REQUIRED)
 
 # include
 
