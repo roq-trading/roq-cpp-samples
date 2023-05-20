@@ -32,6 +32,8 @@ void Producer::operator()(Event<Stop> const &) {
 }
 
 void Producer::run() {
+  pybind11::scoped_interpreter guard;
+  pybind11::print("Hello, World!");
   log::info("producer was started"sv);
   while (!terminating_) {
     auto text = "hello world"s;  // note! std::string

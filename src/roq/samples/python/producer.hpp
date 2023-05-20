@@ -2,6 +2,8 @@
 
 #pragma once
 
+#include <pybind11/embed.h>
+
 #include <atomic>
 #include <memory>
 #include <thread>
