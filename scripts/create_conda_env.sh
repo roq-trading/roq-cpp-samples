@@ -206,9 +206,6 @@ export CXXFLAGS="$CXXFLAGS $CPPFLAGS"
 export LDFLAGS="$LDFLAGS -L$PREFIX/lib"
 export PKG_CONFIG_PATH="$PREFIX/lib/pkgconfig"
 export ROQ_BUILD_TYPE="release"
-export CONDA_BUILD_SYSROOT=/opt/MacOSX11.3.sdk
-export SDKROOT=/opt/MacOSX11.3.sdk
-export MACOSX_DEPLOYMENT_TARGET=11.3
 EOF
       ;;
     debug)
@@ -220,9 +217,6 @@ export CXXFLAGS="$DEBUG_CXXFLAGS $CPPFLAGS"
 export LDFLAGS="$LDFLAGS -L$PREFIX/lib"
 export PKG_CONFIG_PATH="$PREFIX/lib/pkgconfig"
 export ROQ_BUILD_TYPE="debug"
-export CONDA_BUILD_SYSROOT=/opt/MacOSX11.3.sdk
-export SDKROOT=/opt/MacOSX11.3.sdk
-export MACOSX_DEPLOYMENT_TARGET=11.3
 export ASAN_OPTIONS="strict_string_checks=1:detect_stack_use_after_return=1:check_initialization_order=1:strict_init_order=1:detect_leaks=1"
 EOF
       ;;

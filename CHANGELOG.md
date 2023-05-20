@@ -4,6 +4,10 @@ All notable changes will be documented in this file.
 
 ## Head
 
+### Fixed
+
+* Installer scripts incorrectly used `/opt/MacOSX11.3.sdk` (#361)
+
 ## 0.9.4 &ndash; 2023-05-04
 
 ### Changes
