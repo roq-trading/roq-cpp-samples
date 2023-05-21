@@ -2,10 +2,10 @@
 
 #pragma once
 
+#include <pybind11/embed.h>
+
 #include "roq/api.hpp"
 #include "roq/client.hpp"
-
-#include "roq/samples/python/producer.hpp"
 
 namespace roq {
 namespace samples {
@@ -18,14 +18,15 @@ struct Strategy final : public client::Handler {
   Strategy(Strategy const &) = delete;
 
  protected:
-  void operator()(Event<Start> const &) override;
-  void operator()(Event<Stop> const &) override;
+  void operator()(Event<Timer> const &) override;
   void operator()(Event<TopOfBook> const &) override;
-  void operator()(Event<client::CustomMessage> const &) override;
 
  private:
   [[maybe_unused]] client::Dispatcher &dispatcher_;
-  Producer producer_;
+  pybind11::scoped_interpreter interpreter_;
+  pybind11::module module_;
+  std::chrono::nanoseconds next_timer_ = {};
+  Layer layer_;
 };
 
 }  // namespace python

@@ -13,12 +13,8 @@ namespace python {
 void Config::dispatch(Handler &handler) const {
   // callback for each subscription pattern
   handler(client::Symbol{
-      .regex = flags::Flags::deribit_symbols(),
-      .exchange = flags::Flags::deribit_exchange(),
-  });
-  handler(client::Symbol{
-      .regex = flags::Flags::coinbase_pro_symbols(),
-      .exchange = flags::Flags::coinbase_pro_exchange(),
+      .regex = flags::Flags::symbols(),
+      .exchange = flags::Flags::exchange(),
   });
 }
 

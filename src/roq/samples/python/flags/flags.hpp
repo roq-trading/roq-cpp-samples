@@ -10,10 +10,8 @@ namespace python {
 namespace flags {
 
 struct Flags final {
-  static std::string_view deribit_exchange();
-  static std::string_view deribit_symbols();
-  static std::string_view coinbase_pro_exchange();
-  static std::string_view coinbase_pro_symbols();
+  static std::string_view exchange();
+  static std::string_view symbols();
 };
 
 }  // namespace flags

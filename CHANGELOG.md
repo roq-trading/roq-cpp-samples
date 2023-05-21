@@ -4,6 +4,10 @@ All notable changes will be documented in this file.
 
 ## Head
 
+### Added
+
+* Call Python methods from a strategy (#362)
+
 ### Fixed
 
 * Installer scripts incorrectly used `/opt/MacOSX11.3.sdk` (#361)
