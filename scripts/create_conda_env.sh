@@ -120,7 +120,7 @@ echo -e "\033[1;34mInstall compiler...\033[0m"
 
 case "$KERNEL" in
   Linux*)
-    "$CONDA_DIR/bin/mamba" install -y "gxx_linux-$CONDA_PKG_EXT>=12"
+    "$CONDA_DIR/bin/mamba" install -y "gxx_linux-$CONDA_PKG_EXT>=13"
     ;;
   Darwin*)
     "$CONDA_DIR/bin/mamba" install -y "clang_osx-$CONDA_PKG_EXT>=16"
