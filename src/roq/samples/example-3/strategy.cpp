@@ -72,6 +72,10 @@ void Strategy::operator()(Event<MarketByPriceUpdate> const &event) {
   dispatch(event);
 }
 
+void Strategy::operator()(Event<MarketByOrderUpdate> const &event) {
+  dispatch(event);
+}
+
 void Strategy::operator()(Event<OrderAck> const &event) {
   log::info("OrderAck={}"sv, event.value);
   auto &order_ack = event.value;

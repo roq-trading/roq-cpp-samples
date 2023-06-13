@@ -30,6 +30,15 @@ auto create_market_by_price(auto &exchange, auto &symbol) {
   };
   return client::MarketByPriceFactory::create_new(exchange, symbol, options);
 }
+
+auto create_market_by_order(auto &exchange, auto &symbol) {
+  // note! default options are somewhat conservative and not always appropriate
+  auto options = client::MarketByOrderFactory::Options{
+      .disable_checksum_validation = true,
+      .allow_price_inversion = flags::Flags::allow_price_inversion(),
+  };
+  return client::MarketByOrderFactory::create(client::MarketByOrderFactory::Type::SIMPLE_2, options, exchange, symbol);
+}
 }  // namespace
 
 // === IMPLEMENTATION ===
@@ -37,7 +46,8 @@ auto create_market_by_price(auto &exchange, auto &symbol) {
 Instrument::Instrument(
     std::string_view const &exchange, std::string_view const &symbol, std::string_view const &account)
     : exchange_{exchange}, symbol_{symbol}, account_{account},
-      market_by_price_{create_market_by_price(exchange, symbol)} {
+      market_by_price_{create_market_by_price(exchange, symbol)},
+      market_by_order_{create_market_by_order(exchange, symbol)} {
 }
 
 double Instrument::position() const {
@@ -174,6 +184,13 @@ void Instrument::operator()(MarketByPriceUpdate const &market_by_price_update) {
   (*market_by_price_).extract(depth_, true);
   log::info<1>("[{}:{}] depth=[{}]"sv, exchange_, symbol_, fmt::join(depth_, ", "sv));
   validate(depth_);
+}
+
+void Instrument::operator()(MarketByOrderUpdate const &market_by_order_update) {
+  assert(exchange_.compare(market_by_order_update.exchange) == 0);
+  assert(symbol_.compare(market_by_order_update.symbol) == 0);
+  (*market_by_order_)(market_by_order_update);
+  // TODO something...
 }
 
 void Instrument::operator()(OrderUpdate const &order_update) {

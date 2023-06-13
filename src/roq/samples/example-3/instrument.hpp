@@ -8,6 +8,7 @@
 
 #include "roq/api.hpp"
 
+#include "roq/cache/market_by_order.hpp"
 #include "roq/cache/market_by_price.hpp"
 
 namespace roq {
@@ -52,6 +53,7 @@ struct Instrument final {
   void operator()(ReferenceData const &);
   void operator()(MarketStatus const &);
   void operator()(MarketByPriceUpdate const &);
+  void operator()(MarketByOrderUpdate const &);
   void operator()(OrderUpdate const &);
   void operator()(PositionUpdate const &);
 
@@ -81,6 +83,8 @@ struct Instrument final {
   bool ready_ = false;
   uint32_t last_order_id_ = {};
   double last_traded_quantity_ = {};
+  // MbO demo
+  std::unique_ptr<cache::MarketByOrder> market_by_order_;
 };
 
 }  // namespace example_3

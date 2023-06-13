@@ -27,6 +27,7 @@ struct Strategy final : public client::Handler {
   void operator()(Event<ReferenceData> const &) override;
   void operator()(Event<MarketStatus> const &) override;
   void operator()(Event<MarketByPriceUpdate> const &) override;
+  void operator()(Event<MarketByOrderUpdate> const &) override;
   void operator()(Event<OrderAck> const &) override;
   void operator()(Event<OrderUpdate> const &) override;
   void operator()(Event<TradeUpdate> const &) override;
