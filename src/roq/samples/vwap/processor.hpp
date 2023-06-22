@@ -45,6 +45,8 @@ struct Processor final : public client::EventLogReader::Handler {
   void operator()(Event<CustomMatrixUpdate> const &) override {}
   void operator()(Event<ParametersUpdate> const &) override {}
   void operator()(Event<PortfolioUpdate> const &) override {}
+  void operator()(Event<RiskLimits> const &) override {}
+  void operator()(Event<RiskLimitsUpdate> const &) override {}
 
   cache::MarketByPrice &get_market_by_price(auto const &);
 

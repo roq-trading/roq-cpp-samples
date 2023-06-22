@@ -64,6 +64,10 @@ struct Processor final : public client::EventLogReader::Handler {
   // position manager
   void operator()(Event<PortfolioUpdate> const &) override;
 
+  // risk management
+  void operator()(Event<RiskLimits> const &) override;
+  void operator()(Event<RiskLimitsUpdate> const &) override;
+
  private:
   std::unique_ptr<client::EventLogReader> reader_;
 };

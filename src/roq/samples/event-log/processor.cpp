@@ -136,6 +136,14 @@ void Processor::operator()(Event<PortfolioUpdate> const &event) {
   log::info("{}"sv, event);
 }
 
+void Processor::operator()(Event<RiskLimits> const &event) {
+  log::info("{}"sv, event);
+}
+
+void Processor::operator()(Event<RiskLimitsUpdate> const &event) {
+  log::info("{}"sv, event);
+}
+
 }  // namespace event_log
 }  // namespace samples
 }  // namespace roq
