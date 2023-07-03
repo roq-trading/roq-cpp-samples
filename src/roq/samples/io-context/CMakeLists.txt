@@ -8,6 +8,7 @@ target_link_libraries(
   "${TARGET_NAME}"
   PRIVATE ${TARGET_NAME}-flags
           roq-client::roq-client
+          roq-client::roq-client-flags
           roq-web::roq-web
           roq-io::roq-io
           roq-logging::roq-logging

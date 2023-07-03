@@ -10,6 +10,7 @@ target_link_libraries(
           ${PROJECT_NAME}-algo-strategies
           ${PROJECT_NAME}-algo-framework
           roq-client::roq-client
+          roq-client::roq-client-flags
           roq-logging::roq-logging
           roq-api::roq-api
           tomlplusplus::tomlplusplus
