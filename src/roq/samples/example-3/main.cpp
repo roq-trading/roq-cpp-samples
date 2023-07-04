@@ -2,6 +2,9 @@
 
 #include "roq/api.hpp"
 
+#include "roq/logging/flags/parser.hpp"
+#include "roq/logging/flags/settings.hpp"
+
 #include "roq/samples/example-3/application.hpp"
 
 using namespace std::literals;
@@ -19,5 +22,7 @@ roq::Service::Info const INFO{
 // === IMPLEMENTATION ===
 
 int main(int argc, char **argv) {
-  return roq::samples::example_3::Application{argc, argv, INFO}.run();
+  roq::logging::flags::Parser parser{argc, argv, INFO.description, INFO.build_version};
+  auto settings = roq::logging::flags::create_settings();
+  return roq::samples::example_3::Application{parser, settings, INFO}.run();
 }

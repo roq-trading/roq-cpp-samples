@@ -2,6 +2,9 @@
 
 #include "roq/samples/algo-proto/application.hpp"
 
+#include "roq/logging/flags/parser.hpp"
+#include "roq/logging/flags/settings.hpp"
+
 #include "roq/api.hpp"
 
 using namespace std::literals;
@@ -19,5 +22,7 @@ auto const INFO = roq::Service::Info{
 // === IMPLEMENTATION ===
 
 int main(int argc, char **argv) {
-  return roq::samples::algo_proto::Application{argc, argv, INFO}.run();
+  roq::logging::flags::Parser parser{argc, argv, INFO.description, INFO.build_version};
+  auto settings = roq::logging::flags::create_settings();
+  return roq::samples::algo_proto::Application{parser, settings, INFO}.run();
 }
