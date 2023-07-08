@@ -2,7 +2,9 @@ set(TARGET_NAME ${PROJECT_NAME}-example-5)
 
 add_subdirectory(flags)
 
-add_executable(${TARGET_NAME} application.cpp config.cpp producer.cpp strategy.cpp main.cpp)
+set(SOURCES application.cpp config.cpp producer.cpp settings.cpp strategy.cpp main.cpp)
+
+add_executable(${TARGET_NAME} ${SOURCES})
 
 add_dependencies(${TARGET_NAME} ${TARGET_NAME}-flags-autogen-headers)
 

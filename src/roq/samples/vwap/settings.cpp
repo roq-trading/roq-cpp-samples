@@ -1,16 +1,13 @@
 /* Copyright (c) 2017-2023, Hans Erik Thrane */
 
-#pragma once
-
-#include "roq/samples/vwap/flags/flags.hpp"
+#include "roq/samples/vwap/settings.hpp"
 
 namespace roq {
 namespace samples {
 namespace vwap {
 
-struct Settings final : public flags::Flags {
-  Settings();
-};
+Settings::Settings() : flags::Flags{flags::Flags::create()} {
+}
 
 }  // namespace vwap
 }  // namespace samples

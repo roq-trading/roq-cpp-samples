@@ -1,16 +1,13 @@
 /* Copyright (c) 2017-2023, Hans Erik Thrane */
 
-#pragma once
-
-#include "roq/samples/io-context/flags/flags.hpp"
+#include "roq/samples/io-context/settings.hpp"
 
 namespace roq {
 namespace samples {
 namespace io_context {
 
-struct Settings final : public flags::Flags {
-  Settings();
-};
+Settings::Settings() : flags::Flags{flags::Flags::create()} {
+}
 
 }  // namespace io_context
 }  // namespace samples

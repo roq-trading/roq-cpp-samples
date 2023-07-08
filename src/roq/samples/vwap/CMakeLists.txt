@@ -2,7 +2,9 @@ set(TARGET_NAME ${PROJECT_NAME}-vwap)
 
 add_subdirectory(flags)
 
-add_executable(${TARGET_NAME} application.cpp processor.cpp main.cpp)
+set(SOURCES application.cpp processor.cpp settings.cpp main.cpp)
+
+add_executable(${TARGET_NAME} ${SOURCES})
 
 add_dependencies(${TARGET_NAME} ${TARGET_NAME}-flags-autogen-headers)
 

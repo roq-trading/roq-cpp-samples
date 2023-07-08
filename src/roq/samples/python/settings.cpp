@@ -1,16 +1,13 @@
 /* Copyright (c) 2017-2023, Hans Erik Thrane */
 
-#pragma once
-
-#include "roq/samples/python/flags/flags.hpp"
+#include "roq/samples/python/settings.hpp"
 
 namespace roq {
 namespace samples {
 namespace python {
 
-struct Settings final : public flags::Flags {
-  Settings();
-};
+Settings::Settings() : flags::Flags{flags::Flags::create()} {
+}
 
 }  // namespace python
 }  // namespace samples

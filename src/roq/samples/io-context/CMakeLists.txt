@@ -2,7 +2,9 @@ set(TARGET_NAME ${PROJECT_NAME}-io-context)
 
 add_subdirectory(flags)
 
-add_executable(${TARGET_NAME} application.cpp config.cpp controller.cpp session.cpp main.cpp)
+set(SOURCES application.cpp config.cpp controller.cpp session.cpp settings.cpp main.cpp)
+
+add_executable(${TARGET_NAME} ${SOURCES})
 
 add_dependencies(${TARGET_NAME} ${TARGET_NAME}-flags-autogen-headers)
 

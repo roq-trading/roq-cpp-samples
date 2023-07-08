@@ -1,16 +1,13 @@
 /* Copyright (c) 2017-2023, Hans Erik Thrane */
 
-#pragma once
-
-#include "roq/samples/example-5/flags/flags.hpp"
+#include "roq/samples/example-5/settings.hpp"
 
 namespace roq {
 namespace samples {
 namespace example_5 {
 
-struct Settings final : public flags::Flags {
-  Settings();
-};
+Settings::Settings() : flags::Flags{flags::Flags::create()} {
+}
 
 }  // namespace example_5
 }  // namespace samples
