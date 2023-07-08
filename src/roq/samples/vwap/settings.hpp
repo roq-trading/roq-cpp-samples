@@ -8,7 +8,7 @@ namespace roq {
 namespace samples {
 namespace vwap {
 
-struct Settings final : public flags::Flags__flags {};
+struct Settings final : public flags::Flags {};
 
 }  // namespace vwap
 }  // namespace samples

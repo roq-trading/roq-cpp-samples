@@ -8,7 +8,7 @@ namespace roq {
 namespace samples {
 namespace bridge {
 
-struct Settings final : public flags::Flags__flags {};
+struct Settings final : public flags::Flags {};
 
 }  // namespace bridge
 }  // namespace samples

@@ -8,7 +8,7 @@ namespace roq {
 namespace samples {
 namespace republish {
 
-struct Settings final : public flags::Flags__flags {};
+struct Settings final : public flags::Flags {};
 
 }  // namespace republish
 }  // namespace samples

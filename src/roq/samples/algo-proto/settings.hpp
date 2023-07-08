@@ -8,7 +8,7 @@ namespace roq {
 namespace samples {
 namespace algo_proto {
 
-struct Settings final : public flags::Flags__flags {};
+struct Settings final : public flags::Flags {};
 
 }  // namespace algo_proto
 }  // namespace samples
