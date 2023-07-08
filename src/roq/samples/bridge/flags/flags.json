@@ -1,0 +1,30 @@
+{
+  "name": "Flags",
+  "type": "flags",
+  "values": [
+    {
+      "name": "exchange",
+      "type": "std::string",
+      "default": "deribit",
+      "description": "exchange"
+    },
+    {
+      "name": "symbol",
+      "type": "std::string",
+      "default": "BTC-PERPETUAL",
+      "description": "symbol (regex)"
+    },
+    {
+      "name": "account",
+      "type": "std::string",
+      "default": "A1",
+      "description": "account (regex)"
+    },
+    {
+      "name": "currencies",
+      "type": "std::string",
+      "default": "BTC|USD",
+      "description": "currencies (regex)"
+    }
+  ]
+}

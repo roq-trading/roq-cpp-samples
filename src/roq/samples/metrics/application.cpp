@@ -8,6 +8,7 @@
 #include "roq/exceptions.hpp"
 
 #include "roq/samples/metrics/config.hpp"
+#include "roq/samples/metrics/settings.hpp"
 #include "roq/samples/metrics/strategy.hpp"
 
 using namespace std::literals;
@@ -22,7 +23,8 @@ int Application::main_helper(std::span<std::string_view> const &args) {
   assert(!std::empty(args));
   if (std::size(args) == 1)
     log::fatal("Expected arguments"sv);
-  Config config;
+  Settings settings;
+  Config config{settings};
   // note!
   //   absl::flags will have removed all flags and we're left with arguments
   //   arguments should be a list of unix domain sockets

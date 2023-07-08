@@ -10,6 +10,7 @@
 
 #include "roq/samples/io-context/config.hpp"
 #include "roq/samples/io-context/controller.hpp"
+#include "roq/samples/io-context/settings.hpp"
 
 using namespace std::literals;
 
@@ -23,14 +24,15 @@ int Application::main_helper(std::span<std::string_view> const &args, io::Contex
   assert(!std::empty(args));
   if (std::size(args) == 1)
     log::fatal("Expected arguments"sv);
-  Config config;
+  Settings settings;
+  Config config{settings};
   // note!
   //   absl::flags will have removed all flags and we're left with arguments
   //   arguments should be a list of unix domain sockets
   auto connections = args.subspan(1);
   // note!
   //   using client::Bridge so we can dispatch events through the Timer event
-  client::Bridge{config, connections}.dispatch<Controller>(context);
+  client::Bridge{config, connections}.dispatch<Controller>(settings, context);
   return EXIT_SUCCESS;
 }
 

@@ -6,13 +6,14 @@
 
 #include "roq/samples/example-3/instrument.hpp"
 #include "roq/samples/example-3/model.hpp"
+#include "roq/samples/example-3/settings.hpp"
 
 namespace roq {
 namespace samples {
 namespace example_3 {
 
 struct Strategy final : public client::Handler {
-  explicit Strategy(client::Dispatcher &);
+  Strategy(client::Dispatcher &, Settings const &);
 
   Strategy(Strategy &&) = default;
   Strategy(Strategy const &) = delete;
@@ -44,6 +45,7 @@ struct Strategy final : public client::Handler {
 
  private:
   client::Dispatcher &dispatcher_;
+  Settings const &settings_;
   Instrument instrument_;
   uint32_t max_order_id_ = {};
   Model model_;

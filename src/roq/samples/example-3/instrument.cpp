@@ -11,8 +11,6 @@
 #include "roq/utils/compare.hpp"
 #include "roq/utils/update.hpp"
 
-#include "roq/samples/example-3/flags/flags.hpp"
-
 using namespace std::literals;
 
 namespace roq {
@@ -22,20 +20,20 @@ namespace example_3 {
 // === HELPERS ===
 
 namespace {
-auto create_market_by_price(auto &exchange, auto &symbol) {
+auto create_market_by_price(auto &exchange, auto &symbol, auto allow_price_inversion) {
   // note! default options are somewhat conservative and not always appropriate
   auto options = client::MarketByPriceFactory::Options{
       .disable_checksum_validation = true,
-      .allow_price_inversion = flags::Flags::allow_price_inversion(),
+      .allow_price_inversion = allow_price_inversion,
   };
   return client::MarketByPriceFactory::create_new(exchange, symbol, options);
 }
 
-auto create_market_by_order(auto &exchange, auto &symbol) {
+auto create_market_by_order(auto &exchange, auto &symbol, auto allow_price_inversion) {
   // note! default options are somewhat conservative and not always appropriate
   auto options = client::MarketByOrderFactory::Options{
       .disable_checksum_validation = true,
-      .allow_price_inversion = flags::Flags::allow_price_inversion(),
+      .allow_price_inversion = allow_price_inversion,
   };
   return client::MarketByOrderFactory::create(client::MarketByOrderFactory::Type::SIMPLE_2, options, exchange, symbol);
 }
@@ -43,11 +41,11 @@ auto create_market_by_order(auto &exchange, auto &symbol) {
 
 // === IMPLEMENTATION ===
 
-Instrument::Instrument(
-    std::string_view const &exchange, std::string_view const &symbol, std::string_view const &account)
-    : exchange_{exchange}, symbol_{symbol}, account_{account},
-      market_by_price_{create_market_by_price(exchange, symbol)},
-      market_by_order_{create_market_by_order(exchange, symbol)} {
+Instrument::Instrument(Settings const &settings)
+    : exchange_{settings.exchange}, symbol_{settings.symbol}, account_{settings.account},
+      allow_price_inversion_{settings.allow_price_inversion},
+      market_by_price_{create_market_by_price(exchange_, symbol_, allow_price_inversion_)},
+      market_by_order_{create_market_by_order(exchange_, symbol_, allow_price_inversion_)} {
 }
 
 double Instrument::position() const {
@@ -259,7 +257,7 @@ void Instrument::validate(Depth const &depth) {
   if (utils::is_less_or_equal(depth[0].bid_quantity, 0.0) || utils::is_less_or_equal(depth[0].ask_quantity, 0.0))
     return;
   auto spread = depth[0].ask_price - depth[0].bid_price;
-  if (!flags::Flags::allow_price_inversion() && utils::is_less_or_equal(spread, 0.0))
+  if (!allow_price_inversion_ && utils::is_less_or_equal(spread, 0.0))
     log::fatal(
         "[{}:{}] Probably something wrong: "
         "choice price or price inversion detected. "

@@ -2,19 +2,20 @@
 
 #include "roq/samples/republish/config.hpp"
 
-#include "roq/samples/republish/flags.hpp"
-
 namespace roq {
 namespace samples {
 namespace republish {
 
 // === IMPLEMENTATION ===
 
+Config::Config(Settings const &settings) : settings_{settings} {
+}
+
 void Config::dispatch(Handler &handler) const {
   // callback for each subscription pattern
   handler(client::Symbol{
-      .regex = Flags::symbol(),
-      .exchange = Flags::exchange(),
+      .regex = settings_.symbol,
+      .exchange = settings_.exchange,
   });
 }
 

@@ -8,8 +8,6 @@
 
 #include "roq/client.hpp"
 
-#include "roq/samples/vwap/flags/flags.hpp"
-
 using namespace std::chrono_literals;
 using namespace std::literals;
 
@@ -19,8 +17,11 @@ namespace vwap {
 
 // === IMPLEMENTATION ===
 
-void Processor::dispatch(std::string_view const &path) {
-  Processor processor;
+Processor::Processor(Settings const &settings) : settings_{settings} {
+}
+
+void Processor::dispatch(Settings const &settings, std::string_view const &path) {
+  Processor processor{settings};
   auto reader = client::EventLogReaderFactory::create(path);
   (*reader).dispatch(processor);
 }
@@ -29,7 +30,7 @@ void Processor::operator()(Event<MarketByPriceUpdate> const &event) {
   auto &[message_info, market_by_price_update] = event;
   auto &market_by_price = get_market_by_price(market_by_price_update);
   market_by_price(market_by_price_update);
-  auto layer = market_by_price.compute_vwap(flags::Flags::quantity());
+  auto layer = market_by_price.compute_vwap(settings_.quantity);
   fmt::print(
       "{},{},{},{},{},{}\n"sv,
       message_info.receive_time,

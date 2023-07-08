@@ -6,8 +6,6 @@
 
 #include "roq/logging.hpp"
 
-#include "roq/samples/example-7/flags.hpp"
-
 using namespace std::literals;
 
 namespace roq {
@@ -22,17 +20,17 @@ namespace example_7 {
 // For smaller strings that's fine, but unnecessary
 // We therefore pre-allocate the array here at construction time
 
-Strategy::Strategy(client::Dispatcher &dispatcher)
-    : dispatcher_{dispatcher}, measurements_{{
-                                   {
-                                       .name = "bp"sv,
-                                       .value = NaN,
-                                   },
-                                   {
-                                       .name = "ap"sv,
-                                       .value = NaN,
-                                   },
-                               }},
+Strategy::Strategy(client::Dispatcher &dispatcher, Settings const &settings)
+    : dispatcher_{dispatcher}, settings_{settings}, measurements_{{
+                                                        {
+                                                            .name = "bp"sv,
+                                                            .value = NaN,
+                                                        },
+                                                        {
+                                                            .name = "ap"sv,
+                                                            .value = NaN,
+                                                        },
+                                                    }},
       rows_{{
           "0"sv,
           "-1"sv,
@@ -50,7 +48,7 @@ void Strategy::operator()(Event<DownloadEnd> const &) {
 
 void Strategy::operator()(Event<TopOfBook> const &event) {
   // note! the subscriber shouldn't do anything here
-  if (flags::Flags::subscriber())
+  if (settings_.subscriber)
     return;
   auto &[message_info, top_of_book] = event;
   log::info<1>("[{}:{}] TopOfBook={}"sv, message_info.source, message_info.source_name, top_of_book);
@@ -61,8 +59,8 @@ void Strategy::operator()(Event<TopOfBook> const &event) {
   measurements_[0].value = top_of_book.layer.bid_price;
   measurements_[1].value = top_of_book.layer.ask_price;
   auto custom_metrics = CustomMetrics{
-      .label = Flags::label(),
-      .account = Flags::account(),
+      .label = settings_.label,
+      .account = settings_.account,
       .exchange = top_of_book.exchange,
       .symbol = top_of_book.symbol,
       .measurements = measurements_,
@@ -73,8 +71,8 @@ void Strategy::operator()(Event<TopOfBook> const &event) {
   std::shift_right(std::begin(data_), std::end(data_), 1);
   data_[0] = 0.5 * (top_of_book.layer.bid_price + top_of_book.layer.ask_price);
   auto custom_matrix = CustomMatrix{
-      .label = Flags::label(),
-      .account = Flags::account(),
+      .label = settings_.label,
+      .account = settings_.account,
       .exchange = top_of_book.exchange,
       .symbol = top_of_book.symbol,
       .rows = rows_,

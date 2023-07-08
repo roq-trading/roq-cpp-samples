@@ -1,0 +1,12 @@
+{
+  "name": "Flags",
+  "type": "flags",
+  "values": [
+    {
+      "name": "symbols",
+      "type": "std::string",
+      "default": "^BTC-.*$",
+      "description": "regex used to subscribe symbols"
+    }
+  ]
+}

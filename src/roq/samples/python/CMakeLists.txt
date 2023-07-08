@@ -1,11 +1,13 @@
-set(TARGET_NAME "${PROJECT_NAME}-python")
+set(TARGET_NAME ${PROJECT_NAME}-python)
 
 add_subdirectory(flags)
 
-add_executable("${TARGET_NAME}" application.cpp config.cpp strategy.cpp main.cpp)
+add_executable(${TARGET_NAME} application.cpp config.cpp strategy.cpp main.cpp)
+
+add_dependencies(${TARGET_NAME} ${TARGET_NAME}-flags-autogen-headers)
 
 target_link_libraries(
-  "${TARGET_NAME}"
+  ${TARGET_NAME}
   PRIVATE ${TARGET_NAME}-flags
           roq-client::roq-client
           roq-client::roq-client-flags
@@ -16,6 +18,6 @@ target_link_libraries(
           absl::flags
           pybind11::embed)
 
-target_compile_definitions("${TARGET_NAME}" PRIVATE ROQ_PACKAGE_NAME="${PROJECT_NAME}")
+target_compile_definitions(${TARGET_NAME} PRIVATE ROQ_PACKAGE_NAME="${PROJECT_NAME}")
 
 install(TARGETS ${TARGET_NAME})

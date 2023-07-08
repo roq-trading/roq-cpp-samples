@@ -1,0 +1,12 @@
+{
+  "name": "Flags",
+  "type": "flags",
+  "values": [
+    {
+      "name": "encoding",
+      "type": "std::string",
+      "default": "binary",
+      "description": "encoding type -- one of binary or base64"
+    }
+  ]
+}

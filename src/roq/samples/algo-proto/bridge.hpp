@@ -14,6 +14,7 @@
 
 #include "roq/samples/algo-proto/config.hpp"
 #include "roq/samples/algo-proto/route.hpp"
+#include "roq/samples/algo-proto/settings.hpp"
 
 #include "roq/algo/framework/dispatcher.hpp"
 #include "roq/algo/framework/handler.hpp"
@@ -25,7 +26,7 @@ namespace samples {
 namespace algo_proto {
 
 struct Bridge final : public client::Handler, public algo::framework::Dispatcher {
-  Bridge(client::Dispatcher &, Config const &, size_t size);
+  Bridge(client::Dispatcher &, Settings const &, Config const &, size_t size);
 
   Bridge(Bridge &&) = default;
   Bridge(Bridge const &) = delete;

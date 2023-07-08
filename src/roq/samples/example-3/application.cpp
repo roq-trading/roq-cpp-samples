@@ -11,7 +11,7 @@
 #include "roq/exceptions.hpp"
 
 #include "roq/samples/example-3/config.hpp"
-#include "roq/samples/example-3/flags.hpp"
+#include "roq/samples/example-3/settings.hpp"
 #include "roq/samples/example-3/strategy.hpp"
 
 using namespace std::chrono_literals;
@@ -38,14 +38,15 @@ int Application::main_helper(std::span<std::string_view> const &args) {
     log::fatal("Expected arguments"sv);
   if (std::size(args) != 2)
     log::fatal("Expected exactly one argument"sv);
-  Config config;
+  Settings settings;
+  Config config{settings};
   // note!
   //   absl::flags will have removed all flags and we're left with arguments
   //   arguments can be a list of either
   //   * unix domain sockets (trading) or
   //   * event logs (simulation)
   auto connections = args.subspan(1);
-  if (Flags::simulation()) {
+  if (settings.simulation) {
     // collector
     auto collector = client::detail::SimulationFactory::create_collector(SNAPSHOT_FREQUENCY);
     // simulator
@@ -55,16 +56,16 @@ int Application::main_helper(std::span<std::string_view> const &args) {
     auto create_matcher = [](auto &dispatcher) {
       return client::detail::SimulationFactory::create_matcher(dispatcher, MATCHER);
     };
-    client::Simulator::Factory factory{
+    auto factory = client::Simulator::Factory{
         .create_generator = create_generator,
         .create_matcher = create_matcher,
         .market_data_latency = MARKET_DATA_LATENCY,
         .order_management_latency = ORDER_MANAGEMENT_LATENCY,
     };
-    client::Simulator{config, factory, *collector}.dispatch<Strategy>();
+    client::Simulator{config, factory, *collector}.dispatch<Strategy>(settings);
   } else {
     // trader
-    client::Trader{config, connections}.dispatch<Strategy>();
+    client::Trader{config, connections}.dispatch<Strategy>(settings);
   }
   return EXIT_SUCCESS;
 }

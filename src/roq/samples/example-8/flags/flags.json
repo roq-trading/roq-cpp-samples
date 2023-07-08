@@ -1,0 +1,48 @@
+{
+  "name": "Flags",
+  "type": "flags",
+  "values": [
+    {
+      "name": "exchange",
+      "type": "std::string",
+      "default": "deribit",
+      "description": "exchange"
+    },
+    {
+      "name": "symbol",
+      "type": "std::string",
+      "default": "BTC-PERPETUAL",
+      "description": "symbol (regex)"
+    },
+    {
+      "name": "account",
+      "type": "std::string",
+      "default": "A1",
+      "description": "account (regex)"
+    },
+    {
+      "name": "currencies",
+      "type": "std::string",
+      "default": "BTC|USD",
+      "description": "currencies (regex)"
+    },
+    {
+      "name": "quantity",
+      "type": "double",
+      "default": 1.0,
+      "description": "quantity"
+    },
+    {
+      "name": "tick_offset",
+      "type": "int32_t",
+      "default": 100,
+      "description": "offset as number of ticks"
+    },
+    {
+      "name": "top_of_book",
+      "type": "bool",
+      "default": false,
+      "description": "use top of book as trigger?"
+    }
+  ]
+}

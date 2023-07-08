@@ -2,18 +2,19 @@
 
 #include "roq/samples/example-7/config.hpp"
 
-#include "roq/samples/example-7/flags.hpp"
-
 namespace roq {
 namespace samples {
 namespace example_7 {
 
 // === IMPLEMENTATION ===
 
+Config::Config(Settings const &settings) : settings_{settings} {
+}
+
 void Config::dispatch(Handler &handler) const {
   handler(client::Symbol{
-      .regex = Flags::symbol(),
-      .exchange = Flags::exchange(),
+      .regex = settings_.symbol,
+      .exchange = settings_.exchange,
   });
 }
 

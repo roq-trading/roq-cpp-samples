@@ -7,20 +7,18 @@
 
 #include <roq/numbers.hpp>
 
-#include "roq/samples/example-3/flags/flags.hpp"
-
 namespace roq {
 namespace samples {
 namespace example_3 {
 
 // === IMPLEMENTATION ===
 
-EMA::EMA(double alpha) : alpha_{alpha}, countdown_{flags::Flags::warmup()} {
+EMA::EMA(double alpha, uint32_t warmup) : alpha_{alpha}, warmup_{warmup}, countdown_{warmup_} {
 }
 
 void EMA::reset() {
   value_ = NaN;
-  countdown_ = flags::Flags::warmup();
+  countdown_ = warmup_;
 }
 
 double EMA::update(double value) {

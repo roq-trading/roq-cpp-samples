@@ -7,6 +7,7 @@
 #include "roq/api.hpp"
 
 #include "roq/samples/example-3/ema.hpp"
+#include "roq/samples/example-3/settings.hpp"
 
 namespace roq {
 namespace samples {
@@ -17,7 +18,7 @@ struct Model final {
 
   using Depth = std::array<Layer, MAX_DEPTH>;
 
-  Model();
+  explicit Model(Settings const &);
 
   Model(Model &&) = default;
   Model(Model const &) = delete;

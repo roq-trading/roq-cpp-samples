@@ -13,7 +13,6 @@
 #include "roq/utils/compare.hpp"
 
 #include "roq/samples/import/base64.hpp"
-#include "roq/samples/import/flags.hpp"
 
 using namespace std::chrono_literals;
 using namespace std::literals;
@@ -35,8 +34,7 @@ auto const MIN_TRADE_VOL = 1.0;  // 1 lot
 // === HELPERS ===
 
 namespace {
-auto use_base64() {
-  auto encoding = Flags::encoding();
+auto use_base64(auto &encoding) {
   if (utils::case_insensitive_compare(encoding, "binary"sv) == 0)
     return false;
   if (utils::case_insensitive_compare(encoding, "base64"sv) == 0)
@@ -47,9 +45,9 @@ auto use_base64() {
 
 // === IMPLEMENTATION ===
 
-Processor::Processor(std::string_view const &path)
+Processor::Processor(Settings const &settings, std::string_view const &path)
     : file_{std::string{path}, std::ios::out | std::ios::binary},
-      encoding_{use_base64() ? Encoding::BASE64 : Encoding::BINARY} {
+      encoding_{use_base64(settings.encoding) ? Encoding::BASE64 : Encoding::BINARY} {
   if (!file_)
     throw RuntimeError{R"(Unable to open file for writing: path="{}")"sv, path};
 }

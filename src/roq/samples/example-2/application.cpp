@@ -7,6 +7,7 @@
 #include "roq/exceptions.hpp"
 
 #include "roq/samples/example-2/config.hpp"
+#include "roq/samples/example-2/settings.hpp"
 #include "roq/samples/example-2/strategy.hpp"
 
 using namespace std::literals;
@@ -25,12 +26,13 @@ int Application::main_helper(std::span<std::string_view> const &args) {
     log::fatal(
         "Expected exactly two arguments: "
         "futures exchange then cash exchange"sv);
-  Config config;
+  Settings settings;
+  Config config{settings};
   // note!
   //   absl::flags will have removed all flags and we're left with arguments
   //   arguments should be a list of unix domain sockets
   auto connections = args.subspan(1);
-  client::Trader{config, connections}.dispatch<Strategy>();
+  client::Trader{config, connections}.dispatch<Strategy>(settings);
   return EXIT_SUCCESS;
 }
 

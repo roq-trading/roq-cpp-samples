@@ -9,7 +9,7 @@
 #include "roq/samples/algo-proto/bridge.hpp"
 #include "roq/samples/algo-proto/config.hpp"
 
-#include "roq/samples/algo-proto/flags/flags.hpp"
+#include "roq/samples/algo-proto/settings.hpp"
 
 using namespace std::literals;
 
@@ -34,9 +34,10 @@ int Application::main_helper(std::span<std::string_view> const &args) {
     log::fatal("Expected arguments"sv);
   if (std::size(args) != 2)
     log::fatal("Expected exactly one argument"sv);
-  Config config{flags::Flags::config_file()};
+  Settings settings;
+  Config config{settings};
   auto connections = args.subspan(1);
-  client::Trader{config, connections}.dispatch<Bridge>(config, std::size(connections));
+  client::Trader{config, connections}.dispatch<Bridge>(settings, config, std::size(connections));
   return EXIT_SUCCESS;
 }
 

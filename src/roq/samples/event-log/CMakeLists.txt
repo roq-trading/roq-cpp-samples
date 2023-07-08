@@ -1,9 +1,9 @@
-set(TARGET_NAME "${PROJECT_NAME}-event-log")
+set(TARGET_NAME ${PROJECT_NAME}-event-log)
 
-add_executable("${TARGET_NAME}" application.cpp processor.cpp main.cpp)
+add_executable(${TARGET_NAME} application.cpp processor.cpp main.cpp)
 
 target_link_libraries(
-  "${TARGET_NAME}"
+  ${TARGET_NAME}
   PRIVATE roq-client::roq-client
           roq-client::roq-client-flags
           roq-logging::roq-logging
@@ -12,6 +12,6 @@ target_link_libraries(
           fmt::fmt
           absl::flags)
 
-target_compile_definitions("${TARGET_NAME}" PRIVATE ROQ_PACKAGE_NAME="${PROJECT_NAME}")
+target_compile_definitions(${TARGET_NAME} PRIVATE ROQ_PACKAGE_NAME="${PROJECT_NAME}")
 
 install(TARGETS ${TARGET_NAME})

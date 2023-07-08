@@ -8,8 +8,6 @@
 
 #include "roq/utils/compare.hpp"
 
-#include "roq/samples/example-3/flags.hpp"
-
 using namespace std::literals;
 
 namespace roq {
@@ -18,7 +16,8 @@ namespace example_3 {
 
 // === IMPLEMENTATION ===
 
-Model::Model() : bid_ema_{Flags::ema_alpha()}, ask_ema_{Flags::ema_alpha()} {
+Model::Model(Settings const &settings)
+    : bid_ema_{settings.ema_alpha, settings.warmup}, ask_ema_{settings.ema_alpha, settings.warmup} {
 }
 
 void Model::reset() {

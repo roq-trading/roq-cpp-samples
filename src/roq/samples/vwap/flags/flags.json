@@ -1,0 +1,12 @@
+{
+  "name": "Flags",
+  "type": "flags",
+  "values": [
+    {
+      "name": "quantity",
+      "type": "double",
+      "default": 1.0,
+      "description": "vwap quantity"
+    }
+  ]
+}

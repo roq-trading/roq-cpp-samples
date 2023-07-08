@@ -7,6 +7,8 @@
 #include "roq/api.hpp"
 #include "roq/client.hpp"
 
+#include "roq/samples/republish/settings.hpp"
+
 namespace roq {
 namespace samples {
 namespace republish {
@@ -14,7 +16,7 @@ namespace republish {
 // strategy implementation
 
 struct Strategy final : public client::Handler {
-  explicit Strategy(client::Dispatcher &);
+  Strategy(client::Dispatcher &, Settings const &);
 
   ~Strategy();
 

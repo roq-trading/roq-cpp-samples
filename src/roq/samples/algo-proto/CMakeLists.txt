@@ -2,10 +2,12 @@ set(TARGET_NAME "${PROJECT_NAME}-algo-proto")
 
 add_subdirectory(flags)
 
-add_executable("${TARGET_NAME}" application.cpp bridge.cpp config.cpp route.cpp main.cpp)
+add_executable(${TARGET_NAME} application.cpp bridge.cpp config.cpp route.cpp main.cpp)
+
+add_dependencies(${TARGET_NAME} ${TARGET_NAME}-flags-autogen-headers)
 
 target_link_libraries(
-  "${TARGET_NAME}"
+  ${TARGET_NAME}
   PRIVATE ${TARGET_NAME}-flags
           ${PROJECT_NAME}-algo-strategies
           ${PROJECT_NAME}-algo-framework
@@ -18,6 +20,6 @@ target_link_libraries(
           fmt::fmt
           absl::flags)
 
-target_compile_definitions("${TARGET_NAME}" PRIVATE ROQ_PACKAGE_NAME="${PROJECT_NAME}")
+target_compile_definitions(${TARGET_NAME} PRIVATE ROQ_PACKAGE_NAME="${PROJECT_NAME}")
 
 install(TARGETS ${TARGET_NAME})

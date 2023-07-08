@@ -1,0 +1,84 @@
+{
+  "name": "Flags",
+  "type": "flags",
+  "values": [
+    {
+      "name": "source_name_1",
+      "type": "std::string",
+      "default": "deribit",
+      "description": "exchange"
+    },
+    {
+      "name": "exchange_1",
+      "type": "std::string",
+      "default": "deribit",
+      "description": "exchange"
+    },
+    {
+      "name": "symbol_1",
+      "type": "std::string",
+      "default": "BTC-PERPETUAL",
+      "description": "symbol (regex)"
+    },
+    {
+      "name": "source_name_2",
+      "type": "std::string",
+      "default": "deribit",
+      "description": "exchange"
+    },
+    {
+      "name": "exchange_2",
+      "type": "std::string",
+      "default": "deribit",
+      "description": "exchange"
+    },
+    {
+      "name": "symbol_2",
+      "type": "std::string",
+      "default": "BTC-PERPETUAL",
+      "description": "symbol (regex)"
+    },
+    {
+      "name": "account",
+      "type": "std::string",
+      "default": "A1",
+      "description": "account (regex)"
+    },
+    {
+      "name": "currencies",
+      "type": "std::string",
+      "default": "BTC|USD",
+      "description": "currencies (regex)"
+    },
+    {
+      "name": "sample_freq",
+      "type": "std::chrono::nanoseconds",
+      "default": "1000ms",
+      "description": "sample frequency"
+    },
+    {
+      "name": "ema_alpha",
+      "type": "double",
+      "default": 0.33,
+      "description": "alpha used to compute exponential moving average (0 < alpha <= 1)"
+    },
+    {
+      "name": "warmup",
+      "type": "uint32_t",
+      "default": "120",
+      "description": "warmup (number of samples before a signal is generated)"
+    },
+    {
+      "name": "enable_trading",
+      "type": "bool",
+      "default": false,
+      "description": "trading must explicitly be enabled!"
+    },
+    {
+      "name": "simulation",
+      "type": "bool",
+      "default": false,
+      "description": "requires an event-log"
+    }
+  ]
+}

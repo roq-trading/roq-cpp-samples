@@ -4,17 +4,20 @@
 
 #include "roq/client/config.hpp"
 
+#include "roq/samples/example-3/settings.hpp"
+
 namespace roq {
 namespace samples {
 namespace example_3 {
 
 struct Config final : public client::Config {
-  Config() {}
+  explicit Config(Settings const &);
 
   Config(Config &&) = default;
   Config(Config const &) = delete;
 
  protected:
+  Settings const &settings_;
   void dispatch(Handler &) const override;
 };
 

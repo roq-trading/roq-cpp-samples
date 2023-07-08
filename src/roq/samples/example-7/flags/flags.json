@@ -1,0 +1,42 @@
+{
+  "name": "Flags",
+  "type": "flags",
+  "values": [
+    {
+      "name": "exchange",
+      "type": "std::string",
+      "default": "deribit",
+      "description": "exchange"
+    },
+    {
+      "name": "symbol",
+      "type": "std::string",
+      "default": "BTC-PERPETUAL",
+      "description": "symbol (regex)"
+    },
+    {
+      "name": "account",
+      "type": "std::string",
+      "default": "A1",
+      "description": "account (regex)"
+    },
+    {
+      "name": "label",
+      "type": "std::string",
+      "default": "ToB",
+      "description": "label"
+    },
+    {
+      "name": "simulation",
+      "type": "bool",
+      "default": false,
+      "description": "requires an event-log"
+    },
+    {
+      "name": "subscriber",
+      "type": "bool",
+      "default": false,
+      "description": "subscriber?"
+    }
+  ]
+}

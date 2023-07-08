@@ -20,6 +20,7 @@
 #include "roq/io/net/udp/sender.hpp"
 
 #include "roq/samples/io-context/session.hpp"
+#include "roq/samples/io-context/settings.hpp"
 #include "roq/samples/io-context/shared.hpp"
 
 namespace roq {
@@ -29,7 +30,7 @@ namespace io_context {
 struct Controller final : public client::Handler,
                           public io::net::udp::Sender::Handler,
                           public io::net::tcp::Listener::Handler {
-  Controller(client::Dispatcher &, io::Context &);
+  Controller(client::Dispatcher &, Settings const &, io::Context &);
 
  protected:
   // client::Handler
@@ -51,6 +52,7 @@ struct Controller final : public client::Handler,
 
  private:
   client::Dispatcher &dispatcher_;
+  Settings const &settings_;
   io::Context &context_;
   std::unique_ptr<io::Sender> const sender_;
   std::unique_ptr<io::net::tcp::Listener> const listener_;

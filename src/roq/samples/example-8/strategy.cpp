@@ -8,8 +8,6 @@
 
 #include "roq/utils/compare.hpp"
 
-#include "roq/samples/example-8/flags.hpp"
-
 using namespace std::literals;
 using namespace std::chrono_literals;
 
@@ -19,10 +17,10 @@ namespace example_8 {
 
 // === IMPLEMENTATION ===
 
-Strategy::Strategy(client::Dispatcher &dispatcher)
-    : dispatcher_{dispatcher}, account_{Flags::account()}, exchange_{Flags::exchange()}, symbol_{Flags::symbol()},
-      use_top_of_book_{Flags::top_of_book()}, use_market_by_price_{!use_top_of_book_}, quantity_{Flags::quantity()},
-      tick_offset_{Flags::tick_offset()}, market_by_price_(client::MarketByPriceFactory::create(exchange_, symbol_)) {
+Strategy::Strategy(client::Dispatcher &dispatcher, Settings const &settings)
+    : dispatcher_{dispatcher}, account_{settings.account}, exchange_{settings.exchange}, symbol_{settings.symbol},
+      use_top_of_book_{settings.top_of_book}, use_market_by_price_{!use_top_of_book_}, quantity_{settings.quantity},
+      tick_offset_{settings.tick_offset}, market_by_price_(client::MarketByPriceFactory::create(exchange_, symbol_)) {
 }
 
 void Strategy::operator()(Event<DownloadBegin> const &event) {

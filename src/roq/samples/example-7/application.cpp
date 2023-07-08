@@ -9,7 +9,7 @@
 
 #include "roq/samples/example-7/collector.hpp"
 #include "roq/samples/example-7/config.hpp"
-#include "roq/samples/example-7/flags.hpp"
+#include "roq/samples/example-7/settings.hpp"
 #include "roq/samples/example-7/strategy.hpp"
 
 using namespace std::literals;
@@ -36,14 +36,15 @@ int Application::main_helper(std::span<std::string_view> const &args) {
     log::fatal("Expected arguments"sv);
   if (std::size(args) < 2)
     log::fatal("Expected at least one argument"sv);
-  Config config;
+  Settings settings;
+  Config config{settings};
   // note!
   //   absl::flags will have removed all flags and we're left with arguments
   //   arguments can be a list of either
   //   * unix domain sockets (trading) or
   //   * event logs (simulation)
   auto connections = args.subspan(1);
-  if (Flags::simulation()) {
+  if (settings.simulation) {
     // collector
     Collector collector;
     // simulator
@@ -59,10 +60,10 @@ int Application::main_helper(std::span<std::string_view> const &args) {
         .market_data_latency = MARKET_DATA_LATENCY,
         .order_management_latency = ORDER_MANAGEMENT_LATENCY,
     };
-    client::Simulator{config, factory, collector}.dispatch<Strategy>();
+    client::Simulator{config, factory, collector}.dispatch<Strategy>(settings);
   } else {
     // trader
-    client::Trader{config, connections}.dispatch<Strategy>();
+    client::Trader{config, connections}.dispatch<Strategy>(settings);
   }
   return EXIT_SUCCESS;
 }

@@ -10,15 +10,17 @@
 
 #include "roq/client/event_log_reader.hpp"
 
+#include "roq/samples/vwap/settings.hpp"
+
 namespace roq {
 namespace samples {
 namespace vwap {
 
 struct Processor final : public client::EventLogReader::Handler {
-  static void dispatch(std::string_view const &path);
+  static void dispatch(Settings const &, std::string_view const &path);
 
  protected:
-  Processor() = default;
+  explicit Processor(Settings const &);
 
   void operator()(Event<GatewaySettings> const &) override {}
   void operator()(Event<StreamStatus> const &) override {}
@@ -51,6 +53,7 @@ struct Processor final : public client::EventLogReader::Handler {
   cache::MarketByPrice &get_market_by_price(auto const &);
 
  private:
+  Settings const &settings_;
   absl::node_hash_map<Symbol, std::unique_ptr<cache::MarketByPrice>> market_by_price_;
 };
 

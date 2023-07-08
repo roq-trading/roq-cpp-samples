@@ -11,7 +11,7 @@ namespace samples {
 namespace example_3 {
 
 struct EMA final {
-  explicit EMA(double alpha);
+  EMA(double alpha, uint32_t warmup);
 
   EMA(EMA &&) = default;
   EMA(const EMA &) = delete;
@@ -26,6 +26,8 @@ struct EMA final {
 
  private:
   double const alpha_;
+  uint32_t const warmup_;
+
   double value_ = NaN;
   uint32_t countdown_;
 };

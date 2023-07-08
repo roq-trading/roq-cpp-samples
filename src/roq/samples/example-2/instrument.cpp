@@ -11,8 +11,6 @@
 #include "roq/utils/compare.hpp"
 #include "roq/utils/update.hpp"
 
-#include "roq/samples/example-2/flags.hpp"
-
 using namespace std::literals;
 
 namespace roq {
@@ -21,8 +19,9 @@ namespace example_2 {
 
 // === IMPLEMENTATION ===
 
-Instrument::Instrument(std::string_view const &exchange, std::string_view const &symbol)
-    : exchange_{exchange}, symbol_{symbol}, market_by_price_{client::MarketByPriceFactory::create(exchange, symbol)} {
+Instrument::Instrument(std::string_view const &exchange, std::string_view const &symbol, double alpha)
+    : exchange_{exchange}, symbol_{symbol}, alpha_{alpha},
+      market_by_price_{client::MarketByPriceFactory::create(exchange, symbol)} {
 }
 
 void Instrument::operator()(Connected const &) {
@@ -153,7 +152,7 @@ void Instrument::update_model() {
   if (std::isnan(avg_price_))
     avg_price_ = mid_price_;  // initialize
   else
-    avg_price_ = Flags::alpha() * mid_price_ + (1.0 - Flags::alpha()) * avg_price_;
+    avg_price_ = alpha_ * mid_price_ + (1.0 - alpha_) * avg_price_;
   // only verbose logging
   log::info<1>("[{}:{}] model={{mid_price={}, avg_price={}}}"sv, exchange_, symbol_, mid_price_, avg_price_);
 }

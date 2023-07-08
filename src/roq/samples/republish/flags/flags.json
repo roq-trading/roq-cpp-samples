@@ -1,0 +1,24 @@
+{
+  "name": "Flags",
+  "type": "flags",
+  "values": [
+    {
+      "name": "exchange",
+      "type": "std::string",
+      "default": "deribit",
+      "description": "exchange"
+    },
+    {
+      "name": "symbol",
+      "type": "std::string",
+      "default": ".*",
+      "description": "symbol (regex)"
+    },
+    {
+      "name": "port",
+      "type": "uint16_t",
+      "default": "8888",
+      "description": "port"
+    }
+  ]
+}

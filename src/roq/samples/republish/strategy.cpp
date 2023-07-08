@@ -9,8 +9,6 @@
 #include <fmt/compile.h>
 #include <fmt/format.h>
 
-#include "roq/samples/republish/flags/flags.hpp"
-
 #include "roq/logging.hpp"
 
 using namespace std::literals;
@@ -26,14 +24,14 @@ namespace republish {
 // convenience wrappers around some libc socket functions
 // note! not very generic -- just for the example
 namespace {
-auto create_socket(auto &address) {
+auto create_socket(auto &settings, auto &address) {
   // create
   auto fd = ::socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
   if (fd < 0)
     log::system_error("Failed to create socket"sv);
   // bind
   address.sin_family = AF_INET;
-  address.sin_port = htons(flags::Flags::port());
+  address.sin_port = htons(settings.port);
   address.sin_addr.s_addr = htonl(INADDR_ANY);
   if (::bind(fd, reinterpret_cast<struct sockaddr *>(&address), sizeof(address)) < 0)
     log::system_error("Failed to bind socket"sv);
@@ -67,7 +65,8 @@ void socket_sendto(auto const socket, auto const &address, auto const &message) 
 
 // === IMPLEMENTATION ===
 
-Strategy::Strategy(client::Dispatcher &dispatcher) : dispatcher_{dispatcher}, socket_{create_socket(address_)} {
+Strategy::Strategy(client::Dispatcher &dispatcher, Settings const &settings)
+    : dispatcher_{dispatcher}, socket_{create_socket(settings, address_)} {
 }
 
 Strategy::~Strategy() {

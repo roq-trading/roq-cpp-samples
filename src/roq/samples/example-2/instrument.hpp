@@ -15,7 +15,7 @@ namespace example_2 {
 // helper class caching instrument specific information
 
 struct Instrument final {
-  Instrument(std::string_view const &exchange, std::string_view const &symbol);
+  Instrument(std::string_view const &exchange, std::string_view const &symbol, double alpha);
 
   Instrument(Instrument &&) = default;
   Instrument(Instrument const &) = delete;
@@ -43,6 +43,8 @@ struct Instrument final {
 
   std::string_view const exchange_;
   std::string_view const symbol_;
+  double const alpha_;
+
   bool connected_ = false;
   bool download_ = false;
   double tick_size_ = NaN;

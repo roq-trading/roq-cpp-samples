@@ -11,8 +11,6 @@
 
 #include "roq/logging.hpp"
 
-#include "roq/samples/algo-proto/flags/flags.hpp"
-
 using namespace std::literals;
 
 namespace roq {
@@ -90,8 +88,8 @@ auto parse_strategy(auto &node) {
 
 // === IMPLEMENTATION ===
 
-Config::Config(std::string_view const &path) {
-  auto root = toml::parse_file(path);
+Config::Config(Settings const &settings) : settings_{settings} {
+  auto root = toml::parse_file(settings_.config_file);
   if (find(root, "strategies"sv, [&](auto &node) {
         auto table = node.as_table();
         for (auto &[key, value] : *table)
@@ -116,7 +114,7 @@ void Config::dispatch(Handler &handler) const {
   });
   // accounts
   handler(client::Account{
-      .regex = flags::Flags::account(),
+      .regex = settings_.account,
   });
   // symbols
   for (auto &[exchange, symbols] : exchange_symbols)

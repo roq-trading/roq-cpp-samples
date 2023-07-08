@@ -1,0 +1,36 @@
+{
+  "name": "Flags",
+  "type": "flags",
+  "values": [
+    {
+      "name": "exchange",
+      "type": "std::string",
+      "default": "deribit",
+      "description": "exchange"
+    },
+    {
+      "name": "symbol",
+      "type": "std::string",
+      "default": "BTC-PERPETUAL",
+      "description": "symbol (regex)"
+    },
+    {
+      "name": "ws_port",
+      "type": "uint16_t",
+      "default": 1234,
+      "description": "port"
+    },
+    {
+      "name": "udp_port",
+      "type": "uint16_t",
+      "default": 2345,
+      "description": "port"
+    },
+    {
+      "name": "filter_symbols",
+      "type": "bool",
+      "default": false,
+      "description": "set to true to enable ws managed subscribe/unsubscribe"
+    }
+  ]
+}

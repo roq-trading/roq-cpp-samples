@@ -9,12 +9,14 @@
 
 #include "roq/algo/framework/config.hpp"
 
+#include "roq/samples/algo-proto/settings.hpp"
+
 namespace roq {
 namespace samples {
 namespace algo_proto {
 
 struct Config final : public client::Config {
-  Config(std::string_view const &path);
+  explicit Config(Settings const &);
 
   Config(Config &&) = default;
   Config(Config const &) = delete;
@@ -23,6 +25,7 @@ struct Config final : public client::Config {
   void dispatch(Handler &) const override;
 
  public:
+  Settings const &settings_;
   absl::flat_hash_map<Symbol, algo::framework::Config> strategies;
   absl::flat_hash_map<Exchange, absl::flat_hash_set<Symbol>> exchange_symbols;
 };

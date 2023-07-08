@@ -2,17 +2,15 @@
 
 #include "roq/samples/example-2/strategy.hpp"
 
-#include "roq/samples/example-2/flags.hpp"
-
 namespace roq {
 namespace samples {
 namespace example_2 {
 
 // === IMPLEMENTATION ===
 
-Strategy::Strategy(client::Dispatcher &dispatcher)
-    : dispatcher_{dispatcher}, futures_{Flags::futures_exchange(), Flags::futures_symbol()},
-      cash_{Flags::cash_exchange(), Flags::cash_symbol()} {
+Strategy::Strategy(client::Dispatcher &dispatcher, Settings const &settings)
+    : dispatcher_{dispatcher}, futures_{settings.futures_exchange, settings.futures_symbol, settings.alpha},
+      cash_{settings.cash_exchange, settings.cash_symbol, settings.alpha} {
 }
 
 void Strategy::operator()(Event<Connected> const &event) {

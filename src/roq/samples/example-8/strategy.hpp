@@ -10,12 +10,14 @@
 #include "roq/api.hpp"
 #include "roq/client.hpp"
 
+#include "roq/samples/example-8/settings.hpp"
+
 namespace roq {
 namespace samples {
 namespace example_8 {
 
 struct Strategy final : public client::Handler {
-  explicit Strategy(client::Dispatcher &);
+  Strategy(client::Dispatcher &, Settings const &settings);
 
   Strategy(Strategy &&) = default;
   Strategy(Strategy const &) = delete;

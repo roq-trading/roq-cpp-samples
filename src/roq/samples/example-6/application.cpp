@@ -11,7 +11,7 @@
 #include "roq/exceptions.hpp"
 
 #include "roq/samples/example-6/config.hpp"
-#include "roq/samples/example-6/flags.hpp"
+#include "roq/samples/example-6/settings.hpp"
 #include "roq/samples/example-6/strategy.hpp"
 
 using namespace std::chrono_literals;
@@ -38,9 +38,10 @@ int Application::main_helper(std::span<std::string_view> const &args) {
   assert(!std::empty(args));
   if (std::size(args) != 3)
     log::fatal("Expected exactly two arguments"sv);
-  Config config;
+  Settings settings;
+  Config config{settings};
   auto connections = args.subspan(1);
-  if (Flags::simulation()) {
+  if (settings.simulation) {
     // collector
     auto collector = client::detail::SimulationFactory::create_collector(SNAPSHOT_FREQUENCY);
     // simulator

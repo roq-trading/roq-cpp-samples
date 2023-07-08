@@ -2,18 +2,19 @@
 
 #include "roq/samples/metrics/config.hpp"
 
-#include "roq/samples/metrics/flags.hpp"
-
 namespace roq {
 namespace samples {
 namespace metrics {
 
 // === IMPLEMENTATION ===
 
+Config::Config(Settings const &settings) : settings_{settings} {
+}
+
 void Config::dispatch(Handler &handler) const {
   // callback for each subscription pattern
   handler(client::Symbol{
-      .regex = Flags::symbols(),
+      .regex = settings_.symbols,
       .exchange = {},
   });
 }

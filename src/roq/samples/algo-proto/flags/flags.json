@@ -1,0 +1,38 @@
+{
+  "name": "Flags",
+  "type": "flags",
+  "values": [
+    {
+      "name": "config_file",
+      "type": "std::string",
+      "description": "config file (path)"
+    },
+    {
+      "name": "account",
+      "type": "std::string",
+      "default": "A1",
+      "description": "account (regex)"
+    },
+    {
+      "name": "strategy",
+      "type": "std::string",
+      "description": "strategy"
+    },
+    {
+      "name": "side",
+      "type": "std::string",
+      "default": "BUY",
+      "description": "side"
+    },
+    {
+      "name": "quantity",
+      "type": "double",
+      "description": "quantity"
+    },
+    {
+      "name": "price",
+      "type": "double",
+      "description": "price"
+    }
+  ]
+}

@@ -11,6 +11,8 @@
 #include "roq/cache/market_by_order.hpp"
 #include "roq/cache/market_by_price.hpp"
 
+#include "roq/samples/example-3/settings.hpp"
+
 namespace roq {
 namespace samples {
 namespace example_3 {
@@ -20,7 +22,7 @@ struct Instrument final {
 
   using Depth = std::array<Layer, MAX_DEPTH>;
 
-  Instrument(std::string_view const &exchange, std::string_view const &symbol, std::string_view const &account);
+  explicit Instrument(Settings const &);
 
   Instrument(Instrument &&) = default;
   Instrument(Instrument const &) = delete;
@@ -68,6 +70,8 @@ struct Instrument final {
   std::string_view const exchange_;
   std::string_view const symbol_;
   std::string_view const account_;
+  bool const allow_price_inversion_;
+
   bool connected_ = false;
   bool download_ = false;
   double tick_size_ = NaN;

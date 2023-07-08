@@ -9,8 +9,6 @@
 #include "roq/client.hpp"
 #include "roq/logging.hpp"
 
-#include "roq/samples/algo-proto/flags/flags.hpp"
-
 using namespace std::literals;
 
 namespace roq {
@@ -73,15 +71,15 @@ auto create_factories(auto const &config, auto const &routes, auto const &gatewa
 
 // === IMPLEMENTATION ===
 
-Bridge::Bridge(client::Dispatcher &dispatcher, Config const &config, size_t size)
+Bridge::Bridge(client::Dispatcher &dispatcher, Settings const &settings, Config const &config, size_t size)
     : dispatcher_{dispatcher}, routes_{create_routes<decltype(routes_)>(config)}, gateways_(size),
       factories_{create_factories<decltype(factories_)>(config, routes_, gateways_)} {
-  auto side = magic_enum::enum_cast<Side>(flags::Flags::side()).value_or(Side::UNDEFINED);
+  auto side = magic_enum::enum_cast<Side>(settings.side).value_or(Side::UNDEFINED);
   CreateOrder create_order{
-      .account = flags::Flags::account(),
+      .account = settings.account,
       .order_id = {},
       .exchange = {},
-      .symbol = flags::Flags::strategy(),
+      .symbol = settings.strategy,
       .side = side,
       .position_effect = {},
       .max_show_quantity = NaN,
@@ -89,8 +87,8 @@ Bridge::Bridge(client::Dispatcher &dispatcher, Config const &config, size_t size
       .time_in_force = TimeInForce::GTC,
       .execution_instructions = {},
       .request_template{},
-      .quantity = flags::Flags::quantity(),
-      .price = flags::Flags::price(),
+      .quantity = settings.quantity,
+      .price = settings.price,
       .stop_price = NaN,
       .routing_id = {},
   };

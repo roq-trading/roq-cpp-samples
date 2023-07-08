@@ -8,6 +8,7 @@
 #include "roq/exceptions.hpp"
 
 #include "roq/samples/vwap/processor.hpp"
+#include "roq/samples/vwap/settings.hpp"
 
 using namespace std::literals;
 
@@ -20,8 +21,9 @@ namespace vwap {
 int Application::main_helper(std::span<std::string_view> const &args) {
   if (std::size(args) < 2)
     log::fatal("Expected at least 1 argument"sv);
+  Settings settings;
   for (auto &path : args.subspan(1))
-    Processor::dispatch(path);
+    Processor::dispatch(settings, path);
   return EXIT_SUCCESS;
 }
 

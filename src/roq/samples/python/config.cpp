@@ -2,19 +2,20 @@
 
 #include "roq/samples/python/config.hpp"
 
-#include "roq/samples/python/flags/flags.hpp"
-
 namespace roq {
 namespace samples {
 namespace python {
 
 // === IMPLEMENTATION ===
 
+Config::Config(Settings const &settings) : settings_{settings} {
+}
+
 void Config::dispatch(Handler &handler) const {
   // callback for each subscription pattern
   handler(client::Symbol{
-      .regex = flags::Flags::symbols(),
-      .exchange = flags::Flags::exchange(),
+      .regex = settings_.symbols,
+      .exchange = settings_.exchange,
   });
 }
 

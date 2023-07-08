@@ -2,13 +2,14 @@
 
 #include "roq/samples/example-6/config.hpp"
 
-#include "roq/samples/example-6/flags.hpp"
-
 namespace roq {
 namespace samples {
 namespace example_6 {
 
 // === IMPLEMENTATION ===
+
+Config::Config(Settings const &settings) : settings_{settings} {
+}
 
 void Config::dispatch(Handler &handler) const {
   // settings
@@ -18,20 +19,20 @@ void Config::dispatch(Handler &handler) const {
   });
   // accounts
   handler(client::Account{
-      .regex = Flags::account(),
+      .regex = settings_.account,
   });
   // symbols
   handler(client::Symbol{
-      .regex = Flags::symbol_1(),
-      .exchange = Flags::exchange_1(),
+      .regex = settings_.symbol_1,
+      .exchange = settings_.exchange_1,
   });
   handler(client::Symbol{
-      .regex = Flags::symbol_2(),
-      .exchange = Flags::exchange_2(),
+      .regex = settings_.symbol_2,
+      .exchange = settings_.exchange_2,
   });
   // currencies
   handler(client::Symbol{
-      .regex = Flags::currencies(),
+      .regex = settings_.currencies,
       .exchange = {},
   });
 }

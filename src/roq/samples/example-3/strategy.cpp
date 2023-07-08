@@ -9,8 +9,6 @@
 #include "roq/utils/common.hpp"
 #include "roq/utils/update.hpp"
 
-#include "roq/samples/example-3/flags.hpp"
-
 using namespace std::literals;
 
 namespace roq {
@@ -19,8 +17,8 @@ namespace example_3 {
 
 // === IMPLEMENTATION ===
 
-Strategy::Strategy(client::Dispatcher &dispatcher)
-    : dispatcher_{dispatcher}, instrument_{Flags::exchange(), Flags::symbol(), Flags::account()} {
+Strategy::Strategy(client::Dispatcher &dispatcher, Settings const &settings)
+    : dispatcher_{dispatcher}, settings_{settings}, instrument_{settings}, model_{settings} {
 }
 
 void Strategy::operator()(Event<Timer> const &event) {
@@ -30,7 +28,7 @@ void Strategy::operator()(Event<Timer> const &event) {
   if (next_sample_ != next_sample_.zero())  // initialized?
     update_model();
   auto now = std::chrono::duration_cast<std::chrono::seconds>(event.value.now);
-  next_sample_ = now + Flags::sample_freq();
+  next_sample_ = now + settings_.sample_freq;
   // possible extension: reset request timeout
 }
 
@@ -134,7 +132,7 @@ void Strategy::update_model() {
 }
 
 void Strategy::try_trade(Side side, double price) {
-  if (!Flags::enable_trading()) {
+  if (!settings_.enable_trading) {
     log::warn("Trading *NOT* enabled"sv);
     return;
   }
@@ -149,7 +147,7 @@ void Strategy::try_trade(Side side, double price) {
     if (side != working_side_) {
       log::info("*** CANCEL WORKING ORDER ***"sv);
       auto cancel_order = CancelOrder{
-          .account = Flags::account(),
+          .account = settings_.account,
           .order_id = working_order_id_,
           .request_template = {},
           .routing_id = {},
@@ -166,10 +164,10 @@ void Strategy::try_trade(Side side, double price) {
   }
   auto order_id = ++max_order_id_;
   auto create_order = CreateOrder{
-      .account = Flags::account(),
+      .account = settings_.account,
       .order_id = order_id,
-      .exchange = Flags::exchange(),
-      .symbol = Flags::symbol(),
+      .exchange = settings_.exchange,
+      .symbol = settings_.symbol,
       .side = side,
       .position_effect = {},
       .max_show_quantity = NaN,

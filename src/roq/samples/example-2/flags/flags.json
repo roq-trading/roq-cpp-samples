@@ -1,0 +1,36 @@
+{
+  "name": "Flags",
+  "type": "flags",
+  "values": [
+    {
+      "name": "futures_exchange",
+      "type": "std::string",
+      "default": "deribit",
+      "description": "futures exchange"
+    },
+    {
+      "name": "futures_symbol",
+      "type": "std::string",
+      "default": "BTC-PERPETUAL",
+      "description": "futures symbol"
+    },
+    {
+      "name": "cash_exchange",
+      "type": "std::string",
+      "default": "coinbase-pro",
+      "description": "cash exchange"
+    },
+    {
+      "name": "cash_symbol",
+      "type": "std::string",
+      "default": "BTC-USD",
+      "description": "cash symbol"
+    },
+    {
+      "name": "alpha",
+      "type": "double",
+      "default": "0.2",
+      "description": "alpha used to compute exponential moving average"
+    }
+  ]
+}

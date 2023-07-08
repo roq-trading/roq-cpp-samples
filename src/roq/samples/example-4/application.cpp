@@ -8,6 +8,7 @@
 #include "roq/exceptions.hpp"
 
 #include "roq/samples/example-4/config.hpp"
+#include "roq/samples/example-4/settings.hpp"
 #include "roq/samples/example-4/strategy.hpp"
 
 using namespace std::literals;
@@ -22,7 +23,8 @@ int Application::main_helper(std::span<std::string_view> const &args) {
   assert(!std::empty(args));
   if (std::size(args) == 1)
     log::fatal("Expected arguments"sv);
-  Config config;
+  Settings settings;
+  Config config{settings};
   auto connections = args.subspan(1);
   client::Trader{config, connections}.dispatch<Strategy>();
   return EXIT_SUCCESS;

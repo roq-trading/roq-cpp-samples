@@ -8,8 +8,6 @@
 
 #include "roq/json/top_of_book.hpp"
 
-#include "roq/samples/io-context/flags/flags.hpp"
-
 using namespace std::literals;
 
 namespace roq {
@@ -19,25 +17,25 @@ namespace io_context {
 // === HELPERS ===
 
 namespace {
-auto create_sender(auto &handler, auto &context) {
-  auto network_address = io::NetworkAddress{flags::Flags::udp_port()};
+auto create_sender(auto &handler, auto &settings, auto &context) {
+  auto network_address = io::NetworkAddress{settings.udp_port};
   auto socket_options = Mask{
       io::SocketOption::REUSE_ADDRESS,
   };
   return context.create_udp_sender(handler, network_address, socket_options);
 }
 
-auto create_listener(auto &handler, auto &context) {
-  auto network_address = io::NetworkAddress{flags::Flags::ws_port()};
+auto create_listener(auto &handler, auto &settings, auto &context) {
+  auto network_address = io::NetworkAddress{settings.ws_port};
   return context.create_tcp_listener(handler, network_address);
 }
 }  // namespace
 
 // === IMPLEMENTATION ===
 
-Controller::Controller(client::Dispatcher &dispatcher, io::Context &context)
-    : dispatcher_{dispatcher}, context_{context}, sender_{create_sender(*this, context)},
-      listener_{create_listener(*this, context_)} {
+Controller::Controller(client::Dispatcher &dispatcher, Settings const &settings, io::Context &context)
+    : dispatcher_{dispatcher}, settings_{settings}, context_{context},
+      sender_{create_sender(*this, settings_, context)}, listener_{create_listener(*this, settings_, context_)} {
 }
 
 // client::Handler
@@ -48,7 +46,7 @@ void Controller::operator()(Event<Timer> const &event) {
 }
 
 void Controller::operator()(Event<TopOfBook> const &event) {
-  if (flags::Flags::filter_symbols() && shared_.symbols.find(event.value.symbol) == std::end(shared_.symbols))
+  if (settings_.filter_symbols && shared_.symbols.find(event.value.symbol) == std::end(shared_.symbols))
     return;
   json::Context context;  // note! a better implementation would get decimals from reference data
   send("{}\n"sv, json::TopOfBook{context, event});

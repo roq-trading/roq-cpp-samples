@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.12)
 
 # cmake
 
-set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/scripts/cmake" ${CMAKE_MODULE_PATH})
+set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/scripts/cmake ${CMAKE_MODULE_PATH})
 
 # project
 
@@ -43,9 +43,9 @@ find_program(CLANG_FORMAT clang-format REQUIRED)
 
 # include
 
-include_directories("${CMAKE_SOURCE_DIR}/src")
+include_directories(${CMAKE_SOURCE_DIR}/src)
 
 # sub-projects
 
-add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/src/roq/algo")
-add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/src/roq/samples")
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/src/roq/algo)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/src/roq/samples)

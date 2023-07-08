@@ -7,12 +7,14 @@
 #include "roq/api.hpp"
 #include "roq/client.hpp"
 
+#include "roq/samples/example-7/settings.hpp"
+
 namespace roq {
 namespace samples {
 namespace example_7 {
 
 struct Strategy final : public client::Handler {
-  explicit Strategy(client::Dispatcher &);
+  Strategy(client::Dispatcher &, Settings const &);
 
   Strategy(Strategy &&) = default;
   Strategy(Strategy const &) = delete;
@@ -27,6 +29,7 @@ struct Strategy final : public client::Handler {
 
  private:
   client::Dispatcher &dispatcher_;
+  Settings const &settings_;
   std::array<Measurement, 2> measurements_;
   std::array<MatrixKey, 3> rows_;
   std::array<double, 3> data_;

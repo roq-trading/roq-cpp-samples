@@ -6,6 +6,7 @@
 #include "roq/client.hpp"
 
 #include "roq/samples/example-2/instrument.hpp"
+#include "roq/samples/example-2/settings.hpp"
 
 namespace roq {
 namespace samples {
@@ -14,7 +15,7 @@ namespace example_2 {
 // strategy implementation
 
 struct Strategy final : public client::Handler {
-  explicit Strategy(client::Dispatcher &);
+  Strategy(client::Dispatcher &, Settings const &);
 
   Strategy(Strategy &&) = default;
   Strategy(Strategy const &) = delete;

@@ -9,6 +9,7 @@
 
 #include "roq/samples/bridge/bridge.hpp"
 #include "roq/samples/bridge/config.hpp"
+#include "roq/samples/bridge/settings.hpp"
 
 using namespace std::literals;
 
@@ -24,7 +25,8 @@ int Application::main_helper(std::span<std::string_view> const &args) {
     log::fatal("Expected arguments"sv);
   if (std::size(args) != 2)
     log::fatal("Expected exactly one argument"sv);
-  Config config;
+  Settings settings;
+  Config config{settings};
   auto connections = args.subspan(1);
   // this is where you start the dispatch loop
   client::Bridge{config, connections}.dispatch<Bridge>();

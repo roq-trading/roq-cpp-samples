@@ -5,6 +5,8 @@
 #include "roq/api.hpp"
 #include "roq/client.hpp"
 
+#include "roq/samples/example-5/settings.hpp"
+
 namespace roq {
 namespace samples {
 namespace example_5 {
@@ -15,13 +17,16 @@ namespace example_5 {
 // without imposing any kind of requirement on containers and storage
 
 struct Config final : public client::Config {
-  Config() {}
+  explicit Config(Settings const &);
 
   Config(Config &&) = default;
   Config(Config const &) = delete;
 
  protected:
   void dispatch(Handler &) const override;
+
+ private:
+  Settings const &settings_;
 };
 
 }  // namespace example_5
