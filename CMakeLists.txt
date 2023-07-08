@@ -1,8 +1,12 @@
 cmake_minimum_required(VERSION 3.12)
 
-project(roq-samples)
+# cmake
 
-set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/scripts/cmake" ${CMAKE_MODULE_PATH})
+
+# project
+
+project(roq-samples)
 
 # conda
 
@@ -14,6 +18,10 @@ endif()
 # rpath
 
 set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
+
+# c++
+
+set(CMAKE_CXX_STANDARD 20)
 
 # filesystem
 
@@ -30,6 +38,8 @@ find_package(roq-logging REQUIRED)
 find_package(roq-web REQUIRED)
 find_package(tomlplusplus REQUIRED)
 find_package(pybind11 REQUIRED)
+
+find_program(CLANG_FORMAT clang-format REQUIRED)
 
 # include
 

@@ -1,0 +1,4 @@
+[submodule "roq-scripts"]
+	path = scripts
+	url = https://github.com/roq-trading/roq-scripts.git
+	ignore = dirty

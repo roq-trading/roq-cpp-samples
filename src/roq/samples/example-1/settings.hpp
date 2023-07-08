@@ -8,7 +8,7 @@ namespace roq {
 namespace samples {
 namespace example_1 {
 
-using flags::Flags;
+struct Settings final : public flags::Flags__flags {};
 
 }  // namespace example_1
 }  // namespace samples
