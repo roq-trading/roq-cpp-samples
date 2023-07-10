@@ -31,7 +31,6 @@ include(GNUInstallDirs)
 
 find_package(absl REQUIRED)
 find_package(fmt REQUIRED)
-find_package(Libevent REQUIRED)
 find_package(pybind11 REQUIRED)
 find_package(roq-api REQUIRED)
 find_package(roq-client REQUIRED)

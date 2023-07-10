@@ -6,7 +6,7 @@
 
 #include "roq/exceptions.hpp"
 
-#include "roq/io/engine/libevent/context_factory.hpp"
+#include "roq/io/engine/context_factory.hpp"
 
 #include "roq/samples/io-context/config.hpp"
 #include "roq/samples/io-context/controller.hpp"
@@ -44,8 +44,8 @@ int Application::main(int argc, char **argv) {
     args.emplace_back(argv[i]);
   // note!
   //   create a specific instance of io::Context -- libevent
-  auto libevent = io::engine::libevent::ContextFactory::create();
-  return main_helper(args, *libevent);
+  auto context = io::engine::ContextFactory::create("libevent"sv);
+  return main_helper(args, *context);
 }
 
 }  // namespace io_context
