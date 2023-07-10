@@ -37,6 +37,12 @@ The project is primarily designed to be compatible with the conda package manage
 > Use `stable` for (the approx. monthly) release build.
 > Use `unstable` for the more regularly updated development builds.
 
+### Initialize sub-modules
+
+```bash
+git submodule update --init --recursive
+```
+
 ### Create environment (Mambaforge)
 
 ```bash

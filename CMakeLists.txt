@@ -31,13 +31,14 @@ include(GNUInstallDirs)
 
 find_package(absl REQUIRED)
 find_package(fmt REQUIRED)
+find_package(Libevent REQUIRED)
+find_package(pybind11 REQUIRED)
 find_package(roq-api REQUIRED)
 find_package(roq-client REQUIRED)
 find_package(roq-io REQUIRED)
 find_package(roq-logging REQUIRED)
 find_package(roq-web REQUIRED)
 find_package(tomlplusplus REQUIRED)
-find_package(pybind11 REQUIRED)
 
 find_program(CLANG_FORMAT clang-format REQUIRED)
 
