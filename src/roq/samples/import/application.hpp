@@ -2,8 +2,6 @@
 
 #pragma once
 
-#include <span>
-
 #include "roq/tool.hpp"
 
 namespace roq {
@@ -17,8 +15,7 @@ struct Application final : public Tool {
   using Tool::Tool;
 
  protected:
-  int main_helper(std::span<std::string_view> const &args);
-  int main(int argc, char **argv) override;
+  int main(args::Parser const &) override;
 };
 
 }  // namespace import

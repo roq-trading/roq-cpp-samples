@@ -2,11 +2,13 @@
 
 #include "roq/samples/python/settings.hpp"
 
+#include "roq/client/flags/settings.hpp"
+
 namespace roq {
 namespace samples {
 namespace python {
 
-Settings::Settings() : flags::Flags{flags::Flags::create()} {
+Settings::Settings(args::Parser const &args) : client::flags::Settings{args}, flags::Flags{flags::Flags::create()} {
 }
 
 }  // namespace python

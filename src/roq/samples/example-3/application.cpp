@@ -5,10 +5,6 @@
 #include <cassert>
 #include <chrono>
 #include <memory>
-#include <vector>
-
-#include "roq/client.hpp"
-#include "roq/exceptions.hpp"
 
 #include "roq/samples/example-3/config.hpp"
 #include "roq/samples/example-3/settings.hpp"
@@ -32,26 +28,24 @@ auto const ORDER_MANAGEMENT_LATENCY = 10ms;
 
 // === IMPLEMENTATION ===
 
-int Application::main_helper(std::span<std::string_view> const &args) {
-  assert(!std::empty(args));
-  if (std::size(args) == 1)
+int Application::main(args::Parser const &args) {
+  auto params = args.params();
+  if (std::empty(params))
     log::fatal("Expected arguments"sv);
-  if (std::size(args) != 2)
+  if (std::size(params) != 1)
     log::fatal("Expected exactly one argument"sv);
-  Settings settings;
+  Settings settings{args};
   Config config{settings};
   // note!
-  //   absl::flags will have removed all flags and we're left with arguments
-  //   arguments can be a list of either
+  //   params can be a list of either
   //   * unix domain sockets (trading) or
   //   * event logs (simulation)
-  auto connections = args.subspan(1);
   if (settings.simulation) {
     // collector
     auto collector = client::detail::SimulationFactory::create_collector(SNAPSHOT_FREQUENCY);
     // simulator
-    auto create_generator = [&connections](auto source_id) {
-      return client::detail::SimulationFactory::create_generator(connections[source_id], source_id);
+    auto create_generator = [&params](auto source_id) {
+      return client::detail::SimulationFactory::create_generator(params[source_id], source_id);
     };
     auto create_matcher = [](auto &dispatcher) {
       return client::detail::SimulationFactory::create_matcher(dispatcher, MATCHER);
@@ -62,21 +56,12 @@ int Application::main_helper(std::span<std::string_view> const &args) {
         .market_data_latency = MARKET_DATA_LATENCY,
         .order_management_latency = ORDER_MANAGEMENT_LATENCY,
     };
-    client::Simulator{config, factory, *collector}.dispatch<Strategy>(settings);
+    client::Simulator{settings, config, factory, *collector}.dispatch<Strategy>(settings);
   } else {
     // trader
-    client::Trader{config, connections}.dispatch<Strategy>(settings);
+    client::Trader{settings, config, params}.dispatch<Strategy>(settings);
   }
   return EXIT_SUCCESS;
-}
-
-int Application::main(int argc, char **argv) {
-  // wrap arguments (prefer to not work with raw pointers)
-  std::vector<std::string_view> args;
-  args.reserve(argc);
-  for (int i = 0; i < argc; ++i)
-    args.emplace_back(argv[i]);
-  return main_helper(args);
 }
 
 }  // namespace example_3

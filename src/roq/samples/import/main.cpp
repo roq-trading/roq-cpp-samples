@@ -2,7 +2,7 @@
 
 #include "roq/api.hpp"
 
-#include "roq/logging/flags/parser.hpp"
+#include "roq/flags/args.hpp"
 #include "roq/logging/flags/settings.hpp"
 
 #include "roq/samples/import/application.hpp"
@@ -22,7 +22,7 @@ auto const INFO = roq::Tool::Info{
 // === IMPLEMENTATION ===
 
 int main(int argc, char **argv) {
-  roq::logging::flags::Parser parser{argc, argv, INFO.description, INFO.build_version};
-  auto settings = roq::logging::flags::create_settings();
-  return roq::samples::import::Application{parser, settings, INFO}.run();
+  roq::flags::Args args{argc, argv, INFO.description, INFO.build_version};
+  roq::logging::flags::Settings settings{args};
+  return roq::samples::import::Application{args, settings, INFO}.run();
 }

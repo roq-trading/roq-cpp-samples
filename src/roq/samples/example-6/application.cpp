@@ -5,10 +5,6 @@
 #include <cassert>
 #include <chrono>
 #include <memory>
-#include <vector>
-
-#include "roq/client.hpp"
-#include "roq/exceptions.hpp"
 
 #include "roq/samples/example-6/config.hpp"
 #include "roq/samples/example-6/settings.hpp"
@@ -34,19 +30,18 @@ auto const ORDER_MANAGEMENT_LATENCY_2 = 150ms;
 
 // === IMPLEMENTATION ===
 
-int Application::main_helper(std::span<std::string_view> const &args) {
-  assert(!std::empty(args));
-  if (std::size(args) != 3)
+int Application::main(args::Parser const &args) {
+  auto params = args.params();
+  if (std::size(params) != 2)
     log::fatal("Expected exactly two arguments"sv);
-  Settings settings;
+  Settings settings{args};
   Config config{settings};
-  auto connections = args.subspan(1);
   if (settings.simulation) {
     // collector
     auto collector = client::detail::SimulationFactory::create_collector(SNAPSHOT_FREQUENCY);
     // simulator
-    auto create_generator = [&connections](auto source_id) {
-      return client::detail::SimulationFactory::create_generator(connections[source_id], source_id);
+    auto create_generator = [&params](auto source_id) {
+      return client::detail::SimulationFactory::create_generator(params[source_id], source_id);
     };
     auto create_matcher = [](auto &dispatcher) {
       return client::detail::SimulationFactory::create_matcher(dispatcher, MATCHER);
@@ -65,21 +60,12 @@ int Application::main_helper(std::span<std::string_view> const &args) {
             .order_management_latency = ORDER_MANAGEMENT_LATENCY_2,
         },
     };
-    client::Simulator{config, factories}.dispatch<Strategy>();
+    client::Simulator{settings, config, factories}.dispatch<Strategy>();
   } else {
     // trader
-    client::Trader{config, connections}.dispatch<Strategy>();
+    client::Trader{settings, config, params}.dispatch<Strategy>();
   }
   return EXIT_SUCCESS;
-}
-
-int Application::main(int argc, char **argv) {
-  // wrap arguments (prefer to not work with raw pointers)
-  std::vector<std::string_view> args;
-  args.reserve(argc);
-  for (int i = 0; i < argc; ++i)
-    args.emplace_back(argv[i]);
-  return main_helper(args);
 }
 
 }  // namespace example_6

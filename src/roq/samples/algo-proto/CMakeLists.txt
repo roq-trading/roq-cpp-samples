@@ -17,6 +17,7 @@ target_link_libraries(
           roq-client::roq-client-flags
           roq-logging::roq-logging
           roq-logging::roq-logging-flags
+          roq-flags::roq-flags
           roq-api::roq-api
           tomlplusplus::tomlplusplus
           fmt::fmt

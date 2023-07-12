@@ -2,11 +2,13 @@
 
 #include "roq/samples/metrics/settings.hpp"
 
+#include "roq/client/flags/settings.hpp"
+
 namespace roq {
 namespace samples {
 namespace metrics {
 
-Settings::Settings() : flags::Flags{flags::Flags::create()} {
+Settings::Settings(args::Parser const &args) : client::flags::Settings{args}, flags::Flags{flags::Flags::create()} {
 }
 
 }  // namespace metrics

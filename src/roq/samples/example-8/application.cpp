@@ -3,9 +3,6 @@
 #include "roq/samples/example-8/application.hpp"
 
 #include <cassert>
-#include <vector>
-
-#include "roq/exceptions.hpp"
 
 #include "roq/samples/example-8/config.hpp"
 #include "roq/samples/example-8/settings.hpp"
@@ -19,23 +16,14 @@ namespace example_8 {
 
 // === IMPLEMENTATION ===
 
-int Application::main_helper(std::span<std::string_view> const &args) {
-  assert(!std::empty(args));
-  if (std::size(args) == 1)
+int Application::main(args::Parser const &args) {
+  auto params = args.params();
+  if (std::empty(params))
     log::fatal("Expected arguments"sv);
-  Settings settings;
+  Settings settings{args};
   Config config{settings};
-  auto connections = args.subspan(1);
-  client::Trader{config, connections}.dispatch<Strategy>(settings);
+  client::Trader{settings, config, params}.dispatch<Strategy>(settings);
   return EXIT_SUCCESS;
-}
-
-int Application::main(int argc, char **argv) {
-  std::vector<std::string_view> args;
-  args.reserve(argc);
-  for (int i = 0; i < argc; ++i)
-    args.emplace_back(argv[i]);
-  return main_helper(args);
 }
 
 }  // namespace example_8

@@ -2,10 +2,6 @@
 
 #include "roq/samples/example-2/application.hpp"
 
-#include <vector>
-
-#include "roq/exceptions.hpp"
-
 #include "roq/samples/example-2/config.hpp"
 #include "roq/samples/example-2/settings.hpp"
 #include "roq/samples/example-2/strategy.hpp"
@@ -18,31 +14,18 @@ namespace example_2 {
 
 // === IMPLEMENTATION ===
 
-int Application::main_helper(std::span<std::string_view> const &args) {
-  assert(!std::empty(args));
-  if (std::size(args) == 1)
+int Application::main(args::Parser const &args) {
+  auto params = args.params();
+  if (std::empty(params))
     log::fatal("Expected arguments"sv);
-  if (std::size(args) != 3)
+  if (std::size(params) != 2)
     log::fatal(
         "Expected exactly two arguments: "
         "futures exchange then cash exchange"sv);
-  Settings settings;
+  Settings settings{args};
   Config config{settings};
-  // note!
-  //   absl::flags will have removed all flags and we're left with arguments
-  //   arguments should be a list of unix domain sockets
-  auto connections = args.subspan(1);
-  client::Trader{config, connections}.dispatch<Strategy>(settings);
+  client::Trader{settings, config, params}.dispatch<Strategy>(settings);
   return EXIT_SUCCESS;
-}
-
-int Application::main(int argc, char **argv) {
-  // wrap arguments (prefer to not work with raw pointers)
-  std::vector<std::string_view> args;
-  args.reserve(argc);
-  for (int i = 0; i < argc; ++i)
-    args.emplace_back(argv[i]);
-  return main_helper(args);
 }
 
 }  // namespace example_2

@@ -2,10 +2,6 @@
 
 #include "roq/samples/io-context/application.hpp"
 
-#include <vector>
-
-#include "roq/exceptions.hpp"
-
 #include "roq/io/engine/context_factory.hpp"
 
 #include "roq/samples/io-context/config.hpp"
@@ -18,34 +14,27 @@ namespace roq {
 namespace samples {
 namespace io_context {
 
-// === IMPLEMENTATION ===
+// === CONSTANTS ===
 
-int Application::main_helper(std::span<std::string_view> const &args, io::Context &context) {
-  assert(!std::empty(args));
-  if (std::size(args) == 1)
-    log::fatal("Expected arguments"sv);
-  Settings settings;
-  Config config{settings};
-  // note!
-  //   absl::flags will have removed all flags and we're left with arguments
-  //   arguments should be a list of unix domain sockets
-  auto connections = args.subspan(1);
-  // note!
-  //   using client::Bridge so we can dispatch events through the Timer event
-  client::Bridge{config, connections}.dispatch<Controller>(settings, context);
-  return EXIT_SUCCESS;
+namespace {
+auto const IO_ENGINE = "libevent"sv;
 }
 
-int Application::main(int argc, char **argv) {
-  // wrap arguments (prefer to not work with raw pointers)
-  std::vector<std::string_view> args;
-  args.reserve(argc);
-  for (int i = 0; i < argc; ++i)
-    args.emplace_back(argv[i]);
+// === IMPLEMENTATION ===
+
+int Application::main(args::Parser const &args) {
+  auto params = args.params();
+  if (std::empty(params))
+    log::fatal("Expected arguments"sv);
+  Settings settings{args};
+  Config config{settings};
   // note!
-  //   create a specific instance of io::Context -- libevent
-  auto context = io::engine::ContextFactory::create("libevent"sv);
-  return main_helper(args, *context);
+  //   create a specific instance of io::Context
+  auto context = io::engine::ContextFactory::create(IO_ENGINE);
+  // note!
+  //   using client::Bridge so we can dispatch events through the Timer event
+  client::Bridge{settings, config, params}.dispatch<Controller>(settings, *context);
+  return EXIT_SUCCESS;
 }
 
 }  // namespace io_context

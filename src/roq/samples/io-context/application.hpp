@@ -2,11 +2,7 @@
 
 #pragma once
 
-#include <span>
-
 #include "roq/service.hpp"
-
-#include "roq/io/context.hpp"
 
 namespace roq {
 namespace samples {
@@ -18,8 +14,7 @@ struct Application final : public Service {
   using Service::Service;
 
  protected:
-  int main_helper(std::span<std::string_view> const &args, io::Context &);
-  int main(int argc, char **argv) override;
+  int main(args::Parser const &) override;
 };
 
 }  // namespace io_context

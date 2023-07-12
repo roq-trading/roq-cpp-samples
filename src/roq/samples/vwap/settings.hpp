@@ -2,6 +2,8 @@
 
 #pragma once
 
+#include "roq/args/parser.hpp"
+
 #include "roq/samples/vwap/flags/flags.hpp"
 
 namespace roq {
@@ -9,7 +11,7 @@ namespace samples {
 namespace vwap {
 
 struct Settings final : public flags::Flags {
-  Settings();
+  explicit Settings(args::Parser const &);
 };
 
 }  // namespace vwap

@@ -3,7 +3,6 @@
 #include "roq/samples/bridge/application.hpp"
 
 #include <cassert>
-#include <vector>
 
 #include "roq/client.hpp"
 
@@ -19,26 +18,17 @@ namespace bridge {
 
 // === IMPLEMENTATION ===
 
-int Application::main_helper(std::span<std::string_view> const &args) {
-  assert(!std::empty(args));
-  if (std::size(args) == 1)
+int Application::main(args::Parser const &args) {
+  auto params = args.params();
+  if (std::empty(params))
     log::fatal("Expected arguments"sv);
-  if (std::size(args) != 2)
+  if (std::size(params) != 1)
     log::fatal("Expected exactly one argument"sv);
-  Settings settings;
+  Settings settings{args};
   Config config{settings};
-  auto connections = args.subspan(1);
   // this is where you start the dispatch loop
-  client::Bridge{config, connections}.dispatch<Bridge>();
+  client::Bridge{settings, config, params}.dispatch<Bridge>();
   return EXIT_SUCCESS;
-}
-
-int Application::main(int argc, char **argv) {
-  std::vector<std::string_view> args;
-  args.reserve(argc);
-  for (int i = 0; i < argc; ++i)
-    args.emplace_back(argv[i]);
-  return main_helper(args);
 }
 
 }  // namespace bridge

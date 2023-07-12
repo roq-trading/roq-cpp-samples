@@ -2,8 +2,6 @@
 
 #include "roq/samples/algo-proto/application.hpp"
 
-#include <vector>
-
 #include "roq/exceptions.hpp"
 
 #include "roq/samples/algo-proto/bridge.hpp"
@@ -19,25 +17,15 @@ namespace algo_proto {
 
 // === IMPLEMENTATION ===
 
-int Application::main(int argc, char **argv) {
-  // wrap arguments (prefer to not work with raw pointers)
-  std::vector<std::string_view> args;
-  args.reserve(argc);
-  for (int i = 0; i < argc; ++i)
-    args.emplace_back(argv[i]);
-  return main_helper(args);
-}
-
-int Application::main_helper(std::span<std::string_view> const &args) {
-  assert(!std::empty(args));
-  if (std::size(args) == 1)
+int Application::main(args::Parser const &args) {
+  auto params = args.params();
+  if (std::empty(params))
     log::fatal("Expected arguments"sv);
-  if (std::size(args) != 2)
+  if (std::size(params) != 1)
     log::fatal("Expected exactly one argument"sv);
-  Settings settings;
+  Settings settings{args};
   Config config{settings};
-  auto connections = args.subspan(1);
-  client::Trader{config, connections}.dispatch<Bridge>(settings, config, std::size(connections));
+  client::Trader{settings, config, params}.dispatch<Bridge>(settings, config, std::size(params));
   return EXIT_SUCCESS;
 }
 

@@ -6,7 +6,7 @@ namespace roq {
 namespace samples {
 namespace vwap {
 
-Settings::Settings() : flags::Flags{flags::Flags::create()} {
+Settings::Settings(args::Parser const &) : flags::Flags{flags::Flags::create()} {
 }
 
 }  // namespace vwap
