@@ -1,4 +1,4 @@
-set(TARGET_NAME "${PROJECT_NAME}-algo-proto")
+set(TARGET_NAME ${PROJECT_NAME}-algo-proto)
 
 add_subdirectory(flags)
 
