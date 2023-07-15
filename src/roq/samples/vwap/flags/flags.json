@@ -5,6 +5,7 @@
     {
       "name": "quantity",
       "type": "double",
+      "required": true,
       "default": 1.0,
       "description": "vwap quantity"
     }

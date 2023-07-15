@@ -5,24 +5,28 @@
     {
       "name": "deribit_exchange",
       "type": "std::string",
+      "required": true,
       "default": "deribit",
       "description": "name of deribit exchange"
     },
     {
       "name": "deribit_symbols",
       "type": "std::string",
+      "required": true,
       "default": "BTC-\\\\d{2}\\\\D{3}\\\\d{2}",
       "description": "regex used to subscribe deribit symbols"
     },
     {
       "name": "coinbase_pro_exchange",
       "type": "std::string",
+      "required": true,
       "default": "coinbase-pro",
       "description": "name of the coinbase-pro exchange"
     },
     {
       "name": "coinbase_pro_symbols",
       "type": "std::string",
+      "required": true,
       "default": "BTC-.*",
       "description": "regex used to subscribe coinbase-pro symbols"
     }

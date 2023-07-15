@@ -5,12 +5,14 @@
     {
       "name": "exchange",
       "type": "std::string",
+      "required": true,
       "default": "deribit",
       "description": "exchange name"
     },
     {
       "name": "symbols",
       "type": "std::string",
+      "required": true,
       "default": ".*",
       "description": "regex used to subscribe symbols"
     }

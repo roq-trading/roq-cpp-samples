@@ -5,24 +5,30 @@
     {
       "name": "exchange",
       "type": "std::string",
+      "required": true,
       "default": "deribit",
       "description": "exchange"
     },
     {
       "name": "symbol",
       "type": "std::string",
+      "required": true,
       "default": "BTC-PERPETUAL",
       "description": "symbol (regex)"
     },
     {
-      "name": "ws_port",
-      "type": "uint16_t",
+      "name": "ws_listen_address",
+      "type": "std::string",
+      "validator": "roq::flags::validators::ListenAddress",
+      "required": true,
       "default": 1234,
       "description": "port"
     },
     {
-      "name": "udp_port",
-      "type": "uint16_t",
+      "name": "udp_listen_address",
+      "type": "std::string",
+      "validator": "roq::flags::validators::ListenAddress",
+      "required": true,
       "default": 2345,
       "description": "port"
     },

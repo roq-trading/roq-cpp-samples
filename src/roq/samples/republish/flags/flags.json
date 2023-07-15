@@ -5,19 +5,22 @@
     {
       "name": "exchange",
       "type": "std::string",
+      "required": true,
       "default": "deribit",
       "description": "exchange"
     },
     {
       "name": "symbol",
       "type": "std::string",
+      "required": true,
       "default": ".*",
       "description": "symbol (regex)"
     },
     {
       "name": "port",
       "type": "uint16_t",
-      "default": "8888",
+      "required": true,
+      "default": 8888,
       "description": "port"
     }
   ]

@@ -5,33 +5,40 @@
     {
       "name": "config_file",
       "type": "std::string",
+      "validator": "roq::flags::validators::Path",
+      "required": true,
       "description": "config file (path)"
     },
     {
       "name": "account",
       "type": "std::string",
+      "required": true,
       "default": "A1",
       "description": "account (regex)"
     },
     {
       "name": "strategy",
       "type": "std::string",
+      "required": true,
       "description": "strategy"
     },
     {
       "name": "side",
       "type": "std::string",
+      "required": true,
       "default": "BUY",
       "description": "side"
     },
     {
       "name": "quantity",
       "type": "double",
+      "required": true,
       "description": "quantity"
     },
     {
       "name": "price",
       "type": "double",
+      "required": true,
       "description": "price"
     }
   ]

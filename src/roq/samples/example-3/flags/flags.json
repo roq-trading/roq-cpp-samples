@@ -5,18 +5,21 @@
     {
       "name": "exchange",
       "type": "std::string",
+      "required": true,
       "default": "deribit",
       "description": "exchange"
     },
     {
       "name": "symbol",
       "type": "std::string",
+      "required": true,
       "default": "BTC-PERPETUAL",
       "description": "symbol (regex)"
     },
     {
       "name": "account",
       "type": "std::string",
+      "required": true,
       "default": "A1",
       "description": "account (regex)"
     },
@@ -29,18 +32,22 @@
     {
       "name": "sample_freq",
       "type": "std::chrono::nanoseconds",
+      "validator": "roq::flags::validators::TimePeriod",
+      "required": true,
       "default": "1000ms",
       "description": "sample frequency"
     },
     {
       "name": "ema_alpha",
       "type": "double",
+      "required": true,
       "default": 0.33,
       "description": "alpha used to compute exponential moving average (0 < alpha <= 1)"
     },
     {
       "name": "warmup",
       "type": "uint32_t",
+      "required": true,
       "default": "120",
       "description": "warmup (number of samples before a signal is generated)"
     },

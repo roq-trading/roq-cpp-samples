@@ -18,7 +18,7 @@ namespace io_context {
 
 namespace {
 auto create_sender(auto &handler, auto &settings, auto &context) {
-  auto network_address = io::NetworkAddress{settings.udp_port};
+  auto network_address = io::NetworkAddress{settings.udp_listen_address};
   auto socket_options = Mask{
       io::SocketOption::REUSE_ADDRESS,
   };
@@ -26,7 +26,7 @@ auto create_sender(auto &handler, auto &settings, auto &context) {
 }
 
 auto create_listener(auto &handler, auto &settings, auto &context) {
-  auto network_address = io::NetworkAddress{settings.ws_port};
+  auto network_address = io::NetworkAddress{settings.ws_listen_address};
   return context.create_tcp_listener(handler, network_address);
 }
 }  // namespace

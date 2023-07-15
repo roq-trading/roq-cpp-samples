@@ -5,6 +5,7 @@
     {
       "name": "symbols",
       "type": "std::string",
+      "required": true,
       "default": "^BTC-.*$",
       "description": "regex used to subscribe symbols"
     }

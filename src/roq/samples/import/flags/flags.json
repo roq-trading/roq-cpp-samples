@@ -5,6 +5,7 @@
     {
       "name": "encoding",
       "type": "std::string",
+      "required": true,
       "default": "binary",
       "description": "encoding type -- one of binary or base64"
     }
