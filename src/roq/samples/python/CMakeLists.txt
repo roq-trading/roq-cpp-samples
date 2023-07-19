@@ -18,7 +18,6 @@ target_link_libraries(
           roq-flags::roq-flags
           roq-api::roq-api
           fmt::fmt
-          absl::flags
           pybind11::embed)
 
 target_compile_definitions(${TARGET_NAME} PRIVATE ROQ_PACKAGE_NAME="${PROJECT_NAME}")

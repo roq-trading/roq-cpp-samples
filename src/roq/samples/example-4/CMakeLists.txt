@@ -16,8 +16,7 @@ target_link_libraries(
           roq-logging::roq-logging
           roq-logging::roq-logging-flags
           roq-flags::roq-flags
-          roq-api::roq-api
-          absl::flags)
+          roq-api::roq-api)
 
 target_compile_definitions(${TARGET_NAME} PRIVATE ROQ_PACKAGE_NAME="${PROJECT_NAME}")
 
