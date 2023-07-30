@@ -109,6 +109,7 @@ void Strategy::create_order(MessageInfo const &message_info, Layer const &layer)
       .price = price,
       .stop_price = NaN,
       .routing_id = {},
+      .strategy_id = {},
   };
   log::info<1>("create_order={}"sv, create_order);
   dispatcher_.send(create_order, 0u, true);

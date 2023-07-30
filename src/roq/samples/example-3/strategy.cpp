@@ -179,6 +179,7 @@ void Strategy::try_trade(Side side, double price) {
       .price = price,
       .stop_price = NaN,
       .routing_id = {},
+      .strategy_id = {},
   };
   dispatcher_.send(create_order, 0);
   working_order_id_ = order_id;
