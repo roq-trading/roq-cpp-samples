@@ -285,7 +285,7 @@ bool Bridge::find_strategy(std::string_view const &routing_id, Callback callback
 }
 
 template <typename Callback>
-bool Bridge::find_source(uint32_t order_id, Callback callback) {
+bool Bridge::find_source(uint64_t order_id, Callback callback) {
   auto iter = order_id_to_source_.find(order_id);
   if (iter == std::end(order_id_to_source_))
     return false;

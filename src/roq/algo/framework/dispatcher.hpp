@@ -9,7 +9,7 @@ namespace algo {
 namespace framework {
 
 struct Dispatcher {
-  virtual uint32_t next_order_id() const = 0;
+  virtual uint64_t next_order_id() const = 0;
 
   virtual void operator()(CreateOrder const &) = 0;
   virtual void operator()(ModifyOrder const &) = 0;

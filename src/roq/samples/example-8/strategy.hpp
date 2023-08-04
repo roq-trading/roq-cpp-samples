@@ -42,7 +42,7 @@ struct Strategy final : public client::Handler {
   double const quantity_;
   int32_t const tick_offset_;
   bool downloading_ = false;
-  uint32_t order_id_ = 0;
+  uint64_t order_id_ = 0;
   double tick_size_ = NaN;
   std::unique_ptr<cache::MarketByPrice> market_by_price_;
   std::array<Layer, 1> buffer_;

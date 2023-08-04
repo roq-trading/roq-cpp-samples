@@ -32,7 +32,7 @@ struct Base : public framework::Handler {
     return (*market.market_by_price).extract(std::forward<Args>(args)...);
   }
 
-  uint32_t next_order_id() { return dispatcher_.next_order_id(); }
+  uint64_t next_order_id() { return dispatcher_.next_order_id(); }
 
  protected:
   struct Ready final {};
@@ -66,7 +66,7 @@ struct Base : public framework::Handler {
 
  protected:
   friend OrderManager;
-  absl::flat_hash_map<uint32_t, size_t> order_id_to_order_manager_index_;
+  absl::flat_hash_map<uint64_t, size_t> order_id_to_order_manager_index_;
 
  private:
   template <typename T>

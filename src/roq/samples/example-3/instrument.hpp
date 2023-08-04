@@ -85,7 +85,7 @@ struct Instrument final {
   double long_position_ = {};
   double short_position_ = {};
   bool ready_ = false;
-  uint32_t last_order_id_ = {};
+  uint64_t last_order_id_ = {};
   double last_traded_quantity_ = {};
   // MbO demo
   std::unique_ptr<cache::MarketByOrder> market_by_order_;

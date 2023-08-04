@@ -32,7 +32,7 @@ struct Bridge final : public client::Handler, public algo::framework::Dispatcher
   Bridge(Bridge const &) = delete;
 
  protected:
-  uint32_t next_order_id() const override { return max_order_id_ + 1; }
+  uint64_t next_order_id() const override { return max_order_id_ + 1; }
 
   void operator()(CreateOrder const &) override;
   void operator()(ModifyOrder const &) override;
@@ -69,7 +69,7 @@ struct Bridge final : public client::Handler, public algo::framework::Dispatcher
   bool find_strategy(std::string_view const &routing_id, Callback);
 
   template <typename Callback>
-  bool find_source(uint32_t order_id, Callback);
+  bool find_source(uint64_t order_id, Callback);
 
  private:
   client::Dispatcher &dispatcher_;
@@ -80,9 +80,9 @@ struct Bridge final : public client::Handler, public algo::framework::Dispatcher
   absl::flat_hash_map<uint32_t, std::unique_ptr<algo::framework::Handler>> strategies_;
   absl::flat_hash_map<RoutingId, uint32_t> routing_id_to_strategy_;
   uint32_t strategy_id_ = {};
-  uint32_t max_order_id_ = {};
+  uint64_t max_order_id_ = {};
   // note! we must maintain a map of order_id to source
-  absl::flat_hash_map<uint32_t, uint8_t> order_id_to_source_;
+  absl::flat_hash_map<uint64_t, uint8_t> order_id_to_source_;
 };
 
 }  // namespace algo_proto

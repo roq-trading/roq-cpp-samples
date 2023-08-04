@@ -31,7 +31,7 @@ struct OrderManager final {
   double target_quantity_ = NaN;
   double target_price_ = NaN;
   //
-  uint32_t order_id_ = {};
+  uint64_t order_id_ = {};
 };
 
 }  // namespace strategies

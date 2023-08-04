@@ -47,10 +47,10 @@ struct Strategy final : public client::Handler {
   client::Dispatcher &dispatcher_;
   Settings const &settings_;
   Instrument instrument_;
-  uint32_t max_order_id_ = {};
+  uint64_t max_order_id_ = {};
   Model model_;
   std::chrono::nanoseconds next_sample_ = {};
-  uint32_t working_order_id_ = {};
+  uint64_t working_order_id_ = {};
   Side working_side_ = {};
 };
 
