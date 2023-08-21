@@ -43,7 +43,7 @@ The project is primarily designed to be compatible with the conda package manage
 git submodule update --init --recursive
 ```
 
-### Create environment (Mambaforge)
+### Create environment
 
 ```bash
 scripts/create_conda_env.sh stable debug
@@ -52,7 +52,7 @@ scripts/create_conda_env.sh stable debug
 ### Activate environment
 
 ```bash
-source opt/conda/bin/activate
+source opt/conda/bin/activate dev
 ```
 
 ## Building
