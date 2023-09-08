@@ -91,6 +91,7 @@ Bridge::Bridge(client::Dispatcher &dispatcher, Settings const &settings, Config 
       .price = settings.price,
       .stop_price = NaN,
       .routing_id = {},
+      .strategy_id = {},
   };
   create_strategy(create_order);  // XXX must wait until all sources connected
 }

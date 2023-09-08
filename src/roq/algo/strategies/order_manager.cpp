@@ -47,6 +47,7 @@ void OrderManager::set_target(double quantity, double price) {
         .price = target_price_,
         .stop_price = NaN,
         .routing_id = base_.routing_id_,
+        .strategy_id = {},
     };
     base_.dispatcher_(create_order);
     order_id_ = order_id;
