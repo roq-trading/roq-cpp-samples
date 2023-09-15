@@ -2,13 +2,13 @@
 
 #pragma once
 
-#include <flatbuffers/flatbuffers.h>
-
 #include <chrono>
 #include <fstream>
 #include <string_view>
 
 #include "roq/api.hpp"
+
+#include "roq/codec/fbs/encoder.hpp"
 
 #include "roq/samples/import/settings.hpp"
 
@@ -34,7 +34,7 @@ struct Processor final {
 
  private:
   uint64_t seqno_ = {};
-  flatbuffers::FlatBufferBuilder builder_;
+  std::unique_ptr<codec::fbs::Encoder> encoder_;
   std::ofstream file_;
   enum class Encoding {
     BINARY,

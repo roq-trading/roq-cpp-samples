@@ -7,9 +7,6 @@
 #include <stdexcept>
 #include <string>
 
-#include "roq/fbs/api.hpp"
-#include "roq/fbs/encode.hpp"
-
 #include "roq/utils/compare.hpp"
 
 #include "roq/samples/import/base64.hpp"
@@ -34,6 +31,13 @@ auto const MIN_TRADE_VOL = 1.0;  // 1 lot
 // === HELPERS ===
 
 namespace {
+auto create_encoder() {
+  auto options = codec::fbs::Encoder::Options{
+      .size_prefixed = true,
+  };
+  return codec::fbs::Encoder::create(options);
+}
+
 auto use_base64(auto &encoding) {
   if (utils::case_insensitive_compare(encoding, "binary"sv) == 0)
     return false;
@@ -46,7 +50,7 @@ auto use_base64(auto &encoding) {
 // === IMPLEMENTATION ===
 
 Processor::Processor(Settings const &settings, std::string_view const &path)
-    : file_{std::string{path}, std::ios::out | std::ios::binary},
+    : encoder_{create_encoder()}, file_{std::string{path}, std::ios::out | std::ios::binary},
       encoding_{use_base64(settings.encoding) ? Encoding::BASE64 : Encoding::BINARY} {
   if (!file_)
     throw RuntimeError{R"(Unable to open file for writing: path="{}")"sv, path};
@@ -60,6 +64,7 @@ Processor::~Processor() {
   } catch (...) {
   }
 }
+
 void Processor::dispatch() {
   // first message *must* be GatewaySettings
   process(
@@ -243,24 +248,11 @@ MessageInfo Processor::create_message_info(std::chrono::nanoseconds timestamp_ut
 
 template <typename T>
 void Processor::process(T const &value, std::chrono::nanoseconds timestamp_utc) {
-  builder_.Clear();
   auto message_info = create_message_info(timestamp_utc);
-  Event<T> event{message_info, value};
-  auto root = fbs::encode(builder_, event);
-  builder_.FinishSizePrefixed(root);  // note! *must* include size
-  auto data = builder_.GetBufferPointer();
-  auto length = builder_.GetSize();
-  switch (encoding_) {
-    using enum Encoding;
-    case BINARY:
-      file_.write(reinterpret_cast<char const *>(data), length);
-      break;
-    case BASE64: {
-      auto message = Base64::encode(data, length);
-      file_.write(message.c_str(), std::size(message));
-      break;
-    }
-  }
+  Event event{message_info, value};
+  auto message = (*encoder_)(event);
+  assert(!std::empty(message));
+  file_.write(reinterpret_cast<char const *>(std::data(message)), std::size(message));
 }
 
 }  // namespace import
