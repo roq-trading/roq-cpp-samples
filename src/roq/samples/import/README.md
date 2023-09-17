@@ -63,7 +63,7 @@ mamba install -y --channel https://roq-trading.com/conda/stable \
 ```bash
 roq-import \
     --type event_log \
-    --protocol flatbuffers
+    --protocol flatbuffers \
     --encoding binary \
     --name cme \
     --event_log_dir . \
