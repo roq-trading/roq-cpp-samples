@@ -45,6 +45,16 @@ find_package(tomlplusplus REQUIRED)
 
 find_program(CLANG_FORMAT clang-format REQUIRED)
 
+# test
+
+if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
+  include(CTest)
+endif()
+
+if(BUILD_TESTING)
+  find_package(Catch2 REQUIRED)
+endif()
+
 # include
 
 include_directories(${CMAKE_SOURCE_DIR}/src)
