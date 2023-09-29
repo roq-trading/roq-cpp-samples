@@ -34,7 +34,7 @@ struct Spread final : public Base {
   double current_spread() const;
 
  private:
-  const Side side_;
+  Side const side_;
   double const quantity_;
   double const price_;
 };

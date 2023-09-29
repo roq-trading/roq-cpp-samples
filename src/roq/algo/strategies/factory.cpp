@@ -16,9 +16,9 @@ namespace strategies {
 
 Factory::Factory(
     std::string_view const &type,
-    std::span<const framework::Instrument> const &instruments,
+    std::span<framework::Instrument const> const &instruments,
     std::span<framework::Market const *> const &markets,
-    std::span<const cache::Gateway> const &gateways)
+    std::span<cache::Gateway const> const &gateways)
     : type_{type}, state_{instruments, markets, gateways} {
 }
 

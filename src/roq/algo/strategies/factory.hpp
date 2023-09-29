@@ -24,9 +24,9 @@ namespace strategies {
 struct Factory final : public framework::Factory {
   Factory(
       std::string_view const &type,
-      std::span<const framework::Instrument> const &,
+      std::span<framework::Instrument const> const &,
       std::span<framework::Market const *> const &,
-      std::span<const cache::Gateway> const &);
+      std::span<cache::Gateway const> const &);
 
   Factory(Factory &&) = default;
   Factory(Factory const &) = delete;

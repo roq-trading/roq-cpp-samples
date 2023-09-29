@@ -61,7 +61,7 @@ void Instrument::operator()(GatewayStatus const &gateway_status) {
   if (!std::empty(gateway_status.account))  // we only care about market (not account)
     return;
   // bit-mask of required message types
-  static const Mask required{
+  static Mask const required{
       SupportType::REFERENCE_DATA,
       SupportType::MARKET_STATUS,
       SupportType::MARKET_BY_PRICE,

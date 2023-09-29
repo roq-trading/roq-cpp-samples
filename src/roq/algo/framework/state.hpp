@@ -19,7 +19,7 @@ namespace framework {
 
 struct State final {
   State(
-      std::span<Instrument const> const &, std::span<Market const *> const &, std::span<const cache::Gateway> const &);
+      std::span<Instrument const> const &, std::span<Market const *> const &, std::span<cache::Gateway const> const &);
 
   State(State &&) = default;
   State(State const &) = default;
@@ -43,7 +43,7 @@ struct State final {
   std::string const type_;
   std::vector<Instrument> const instruments_;
   std::vector<Market const *> const markets_;
-  std::span<const cache::Gateway> const gateways_;
+  std::span<cache::Gateway const> const gateways_;
 };
 
 }  // namespace framework

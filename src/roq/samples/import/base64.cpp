@@ -29,12 +29,12 @@ char const *const B64chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwx
 // === HELPERS ===
 
 namespace {
-const std::string b64encode(void const *data, size_t const &len) {
+std::string const b64encode(void const *data, size_t const &len) {
   std::string result((len + 2) / 3 * 4, '=');
   unsigned char const *p = reinterpret_cast<unsigned char const *>(data);
   char *str = &result[0];
   size_t j = 0, pad = len % 3;
-  const size_t last = len - pad;
+  size_t const last = len - pad;
 
   for (size_t i = 0; i < last; i += 3) {
     int n = static_cast<int>(p[i]) << 16 | static_cast<int>(p[i + 1]) << 8 | static_cast<int>(p[i + 2]);
