@@ -11,7 +11,7 @@ add_dependencies(${TARGET_NAME} ${TARGET_NAME}-flags-autogen-headers)
 target_link_libraries(
   ${TARGET_NAME}
   PRIVATE ${TARGET_NAME}-flags
-          roq-fbs-codec::roq-fbs-codec
+          roq-codec::roq-codec
           roq-logging::roq-logging
           roq-logging::roq-logging-flags
           roq-flags::roq-flags
