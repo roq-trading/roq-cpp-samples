@@ -78,6 +78,7 @@ void Processor::dispatch() {
           .oms_download_has_state = false,
           .oms_download_has_routing_id = false,
           .oms_request_id_type = {},
+          .oms_cancel_all_orders = {},
       },
       1ns);  // timestamp should be something useful, like UTC
   // prefer to process ReferenceData before any market data
