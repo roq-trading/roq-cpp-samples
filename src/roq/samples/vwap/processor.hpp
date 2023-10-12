@@ -38,6 +38,7 @@ struct Processor final : public client::EventLogReader::Handler {
   void operator()(Event<ModifyOrder> const &) override {}
   void operator()(Event<CancelOrder> const &) override {}
   void operator()(Event<CancelAllOrders> const &) override {}
+  void operator()(Event<CancelAllOrdersAck> const &) override {}
   void operator()(Event<OrderAck> const &) override {}
   void operator()(Event<OrderUpdate> const &) override {}
   void operator()(Event<TradeUpdate> const &) override {}

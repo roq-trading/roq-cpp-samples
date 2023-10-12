@@ -100,6 +100,10 @@ void Processor::operator()(Event<CancelAllOrders> const &event) {
   log::info("{}"sv, event);
 }
 
+void Processor::operator()(Event<CancelAllOrdersAck> const &event) {
+  log::info("{}"sv, event);
+}
+
 void Processor::operator()(Event<OrderAck> const &event) {
   log::info("{}"sv, event);
 }
