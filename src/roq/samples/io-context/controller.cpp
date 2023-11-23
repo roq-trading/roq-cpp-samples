@@ -67,6 +67,10 @@ void Controller::operator()(io::net::tcp::Connection::Factory &factory) {
   sessions_.try_emplace(session_id, std::move(session));
 }
 
+void Controller::operator()(io::net::tcp::Connection::Factory &factory, io::NetworkAddress const &) {
+  (*this)(factory);
+}
+
 // utilities
 
 void Controller::remove_zombies(std::chrono::nanoseconds now) {
