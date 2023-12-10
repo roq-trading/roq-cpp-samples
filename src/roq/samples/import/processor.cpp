@@ -108,6 +108,10 @@ void Processor::dispatch() {
           .settlement_date = {},
           .expiry_datetime = {},
           .expiry_datetime_utc = {},
+          .exchange_time_utc = {},
+          .exchange_sequence = {},
+          .sending_time_utc = {},
+          .discard = {},
       },
       2ns);
   // prefer to publish market trading status
@@ -117,6 +121,9 @@ void Processor::dispatch() {
           .exchange = EXCHANGE,
           .symbol = SYMBOL,
           .trading_status = TradingStatus::OPEN,
+          .exchange_time_utc = {},
+          .exchange_sequence = {},
+          .sending_time_utc = {},
       },
       3ns);
   // initial image
