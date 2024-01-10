@@ -6,7 +6,6 @@
 #include <sys/socket.h>
 #include <unistd.h>
 
-#include <fmt/compile.h>
 #include <fmt/format.h>
 
 #include "roq/logging.hpp"
