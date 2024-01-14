@@ -170,6 +170,7 @@ void Strategy::try_trade(Side side, double price) {
       .symbol = settings_.symbol,
       .side = side,
       .position_effect = {},
+      .margin_mode = {},
       .max_show_quantity = NaN,
       .order_type = OrderType::LIMIT,
       .time_in_force = TimeInForce::GTC,

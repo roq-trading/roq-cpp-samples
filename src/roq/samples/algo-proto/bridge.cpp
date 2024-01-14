@@ -82,6 +82,7 @@ Bridge::Bridge(client::Dispatcher &dispatcher, Settings const &settings, Config 
       .symbol = settings.strategy,
       .side = side,
       .position_effect = {},
+      .margin_mode = {},
       .max_show_quantity = NaN,
       .order_type = OrderType::LIMIT,
       .time_in_force = TimeInForce::GTC,

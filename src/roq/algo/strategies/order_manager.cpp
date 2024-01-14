@@ -38,6 +38,7 @@ void OrderManager::set_target(double quantity, double price) {
         .symbol = instrument.symbol,
         .side = side_,
         .position_effect = {},
+        .margin_mode = {},
         .max_show_quantity = NaN,
         .order_type = OrderType::LIMIT,
         .time_in_force = TimeInForce::GTC,
