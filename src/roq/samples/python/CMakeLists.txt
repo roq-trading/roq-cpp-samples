@@ -1,5 +1,8 @@
 set(TARGET_NAME ${PROJECT_NAME}-python)
 
+# https://pybind11.readthedocs.io/en/stable/faq.html#someclass-declared-with-greater-visibility-than-the-type-of-its-field-someclass-member-wattributes
+set(CMAKE_CXX_VISIBILITY_PRESET hidden)
+
 add_subdirectory(flags)
 
 set(SOURCES application.cpp config.cpp settings.cpp strategy.cpp main.cpp)
