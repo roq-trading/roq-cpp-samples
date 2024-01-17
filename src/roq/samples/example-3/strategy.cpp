@@ -77,7 +77,7 @@ void Strategy::operator()(Event<MarketByOrderUpdate> const &event) {
 void Strategy::operator()(Event<OrderAck> const &event) {
   log::info("OrderAck={}"sv, event.value);
   auto &order_ack = event.value;
-  if (utils::has_request_completed(order_ack.status)) {
+  if (utils::has_request_completed(order_ack.request_status)) {
     // possible extension: reset request timeout
   }
 }
@@ -86,7 +86,7 @@ void Strategy::operator()(Event<OrderUpdate> const &event) {
   log::info("OrderUpdate={}"sv, event.value);
   dispatch(event);  // update position
   auto &order_update = event.value;
-  if (utils::is_order_complete(order_update.status)) {
+  if (utils::is_order_complete(order_update.order_status)) {
     working_order_id_ = {};
     working_side_ = {};
   }
