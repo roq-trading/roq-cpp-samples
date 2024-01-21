@@ -4,8 +4,8 @@
 
 #include "roq/client.hpp"
 
-#include "roq/metrics/counter.hpp"
-#include "roq/metrics/histogram.hpp"
+#include "roq/utils/metrics/counter.hpp"
+#include "roq/utils/metrics/histogram.hpp"
 
 namespace roq {
 namespace samples {
@@ -25,8 +25,8 @@ struct Strategy final : public client::Handler {
  private:
   [[maybe_unused]] client::Dispatcher &dispatcher_;
   // note! following variables are each aligned to a cache line
-  roq::metrics::Counter<uint64_t> counter_;
-  roq::metrics::external_latency_t histogram_;  // note! or internal_latency_t or your own...
+  roq::utils::metrics::Counter<uint64_t> counter_;
+  roq::utils::metrics::external_latency_t histogram_;  // note! or internal_latency_t or your own...
 };
 
 }  // namespace metrics

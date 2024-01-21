@@ -4,6 +4,8 @@
 
 #include "roq/logging.hpp"
 
+#include "roq/utils/metrics/const.hpp"
+
 using namespace std::literals;
 
 namespace roq {
@@ -33,8 +35,8 @@ void Strategy::operator()(Event<ExternalLatency> const &event) {
 // note! the writer is called from another thread -- always only use atomic variables!
 void Strategy::operator()(roq::metrics::Writer &writer) const {
   writer  //
-      .write(counter_, roq::metrics::COUNTER)
-      .write(histogram_, roq::metrics::PROFILE);
+      .write(counter_, roq::utils::metrics::COUNTER)
+      .write(histogram_, roq::utils::metrics::PROFILE);
 }
 
 }  // namespace metrics
