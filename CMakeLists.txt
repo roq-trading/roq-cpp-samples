@@ -40,6 +40,7 @@ find_package(roq-codec REQUIRED)
 find_package(roq-flags REQUIRED)
 find_package(roq-io REQUIRED)
 find_package(roq-logging REQUIRED)
+find_package(roq-utils REQUIRED)
 find_package(roq-web REQUIRED)
 find_package(tomlplusplus REQUIRED)
 

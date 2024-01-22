@@ -13,6 +13,7 @@ target_link_libraries(
   PRIVATE ${TARGET_NAME}-flags
           roq-client::roq-client
           roq-client::roq-client-flags
+          roq-utils::roq-utils
           roq-logging::roq-logging
           roq-logging::roq-logging-flags
           roq-flags::roq-flags
