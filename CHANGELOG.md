@@ -4,6 +4,8 @@ All notable changes will be documented in this file.
 
 ## Head
 
+## 0.9.9 &ndash; 2024-01-28
+
 ## 0.9.8 &ndash; 2023-11-20
 
 ## 0.9.7 &ndash; 2023-09-18
