@@ -15,6 +15,7 @@ target_link_libraries(
           ${PROJECT_NAME}-algo-framework
           roq-client::roq-client
           roq-client::roq-client-flags
+          roq-cache::roq-cache
           roq-logging::roq-logging
           roq-logging::roq-logging-flags
           roq-flags::roq-flags
