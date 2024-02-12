@@ -6,7 +6,8 @@
 
 #include "roq/logging.hpp"
 
-#include "roq/json/top_of_book.hpp"
+#include "roq/utils/json/context.hpp"
+#include "roq/utils/json/top_of_book.hpp"
 
 using namespace std::literals;
 
@@ -48,8 +49,8 @@ void Controller::operator()(Event<Timer> const &event) {
 void Controller::operator()(Event<TopOfBook> const &event) {
   if (settings_.filter_symbols && shared_.symbols.find(event.value.symbol) == std::end(shared_.symbols))
     return;
-  json::Context context;  // note! a better implementation would get decimals from reference data
-  send("{}\n"sv, json::TopOfBook{context, event});
+  utils::json::Context context;  // note! a better implementation would get decimals from reference data
+  send("{}\n"sv, utils::json::TopOfBook{context, event});
 }
 
 // io::net::udp::Sender::Handler
