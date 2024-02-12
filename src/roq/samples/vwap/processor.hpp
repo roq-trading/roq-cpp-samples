@@ -25,6 +25,7 @@ struct Processor final : public client::EventLogReader::Handler {
   void operator()(Event<GatewaySettings> const &) override {}
   void operator()(Event<StreamStatus> const &) override {}
   void operator()(Event<ExternalLatency> const &) override {}
+  void operator()(Event<RateLimitsUpdate> const &) override {}
   void operator()(Event<RateLimitTrigger> const &) override {}
   void operator()(Event<GatewayStatus> const &) override {}
   void operator()(Event<ReferenceData> const &) override {}

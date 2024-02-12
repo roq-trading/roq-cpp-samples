@@ -25,6 +25,7 @@ struct Processor final : public client::EventLogReader::Handler {
   // stream
   void operator()(Event<StreamStatus> const &) override;
   void operator()(Event<ExternalLatency> const &) override;
+  void operator()(Event<RateLimitsUpdate> const &) override;
   void operator()(Event<RateLimitTrigger> const &) override;
 
   // service
