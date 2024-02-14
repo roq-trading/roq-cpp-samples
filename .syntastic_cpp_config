@@ -1,4 +1,3 @@
 -std=c++23
 -Isrc
--Ithird_party/googletest/googletest/include
 -I../opt/conda/envs/dev/include
