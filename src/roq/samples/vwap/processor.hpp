@@ -2,9 +2,9 @@
 
 #pragma once
 
-#include <absl/container/node_hash_map.h>
-
 #include <memory>
+
+#include "roq/utils/container.hpp"
 
 #include "roq/cache/market_by_price.hpp"
 
@@ -56,7 +56,7 @@ struct Processor final : public client::EventLogReader::Handler {
 
  private:
   Settings const &settings_;
-  absl::node_hash_map<Symbol, std::unique_ptr<cache::MarketByPrice>> market_by_price_;
+  utils::unordered_map<std::string, std::unique_ptr<cache::MarketByPrice>> market_by_price_;
 };
 
 }  // namespace vwap

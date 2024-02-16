@@ -17,6 +17,7 @@ target_link_libraries(
           roq-logging::roq-logging-flags
           roq-flags::roq-flags
           roq-api::roq-api
+          unordered_dense::unordered_dense
           fmt::fmt)
 
 target_compile_definitions(${TARGET_NAME} PRIVATE ROQ_PACKAGE_NAME="${PROJECT_NAME}")

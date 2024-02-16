@@ -2,17 +2,17 @@
 
 #pragma once
 
-#include <absl/container/flat_hash_set.h>
-
 #include "roq/api.hpp"
+
+#include "roq/utils/container.hpp"
 
 namespace roq {
 namespace samples {
 namespace io_context {
 
 struct Shared final {
-  absl::flat_hash_set<uint64_t> sessions_to_remove;
-  absl::flat_hash_set<Symbol> symbols;
+  utils::unordered_set<uint64_t> sessions_to_remove;
+  utils::unordered_set<std::string> symbols;
 };
 
 }  // namespace io_context

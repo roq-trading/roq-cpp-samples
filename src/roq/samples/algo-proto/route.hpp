@@ -2,9 +2,9 @@
 
 #pragma once
 
-#include <absl/container/flat_hash_set.h>
-
 #include <string_view>
+
+#include "roq/utils/container.hpp"
 
 #include "roq/algo/framework/market.hpp"
 
@@ -36,7 +36,7 @@ struct Route final {
 
  private:
   algo::framework::Market market_;
-  absl::flat_hash_set<uint32_t> strategies_;
+  utils::unordered_set<uint32_t> strategies_;
 };
 
 }  // namespace algo_proto

@@ -2,12 +2,12 @@
 
 #pragma once
 
-#include <absl/container/flat_hash_map.h>
-
 #include <string>
 #include <vector>
 
 #include "roq/client.hpp"
+
+#include "roq/utils/container.hpp"
 
 #include "roq/cache/gateway.hpp"
 #include "roq/cache/market.hpp"
@@ -74,15 +74,15 @@ struct Bridge final : public client::Handler, public algo::framework::Dispatcher
  private:
   client::Dispatcher &dispatcher_;
   // note! we assume each {exchange,symbol} can only originate from a single source
-  absl::flat_hash_map<Exchange, absl::flat_hash_map<Symbol, Route>> routes_;
+  utils::unordered_map<std::string, utils::unordered_map<std::string, Route>> routes_;
   std::vector<cache::Gateway> gateways_;
-  absl::flat_hash_map<Symbol, std::unique_ptr<algo::framework::Factory>> factories_;
-  absl::flat_hash_map<uint32_t, std::unique_ptr<algo::framework::Handler>> strategies_;
-  absl::flat_hash_map<RoutingId, uint32_t> routing_id_to_strategy_;
+  utils::unordered_map<std::string, std::unique_ptr<algo::framework::Factory>> factories_;
+  utils::unordered_map<uint32_t, std::unique_ptr<algo::framework::Handler>> strategies_;
+  utils::unordered_map<std::string, uint32_t> routing_id_to_strategy_;
   uint32_t strategy_id_ = {};
   uint64_t max_order_id_ = {};
   // note! we must maintain a map of order_id to source
-  absl::flat_hash_map<uint64_t, uint8_t> order_id_to_source_;
+  utils::unordered_map<uint64_t, uint8_t> order_id_to_source_;
 };
 
 }  // namespace algo_proto

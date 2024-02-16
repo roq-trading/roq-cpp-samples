@@ -2,10 +2,9 @@
 
 #pragma once
 
-#include <absl/container/flat_hash_map.h>
-#include <absl/container/flat_hash_set.h>
-
 #include "roq/client.hpp"
+
+#include "roq/utils/container.hpp"
 
 #include "roq/algo/framework/config.hpp"
 
@@ -26,8 +25,8 @@ struct Config final : public client::Config {
 
  public:
   Settings const &settings_;
-  absl::flat_hash_map<Symbol, algo::framework::Config> strategies;
-  absl::flat_hash_map<Exchange, absl::flat_hash_set<Symbol>> exchange_symbols;
+  utils::unordered_map<std::string, algo::framework::Config> strategies;
+  utils::unordered_map<std::string, utils::unordered_set<std::string>> exchange_symbols;
 };
 
 }  // namespace algo_proto

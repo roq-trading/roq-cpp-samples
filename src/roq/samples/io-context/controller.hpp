@@ -2,8 +2,6 @@
 
 #pragma once
 
-#include <absl/container/flat_hash_map.h>
-
 #include <fmt/format.h>
 
 #include <chrono>
@@ -11,6 +9,8 @@
 #include <vector>
 
 #include "roq/client.hpp"
+
+#include "roq/utils/container.hpp"
 
 #include "roq/io/context.hpp"
 
@@ -57,7 +57,7 @@ struct Controller final : public client::Handler,
   io::Context &context_;
   std::unique_ptr<io::Sender> const sender_;
   std::unique_ptr<io::net::tcp::Listener> const listener_;
-  absl::flat_hash_map<uint64_t, std::unique_ptr<Session>> sessions_;
+  utils::unordered_map<uint64_t, std::unique_ptr<Session>> sessions_;
   std::chrono::nanoseconds next_garbage_collection_ = {};
   uint64_t next_session_id_ = {};
   Shared shared_;
