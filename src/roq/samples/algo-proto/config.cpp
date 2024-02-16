@@ -2,8 +2,6 @@
 
 #include "roq/samples/algo-proto/config.hpp"
 
-#include <absl/container/flat_hash_set.h>
-
 #include <toml++/toml.h>
 
 #include <utility>

@@ -7,6 +7,8 @@
 
 #include "roq/string.hpp"
 
+#include "roq/utils/container.hpp"
+
 #include "roq/algo/framework/dispatcher.hpp"
 #include "roq/algo/framework/handler.hpp"
 #include "roq/algo/framework/state.hpp"
@@ -66,7 +68,7 @@ struct Base : public framework::Handler {
 
  protected:
   friend OrderManager;
-  absl::flat_hash_map<uint64_t, size_t> order_id_to_order_manager_index_;
+  utils::unordered_map<uint64_t, size_t> order_id_to_order_manager_index_;
 
  private:
   template <typename T>
