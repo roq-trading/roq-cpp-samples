@@ -1,0 +1,47 @@
+{
+  "name": "Flags",
+  "type": "flags",
+  "values": [
+    {
+      "name": "engine",
+      "type": "std::string",
+      "required": true,
+      "default": "libevent",
+      "description": "i/o context engine"
+    },
+    {
+      "name": "account",
+      "type": "std::string",
+      "required": true,
+      "default": "A1",
+      "description": "account"
+    },
+    {
+      "name": "exchange",
+      "type": "std::string",
+      "required": true,
+      "default": "deribit",
+      "description": "exchange"
+    },
+    {
+      "name": "symbol",
+      "type": "std::string",
+      "required": true,
+      "default": "BTC-PERPETUAL",
+      "description": "symbol"
+    },
+    {
+      "name": "quantity",
+      "type": "double",
+      "required": true,
+      "default": 1.0,
+      "description": "quantity"
+    },
+    {
+      "name": "price",
+      "type": "double",
+      "required": true,
+      "description": "price"
+    }
+  ]
+}
