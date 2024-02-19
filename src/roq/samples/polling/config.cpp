@@ -12,6 +12,13 @@ Config::Config(Settings const &settings) : settings_{settings} {
 }
 
 void Config::dispatch(Handler &handler) const {
+  handler(client::Settings{
+      .order_cancel_policy = OrderCancelPolicy::BY_ACCOUNT,
+      .order_management = {},
+  });
+  handler(client::Account{
+      .regex = settings_.account,
+  });
   handler(client::Symbol{
       .regex = settings_.symbol,
       .exchange = settings_.exchange,

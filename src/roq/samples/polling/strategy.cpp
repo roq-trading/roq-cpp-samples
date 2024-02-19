@@ -59,6 +59,7 @@ void Strategy::dispatch() {
 void Strategy::operator()(State state) {
   assert(state_ != state);
   state_ = state;
+  log::info("state={}"sv, magic_enum::enum_name(state_));
   auto now = clock::get_system();
   next_update_ = now + WAIT_THIS_LONG_BEFORE_NEXT_STATE_CHANGE;
 }
@@ -78,8 +79,8 @@ void Strategy::refresh(std::chrono::nanoseconds now) {
       (*this)(State::CREATE_ORDER);
       break;
     case CREATE_ORDER:
-      create_order();
       (*this)(State::WAITING_CREATE);
+      create_order();
       break;
     case WAITING_CREATE:
       log::warn("Request has timed out"sv);
@@ -89,6 +90,7 @@ void Strategy::refresh(std::chrono::nanoseconds now) {
       (*this)(State::CANCEL_ORDER);
       break;
     case CANCEL_ORDER:
+      (*this)(State::WAITING_CANCEL);
       cancel_order();
       break;
     case WAITING_CANCEL:
@@ -153,18 +155,22 @@ void Strategy::cancel_order() {
 
 // client::Simple::Handler
 
-void Strategy::operator()(Event<Connected> const &) {
+void Strategy::operator()(Event<Connected> const &event) {
+  log::debug("event={}"sv, event);
   assert(state_ == State::CONNECTING);
 }
 
-void Strategy::operator()(Event<Disconnected> const &) {
+void Strategy::operator()(Event<Disconnected> const &event) {
+  log::debug("event={}"sv, event);
   (*this)(State::CONNECTING);
 }
 
-void Strategy::operator()(Event<DownloadBegin> const &) {
+void Strategy::operator()(Event<DownloadBegin> const &event) {
+  log::debug("event={}"sv, event);
 }
 
 void Strategy::operator()(Event<DownloadEnd> const &event) {
+  log::debug("event={}"sv, event);
   auto &download_end = event.value;
   auto max_order_id = download_end.max_order_id;
   if (max_order_id_ < max_order_id) {
@@ -173,7 +179,8 @@ void Strategy::operator()(Event<DownloadEnd> const &event) {
   }
 }
 
-void Strategy::operator()(Event<Ready> const &) {
+void Strategy::operator()(Event<Ready> const &event) {
+  log::debug("event={}"sv, event);
   assert(state_ == State::CONNECTING);
   (*this)(State::READY);
 }
@@ -187,16 +194,24 @@ void Strategy::operator()(Event<StreamStatus> const &) {
 void Strategy::operator()(Event<GatewayStatus> const &) {
 }
 
-void Strategy::operator()(Event<ReferenceData> const &) {
+void Strategy::operator()(Event<ReferenceData> const &event) {
+  // log::debug("event={}"sv, event);
 }
 
-void Strategy::operator()(Event<MarketStatus> const &) {
+void Strategy::operator()(Event<MarketStatus> const &event) {
+  // log::debug("event={}"sv, event);
 }
 
-void Strategy::operator()(Event<TopOfBook> const &) {
+void Strategy::operator()(Event<TopOfBook> const &event) {
+  // log::debug("event={}"sv, event);
+}
+
+void Strategy::operator()(Event<MarketByPriceUpdate> const &event) {
+  // log::debug("event={}"sv, event);
 }
 
 void Strategy::operator()(Event<OrderAck> const &event) {
+  log::debug("event={}"sv, event);
   auto &order_ack = event.value;
   // waiting?
   if (!utils::has_request_maybe_completed(order_ack.request_status))
@@ -225,7 +240,8 @@ void Strategy::operator()(Event<OrderAck> const &event) {
   }
 }
 
-void Strategy::operator()(Event<OrderUpdate> const &) {
+void Strategy::operator()(Event<OrderUpdate> const &event) {
+  log::debug("event={}"sv, event);
 }
 
 }  // namespace polling

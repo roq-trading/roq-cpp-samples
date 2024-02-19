@@ -57,6 +57,7 @@ struct Strategy final : public client::Simple::Handler {
   void operator()(Event<ReferenceData> const &) override;
   void operator()(Event<MarketStatus> const &) override;
   void operator()(Event<TopOfBook> const &) override;
+  void operator()(Event<MarketByPriceUpdate> const &) override;
   void operator()(Event<OrderAck> const &) override;
   void operator()(Event<OrderUpdate> const &) override;
 
