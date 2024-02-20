@@ -201,20 +201,16 @@ void Strategy::operator()(Event<StreamStatus> const &) {
 void Strategy::operator()(Event<GatewayStatus> const &) {
 }
 
-void Strategy::operator()(Event<ReferenceData> const &event) {
-  // log::debug("event={}"sv, event);
+void Strategy::operator()(Event<ReferenceData> const &) {
 }
 
-void Strategy::operator()(Event<MarketStatus> const &event) {
-  // log::debug("event={}"sv, event);
+void Strategy::operator()(Event<MarketStatus> const &) {
 }
 
-void Strategy::operator()(Event<TopOfBook> const &event) {
-  // log::debug("event={}"sv, event);
+void Strategy::operator()(Event<TopOfBook> const &) {
 }
 
-void Strategy::operator()(Event<MarketByPriceUpdate> const &event) {
-  // log::debug("event={}"sv, event);
+void Strategy::operator()(Event<MarketByPriceUpdate> const &) {
 }
 
 void Strategy::operator()(Event<OrderAck> const &event) {
