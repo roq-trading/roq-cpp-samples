@@ -10,6 +10,8 @@
 
 #include "roq/utils/common.hpp"
 
+#include "roq/io/sys/scheduler.hpp"
+
 using namespace std::literals;
 
 namespace roq {
@@ -21,6 +23,7 @@ namespace polling {
 namespace {
 auto const DISPATCH_THIS_MANY_BEFORE_CHECKING_CLOCK = 1000uz;
 auto const WAIT_THIS_LONG_BEFORE_NEXT_STATE_CHANGE = 10s;
+auto const YIELD_FREQUENCY = 1000ms;
 }  // namespace
 
 // === HELPERS ===
@@ -38,22 +41,26 @@ Strategy::Strategy(
     Config const &config,
     io::Context &context,
     std::span<std::string_view const> const &connections)
-    : settings_{settings}, dispatcher_{create_dispatcher(*this, settings, config, context, connections)} {
+    : settings_{settings}, terminate_{context.create_signal(*this, io::sys::Signal::Type::TERMINATE)},
+      interrupt_{context.create_signal(*this, io::sys::Signal::Type::INTERRUPT)},
+      dispatcher_{create_dispatcher(*this, settings, config, context, connections)} {
 }
 
-// XXX FIXME option to choose who owns the signal handler
 void Strategy::dispatch() {
-  log::info("Start the dispatch loop..."sv);
+  log::info("Starting the dispatch loop..."sv);
   (*dispatcher_).start();
   auto ok = true;
   while (ok) {
     auto now = clock::get_system();
-    // XXX FIXME yield
     refresh(now);
+    if (next_yield_ < now && YIELD_FREQUENCY.count() > 0) {
+      next_yield_ = now + YIELD_FREQUENCY;
+      io::sys::Scheduler::yield();
+    }
     for (size_t i = 0; ok && i < DISPATCH_THIS_MANY_BEFORE_CHECKING_CLOCK; ++i)
       ok = (*dispatcher_).dispatch();
   }
-  log::info("Dispatch loop has stopped!"sv);
+  log::info("The dispatch loop has stopped!"sv);
 }
 
 void Strategy::operator()(State state) {
@@ -242,6 +249,13 @@ void Strategy::operator()(Event<OrderAck> const &event) {
 
 void Strategy::operator()(Event<OrderUpdate> const &event) {
   log::debug("event={}"sv, event);
+}
+
+// io::sys::Signal::Handler
+
+void Strategy::operator()(io::sys::Signal::Event const &event) {
+  log::warn("*** SIGNAL: {} ***"sv, magic_enum::enum_name(event.type));
+  (*dispatcher_).stop();
 }
 
 }  // namespace polling
