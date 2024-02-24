@@ -29,8 +29,8 @@ auto const YIELD_FREQUENCY = 1000ms;
 // === HELPERS ===
 
 namespace {
-auto create_dispatcher(auto &handler, auto &settings, auto &config, auto &context, auto &connections) {
-  return client::Simple::create(handler, settings, config, context, connections);
+auto create_dispatcher(auto &settings, auto &config, auto &context, auto &connections) {
+  return client::Simple::create(settings, config, context, connections);
 }
 }  // namespace
 
@@ -43,7 +43,7 @@ Strategy::Strategy(
     std::span<std::string_view const> const &connections)
     : settings_{settings}, terminate_{context.create_signal(*this, io::sys::Signal::Type::TERMINATE)},
       interrupt_{context.create_signal(*this, io::sys::Signal::Type::INTERRUPT)},
-      dispatcher_{create_dispatcher(*this, settings, config, context, connections)} {
+      dispatcher_{create_dispatcher(settings, config, context, connections)} {
 }
 
 void Strategy::dispatch() {
@@ -58,7 +58,7 @@ void Strategy::dispatch() {
       io::sys::Scheduler::yield();
     }
     for (size_t i = 0; ok && i < DISPATCH_THIS_MANY_BEFORE_CHECKING_CLOCK; ++i)
-      ok = (*dispatcher_).dispatch();
+      ok = (*dispatcher_).dispatch(*this);
   }
   log::info("The dispatch loop has stopped!"sv);
 }
