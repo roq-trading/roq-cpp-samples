@@ -1,0 +1,42 @@
+/* Copyright (c) 2017-2024, Hans Erik Thrane */
+
+#include "roq/samples/rest/application.hpp"
+
+#include "roq/io/engine/context_factory.hpp"
+
+#include "roq/samples/rest/config.hpp"
+#include "roq/samples/rest/controller.hpp"
+#include "roq/samples/rest/settings.hpp"
+
+using namespace std::literals;
+
+namespace roq {
+namespace samples {
+namespace rest {
+
+// === CONSTANTS ===
+
+namespace {
+auto const IO_ENGINE = "libevent"sv;
+}
+
+// === IMPLEMENTATION ===
+
+int Application::main(args::Parser const &args) {
+  auto params = args.params();
+  if (std::empty(params))
+    log::fatal("Expected arguments"sv);
+  Settings settings{args};
+  Config config{settings};
+  // note!
+  //   create a specific instance of io::Context
+  auto context = io::engine::ContextFactory::create(IO_ENGINE);
+  // note!
+  //   using client::Bridge so we can dispatch events through the Timer event
+  client::Bridge{settings, config, params}.dispatch<Controller>(settings, *context);
+  return EXIT_SUCCESS;
+}
+
+}  // namespace rest
+}  // namespace samples
+}  // namespace roq

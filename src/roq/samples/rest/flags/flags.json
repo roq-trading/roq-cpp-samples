@@ -1,0 +1,33 @@
+{
+  "name": "Flags",
+  "type": "flags",
+  "values": [
+    {
+      "name": "exchange",
+      "type": "std::string",
+      "required": true,
+      "default": "binance",
+      "description": "exchange"
+    },
+    {
+      "name": "symbol",
+      "type": "std::string",
+      "required": true,
+      "default": "BTCUSDT",
+      "description": "symbol (regex)"
+    },
+    {
+      "name": "rest_uri",
+      "type": "std::string",
+      "required": true,
+      "default": "https://api.binance.com",
+      "description": "uri"
+    },
+    {
+      "name": "rest_ping_path",
+      "type": "std::string",
+      "default": "/api/v3/ping",
+      "description": "ping path"
+    }
+  ]
+}
