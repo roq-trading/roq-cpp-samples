@@ -10,8 +10,8 @@
 #include "roq/samples/example-3/settings.hpp"
 #include "roq/samples/example-3/strategy.hpp"
 
-using namespace std::chrono_literals;
 using namespace std::literals;
+using namespace std::chrono_literals;  // NOLINT
 
 namespace roq {
 namespace samples {

@@ -188,7 +188,7 @@ void Instrument::operator()(MarketByOrderUpdate const &market_by_order_update) {
   assert(exchange_.compare(market_by_order_update.exchange) == 0);
   assert(symbol_.compare(market_by_order_update.symbol) == 0);
   (*market_by_order_)(market_by_order_update);
-  // TODO something...
+  // ...
 }
 
 void Instrument::operator()(OrderUpdate const &order_update) {
