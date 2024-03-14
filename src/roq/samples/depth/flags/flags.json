@@ -1,0 +1,27 @@
+{
+  "name": "Flags",
+  "type": "flags",
+  "values": [
+    {
+      "name": "exchange",
+      "type": "std::string",
+      "required": true,
+      "default": "deribit",
+      "description": "exchange"
+    },
+    {
+      "name": "symbol",
+      "type": "std::string",
+      "required": true,
+      "default": "BTC-PERPETUAL",
+      "description": "symbol"
+    },
+    {
+      "name": "depth",
+      "type": "uint16_t",
+      "required": true,
+      "default": 5,
+      "description": "depth (view)"
+    }
+  ]
+}
