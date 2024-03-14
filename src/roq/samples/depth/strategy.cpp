@@ -20,6 +20,17 @@ namespace {
 auto const MULTIPLIER = 10uz;
 }
 
+// === HELPERS ===
+
+namespace {
+void print(auto &market_by_price) {
+  std::vector<Layer> depth;
+  market_by_price.extract_2(depth);
+  for (size_t i = 0; i < std::size(depth); ++i)
+    log::warn("  [{:4}] {}"sv, i, depth[i]);
+}
+}  // namespace
+
 // === IMPLEMENTATION ===
 
 Strategy::Strategy(client::Dispatcher &, Settings const &settings)
@@ -81,6 +92,11 @@ void Strategy::operator()(Event<MarketByPriceUpdate> const &event) {
   } else {
     log::warn("lhs={} != rhs={}"sv, lhs, rhs);
     ++issues_;
+    log::info("market_by_price_update={}"sv, market_by_price_update);
+    log::warn("FULL:"sv);
+    print(*mbp_full_);
+    log::warn("DEPTH:"sv);
+    print(*mbp_depth_);
   }
   auto tmp = utils::compare(lhs[0].bid_price, lhs[0].ask_price);
   if (tmp == 0)
