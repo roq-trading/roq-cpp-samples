@@ -31,6 +31,7 @@ struct Strategy final : public client::Handler {
   std::unique_ptr<cache::MarketByPrice> mbp_full_;
   std::unique_ptr<cache::MarketByPrice> mbp_depth_;
   std::vector<MBPUpdate> bids_, asks_;
+  std::vector<Layer> lhs_, rhs_;
   size_t issues_ = {}, choice_ = {}, inversion_ = {};
 };
 
