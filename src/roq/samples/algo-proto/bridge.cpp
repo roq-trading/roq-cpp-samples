@@ -54,7 +54,7 @@ auto create_factories(auto const &config, auto const &routes, auto const &gatewa
     tmp.reserve(std::size(strategy.instruments));
     for (auto &instrument : strategy.instruments) {
       if (find_route(routes, instrument.exchange, instrument.symbol, [&](auto &route) {
-            auto &market = static_cast<const algo::framework::Market &>(route);
+            auto &market = static_cast<algo::framework::Market const &>(route);
             tmp.emplace_back(&market);
           })) {
       } else {
