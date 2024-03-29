@@ -47,8 +47,7 @@ void print(auto &market_by_price) {
 
 Strategy::Strategy(client::Dispatcher &, Settings const &settings)
     : settings_{settings}, mbp_full_{market::mbp::Factory::create(settings_.exchange, settings_.symbol)},
-      mbp_depth_{market::mbp::Factory::create(settings_.exchange, settings_.symbol)},
-      bids_(settings_.depth * MULTIPLIER), asks_(settings_.depth * MULTIPLIER), lhs_(settings_.depth),
+      mbp_depth_{market::mbp::Factory::create(settings_.exchange, settings_.symbol)}, lhs_(settings_.depth),
       rhs_(settings_.depth) {
 }
 
@@ -75,13 +74,13 @@ void Strategy::operator()(Event<MarketByPriceUpdate> const &event) {
   auto &market_by_price_update = event.value;
   log::info("market_by_price_update={}"sv, market_by_price_update);
   // note! the depth update *must* be computed before applying the update to the full book
-  auto [bids, asks] = (*mbp_full_).create_depth_update(market_by_price_update, settings_.depth, bids_, asks_);
+  (*mbp_full_).create_depth_update(market_by_price_update, settings_.depth, bids_, asks_);
   auto depth_update = MarketByPriceUpdate{
       .stream_id = market_by_price_update.stream_id,
       .exchange = market_by_price_update.exchange,
       .symbol = market_by_price_update.symbol,
-      .bids = bids,  // note!
-      .asks = asks,  // note!
+      .bids = bids_,  // note!
+      .asks = asks_,  // note!
       .update_type = market_by_price_update.update_type,
       .exchange_time_utc = market_by_price_update.exchange_time_utc,
       .exchange_sequence = market_by_price_update.exchange_sequence,
@@ -120,6 +119,8 @@ void Strategy::operator()(Event<MarketByPriceUpdate> const &event) {
   if (tmp > 0)
     ++inversion_;
   log::info("issues={}, choice={}, inversion={}"sv, issues_, choice_, inversion_);
+  if ((*mbp_depth_).max_depth() > settings_.depth)
+    log::fatal("HERE"sv);
 }
 
 }  // namespace depth
