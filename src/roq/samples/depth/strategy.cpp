@@ -14,12 +14,6 @@ namespace roq {
 namespace samples {
 namespace depth {
 
-// === CONSTANTS ===
-
-namespace {
-auto const MULTIPLIER = 10uz;
-}
-
 // === HELPERS ===
 
 namespace {
