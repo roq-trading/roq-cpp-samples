@@ -87,7 +87,7 @@ I0223 12:25:06.526573 4468548 service.cpp:65] ===== STOP =====
 
 ### Order Management
 
-Placement of limit orders is controlled by the `--enable-trading` flag
+Placement of limit orders is controlled by the `--enable_trading` flag
 
 ```bash
 ./roq-samples-example-3 \
@@ -151,5 +151,5 @@ Switching to live trading
     ~/deribit.sock
 ```
 
-Then add the `--enable-trading` flag if you really want orders to be placed on
+Then add the `--enable_trading` flag if you really want orders to be placed on
 the market.
