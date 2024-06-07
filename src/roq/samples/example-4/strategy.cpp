@@ -44,13 +44,11 @@ void Strategy::operator()(Event<MarketStatus> const &event) {
 }
 
 void Strategy::operator()(Event<MarketByPriceUpdate> const &event) {
-  log::info<1>(
-      "[{}:{}] MarketByPriceUpdate={}"sv, event.message_info.source, event.message_info.source_name, event.value);
+  log::info<1>("[{}:{}] MarketByPriceUpdate={}"sv, event.message_info.source, event.message_info.source_name, event.value);
 }
 
 void Strategy::operator()(Event<MarketByOrderUpdate> const &event) {
-  log::info<1>(
-      "[{}:{}] MarketByOrderUpdate={}"sv, event.message_info.source, event.message_info.source_name, event.value);
+  log::info<1>("[{}:{}] MarketByOrderUpdate={}"sv, event.message_info.source, event.message_info.source_name, event.value);
 }
 
 void Strategy::operator()(Event<TradeSummary> const &event) {

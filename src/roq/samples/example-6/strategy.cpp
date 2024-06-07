@@ -99,12 +99,7 @@ template <typename T>
 void Strategy::check(Event<T> const &event) {
   log::info("event={}"sv, event);
   auto receive_time = event.message_info.receive_time;
-  log::debug<4>(
-      "prev={}, next={}, delta={}, source={}"sv,
-      receive_time,
-      prev_receive_time_,
-      receive_time - prev_receive_time_,
-      event.message_info.source);
+  log::debug<4>("prev={}, next={}, delta={}, source={}"sv, receive_time, prev_receive_time_, receive_time - prev_receive_time_, event.message_info.source);
   if (receive_time < prev_receive_time_)
     log::fatal("Discovered a time machine (receive_time={}, prev_receive_time={})"sv, receive_time, prev_receive_time_);
   prev_receive_time_ = receive_time;

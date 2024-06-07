@@ -13,9 +13,7 @@ namespace algo_proto {
 // === HELPERS ===
 
 namespace {
-auto create_market_by_price = [](auto &exchange, auto &symbol) {
-  return client::MarketByPriceFactory::create(exchange, symbol);
-};
+auto create_market_by_price = [](auto &exchange, auto &symbol) { return client::MarketByPriceFactory::create(exchange, symbol); };
 }  // namespace
 
 // === IMPLEMENTATION ===

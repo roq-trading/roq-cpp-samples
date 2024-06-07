@@ -16,8 +16,7 @@ namespace algo {
 namespace framework {
 
 struct State final {
-  State(
-      std::span<Instrument const> const &, std::span<Market const *> const &, std::span<cache::Gateway const> const &);
+  State(std::span<Instrument const> const &, std::span<Market const *> const &, std::span<cache::Gateway const> const &);
 
   State(State &&) = default;
   State(State const &) = default;

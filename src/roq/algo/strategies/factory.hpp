@@ -31,8 +31,7 @@ struct Factory final : public framework::Factory {
 
   operator framework::State const &() const override { return state_; }
 
-  std::unique_ptr<framework::Handler> create(
-      framework::Dispatcher &, std::string_view const &routing_id, CreateOrder const &) override;
+  std::unique_ptr<framework::Handler> create(framework::Dispatcher &, std::string_view const &routing_id, CreateOrder const &) override;
 
  private:
   std::string const type_;

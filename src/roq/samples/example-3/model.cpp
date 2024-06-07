@@ -16,8 +16,7 @@ namespace example_3 {
 
 // === IMPLEMENTATION ===
 
-Model::Model(Settings const &settings)
-    : bid_ema_{settings.ema_alpha, settings.warmup}, ask_ema_{settings.ema_alpha, settings.warmup} {
+Model::Model(Settings const &settings) : bid_ema_{settings.ema_alpha, settings.warmup}, ask_ema_{settings.ema_alpha, settings.warmup} {
 }
 
 void Model::reset() {

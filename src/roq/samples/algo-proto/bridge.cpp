@@ -254,8 +254,7 @@ void Bridge::create_strategy(CreateOrder const &create_order) {
   if (iter != std::end(factories_)) {
     auto &factory = *(*iter).second;
     auto strategy_id = ++strategy_id_;
-    auto routing_id =
-        client::Base64::encode({reinterpret_cast<std::byte const *>(&strategy_id), sizeof(strategy_id)}, true);
+    auto routing_id = client::Base64::encode({reinterpret_cast<std::byte const *>(&strategy_id), sizeof(strategy_id)}, true);
     auto strategy = factory.create(*this, routing_id, create_order);
     assert(!!strategy);
     [[maybe_unused]] auto res = strategies_.emplace(strategy_id, std::move(strategy));

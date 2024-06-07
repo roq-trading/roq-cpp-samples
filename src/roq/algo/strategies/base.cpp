@@ -40,11 +40,7 @@ auto create_order_managers(Base &base, framework::State const &state, CreateOrde
 
 // === IMPLEMENTATION ===
 
-Base::Base(
-    framework::Dispatcher &dispatcher,
-    framework::State const &state,
-    std::string_view const &routing_id,
-    CreateOrder const &create_order)
+Base::Base(framework::Dispatcher &dispatcher, framework::State const &state, std::string_view const &routing_id, CreateOrder const &create_order)
     : dispatcher_{dispatcher}, state_{state}, routing_id_{routing_id}, account_{create_order.account},
       order_managers_{create_order_managers(*this, state_, create_order)}, ready_by_instrument_(std::size(state_)) {
   assert(std::empty(create_order.routing_id));

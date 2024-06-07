@@ -27,9 +27,7 @@ namespace roq {
 namespace samples {
 namespace io_context {
 
-struct Controller final : public client::Handler,
-                          public io::net::udp::Sender::Handler,
-                          public io::net::tcp::Listener::Handler {
+struct Controller final : public client::Handler, public io::net::udp::Sender::Handler, public io::net::tcp::Listener::Handler {
   Controller(client::Dispatcher &, Settings const &, io::Context &);
 
  protected:

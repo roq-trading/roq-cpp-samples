@@ -41,8 +41,7 @@ void print(auto &market_by_price) {
 
 Strategy::Strategy(client::Dispatcher &, Settings const &settings)
     : settings_{settings}, mbp_full_{market::mbp::Factory::create(settings_.exchange, settings_.symbol)},
-      mbp_depth_{market::mbp::Factory::create(settings_.exchange, settings_.symbol)}, lhs_(settings_.depth),
-      rhs_(settings_.depth) {
+      mbp_depth_{market::mbp::Factory::create(settings_.exchange, settings_.symbol)}, lhs_(settings_.depth), rhs_(settings_.depth) {
 }
 
 void Strategy::operator()(Event<Connected> const &) {

@@ -36,14 +36,9 @@ auto create_dispatcher(auto &settings, auto &config, auto &context, auto &connec
 
 // === IMPLEMENTATION ===
 
-Strategy::Strategy(
-    Settings const &settings,
-    Config const &config,
-    io::Context &context,
-    std::span<std::string_view const> const &connections)
+Strategy::Strategy(Settings const &settings, Config const &config, io::Context &context, std::span<std::string_view const> const &connections)
     : settings_{settings}, terminate_{context.create_signal(*this, io::sys::Signal::Type::TERMINATE)},
-      interrupt_{context.create_signal(*this, io::sys::Signal::Type::INTERRUPT)},
-      dispatcher_{create_dispatcher(settings, config, context, connections)} {
+      interrupt_{context.create_signal(*this, io::sys::Signal::Type::INTERRUPT)}, dispatcher_{create_dispatcher(settings, config, context, connections)} {
 }
 
 void Strategy::dispatch() {

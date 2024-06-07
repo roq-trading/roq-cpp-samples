@@ -38,12 +38,8 @@ int Application::main(args::Parser const &args) {
     // collector
     Collector collector;
     // simulator
-    auto create_generator = [&params](auto source_id) {
-      return client::detail::SimulationFactory::create_generator(params[source_id], source_id);
-    };
-    auto create_matcher = [](auto &dispatcher) {
-      return client::detail::SimulationFactory::create_matcher(dispatcher, MATCHER);
-    };
+    auto create_generator = [&params](auto source_id) { return client::detail::SimulationFactory::create_generator(params[source_id], source_id); };
+    auto create_matcher = [](auto &dispatcher) { return client::detail::SimulationFactory::create_matcher(dispatcher, MATCHER); };
     client::Simulator::Factory factory{
         .create_generator = create_generator,
         .create_matcher = create_matcher,

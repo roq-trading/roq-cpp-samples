@@ -20,8 +20,7 @@ namespace example_2 {
 // === IMPLEMENTATION ===
 
 Instrument::Instrument(std::string_view const &exchange, std::string_view const &symbol, double alpha)
-    : exchange_{exchange}, symbol_{symbol}, alpha_{alpha},
-      market_by_price_{client::MarketByPriceFactory::create(exchange, symbol)} {
+    : exchange_{exchange}, symbol_{symbol}, alpha_{alpha}, market_by_price_{client::MarketByPriceFactory::create(exchange, symbol)} {
 }
 
 void Instrument::operator()(Connected const &) {
@@ -159,8 +158,8 @@ void Instrument::update_model() {
 
 void Instrument::check_ready() {
   auto before = ready_;
-  ready_ = connected_ && !download_ && utils::is_greater(tick_size_, 0.0) && utils::is_greater(min_trade_vol_, 0.0) &&
-           utils::is_greater(multiplier_, 0.0) && trading_status_ == TradingStatus::OPEN && market_data_;
+  ready_ = connected_ && !download_ && utils::is_greater(tick_size_, 0.0) && utils::is_greater(min_trade_vol_, 0.0) && utils::is_greater(multiplier_, 0.0) &&
+           trading_status_ == TradingStatus::OPEN && market_data_;
   if (ready_ != before)
     log::info("[{}:{}] ready={}"sv, exchange_, symbol_, ready_);
 }

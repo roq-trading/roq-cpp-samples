@@ -42,8 +42,7 @@ auto create_market_by_order(auto &exchange, auto &symbol, auto allow_price_inver
 // === IMPLEMENTATION ===
 
 Instrument::Instrument(Settings const &settings)
-    : exchange_{settings.exchange}, symbol_{settings.symbol}, account_{settings.account},
-      allow_price_inversion_{settings.allow_price_inversion},
+    : exchange_{settings.exchange}, symbol_{settings.symbol}, account_{settings.account}, allow_price_inversion_{settings.allow_price_inversion},
       market_by_price_{create_market_by_price(exchange_, symbol_, allow_price_inversion_)},
       market_by_order_{create_market_by_order(exchange_, symbol_, allow_price_inversion_)} {
 }
@@ -230,9 +229,8 @@ void Instrument::operator()(PositionUpdate const &position_update) {
 
 void Instrument::check_ready() {
   auto before = ready_;
-  ready_ = connected_ && !download_ && utils::is_greater(tick_size_, 0.0) && utils::is_greater(min_trade_vol_, 0.0) &&
-           utils::is_greater(multiplier_, 0.0) && trading_status_ == TradingStatus::OPEN && market_data_ &&
-           order_management_;
+  ready_ = connected_ && !download_ && utils::is_greater(tick_size_, 0.0) && utils::is_greater(min_trade_vol_, 0.0) && utils::is_greater(multiplier_, 0.0) &&
+           trading_status_ == TradingStatus::OPEN && market_data_ && order_management_;
   if (ready_ != before)
     log::info("[{}:{}] ready={}"sv, exchange_, symbol_, ready_);
 }

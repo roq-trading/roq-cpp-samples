@@ -11,11 +11,7 @@ namespace framework {
 // note! intercept source
 struct Market final {
   template <typename MarketByPriceFactory>
-  Market(
-      uint32_t market_id,
-      std::string_view const &exchange,
-      std::string_view const &symbol,
-      MarketByPriceFactory create_market_by_price)
+  Market(uint32_t market_id, std::string_view const &exchange, std::string_view const &symbol, MarketByPriceFactory create_market_by_price)
       : market_(market_id, exchange, symbol, create_market_by_price) {}
 
   Market(Market &&) = default;

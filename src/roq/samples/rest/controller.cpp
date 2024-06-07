@@ -65,8 +65,7 @@ auto create_client(auto &handler, auto &settings, auto &context) {
 // === IMPLEMENTATION ===
 
 Controller::Controller(client::Dispatcher &dispatcher, Settings const &settings, io::Context &context)
-    : dispatcher_{dispatcher}, settings_{settings}, context_{context},
-      client_{create_client(*this, settings, context)} {
+    : dispatcher_{dispatcher}, settings_{settings}, context_{context}, client_{create_client(*this, settings, context)} {
 }
 
 // client::Handler

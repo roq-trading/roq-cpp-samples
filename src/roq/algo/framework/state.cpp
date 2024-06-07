@@ -10,12 +10,8 @@ namespace framework {
 
 // === IMPLEMENTATION ===
 
-State::State(
-    std::span<Instrument const> const &instruments,
-    std::span<Market const *> const &markets,
-    std::span<cache::Gateway const> const &gateways)
-    : instruments_(std::begin(instruments), std::end(instruments)), markets_(std::begin(markets), std::end(markets)),
-      gateways_(gateways) {
+State::State(std::span<Instrument const> const &instruments, std::span<Market const *> const &markets, std::span<cache::Gateway const> const &gateways)
+    : instruments_(std::begin(instruments), std::end(instruments)), markets_(std::begin(markets), std::end(markets)), gateways_(gateways) {
   assert(std::size(instruments_) == std::size(markets_));
 }
 

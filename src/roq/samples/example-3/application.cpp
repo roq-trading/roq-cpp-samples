@@ -44,12 +44,8 @@ int Application::main(args::Parser const &args) {
     // collector
     auto collector = client::detail::SimulationFactory::create_collector(SNAPSHOT_FREQUENCY);
     // simulator
-    auto create_generator = [&params](auto source_id) {
-      return client::detail::SimulationFactory::create_generator(params[source_id], source_id);
-    };
-    auto create_matcher = [](auto &dispatcher) {
-      return client::detail::SimulationFactory::create_matcher(dispatcher, MATCHER);
-    };
+    auto create_generator = [&params](auto source_id) { return client::detail::SimulationFactory::create_generator(params[source_id], source_id); };
+    auto create_matcher = [](auto &dispatcher) { return client::detail::SimulationFactory::create_matcher(dispatcher, MATCHER); };
     auto factory = client::Simulator::Factory{
         .create_generator = create_generator,
         .create_matcher = create_matcher,

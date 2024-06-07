@@ -4,5 +4,4 @@ set(SOURCES base.cpp factory.cpp order_manager.cpp spread.cpp)
 
 add_library(${TARGET_NAME} OBJECT ${SOURCES})
 
-target_link_libraries(${TARGET_NAME} PRIVATE roq-api::roq-api absl::flags
-                                             unordered_dense::unordered_dense)
+target_link_libraries(${TARGET_NAME} PRIVATE roq-api::roq-api absl::flags unordered_dense::unordered_dense)

@@ -99,8 +99,7 @@ Config::Config(Settings const &settings) : settings_{settings} {
   // extract
   for (auto &[_, strategy] : strategies) {
     for (auto &instrument : strategy.instruments)
-      exchange_symbols[static_cast<std::string_view>(instrument.exchange)].emplace(
-          static_cast<std::string_view>(instrument.symbol));
+      exchange_symbols[static_cast<std::string_view>(instrument.exchange)].emplace(static_cast<std::string_view>(instrument.symbol));
   }
 }
 

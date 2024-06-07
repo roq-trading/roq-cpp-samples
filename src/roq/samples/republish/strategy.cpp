@@ -48,13 +48,7 @@ void close_socket(auto fd) {
 }
 
 void socket_sendto(auto const socket, auto const &address, auto const &message) {
-  auto res = ::sendto(
-      socket,
-      std::data(message),
-      std::size(message),
-      0,
-      reinterpret_cast<struct sockaddr const *>(&address),
-      sizeof(address));
+  auto res = ::sendto(socket, std::data(message), std::size(message), 0, reinterpret_cast<struct sockaddr const *>(&address), sizeof(address));
   if (res < 0)
     log::system_error("Failed to send"sv);
 }
@@ -62,8 +56,7 @@ void socket_sendto(auto const socket, auto const &address, auto const &message) 
 
 // === IMPLEMENTATION ===
 
-Strategy::Strategy(client::Dispatcher &dispatcher, Settings const &settings)
-    : dispatcher_{dispatcher}, socket_{create_socket(settings, address_)} {
+Strategy::Strategy(client::Dispatcher &dispatcher, Settings const &settings) : dispatcher_{dispatcher}, socket_{create_socket(settings, address_)} {
 }
 
 Strategy::~Strategy() {
@@ -79,13 +72,7 @@ void Strategy::operator()(Event<TopOfBook> const &event) {
   auto &layer = top_of_book.layer;
   // json message
   // note! you can optimize this by pre-allocating a buffer and use fmt::format_to
-  auto message = fmt::format(
-      R"(["{}",{},{},{},{}])"sv,
-      top_of_book.symbol,
-      layer.bid_price,
-      layer.bid_quantity,
-      layer.ask_price,
-      layer.ask_quantity);
+  auto message = fmt::format(R"(["{}",{},{},{},{}])"sv, top_of_book.symbol, layer.bid_price, layer.bid_quantity, layer.ask_price, layer.ask_quantity);
   // note! you should use a higher verbosity level here to make it possible to avoid some logging
   log::info<0>("{}"sv, message);
   // broadcast
