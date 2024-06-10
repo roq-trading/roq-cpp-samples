@@ -2,3 +2,7 @@
 	path = scripts
 	url = https://github.com/roq-trading/roq-scripts.git
 	ignore = dirty
+[submodule "roq-cmake"]
+	path = cmake
+	url = https://github.com/roq-trading/roq-cmake.git
+	ignore = dirty
