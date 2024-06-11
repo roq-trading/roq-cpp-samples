@@ -1,44 +1,44 @@
 {
-  "name": "Flags",
+  "name": "roq/samples/example-7/flags/Flags",
   "type": "flags",
   "values": [
     {
       "name": "exchange",
-      "type": "std::string",
+      "type": "std/string",
       "required": true,
       "default": "deribit",
       "description": "exchange"
     },
     {
       "name": "symbol",
-      "type": "std::string",
+      "type": "std/string",
       "required": true,
       "default": "BTC-PERPETUAL",
       "description": "symbol (regex)"
     },
     {
       "name": "account",
-      "type": "std::string",
+      "type": "std/string",
       "required": true,
       "default": "A1",
       "description": "account (regex)"
     },
     {
       "name": "label",
-      "type": "std::string",
+      "type": "std/string",
       "required": true,
       "default": "ToB",
       "description": "label"
     },
     {
       "name": "simulation",
-      "type": "bool",
+      "type": "std/bool",
       "default": false,
       "description": "requires an event-log"
     },
     {
       "name": "subscriber",
-      "type": "bool",
+      "type": "std/bool",
       "default": false,
       "description": "subscriber?"
     }

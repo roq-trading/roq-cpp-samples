@@ -1,24 +1,24 @@
 {
-  "name": "Flags",
+  "name": "roq/samples/depth/flags/Flags",
   "type": "flags",
   "values": [
     {
       "name": "exchange",
-      "type": "std::string",
+      "type": "std/string",
       "required": true,
       "default": "deribit",
       "description": "exchange"
     },
     {
       "name": "symbol",
-      "type": "std::string",
+      "type": "std/string",
       "required": true,
       "default": "BTC-PERPETUAL",
       "description": "symbol"
     },
     {
       "name": "depth",
-      "type": "uint16_t",
+      "type": "std/uint16",
       "required": true,
       "default": 5,
       "description": "depth (view)"

@@ -1,17 +1,17 @@
 {
-  "name": "Flags",
+  "name": "roq/samples/example-4/flags/Flags",
   "type": "flags",
   "values": [
     {
       "name": "exchange",
-      "type": "std::string",
+      "type": "std/string",
       "required": true,
       "default": "deribit",
       "description": "exchange name"
     },
     {
       "name": "symbols",
-      "type": "std::string",
+      "type": "std/string",
       "required": true,
       "default": ".*",
       "description": "regex used to subscribe symbols"

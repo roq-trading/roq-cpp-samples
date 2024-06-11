@@ -1,17 +1,17 @@
 {
-  "name": "Flags",
+  "name": "roq/samples/python/flags/Flags",
   "type": "flags",
   "values": [
     {
       "name": "exchange",
-      "type": "std::string",
+      "type": "std/string",
       "required": true,
       "default": "deribit",
       "description": "exchange"
     },
     {
       "name": "symbols",
-      "type": "std::string",
+      "type": "std/string",
       "required": true,
       "default": "BTC-PERPETUAL",
       "description": "symbol (regex)"

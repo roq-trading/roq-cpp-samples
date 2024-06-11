@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.12)
 
 # cmake
 
-set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/scripts/cmake ${CMAKE_MODULE_PATH})
+set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake ${CMAKE_MODULE_PATH})
 
 # project
 
@@ -46,6 +46,14 @@ find_package(roq-utils REQUIRED)
 find_package(roq-web REQUIRED)
 find_package(tomlplusplus REQUIRED)
 find_package(unordered_dense REQUIRED)
+
+# autogen
+
+find_program(ROQ_AUTOGEN roq-autogen REQUIRED)
+
+set(TEMPLATE_DIR ${CMAKE_SOURCE_DIR}/scripts/templates)
+
+# clang-format
 
 find_program(CLANG_FORMAT clang-format REQUIRED)
 

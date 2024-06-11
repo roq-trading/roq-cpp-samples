@@ -1,40 +1,40 @@
 {
-  "name": "Flags",
+  "name": "roq/samples/io-context/flags/Flags",
   "type": "flags",
   "values": [
     {
       "name": "exchange",
-      "type": "std::string",
+      "type": "std/string",
       "required": true,
       "default": "deribit",
       "description": "exchange"
     },
     {
       "name": "symbol",
-      "type": "std::string",
+      "type": "std/string",
       "required": true,
       "default": "BTC-PERPETUAL",
       "description": "symbol (regex)"
     },
     {
       "name": "ws_listen_address",
-      "type": "std::string",
-      "validator": "roq::flags::validators::ListenAddress",
+      "type": "std/string",
+      "validator": "roq/flags/validators/ListenAddress",
       "required": true,
       "default": 1234,
       "description": "port"
     },
     {
       "name": "udp_listen_address",
-      "type": "std::string",
-      "validator": "roq::flags::validators::ListenAddress",
+      "type": "std/string",
+      "validator": "roq/flags/validators/ListenAddress",
       "required": true,
       "default": 2345,
       "description": "port"
     },
     {
       "name": "filter_symbols",
-      "type": "bool",
+      "type": "std/bool",
       "default": false,
       "description": "set to true to enable ws managed subscribe/unsubscribe"
     }

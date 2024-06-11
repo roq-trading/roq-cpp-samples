@@ -1,50 +1,50 @@
 {
-  "name": "Flags",
+  "name": "roq/samples/example-8/flags/Flags",
   "type": "flags",
   "values": [
     {
       "name": "exchange",
-      "type": "std::string",
+      "type": "std/string",
       "required": true,
       "default": "deribit",
       "description": "exchange"
     },
     {
       "name": "symbol",
-      "type": "std::string",
+      "type": "std/string",
       "required": true,
       "default": "BTC-PERPETUAL",
       "description": "symbol (regex)"
     },
     {
       "name": "account",
-      "type": "std::string",
+      "type": "std/string",
       "required": true,
       "default": "A1",
       "description": "account (regex)"
     },
     {
       "name": "currencies",
-      "type": "std::string",
+      "type": "std/string",
       "default": "BTC|USD",
       "description": "currencies (regex)"
     },
     {
       "name": "quantity",
-      "type": "double",
+      "type": "std/double",
       "required": true,
       "default": 1.0,
       "description": "quantity"
     },
     {
       "name": "tick_offset",
-      "type": "int32_t",
+      "type": "std/int32",
       "default": 100,
       "description": "offset as number of ticks"
     },
     {
       "name": "top_of_book",
-      "type": "bool",
+      "type": "std/bool",
       "default": false,
       "description": "use top of book as trigger?"
     }

@@ -1,10 +1,10 @@
 {
-  "name": "Flags",
+  "name": "roq/samples/vwap/flags/Flags",
   "type": "flags",
   "values": [
     {
       "name": "quantity",
-      "type": "double",
+      "type": "std/double",
       "required": true,
       "default": 1.0,
       "description": "vwap quantity"

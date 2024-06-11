@@ -4,31 +4,27 @@ include(RoqAutogen)
 
 set(AUTOGEN_SCHEMAS flags.json)
 
-roq_autogen(
+roq_autogen_hpp(
   OUTPUT
   AUTOGEN_HEADERS
-  NAMESPACE
-  "roq/samples/example-6/flags"
-  OUTPUT_TYPE
-  "flags"
-  FILE_TYPE
-  "hpp"
   SOURCES
-  ${AUTOGEN_SCHEMAS})
+  ${AUTOGEN_SCHEMAS}
+  TEMPLATE_DIR
+  ${TEMPLATE_DIR}
+  TEMPLATE_TYPE
+  "flags")
 
 add_custom_target(${TARGET_NAME}-autogen-headers ALL DEPENDS ${AUTOGEN_HEADERS})
 
-roq_autogen(
+roq_autogen_cpp(
   OUTPUT
   AUTOGEN_SOURCES
-  NAMESPACE
-  "roq/samples/example-6/flags"
-  OUTPUT_TYPE
-  "flags"
-  FILE_TYPE
-  "cpp"
   SOURCES
-  ${AUTOGEN_SCHEMAS})
+  ${AUTOGEN_SCHEMAS}
+  TEMPLATE_DIR
+  ${TEMPLATE_DIR}
+  TEMPLATE_TYPE
+  "flags")
 
 roq_gitignore(OUTPUT .gitignore SOURCES ${TARGET_NAME} ${AUTOGEN_HEADERS} ${AUTOGEN_SOURCES})
 

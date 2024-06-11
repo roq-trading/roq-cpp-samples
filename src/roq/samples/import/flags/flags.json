@@ -1,10 +1,10 @@
 {
-  "name": "Flags",
+  "name": "roq/samples/import/flags/Flags",
   "type": "flags",
   "values": [
     {
       "name": "encoding",
-      "type": "std::string",
+      "type": "std/string",
       "required": true,
       "default": "binary",
       "description": "encoding type -- one of binary or base64"

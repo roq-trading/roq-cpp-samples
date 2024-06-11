@@ -1,43 +1,43 @@
 {
-  "name": "Flags",
+  "name": "roq/samples/algo-proto/flags/Flags",
   "type": "flags",
   "values": [
     {
       "name": "config_file",
-      "type": "std::string",
-      "validator": "roq::flags::validators::Path",
+      "type": "std/string",
+      "validator": "roq/flags/validators/Path",
       "required": true,
       "description": "config file (path)"
     },
     {
       "name": "account",
-      "type": "std::string",
+      "type": "std/string",
       "required": true,
       "default": "A1",
       "description": "account (regex)"
     },
     {
       "name": "strategy",
-      "type": "std::string",
+      "type": "std/string",
       "required": true,
       "description": "strategy"
     },
     {
       "name": "side",
-      "type": "std::string",
+      "type": "std/string",
       "required": true,
       "default": "BUY",
       "description": "side"
     },
     {
       "name": "quantity",
-      "type": "double",
+      "type": "std/double",
       "required": true,
       "description": "quantity"
     },
     {
       "name": "price",
-      "type": "double",
+      "type": "std/double",
       "required": true,
       "description": "price"
     }
