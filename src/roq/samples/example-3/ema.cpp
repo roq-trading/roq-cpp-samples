@@ -5,8 +5,6 @@
 #include <algorithm>
 #include <cmath>
 
-#include <roq/numbers.hpp>
-
 namespace roq {
 namespace samples {
 namespace example_3 {

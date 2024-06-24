@@ -4,7 +4,7 @@
 
 #include <cstdint>
 
-#include "roq/numbers.hpp"
+#include "roq/limits.hpp"
 
 namespace roq {
 namespace samples {
