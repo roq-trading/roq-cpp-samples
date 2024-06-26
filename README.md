@@ -39,10 +39,10 @@ The project is primarily designed to be compatible with the conda package manage
 git submodule update --init --recursive
 ```
 
-### Create environment
+### Create development environment
 
 ```bash
-scripts/create_conda_env.sh unstable debug
+scripts/create_conda_env debug unstable
 ```
 
 ### Activate environment
