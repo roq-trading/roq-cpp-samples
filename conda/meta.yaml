@@ -19,9 +19,13 @@ requirements:
     - catch2
     - fmt
     - libabseil
+    - nlohmann_json
+    - pybind11
+    - roq-cache
     - roq-client
     - roq-flags
     - roq-oss-benchmark
+    - tomlplusplus
 
 about:
   license: BSD-3-Clause

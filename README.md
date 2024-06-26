@@ -91,7 +91,7 @@ Simulation requires you to either use your own event logs (automatically
 captured when you're running a gateway) or use sample data
 
 ```bash
-mamba install -y --channel https://roq-trading.com/conda/unstable \
+conda install -y --channel https://roq-trading.com/conda/unstable \
     roq-data
 ```
 
@@ -104,7 +104,7 @@ Data can now be found in the `$CONDA_PREFIX/share/roq-data/` directory.
 #### [Deribit](https://roq-trading.com/docs/reference/gateways/roq-deribit/)
 
 ```bash
-mamba install -y --channel https://roq-trading.com/conda/unstable \
+conda install -y --channel https://roq-trading.com/conda/unstable \
     roq-deribit
 ```
 
@@ -136,7 +136,7 @@ roq-deribit \
 #### [Coinbase Pro](https://roq-trading.com/docs/reference/gateways/roq-coinbase-pro/)
 
 ```bash
-mamba install -y --channel https://roq-trading.com/conda/unstable \
+conda install -y --channel https://roq-trading.com/conda/unstable \
     roq-coinbase-pro
 ```
 
