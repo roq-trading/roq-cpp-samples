@@ -1,0 +1,30 @@
+package:
+  name: roq-samples
+  version: 1.0
+
+source:
+  git_url: ..
+
+build:
+  skip: true  # [not unix]
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - clangdev
+    - cmake
+    - make
+    - roq-autogen
+  host:
+    - catch2
+    - fmt
+    - libabseil
+    - roq-client
+    - roq-flags
+    - roq-oss-benchmark
+
+about:
+  license: BSD-3-Clause
+  license_family: BSD
+  license_file: LICENSE
+  summary: Samples
