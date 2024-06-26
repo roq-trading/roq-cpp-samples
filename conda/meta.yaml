@@ -1,12 +1,17 @@
 package:
   name: roq-samples
-  version: 1.0
+  version: {{ GIT_DESCRIBE_TAG }}
 
 source:
   git_url: ..
 
 build:
   skip: true  # [not unix]
+  number: {{ GIT_DESCRIBE_NUMBER }}
+  script_env:
+    - CFLAGS=-O3                                                                                                                                                
+    - CPPFLAGS=-O3  # [linux]                                                                                                                                   
+    - CPPFLAGS=-O3 -D_LIBCPP_DISABLE_AVAILABILITY  # [osx]
 
 requirements:
   build:
