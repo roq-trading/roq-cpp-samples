@@ -42,7 +42,7 @@ git submodule update --init --recursive
 ### Create development environment
 
 ```bash
-scripts/create_conda_env debug unstable
+scripts/create_conda_env unstable debug
 ```
 
 ### Activate environment
