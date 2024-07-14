@@ -1,5 +1,5 @@
 package:
-  name: roq-samples
+  name: roq-cpp-samples
   version: {{ GIT_DESCRIBE_TAG }}
 
 source:
@@ -36,4 +36,4 @@ about:
   license: BSD-3-Clause
   license_family: BSD
   license_file: LICENSE
-  summary: Samples
+  summary: C++ Samples

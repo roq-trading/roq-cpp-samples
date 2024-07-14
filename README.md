@@ -1,4 +1,4 @@
-# roq-samples
+# roq-cpp-samples
 
 Samples demonstrating how to implement various features of algorithmic trading
 solutions.
