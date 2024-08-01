@@ -46,7 +46,7 @@ struct Controller final : public client::Handler, public web::rest::Client::Hand
   void operator()(web::rest::Response const &);
 
  private:
-  client::Dispatcher &dispatcher_;
+  [[maybe_unused]] client::Dispatcher &dispatcher_;
   Settings const &settings_;
   io::Context &context_;
   std::unique_ptr<web::rest::Client> client_;
