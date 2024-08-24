@@ -94,7 +94,7 @@ void Controller::send(fmt::format_string<Args...> const &fmt, Args &&...args) {
   fmt::format_to(std::back_inserter(buffer_), fmt, std::forward<Args>(args)...);
   std::string_view message{std::data(buffer_), std::size(buffer_)};
   log::info<3>("{}"sv, message);
-  (*sender_).send_with_completion([&](auto &buffer) {
+  (*sender_).send([&](auto &buffer) {
     if (std::size(buffer) < std::size(message)) [[unlikely]]
       log::fatal("Unexpected: {} < {}"sv, std::size(buffer), std::size(message));
     std::memcpy(std::data(buffer), std::data(message), std::size(message));
