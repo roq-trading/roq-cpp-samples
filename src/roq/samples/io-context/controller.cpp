@@ -94,12 +94,15 @@ void Controller::send(fmt::format_string<Args...> const &fmt, Args &&...args) {
   fmt::format_to(std::back_inserter(buffer_), fmt, std::forward<Args>(args)...);
   std::string_view message{std::data(buffer_), std::size(buffer_)};
   log::info<3>("{}"sv, message);
-  (*sender_).send([&](auto &buffer) {
-    if (std::size(buffer) < std::size(message)) [[unlikely]]
-      log::fatal("Unexpected: {} < {}"sv, std::size(buffer), std::size(message));
-    std::memcpy(std::data(buffer), std::data(message), std::size(message));
-    return std::size(message);
-  });
+  if ((*sender_).send([&](auto &buffer) {
+        if (std::size(buffer) < std::size(message)) [[unlikely]]
+          log::fatal("Unexpected: {} < {}"sv, std::size(buffer), std::size(message));
+        std::memcpy(std::data(buffer), std::data(message), std::size(message));
+        return std::size(message);
+      })) {
+  } else {
+    log::warn("HERE"sv);
+  }
 }
 
 }  // namespace io_context
