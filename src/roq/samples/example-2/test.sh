@@ -21,6 +21,6 @@ fi
 
 # launch
 
-$PREFIX "./roq-samples-example-2" \
+$PREFIX "./roq-cpp-samples-example-2" \
   --name "$NAME" \
   $@

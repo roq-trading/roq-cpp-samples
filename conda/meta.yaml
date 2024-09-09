@@ -26,6 +26,7 @@ requirements:
     - libabseil
     - nlohmann_json
     - pybind11
+    - roq-algo
     - roq-api
     - roq-cache
     - roq-client

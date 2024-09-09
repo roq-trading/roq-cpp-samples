@@ -21,7 +21,7 @@ fi
 
 # launch
 
-$PREFIX "./roq-samples-algo-proto" \
+$PREFIX "./roq-cpp-samples-algo-proto" \
   --name "trader" \
   --config_file "$CONFIG_FILE" \
   --strategy "spread_btc" \

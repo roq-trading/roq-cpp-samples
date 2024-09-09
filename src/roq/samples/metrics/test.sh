@@ -21,7 +21,7 @@ fi
 
 # launch
 
-$PREFIX "./roq-samples-metrics" \
+$PREFIX "./roq-cpp-samples-metrics" \
   --name "$NAME" \
   --service_listen_address 6789 \
   $@

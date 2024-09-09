@@ -21,6 +21,6 @@ fi
 
 # launch
 
-$PREFIX "./roq-samples-depth" \
+$PREFIX "./roq-cpp-samples-depth" \
   --name "$NAME" \
   $@

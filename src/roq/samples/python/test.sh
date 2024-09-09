@@ -21,6 +21,6 @@ fi
 
 # launch
 
-$PREFIX "./roq-samples-python" \
+$PREFIX "./roq-cpp-samples-python" \
   --name "$NAME" \
   $@

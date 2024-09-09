@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-./roq-samples-io-context \
+./roq-cpp-samples-io-context \
   --name trader \
   --ws_port 2345 \
   --udp_port 1234 \

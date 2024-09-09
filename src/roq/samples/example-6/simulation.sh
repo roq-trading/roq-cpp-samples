@@ -21,7 +21,7 @@ fi
 
 # launch
 
-$PREFIX "./roq-samples-example-6" \
+$PREFIX "./roq-cpp-samples-example-6" \
   --name "$NAME" \
   --simulation=true \
   --timer_freq=1s \

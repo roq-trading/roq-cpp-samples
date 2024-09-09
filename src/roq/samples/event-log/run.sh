@@ -19,6 +19,6 @@ fi
 
 # launch
 
-$PREFIX "./roq-samples-event-log" \
+$PREFIX "./roq-cpp-samples-event-log" \
   $CONDA_PREFIX/share/roq/data/deribit.roq \
   $@
