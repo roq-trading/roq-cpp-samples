@@ -6,6 +6,8 @@
 #include <chrono>
 #include <memory>
 
+#include "roq/algo/matcher/factory.hpp"
+
 #include "roq/samples/example-3/config.hpp"
 #include "roq/samples/example-3/settings.hpp"
 #include "roq/samples/example-3/strategy.hpp"
@@ -24,6 +26,9 @@ auto const SNAPSHOT_FREQUENCY = 1s;
 auto const MATCHER = "simple"sv;  // note! filled when market is crossed
 auto const MARKET_DATA_LATENCY = 1ms;
 auto const ORDER_MANAGEMENT_LATENCY = 10ms;
+auto const MATCHER_CONFIG = algo::matcher::Config{
+    .source = algo::matcher::Source::TOP_OF_BOOK,
+};
 }  // namespace
 
 // === IMPLEMENTATION ===
@@ -41,18 +46,56 @@ int Application::main(args::Parser const &args) {
   //   * unix domain sockets (trading) or
   //   * event logs (simulation)
   if (settings.simulation) {
-    // collector
-    auto collector = client::detail::SimulationFactory::create_collector(SNAPSHOT_FREQUENCY);
-    // simulator
-    auto create_generator = [&params](auto source_id) { return client::detail::SimulationFactory::create_generator(params[source_id], source_id); };
-    auto create_matcher = [](auto &dispatcher) { return client::detail::SimulationFactory::create_matcher(dispatcher, MATCHER); };
-    auto factory = client::Simulator::Factory{
-        .create_generator = create_generator,
-        .create_matcher = create_matcher,
-        .market_data_latency = MARKET_DATA_LATENCY,
-        .order_management_latency = ORDER_MANAGEMENT_LATENCY,
-    };
-    client::Simulator{settings, config, factory, *collector}.dispatch<Strategy>(settings);
+    if (!settings.test_new_simulator) {
+      // collector
+      auto collector = client::detail::SimulationFactory::create_collector(SNAPSHOT_FREQUENCY);
+      // simulator
+      auto create_generator = [&params](auto source_id) { return client::detail::SimulationFactory::create_generator(params[source_id], source_id); };
+      auto create_matcher = [](auto &dispatcher) { return client::detail::SimulationFactory::create_matcher(dispatcher, MATCHER); };
+      auto factory = client::Simulator::Factory{
+          .create_generator = create_generator,
+          .create_matcher = create_matcher,
+          .market_data_latency = MARKET_DATA_LATENCY,
+          .order_management_latency = ORDER_MANAGEMENT_LATENCY,
+      };
+      client::Simulator{settings, config, factory, *collector}.dispatch<Strategy>(settings);
+    } else {
+      // !!! FOLLOWING IS **EXPERIMENTAL** !!!
+      struct Callback final : public client::Simulator2::Callback {
+        std::unique_ptr<algo::matcher::Handler> create_matcher(
+            algo::matcher::Dispatcher &dispatcher,
+            algo::matcher::Cache &cache,
+            [[maybe_unused]] uint8_t source_id,
+            std::string_view const &exchange,
+            std::string_view const &symbol) override {
+          return algo::matcher::Factory::create(algo::matcher::Factory::Type::SIMPLE, dispatcher, cache, exchange, symbol, MATCHER_CONFIG);
+        }
+      } callback;
+      std::vector<client::Simulator2::Source> sources;
+      for (auto &item : params) {
+        std::array<client::Simulator2::Account, 1> accounts{{
+            {
+                .name = "A1"sv,
+                .symbols = {},
+            },
+        }};
+        auto source = client::Simulator2::Source{
+            .path = item,
+            .order_management =
+                {
+                    .accounts = accounts,
+                    .latency = ORDER_MANAGEMENT_LATENCY,
+                },
+            .market_data =
+                {
+                    .symbols = {},
+                    .latency = MARKET_DATA_LATENCY,
+                },
+        };
+        sources.emplace_back(std::move(source));
+      }
+      client::Simulator2{settings, config, callback, sources}.dispatch<Strategy>(settings);
+    }
   } else {
     // trader
     client::Trader{settings, config, params}.dispatch<Strategy>(settings);
