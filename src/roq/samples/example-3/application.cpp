@@ -71,14 +71,14 @@ int Application::main(args::Parser const &args) {
           return algo::matcher::Factory::create(algo::matcher::Factory::Type::SIMPLE, dispatcher, cache, exchange, symbol, MATCHER_CONFIG);
         }
       } callback;
+      std::array<client::Simulator2::Account, 1> accounts{{
+          {
+              .name = "A1"sv,
+              .symbols = {},
+          },
+      }};
       std::vector<client::Simulator2::Source> sources;
       for (auto &item : params) {
-        std::array<client::Simulator2::Account, 1> accounts{{
-            {
-                .name = "A1"sv,
-                .symbols = {},
-            },
-        }};
         auto source = client::Simulator2::Source{
             .path = item,
             .order_management =
@@ -92,6 +92,7 @@ int Application::main(args::Parser const &args) {
                     .latency = MARKET_DATA_LATENCY,
                 },
         };
+        log::info("source={}"sv, item);
         sources.emplace_back(std::move(source));
       }
       client::Simulator2{settings, config, callback, sources}.dispatch<Strategy>(settings);

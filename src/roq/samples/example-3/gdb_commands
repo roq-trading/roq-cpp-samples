@@ -1,0 +1,3 @@
+catch throw
+handle SIGINT nostop print pass
+run
