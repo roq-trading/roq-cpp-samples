@@ -107,8 +107,9 @@ void Strategy::operator()(Event<FundsUpdate> const &event) {
 // helper - dispatch event to instrument
 template <typename T>
 void Strategy::dispatch(Event<T> const &event) {
-  assert(event.message_info.source == 0);
-  instrument_(event.value);
+  // assert(event.message_info.source == 0);
+  if (event.message_info.source == 0)
+    instrument_(event.value);
 }
 
 void Strategy::update_model() {

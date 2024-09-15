@@ -28,6 +28,7 @@ auto const MARKET_DATA_LATENCY = 1ms;
 auto const ORDER_MANAGEMENT_LATENCY = 10ms;
 auto const MATCHER_CONFIG = algo::matcher::Config{
     .source = algo::matcher::Source::TOP_OF_BOOK,
+    // .source = algo::matcher::Source::MARKET_BY_PRICE,
 };
 }  // namespace
 
@@ -37,8 +38,8 @@ int Application::main(args::Parser const &args) {
   auto params = args.params();
   if (std::empty(params))
     log::fatal("Expected arguments"sv);
-  if (std::size(params) != 1)
-    log::fatal("Expected exactly one argument"sv);
+  // if (std::size(params) != 1)
+  //   log::fatal("Expected exactly one argument"sv);
   Settings settings{args};
   Config config{settings};
   // note!
