@@ -27,8 +27,8 @@ auto const MATCHER = "simple"sv;  // note! filled when market is crossed
 auto const MARKET_DATA_LATENCY = 1ms;
 auto const ORDER_MANAGEMENT_LATENCY = 10ms;
 auto const MATCHER_CONFIG = algo::matcher::Config{
-    .source = algo::matcher::Source::TOP_OF_BOOK,
-    // .source = algo::matcher::Source::MARKET_BY_PRICE,
+    // .source = algo::matcher::Source::TOP_OF_BOOK,
+    .source = algo::matcher::Source::MARKET_BY_PRICE,
 };
 }  // namespace
 
@@ -46,6 +46,27 @@ auto create_accounts(auto &settings, auto &symbols) {
   using result_type = std::vector<client::Simulator2::Account>;
   result_type result;
   result.emplace_back(settings.account, symbols);
+  return result;
+}
+
+auto create_sources(auto &params, auto &accounts, auto &symbols) {
+  using result_type = std::vector<client::Simulator2::Source>;
+  result_type result;
+  for (auto &item : params) {
+    auto source = client::Simulator2::Source{
+        .path = item,
+        .name = {},
+        .order_management{
+            .accounts = accounts,
+            .latency = ORDER_MANAGEMENT_LATENCY,
+        },
+        .market_data{
+            .symbols = symbols,
+            .latency = MARKET_DATA_LATENCY,
+        },
+    };
+    result.emplace_back(std::move(source));
+  }
   return result;
 }
 }  // namespace
@@ -93,21 +114,7 @@ int Application::main(args::Parser const &args) {
       } callback;
       auto symbols = create_symbols(settings);
       auto accounts = create_accounts(settings, symbols);
-      std::vector<client::Simulator2::Source> sources;
-      for (auto &item : params) {
-        auto source = client::Simulator2::Source{
-            .path = item,
-            .order_management{
-                .accounts = accounts,
-                .latency = ORDER_MANAGEMENT_LATENCY,
-            },
-            .market_data{
-                .symbols = symbols,
-                .latency = MARKET_DATA_LATENCY,
-            },
-        };
-        sources.emplace_back(std::move(source));
-      }
+      auto sources = create_sources(params, accounts, symbols);
       client::Simulator2{settings, config, callback, sources}.dispatch<Strategy>(settings);
     }
   } else {
