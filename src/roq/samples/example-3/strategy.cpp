@@ -54,6 +54,10 @@ void Strategy::operator()(Event<DownloadEnd> const &event) {
   }
 }
 
+void Strategy::operator()(Event<Ready> const &) {
+  // this event signals completion of the initial download
+}
+
 void Strategy::operator()(Event<GatewayStatus> const &event) {
   dispatch(event);
 }

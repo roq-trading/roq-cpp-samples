@@ -24,6 +24,7 @@ struct Strategy final : public client::Handler {
   void operator()(Event<Disconnected> const &) override;
   void operator()(Event<DownloadBegin> const &) override;
   void operator()(Event<DownloadEnd> const &) override;
+  void operator()(Event<Ready> const &) override;
   void operator()(Event<GatewayStatus> const &) override;
   void operator()(Event<ReferenceData> const &) override;
   void operator()(Event<MarketStatus> const &) override;
