@@ -32,6 +32,24 @@ auto const MATCHER_CONFIG = algo::matcher::Config{
 };
 }  // namespace
 
+// === CONSTANTS ===
+
+namespace {
+auto create_symbols(auto &settings) {
+  using result_type = client::Simulator2::Symbols;
+  result_type result;
+  result[std::string{settings.exchange}].emplace(settings.symbol);
+  return result;
+}
+
+auto create_accounts(auto &settings, auto &symbols) {
+  using result_type = std::vector<client::Simulator2::Account>;
+  result_type result;
+  result.emplace_back(settings.account, symbols);
+  return result;
+}
+}  // namespace
+
 // === IMPLEMENTATION ===
 
 int Application::main(args::Parser const &args) {
@@ -48,6 +66,7 @@ int Application::main(args::Parser const &args) {
   //   * event logs (simulation)
   if (settings.simulation) {
     if (!settings.test_new_simulator) {
+      // !!! OLD SIMULATOR !!!
       // collector
       auto collector = client::detail::SimulationFactory::create_collector(SNAPSHOT_FREQUENCY);
       // simulator
@@ -61,7 +80,7 @@ int Application::main(args::Parser const &args) {
       };
       client::Simulator{settings, config, factory, *collector}.dispatch<Strategy>(settings);
     } else {
-      // !!! FOLLOWING IS **EXPERIMENTAL** !!!
+      // !!! NEW SIMULATOR !!!
       struct Callback final : public client::Simulator2::Callback {
         std::unique_ptr<algo::matcher::Handler> create_matcher(
             algo::matcher::Dispatcher &dispatcher,
@@ -72,28 +91,21 @@ int Application::main(args::Parser const &args) {
           return algo::matcher::Factory::create(algo::matcher::Factory::Type::SIMPLE, dispatcher, cache, exchange, symbol, MATCHER_CONFIG);
         }
       } callback;
-      std::array<client::Simulator2::Account, 1> accounts{{
-          {
-              .name = "A1"sv,
-              .symbols = {},
-          },
-      }};
+      auto symbols = create_symbols(settings);
+      auto accounts = create_accounts(settings, symbols);
       std::vector<client::Simulator2::Source> sources;
       for (auto &item : params) {
         auto source = client::Simulator2::Source{
             .path = item,
-            .order_management =
-                {
-                    .accounts = accounts,
-                    .latency = ORDER_MANAGEMENT_LATENCY,
-                },
-            .market_data =
-                {
-                    .symbols = {},
-                    .latency = MARKET_DATA_LATENCY,
-                },
+            .order_management{
+                .accounts = accounts,
+                .latency = ORDER_MANAGEMENT_LATENCY,
+            },
+            .market_data{
+                .symbols = symbols,
+                .latency = MARKET_DATA_LATENCY,
+            },
         };
-        log::info("source={}"sv, item);
         sources.emplace_back(std::move(source));
       }
       client::Simulator2{settings, config, callback, sources}.dispatch<Strategy>(settings);
