@@ -26,10 +26,6 @@ auto const SNAPSHOT_FREQUENCY = 1s;
 auto const MATCHER = "simple"sv;  // note! filled when market is crossed
 auto const MARKET_DATA_LATENCY = 1ms;
 auto const ORDER_MANAGEMENT_LATENCY = 10ms;
-auto const MATCHER_CONFIG = algo::matcher::Config{
-    // .source = algo::matcher::Source::TOP_OF_BOOK,
-    .source = algo::matcher::Source::MARKET_BY_PRICE,
-};
 }  // namespace
 
 // === CONSTANTS ===
@@ -105,11 +101,19 @@ int Application::main(args::Parser const &args) {
       struct Callback final : public client::Simulator2::Callback {
         std::unique_ptr<algo::matcher::Handler> create_matcher(
             algo::matcher::Dispatcher &dispatcher,
-            algo::matcher::Cache &cache,
+            algo::Cache &cache,
             [[maybe_unused]] uint8_t source_id,
             std::string_view const &exchange,
             std::string_view const &symbol) override {
-          return algo::matcher::Factory::create(algo::matcher::Factory::Type::SIMPLE, dispatcher, cache, exchange, symbol, MATCHER_CONFIG);
+          auto config = algo::matcher::Config{
+              .instrument{
+                  .source = 0,
+                  .exchange = exchange,
+                  .symbol = symbol,
+              },
+              .source = algo::matcher::Source::MARKET_BY_PRICE,
+          };
+          return algo::matcher::Factory::create(algo::matcher::Factory::Type::SIMPLE, dispatcher, config, cache);
         }
       } callback;
       auto symbols = create_symbols(settings);
