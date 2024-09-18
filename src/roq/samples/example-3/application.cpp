@@ -38,10 +38,17 @@ auto create_symbols(auto &settings) {
   return result;
 }
 
-auto create_accounts(auto &settings, auto &symbols) {
+auto create_symbols_and_positions(auto &settings) {
+  using result_type = client::Simulator2::SymbolsAndPositions;
+  result_type result;
+  result[std::string{settings.exchange}].emplace(settings.symbol, 0.0);  // note! initial position
+  return result;
+}
+
+auto create_accounts(auto &settings, auto &symbols_and_positions) {
   using result_type = std::vector<client::Simulator2::Account>;
   result_type result;
-  result.emplace_back(settings.account, symbols);
+  result.emplace_back(settings.account, symbols_and_positions);
   return result;
 }
 
@@ -117,7 +124,8 @@ int Application::main(args::Parser const &args) {
         }
       } callback;
       auto symbols = create_symbols(settings);
-      auto accounts = create_accounts(settings, symbols);
+      auto symbols_and_positions = create_symbols_and_positions(settings);
+      auto accounts = create_accounts(settings, symbols_and_positions);
       auto sources = create_sources(params, accounts, symbols);
       client::Simulator2{settings, config, callback, sources}.dispatch<Strategy>(settings);
     }
