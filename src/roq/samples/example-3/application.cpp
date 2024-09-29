@@ -28,7 +28,7 @@ auto const MARKET_DATA_LATENCY = 1ms;
 auto const ORDER_MANAGEMENT_LATENCY = 10ms;
 }  // namespace
 
-// === CONSTANTS ===
+// === HELPERS ===
 
 namespace {
 auto create_symbols(auto &settings) {
