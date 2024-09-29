@@ -118,7 +118,7 @@ int Application::main(args::Parser const &args) {
                   .exchange = exchange,
                   .symbol = symbol,
               },
-              .source = algo::matcher::Source::MARKET_BY_PRICE,
+              .market_data_source = algo::MarketDataSource::MARKET_BY_PRICE,
           };
           return algo::matcher::Factory::create(algo::matcher::Factory::Type::SIMPLE, dispatcher, config, cache);
         }
