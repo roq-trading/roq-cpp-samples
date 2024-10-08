@@ -105,13 +105,13 @@ int Application::main(args::Parser const &args) {
       client::Simulator{settings, config, factory, *collector}.dispatch<Strategy>(settings);
     } else {
       // !!! NEW SIMULATOR !!!
-      struct Callback final : public client::Simulator2::Callback {
+      struct Factory final : public client::Simulator2::Factory {
         std::unique_ptr<algo::matcher::Handler> create_matcher(
             algo::matcher::Dispatcher &dispatcher,
             algo::Cache &cache,
             [[maybe_unused]] uint8_t source_id,
             std::string_view const &exchange,
-            std::string_view const &symbol) override {
+            std::string_view const &symbol) const override {
           auto config = algo::matcher::Config{
               .instrument{
                   .source = 0,
@@ -123,12 +123,18 @@ int Application::main(args::Parser const &args) {
           };
           return algo::matcher::Factory::create(algo::matcher::Factory::Type::SIMPLE, dispatcher, config, cache);
         }
-      } callback;
+      } factory;
+
+      struct Collector final : public client::Collector {
+        void operator()(Event<TradeUpdate> const &event) override { log::warn("event={}"sv, event); }
+      } collector;
+
       auto symbols = create_symbols(settings);
       auto symbols_and_positions = create_symbols_and_positions(settings);
       auto accounts = create_accounts(settings, symbols_and_positions);
       auto sources = create_sources(params, accounts, symbols);
-      client::Simulator2{settings, config, callback, sources}.dispatch<Strategy>(settings);
+
+      client::Simulator2{settings, config, factory, collector, sources}.dispatch<Strategy>(settings);
     }
   } else {
     // trader
