@@ -8,6 +8,8 @@
 
 #include "roq/algo/matcher/factory.hpp"
 
+#include "roq/algo/reporter/factory.hpp"
+
 #include "roq/samples/example-3/config.hpp"
 #include "roq/samples/example-3/settings.hpp"
 #include "roq/samples/example-3/strategy.hpp"
@@ -134,7 +136,11 @@ int Application::main(args::Parser const &args) {
       auto accounts = create_accounts(settings, symbols_and_positions);
       auto sources = create_sources(params, accounts, symbols);
 
-      client::Simulator2{settings, config, factory, collector, sources}.dispatch<Strategy>(settings);
+      auto reporter = algo::reporter::Factory::create(algo::reporter::Factory::Type::SUMMARY);
+
+      client::Simulator2{settings, config, factory, *reporter, sources}.dispatch<Strategy>(settings);
+
+      (*reporter).print();
     }
   } else {
     // trader
