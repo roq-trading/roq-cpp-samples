@@ -117,6 +117,7 @@ int Application::main(args::Parser const &args) {
                   .source = 0,
                   .exchange = exchange,
                   .symbol = symbol,
+                  .account = {},
               },
               .market_data_source = algo::MarketDataSource::MARKET_BY_PRICE,
           };
