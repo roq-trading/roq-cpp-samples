@@ -110,7 +110,7 @@ int Application::main(args::Parser const &args) {
       struct Factory final : public client::Simulator2::Factory {
         std::unique_ptr<algo::matcher::Handler> create_matcher(
             algo::matcher::Dispatcher &dispatcher,
-            algo::Cache &cache,
+            algo::OrderCache &order_cache,
             [[maybe_unused]] uint8_t source_id,
             std::string_view const &exchange,
             std::string_view const &symbol) const override {
@@ -123,7 +123,7 @@ int Application::main(args::Parser const &args) {
               },
               .market_data_source = algo::MarketDataSource::MARKET_BY_PRICE,
           };
-          return algo::matcher::Factory::create(algo::matcher::Factory::Type::SIMPLE, dispatcher, config, cache);
+          return algo::matcher::Factory::create(algo::matcher::Factory::Type::SIMPLE, dispatcher, config, order_cache);
         }
       } factory;
 
