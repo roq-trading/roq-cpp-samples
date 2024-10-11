@@ -111,16 +111,12 @@ int Application::main(args::Parser const &args) {
         std::unique_ptr<algo::matcher::Handler> create_matcher(
             algo::matcher::Dispatcher &dispatcher,
             algo::OrderCache &order_cache,
-            [[maybe_unused]] uint8_t source_id,
+            [[maybe_unused]] uint8_t source,
             std::string_view const &exchange,
             std::string_view const &symbol) const override {
           auto config = algo::matcher::Config{
-              .instrument{
-                  .source = 0,
-                  .exchange = exchange,
-                  .symbol = symbol,
-                  .account = {},
-              },
+              .exchange = exchange,
+              .symbol = symbol,
               .market_data_source = algo::MarketDataSource::MARKET_BY_PRICE,
           };
           return algo::matcher::Factory::create(algo::matcher::Factory::Type::SIMPLE, dispatcher, config, order_cache);
