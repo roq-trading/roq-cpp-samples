@@ -91,6 +91,7 @@ void Processor::dispatch() {
           .security_type = {},
           .base_currency = {},
           .quote_currency = {},
+          .settlement_currency = {},
           .margin_currency = {},
           .commission_currency = {},
           .tick_size = TICK_SIZE,    // strongly recommended

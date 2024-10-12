@@ -101,6 +101,7 @@ void Strategy::create_order(MessageInfo const &message_info, Layer const &layer)
       .side = Side::BUY,
       .position_effect = {},
       .margin_mode = {},
+      .quantity_type = {},
       .max_show_quantity = NaN,
       .order_type = OrderType::LIMIT,
       .time_in_force = TimeInForce::GTC,
