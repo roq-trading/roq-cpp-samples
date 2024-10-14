@@ -89,6 +89,7 @@ void Processor::dispatch() {
           .symbol = SYMBOL,      // required
           .description = {},
           .security_type = {},
+          .cfi_code = {},
           .base_currency = {},
           .quote_currency = {},
           .settlement_currency = {},
