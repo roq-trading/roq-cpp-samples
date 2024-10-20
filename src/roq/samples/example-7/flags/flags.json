@@ -19,8 +19,7 @@
     {
       "name": "account",
       "type": "std/string",
-      "required": true,
-      "default": "A1",
+      "default": "",
       "description": "account (regex)"
     },
     {
