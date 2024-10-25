@@ -16,7 +16,7 @@ build:
 requirements:
   build:
     - {{ compiler('cxx') }}
-    - clangdev
+    - clang-format
     - cmake
     - make
     - roq-autogen
