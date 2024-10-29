@@ -108,8 +108,8 @@ int Application::main(args::Parser const &args) {
     } else {
       // !!! NEW SIMULATOR !!!
       struct Factory final : public client::Simulator2::Factory {
-        std::unique_ptr<algo::matcher::Handler> create_matcher(
-            algo::matcher::Dispatcher &dispatcher,
+        std::unique_ptr<algo::Matcher> create_matcher(
+            algo::Matcher::Dispatcher &dispatcher,
             algo::OrderCache &order_cache,
             [[maybe_unused]] uint8_t source,
             std::string_view const &exchange,
@@ -119,7 +119,7 @@ int Application::main(args::Parser const &args) {
               .symbol = symbol,
               .market_data_source = algo::MarketDataSource::MARKET_BY_PRICE,
           };
-          return algo::matcher::Factory::create(algo::matcher::Factory::Type::SIMPLE, dispatcher, config, order_cache);
+          return algo::matcher::Factory::create(algo::matcher::Type::SIMPLE, dispatcher, config, order_cache);
         }
       } factory;
 
