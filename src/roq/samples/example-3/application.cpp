@@ -2,9 +2,7 @@
 
 #include "roq/samples/example-3/application.hpp"
 
-#include <cassert>
 #include <chrono>
-#include <memory>
 
 #include "roq/algo/matcher/factory.hpp"
 
@@ -28,52 +26,6 @@ auto const SNAPSHOT_FREQUENCY = 1s;
 auto const MATCHER = "simple"sv;  // note! filled when market is crossed
 auto const MARKET_DATA_LATENCY = 1ms;
 auto const ORDER_MANAGEMENT_LATENCY = 10ms;
-}  // namespace
-
-// === HELPERS ===
-
-namespace {
-auto create_symbols(auto &settings) {
-  using result_type = client::Simulator2::Symbols;
-  result_type result;
-  result[std::string{settings.exchange}].emplace(settings.symbol);
-  return result;
-}
-
-auto create_symbols_and_positions(auto &settings) {
-  using result_type = client::Simulator2::SymbolsAndPositions;
-  result_type result;
-  result[std::string{settings.exchange}].emplace(settings.symbol, 0.0);  // note! initial position
-  return result;
-}
-
-auto create_accounts(auto &settings, auto &symbols_and_positions) {
-  using result_type = std::vector<client::Simulator2::Account>;
-  result_type result;
-  result.emplace_back(settings.account, symbols_and_positions);
-  return result;
-}
-
-auto create_sources(auto &params, auto &accounts, auto &symbols) {
-  using result_type = std::vector<client::Simulator2::Source>;
-  result_type result;
-  for (auto &item : params) {
-    auto source = client::Simulator2::Source{
-        .path = item,
-        .name = {},
-        .order_management{
-            .accounts = accounts,
-            .latency = ORDER_MANAGEMENT_LATENCY,
-        },
-        .market_data{
-            .symbols = symbols,
-            .latency = MARKET_DATA_LATENCY,
-        },
-    };
-    result.emplace_back(std::move(source));
-  }
-  return result;
-}
 }  // namespace
 
 // === IMPLEMENTATION ===
