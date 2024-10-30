@@ -91,53 +91,18 @@ int Application::main(args::Parser const &args) {
   //   * unix domain sockets (trading) or
   //   * event logs (simulation)
   if (settings.simulation) {
-    if (!settings.test_new_simulator) {
-      // !!! OLD SIMULATOR !!!
-      // collector
-      auto collector = client::detail::SimulationFactory::create_collector(SNAPSHOT_FREQUENCY);
-      // simulator
-      auto create_generator = [&params](auto source_id) { return client::detail::SimulationFactory::create_generator(params[source_id], source_id); };
-      auto create_matcher = [](auto &dispatcher) { return client::detail::SimulationFactory::create_matcher(dispatcher, MATCHER); };
-      auto factory = client::Simulator::Factory{
-          .create_generator = create_generator,
-          .create_matcher = create_matcher,
-          .market_data_latency = MARKET_DATA_LATENCY,
-          .order_management_latency = ORDER_MANAGEMENT_LATENCY,
-      };
-      client::Simulator{settings, config, factory, *collector}.dispatch<Strategy>(settings);
-    } else {
-      // !!! NEW SIMULATOR !!!
-      struct Factory final : public client::Simulator2::Factory {
-        std::unique_ptr<algo::Matcher> create_matcher(
-            algo::Matcher::Dispatcher &dispatcher,
-            algo::OrderCache &order_cache,
-            [[maybe_unused]] uint8_t source,
-            std::string_view const &exchange,
-            std::string_view const &symbol) const override {
-          auto config = algo::matcher::Config{
-              .exchange = exchange,
-              .symbol = symbol,
-              .market_data_source = algo::MarketDataSource::MARKET_BY_PRICE,
-          };
-          return algo::matcher::Factory::create(algo::matcher::Type::SIMPLE, dispatcher, config, order_cache);
-        }
-      } factory;
-
-      struct Collector final : public client::Collector {
-        void operator()(Event<TradeUpdate> const &event) override { log::warn("event={}"sv, event); }
-      } collector;
-
-      auto symbols = create_symbols(settings);
-      auto symbols_and_positions = create_symbols_and_positions(settings);
-      auto accounts = create_accounts(settings, symbols_and_positions);
-      auto sources = create_sources(params, accounts, symbols);
-
-      auto reporter = algo::reporter::Factory::create(algo::reporter::Type::SUMMARY);
-
-      client::Simulator2{settings, config, factory, *reporter, sources}.dispatch<Strategy>(settings);
-
-      (*reporter).print();
-    }
+    // collector
+    auto collector = client::detail::SimulationFactory::create_collector(SNAPSHOT_FREQUENCY);
+    // simulator
+    auto create_generator = [&params](auto source_id) { return client::detail::SimulationFactory::create_generator(params[source_id], source_id); };
+    auto create_matcher = [](auto &dispatcher) { return client::detail::SimulationFactory::create_matcher(dispatcher, MATCHER); };
+    auto factory = client::Simulator::Factory{
+        .create_generator = create_generator,
+        .create_matcher = create_matcher,
+        .market_data_latency = MARKET_DATA_LATENCY,
+        .order_management_latency = ORDER_MANAGEMENT_LATENCY,
+    };
+    client::Simulator{settings, config, factory, *collector}.dispatch<Strategy>(settings);
   } else {
     // trader
     client::Trader{settings, config, params}.dispatch<Strategy>(settings);

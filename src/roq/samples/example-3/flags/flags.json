@@ -64,12 +64,6 @@
       "description": "requires an event-log"
     },
     {
-      "name": "test_new_simulator",
-      "type": "std/bool",
-      "default": false,
-      "description": "test"
-    },
-    {
       "name": "allow_price_inversion",
       "type": "std/bool",
       "default": false,
