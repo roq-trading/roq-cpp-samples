@@ -95,7 +95,8 @@ void Processor::dispatch() {
           .settlement_currency = {},
           .margin_currency = {},
           .commission_currency = {},
-          .tick_size = TICK_SIZE,    // strongly recommended
+          .tick_size = TICK_SIZE,  // strongly recommended
+          .tick_size_steps = {},
           .multiplier = MULTIPLIER,  // useful
           .min_notional = NaN,
           .min_trade_vol = MIN_TRADE_VOL,  // strongly recommended
@@ -130,7 +131,7 @@ void Processor::dispatch() {
       3ns);
   // initial image
   // ... prefer to sort bids descending
-  MBPUpdate bids_image[] = {
+  std::array<MBPUpdate, 3> bids_image{{
       {
           .price = 99.785,
           .quantity = 3.0,
@@ -155,9 +156,9 @@ void Processor::dispatch() {
           .update_action = {},
           .price_level = {},
       },
-  };
+  }};
   // ... prefer to sort asks asscending
-  MBPUpdate asks_image[] = {
+  std::array<MBPUpdate, 3> asks_image{{
       {
           .price = 99.800,
           .quantity = 3.0,
@@ -182,7 +183,7 @@ void Processor::dispatch() {
           .update_action = {},
           .price_level = {},
       },
-  };
+  }};
   process(
       MarketByPriceUpdate{
           .stream_id = {},
@@ -200,7 +201,7 @@ void Processor::dispatch() {
       },
       4ns);
   // update
-  MBPUpdate bids_update[] = {
+  std::array<MBPUpdate, 2> bids_update{{
       // remove best price ...
       {
           .price = 99.785,
@@ -219,7 +220,7 @@ void Processor::dispatch() {
           .update_action = {},
           .price_level = {},
       },
-  };
+  }};
   process(
       MarketByPriceUpdate{
           .stream_id = {},
