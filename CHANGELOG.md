@@ -4,6 +4,10 @@ All notable changes will be documented in this file.
 
 ## Head
 
+### Changed
+
+* New simulator requiring interfaces from the roq-algo framework (#478)
+
 ## 1.0.2 &ndash; 2024-07-14
 
 ### Changed

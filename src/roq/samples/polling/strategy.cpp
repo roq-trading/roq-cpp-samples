@@ -30,7 +30,7 @@ auto const YIELD_FREQUENCY = 1000ms;
 
 namespace {
 auto create_dispatcher(auto &settings, auto &config, auto &context, auto &connections) {
-  return client::Simple::create(settings, config, context, connections);
+  return client::Polling::create(settings, config, context, connections);
 }
 }  // namespace
 
@@ -156,7 +156,7 @@ void Strategy::cancel_order() {
   }
 }
 
-// client::Simple::Handler
+// client::Polling::Handler
 
 void Strategy::operator()(Event<Connected> const &event) {
   log::debug("event={}"sv, event);

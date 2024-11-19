@@ -10,7 +10,7 @@
 
 #include "roq/io/sys/signal.hpp"
 
-#include "roq/client/simple.hpp"
+#include "roq/client/polling.hpp"
 
 #include "roq/samples/polling/config.hpp"
 #include "roq/samples/polling/settings.hpp"
@@ -26,7 +26,7 @@ namespace polling {
 //   for other use-cases, perhaps the signal handler is handled elsewhere
 //   keep this in mind before you implement your own version
 
-struct Strategy final : public client::Simple::Handler, public io::sys::Signal::Handler {
+struct Strategy final : public client::Polling::Handler, public io::sys::Signal::Handler {
   Strategy(Settings const &, Config const &, io::Context &, std::span<std::string_view const> const &);
 
   Strategy(Strategy &&) = default;
@@ -54,7 +54,7 @@ struct Strategy final : public client::Simple::Handler, public io::sys::Signal::
   void create_order();
   void cancel_order();
 
-  // client::Simple::Handler
+  // client::Polling::Handler
   void operator()(Event<Connected> const &) override;
   void operator()(Event<Disconnected> const &) override;
   void operator()(Event<DownloadBegin> const &) override;
@@ -77,7 +77,7 @@ struct Strategy final : public client::Simple::Handler, public io::sys::Signal::
   Settings const &settings_;
   std::unique_ptr<io::sys::Signal> terminate_;
   std::unique_ptr<io::sys::Signal> interrupt_;
-  std::unique_ptr<client::Simple> dispatcher_;
+  std::unique_ptr<client::Polling> dispatcher_;
   std::chrono::nanoseconds next_yield_ = {};
   State state_ = {};
   std::chrono::nanoseconds next_update_ = {};

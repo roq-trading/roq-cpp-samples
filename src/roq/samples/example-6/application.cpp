@@ -36,31 +36,9 @@ int Application::main(args::Parser const &args) {
     log::fatal("Expected exactly two arguments"sv);
   Settings settings{args};
   Config config{settings};
-  if (settings.simulation) {
-    // collector
-    auto collector = client::detail::SimulationFactory::create_collector(SNAPSHOT_FREQUENCY);
-    // simulator
-    auto create_generator = [&params](auto source_id) { return client::detail::SimulationFactory::create_generator(params[source_id], source_id); };
-    auto create_matcher = [](auto &dispatcher) { return client::detail::SimulationFactory::create_matcher(dispatcher, MATCHER); };
-    client::Simulator::Factory factories[] = {
-        {
-            .create_generator = create_generator,
-            .create_matcher = create_matcher,
-            .market_data_latency = MARKET_DATA_LATENCY_1,
-            .order_management_latency = ORDER_MANAGEMENT_LATENCY_1,
-        },
-        {
-            .create_generator = create_generator,
-            .create_matcher = create_matcher,
-            .market_data_latency = MARKET_DATA_LATENCY_2,
-            .order_management_latency = ORDER_MANAGEMENT_LATENCY_2,
-        },
-    };
-    client::Simulator{settings, config, factories}.dispatch<Strategy>();
-  } else {
-    // trader
-    client::Trader{settings, config, params}.dispatch<Strategy>();
-  }
+
+  client::Trader{settings, config, params}.dispatch<Strategy>();
+
   return EXIT_SUCCESS;
 }
 

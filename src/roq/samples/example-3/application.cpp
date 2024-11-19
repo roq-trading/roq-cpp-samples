@@ -38,27 +38,9 @@ int Application::main(args::Parser const &args) {
   //   log::fatal("Expected exactly one argument"sv);
   Settings settings{args};
   Config config{settings};
-  // note!
-  //   params can be a list of either
-  //   * unix domain sockets (trading) or
-  //   * event logs (simulation)
-  if (settings.simulation) {
-    // collector
-    auto collector = client::detail::SimulationFactory::create_collector(SNAPSHOT_FREQUENCY);
-    // simulator
-    auto create_generator = [&params](auto source_id) { return client::detail::SimulationFactory::create_generator(params[source_id], source_id); };
-    auto create_matcher = [](auto &dispatcher) { return client::detail::SimulationFactory::create_matcher(dispatcher, MATCHER); };
-    auto factory = client::Simulator::Factory{
-        .create_generator = create_generator,
-        .create_matcher = create_matcher,
-        .market_data_latency = MARKET_DATA_LATENCY,
-        .order_management_latency = ORDER_MANAGEMENT_LATENCY,
-    };
-    client::Simulator{settings, config, factory, *collector}.dispatch<Strategy>(settings);
-  } else {
-    // trader
-    client::Trader{settings, config, params}.dispatch<Strategy>(settings);
-  }
+
+  client::Trader{settings, config, params}.dispatch<Strategy>(settings);
+
   return EXIT_SUCCESS;
 }
 
