@@ -15,7 +15,10 @@ For this example, make sure you have installed the `roq-data` conda package.
 
 ### Simulation
 
-Simulation is controlled by the `--simulation=true` flag
+**!!! DEPRECATED !!!**
+
+> See: [roq-cpp-algo-template](https://github.com/roq-trading/roq-cpp-algo-template)
+
 
 ```bash
 ./roq-samples-example-6 \

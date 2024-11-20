@@ -19,15 +19,6 @@ namespace roq {
 namespace samples {
 namespace example_3 {
 
-// === CONSTANTS ===
-
-namespace {
-auto const SNAPSHOT_FREQUENCY = 1s;
-auto const MATCHER = "simple"sv;  // note! filled when market is crossed
-auto const MARKET_DATA_LATENCY = 1ms;
-auto const ORDER_MANAGEMENT_LATENCY = 10ms;
-}  // namespace
-
 // === IMPLEMENTATION ===
 
 int Application::main(args::Parser const &args) {
@@ -38,9 +29,7 @@ int Application::main(args::Parser const &args) {
   //   log::fatal("Expected exactly one argument"sv);
   Settings settings{args};
   Config config{settings};
-
   client::Trader{settings, config, params}.dispatch<Strategy>(settings);
-
   return EXIT_SUCCESS;
 }
 
