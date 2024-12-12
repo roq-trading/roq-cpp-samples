@@ -30,7 +30,7 @@ void Session::operator()(web::rest::Server::Disconnected const &) {
 }
 
 void Session::operator()(web::rest::Server::Request const &request) {
-  if (request.headers.connection == web::http::Connection::UPGRADE) {
+  if (request.headers.connection.has(web::http::Connection::UPGRADE)) {
     log::info("Upgrading session_id={} to websocket..."sv, session_id_);
     (*server_).upgrade(request);
   } else {
@@ -38,9 +38,14 @@ void Session::operator()(web::rest::Server::Request const &request) {
     try {
       // XXX expect POST
       auto result = process_request(request.body);
+      auto connection = [&]() {
+        if (request.headers.connection.has(web::http::Connection::KEEP_ALIVE))
+          return web::http::Connection::KEEP_ALIVE;
+        return web::http::Connection::CLOSE;
+      }();
       web::rest::Server::Response response{
           .status = web::http::Status::OK,  // XXX should depend on result type
-          .connection = request.headers.connection,
+          .connection = connection,
           .sec_websocket_accept = {},
           .cache_control = {},
           .content_type = web::http::ContentType::APPLICATION_JSON,
