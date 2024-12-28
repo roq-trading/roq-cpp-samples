@@ -33,7 +33,7 @@ If you're comfortable using Conda (ABI compatibility, etc.), it may be more
 convenient to simply install the `roq-api` package
 
 ```bash
-mamba install -y --channel https://roq-trading.com/conda/stable \
+conda install -y --channel https://roq-trading.com/conda/stable \
     roq-api
 ```
 
@@ -43,7 +43,7 @@ For this example, we rely on the more complete Conda environment as described
 For the following section, you may want to also install the `roq-tools` package
 
 ```bash
-mamba install -y --channel https://roq-trading.com/conda/stable \
+conda install -y --channel https://roq-trading.com/conda/stable \
     roq-tools
 ```
 
