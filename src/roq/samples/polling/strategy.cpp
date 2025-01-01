@@ -2,6 +2,10 @@
 
 #include "roq/samples/polling/strategy.hpp"
 
+#include <fmt/core.h>
+
+#include <magic_enum/magic_enum_format.hpp>
+
 #include <cassert>
 
 #include "roq/logging.hpp"
@@ -61,7 +65,7 @@ void Strategy::dispatch() {
 void Strategy::operator()(State state) {
   assert(state_ != state);
   state_ = state;
-  log::info("state={}"sv, magic_enum::enum_name(state_));
+  log::info("state={}"sv, state_);
   auto now = clock::get_system();
   next_update_ = now + WAIT_THIS_LONG_BEFORE_NEXT_STATE_CHANGE;
 }
@@ -246,7 +250,7 @@ void Strategy::operator()(Event<OrderUpdate> const &event) {
 // io::sys::Signal::Handler
 
 void Strategy::operator()(io::sys::Signal::Event const &event) {
-  log::warn("*** SIGNAL: {} ***"sv, magic_enum::enum_name(event.type));
+  log::warn("*** SIGNAL: {} ***"sv, event.type);
   (*dispatcher_).stop();
 }
 

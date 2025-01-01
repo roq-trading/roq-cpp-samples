@@ -2,6 +2,10 @@
 
 #include "roq/samples/rest/controller.hpp"
 
+#include <fmt/core.h>
+
+#include <magic_enum/magic_enum_format.hpp>
+
 #include <utility>
 
 #include "roq/logging.hpp"
@@ -109,7 +113,7 @@ void Controller::operator()(Trace<web::rest::Client::Latency> const &event) {
 
 void Controller::operator()(State state) {
   state_ = state;
-  log::info("state={}"sv, magic_enum::enum_name(state_));
+  log::info("state={}"sv, state_);
 }
 
 void Controller::try_request() {
