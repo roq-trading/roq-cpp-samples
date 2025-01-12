@@ -70,6 +70,12 @@ struct Processor final : public client::EventLogReader::Handler {
   void operator()(Event<RiskLimits> const &) override;
   void operator()(Event<RiskLimitsUpdate> const &) override;
 
+  // market making
+  void operator()(Event<MassQuote> const &) override;
+  void operator()(Event<MassQuoteAck> const &) override;
+  void operator()(Event<CancelQuotes> const &) override;
+  void operator()(Event<CancelQuotesAck> const &) override;
+
  private:
   std::unique_ptr<client::EventLogReader> reader_;
 };

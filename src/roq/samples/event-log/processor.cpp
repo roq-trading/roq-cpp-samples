@@ -152,6 +152,22 @@ void Processor::operator()(Event<RiskLimitsUpdate> const &event) {
   log::info("{}"sv, event);
 }
 
+void Processor::operator()(Event<MassQuote> const &event) {
+  log::info("{}"sv, event);
+}
+
+void Processor::operator()(Event<MassQuoteAck> const &event) {
+  log::info("{}"sv, event);
+}
+
+void Processor::operator()(Event<CancelQuotes> const &event) {
+  log::info("{}"sv, event);
+}
+
+void Processor::operator()(Event<CancelQuotesAck> const &event) {
+  log::info("{}"sv, event);
+}
+
 }  // namespace event_log
 }  // namespace samples
 }  // namespace roq
