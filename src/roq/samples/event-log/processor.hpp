@@ -19,6 +19,9 @@ struct Processor final : public client::EventLogReader::Handler {
   void dispatch();
 
  protected:
+  void operator()(Event<Control> const &) override;
+  void operator()(Event<StatusUpdate> const &) override;
+
   // config
   void operator()(Event<GatewaySettings> const &) override;
 

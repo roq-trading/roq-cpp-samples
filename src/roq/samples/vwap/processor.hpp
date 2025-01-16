@@ -22,6 +22,8 @@ struct Processor final : public client::EventLogReader::Handler {
  protected:
   explicit Processor(Settings const &);
 
+  void operator()(Event<Control> const &) override {}
+  void operator()(Event<StatusUpdate> const &) override {}
   void operator()(Event<GatewaySettings> const &) override {}
   void operator()(Event<StreamStatus> const &) override {}
   void operator()(Event<ExternalLatency> const &) override {}

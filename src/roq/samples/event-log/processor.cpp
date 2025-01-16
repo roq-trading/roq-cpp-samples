@@ -36,6 +36,14 @@ void Processor::dispatch() {
   }
 }
 
+void Processor::operator()(Event<Control> const &event) {
+  log::info("{}"sv, event);
+}
+
+void Processor::operator()(Event<StatusUpdate> const &event) {
+  log::info("{}"sv, event);
+}
+
 void Processor::operator()(Event<GatewaySettings> const &event) {
   log::info("{}"sv, event);
 }
