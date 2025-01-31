@@ -20,8 +20,10 @@ struct Processor final : public client::EventLogReader::Handler {
 
  protected:
   void operator()(Event<Control> const &) override;
+  void operator()(Event<ControlAck> const &) override;
   void operator()(Event<ServiceUpdate> const &) override;
   void operator()(Event<StrategyUpdate> const &) override;
+  void operator()(Event<LegsUpdate> const &) override;
 
   // config
   void operator()(Event<GatewaySettings> const &) override;

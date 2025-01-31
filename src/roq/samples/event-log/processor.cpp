@@ -40,11 +40,19 @@ void Processor::operator()(Event<Control> const &event) {
   log::info("{}"sv, event);
 }
 
+void Processor::operator()(Event<ControlAck> const &event) {
+  log::info("{}"sv, event);
+}
+
 void Processor::operator()(Event<ServiceUpdate> const &event) {
   log::info("{}"sv, event);
 }
 
 void Processor::operator()(Event<StrategyUpdate> const &event) {
+  log::info("{}"sv, event);
+}
+
+void Processor::operator()(Event<LegsUpdate> const &event) {
   log::info("{}"sv, event);
 }
 
