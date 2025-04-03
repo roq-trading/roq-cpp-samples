@@ -2,8 +2,6 @@
 
 #include "roq/samples/polling/settings.hpp"
 
-#include "roq/client/flags/settings.hpp"
-
 namespace roq {
 namespace samples {
 namespace polling {
