@@ -2,7 +2,7 @@
 
 #include "roq/samples/polling/application.hpp"
 
-#include <cassert>
+#include "roq/logging.hpp"
 
 #include "roq/io/engine/context_factory.hpp"
 

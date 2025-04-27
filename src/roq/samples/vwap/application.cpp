@@ -2,6 +2,8 @@
 
 #include "roq/samples/vwap/application.hpp"
 
+#include "roq/logging.hpp"
+
 #include "roq/samples/vwap/processor.hpp"
 #include "roq/samples/vwap/settings.hpp"
 

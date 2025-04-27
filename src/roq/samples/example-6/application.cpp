@@ -2,9 +2,7 @@
 
 #include "roq/samples/example-6/application.hpp"
 
-#include <cassert>
-#include <chrono>
-#include <memory>
+#include "roq/logging.hpp"
 
 #include "roq/samples/example-6/config.hpp"
 #include "roq/samples/example-6/settings.hpp"

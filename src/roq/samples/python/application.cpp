@@ -2,7 +2,7 @@
 
 #include "roq/samples/python/application.hpp"
 
-#include <cassert>
+#include "roq/logging.hpp"
 
 #include "roq/samples/python/config.hpp"
 #include "roq/samples/python/settings.hpp"

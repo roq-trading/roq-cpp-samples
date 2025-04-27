@@ -2,7 +2,7 @@
 
 #include "roq/samples/metrics/application.hpp"
 
-#include <cassert>
+#include "roq/logging.hpp"
 
 #include "roq/samples/metrics/config.hpp"
 #include "roq/samples/metrics/settings.hpp"

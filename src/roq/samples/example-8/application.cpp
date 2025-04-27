@@ -2,7 +2,7 @@
 
 #include "roq/samples/example-8/application.hpp"
 
-#include <cassert>
+#include "roq/logging.hpp"
 
 #include "roq/samples/example-8/config.hpp"
 #include "roq/samples/example-8/settings.hpp"

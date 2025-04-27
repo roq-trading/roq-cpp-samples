@@ -2,7 +2,7 @@
 
 #include "roq/samples/example-3/application.hpp"
 
-#include <chrono>
+#include "roq/logging.hpp"
 
 #include "roq/algo/matcher/factory.hpp"
 
@@ -13,7 +13,6 @@
 #include "roq/samples/example-3/strategy.hpp"
 
 using namespace std::literals;
-using namespace std::chrono_literals;  // NOLINT
 
 namespace roq {
 namespace samples {

@@ -2,7 +2,7 @@
 
 #include "roq/samples/bridge/application.hpp"
 
-#include <cassert>
+#include "roq/logging.hpp"
 
 #include "roq/client.hpp"
 

@@ -2,6 +2,8 @@
 
 #include "roq/samples/io-context/application.hpp"
 
+#include "roq/logging.hpp"
+
 #include "roq/io/engine/context_factory.hpp"
 
 #include "roq/samples/io-context/config.hpp"

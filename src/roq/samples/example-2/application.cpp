@@ -2,6 +2,8 @@
 
 #include "roq/samples/example-2/application.hpp"
 
+#include "roq/logging.hpp"
+
 #include "roq/samples/example-2/config.hpp"
 #include "roq/samples/example-2/settings.hpp"
 #include "roq/samples/example-2/strategy.hpp"

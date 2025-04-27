@@ -2,7 +2,7 @@
 
 #include "roq/samples/depth/application.hpp"
 
-#include <cassert>
+#include "roq/logging.hpp"
 
 #include "roq/samples/depth/config.hpp"
 #include "roq/samples/depth/strategy.hpp"

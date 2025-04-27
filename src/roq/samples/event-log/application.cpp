@@ -2,6 +2,8 @@
 
 #include "roq/samples/event-log/application.hpp"
 
+#include "roq/logging.hpp"
+
 #include "roq/samples/event-log/processor.hpp"
 
 using namespace std::literals;

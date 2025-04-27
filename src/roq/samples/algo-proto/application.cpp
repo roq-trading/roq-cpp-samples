@@ -2,7 +2,7 @@
 
 #include "roq/samples/algo-proto/application.hpp"
 
-#include "roq/exceptions.hpp"
+#include "roq/logging.hpp"
 
 #include "roq/samples/algo-proto/bridge.hpp"
 #include "roq/samples/algo-proto/config.hpp"

@@ -2,6 +2,8 @@
 
 #include "roq/samples/republish/application.hpp"
 
+#include "roq/logging.hpp"
+
 #include "roq/samples/republish/config.hpp"
 #include "roq/samples/republish/settings.hpp"
 #include "roq/samples/republish/strategy.hpp"
