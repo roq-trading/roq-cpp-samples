@@ -2,6 +2,8 @@
 
 #pragma once
 
+#include "roq/api.hpp"
+
 #include "roq/cache/market.hpp"
 
 namespace roq {
