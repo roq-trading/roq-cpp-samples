@@ -17,11 +17,13 @@ namespace vwap {
 
 int Application::main(args::Parser const &args) {
   auto params = args.params();
-  if (std::size(params) < 1)
+  if (std::size(params) < 1) {
     log::fatal("Expected at least 1 argument"sv);
+  }
   Settings settings{args};
-  for (auto &path : params)
+  for (auto &path : params) {
     Processor::dispatch(settings, path);
+  }
   return EXIT_SUCCESS;
 }
 

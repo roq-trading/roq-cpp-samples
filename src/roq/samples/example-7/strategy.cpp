@@ -48,13 +48,15 @@ void Strategy::operator()(Event<DownloadEnd> const &) {
 
 void Strategy::operator()(Event<TopOfBook> const &event) {
   // note! the subscriber shouldn't do anything here
-  if (settings_.subscriber)
+  if (settings_.subscriber) {
     return;
+  }
   auto &[message_info, top_of_book] = event;
   log::info<1>("[{}:{}] TopOfBook={}"sv, message_info.source, message_info.source_name, top_of_book);
   // note! we're not allowed to publish during download
-  if (downloading_)
+  if (downloading_) {
     return;
+  }
   //  metrics
   measurements_[0].value = top_of_book.layer.bid_price;
   measurements_[1].value = top_of_book.layer.ask_price;

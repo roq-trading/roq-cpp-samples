@@ -19,8 +19,9 @@ namespace example_6 {
 
 int Application::main(args::Parser const &args) {
   auto params = args.params();
-  if (std::size(params) != 2)
+  if (std::size(params) != 2) {
     log::fatal("Expected exactly two arguments"sv);
+  }
   Settings settings{args};
   Config config{settings};
   client::Trader{settings, config, params}.dispatch<Strategy>();

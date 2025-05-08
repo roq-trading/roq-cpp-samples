@@ -24,10 +24,12 @@ struct Route final {
 
   template <typename T, typename Callback>
   bool dispatch(Event<T> const &event, Callback callback) {
-    if (!market_(event))
+    if (!market_(event)) {
       return false;
-    for (auto strategy_id : strategies_)
+    }
+    for (auto strategy_id : strategies_) {
       callback(strategy_id);
+    }
     return true;
   }
 

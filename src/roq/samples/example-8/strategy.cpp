@@ -26,8 +26,9 @@ Strategy::Strategy(client::Dispatcher &dispatcher, Settings const &settings)
 void Strategy::operator()(Event<DownloadBegin> const &event) {
   log::info("event={}"sv, event);
   auto &[message_info, download_begin] = event;
-  if (account_.compare(download_begin.account) == 0)
+  if (account_.compare(download_begin.account) == 0) {
     downloading_ = true;
+  }
 }
 
 void Strategy::operator()(Event<DownloadEnd> const &event) {
@@ -47,8 +48,9 @@ void Strategy::operator()(Event<ReferenceData> const &event) {
 void Strategy::operator()(Event<TopOfBook> const &event) {
   auto &[message_info, top_of_book] = event;
   // trigger?
-  if (!use_top_of_book_)
+  if (!use_top_of_book_) {
     return;
+  }
   // order action
   create_order(message_info, top_of_book.layer);
 }
@@ -56,17 +58,20 @@ void Strategy::operator()(Event<TopOfBook> const &event) {
 void Strategy::operator()(Event<MarketByPriceUpdate> const &event) {
   auto &[message_info, market_by_price_update] = event;
   // trigger?
-  if (!use_market_by_price_)
+  if (!use_market_by_price_) {
     return;
+  }
   // apply mbp update
   (*market_by_price_)(market_by_price_update);
   // incremental?
-  if (market_by_price_update.update_type != UpdateType::INCREMENTAL)
+  if (market_by_price_update.update_type != UpdateType::INCREMENTAL) {
     return;
+  }
   // extract top of book
   auto layers = (*market_by_price_).extract(buffer_, true);
-  if (std::empty(layers))
+  if (std::empty(layers)) {
     return;
+  }
   // order action
   create_order(message_info, layers[0]);
 }
@@ -78,19 +83,22 @@ void Strategy::operator()(Event<OrderAck> const &event) {
 
 void Strategy::create_order(MessageInfo const &message_info, Layer const &layer) {
   // done?
-  if (countdown_ == 0)
+  if (countdown_ == 0) {
     return;
+  }
   // ready?
   if (next_request_.count()) {
-    if (message_info.receive_time < next_request_)
+    if (message_info.receive_time < next_request_) {
       return;
+    }
   } else {
     next_request_ = message_info.receive_time + 30s;  // warmup
     return;
   }
   // tick size ?
-  if (utils::compare(tick_size_, 0.0) == 0)
+  if (utils::compare(tick_size_, 0.0) == 0) {
     return;
+  }
   // send order
   auto price = layer.bid_price - tick_offset_ * tick_size_;
   auto create_order = CreateOrder{

@@ -13,19 +13,22 @@ Config::Config(Settings const &settings) : settings_{settings} {
 
 void Config::dispatch(Handler &handler) const {
   // settings
-  handler(client::Settings{
-      .order_cancel_policy = OrderCancelPolicy::BY_ACCOUNT,
-      .order_management = {},
-  });
+  handler(
+      client::Settings{
+          .order_cancel_policy = OrderCancelPolicy::BY_ACCOUNT,
+          .order_management = {},
+      });
   // symbols
-  handler(client::Symbol{
-      .regex = settings_.symbol,
-      .exchange = settings_.exchange,
-  });
+  handler(
+      client::Symbol{
+          .regex = settings_.symbol,
+          .exchange = settings_.exchange,
+      });
   // accounts
-  handler(client::Account{
-      .regex = settings_.account,
-  });
+  handler(
+      client::Account{
+          .regex = settings_.account,
+      });
 }
 
 }  // namespace example_8

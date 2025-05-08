@@ -18,8 +18,9 @@ namespace example_5 {
 
 int Application::main(args::Parser const &args) {
   auto params = args.params();
-  if (std::empty(params))
+  if (std::empty(params)) {
     log::fatal("Expected arguments"sv);
+  }
   Settings settings{args};
   Config config{settings};
   // this strategy factory uses direct connectivity to one or more

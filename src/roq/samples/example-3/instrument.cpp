@@ -80,16 +80,18 @@ void Instrument::operator()(Disconnected const &) {
 }
 
 void Instrument::operator()(DownloadBegin const &download_begin) {
-  if (!std::empty(download_begin.account))  // we only care about market (not account)
+  if (!std::empty(download_begin.account)) {  // we only care about market (not account)
     return;
+  }
   assert(!download_);
   download_ = true;
   log::info("[{}:{}] download={}"sv, exchange_, symbol_, download_);
 }
 
 void Instrument::operator()(DownloadEnd const &download_end) {
-  if (!std::empty(download_end.account))  // we only care about market (not account)
+  if (!std::empty(download_end.account)) {  // we only care about market (not account)
     return;
+  }
   assert(download_);
   download_ = false;
   log::info("[{}:{}] download={}"sv, exchange_, symbol_, download_);
@@ -107,8 +109,9 @@ void Instrument::operator()(GatewayStatus const &gateway_status) {
     };
     // readiness defined by full availability of all required message types
     auto market_data = gateway_status.available.has_all(required) && gateway_status.unavailable.has_none(required);
-    if (utils::update(market_data_, market_data))
+    if (utils::update(market_data_, market_data)) {
       log::info("[{}:{}] market_data={}"sv, exchange_, symbol_, market_data_);
+    }
     // sometimes useful to see what is missing
     if (!market_data_) {
       auto missing = required & ~gateway_status.available;
@@ -124,8 +127,9 @@ void Instrument::operator()(GatewayStatus const &gateway_status) {
     };
     // readiness defined by full availability of all required message types
     auto order_management = gateway_status.available.has_all(required) && gateway_status.unavailable.has_none(required);
-    if (utils::update(order_management_, order_management))
+    if (utils::update(order_management_, order_management)) {
       log::info("[{}:{}] order_management={}"sv, exchange_, symbol_, order_management_);
+    }
     // sometimes useful to see what is missing
     if (!market_data_) {
       auto missing = required & ~gateway_status.available;
@@ -167,8 +171,9 @@ void Instrument::operator()(MarketStatus const &market_status) {
 void Instrument::operator()(MarketByPriceUpdate const &market_by_price_update) {
   assert(exchange_.compare(market_by_price_update.exchange) == 0);
   assert(symbol_.compare(market_by_price_update.symbol) == 0);
-  if (download_)
+  if (download_) {
     log::info("MarketByPriceUpdate={}"sv, market_by_price_update);
+  }
   // update depth
   // note!
   //   market by price only gives you *changes*.
@@ -231,8 +236,9 @@ void Instrument::check_ready() {
   auto before = ready_;
   ready_ = connected_ && !download_ && utils::is_greater(tick_size_, 0.0) && utils::is_greater(min_trade_vol_, 0.0) && utils::is_greater(multiplier_, 0.0) &&
            trading_status_ == TradingStatus::OPEN && market_data_ && order_management_;
-  if (ready_ != before)
+  if (ready_ != before) {
     log::info("[{}:{}] ready={}"sv, exchange_, symbol_, ready_);
+  }
 }
 
 void Instrument::reset() {
@@ -252,10 +258,11 @@ void Instrument::reset() {
 }
 
 void Instrument::validate(Depth const &depth) {
-  if (utils::is_less_or_equal(depth[0].bid_quantity, 0.0) || utils::is_less_or_equal(depth[0].ask_quantity, 0.0))
+  if (utils::is_less_or_equal(depth[0].bid_quantity, 0.0) || utils::is_less_or_equal(depth[0].ask_quantity, 0.0)) {
     return;
+  }
   auto spread = depth[0].ask_price - depth[0].bid_price;
-  if (!allow_price_inversion_ && utils::is_less_or_equal(spread, 0.0))
+  if (!allow_price_inversion_ && utils::is_less_or_equal(spread, 0.0)) {
     log::fatal(
         "[{}:{}] Probably something wrong: "
         "choice price or price inversion detected. "
@@ -263,6 +270,7 @@ void Instrument::validate(Depth const &depth) {
         exchange_,
         symbol_,
         fmt::join(depth, ", "sv));
+  }
 }
 
 }  // namespace example_3

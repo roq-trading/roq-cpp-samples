@@ -39,8 +39,9 @@ void Session::operator()(web::rest::Server::Request const &request) {
       // XXX expect POST
       auto result = process_request(request.body);
       auto connection = [&]() {
-        if (request.headers.connection.has(web::http::Connection::KEEP_ALIVE))
+        if (request.headers.connection.has(web::http::Connection::KEEP_ALIVE)) {
           return web::http::Connection::KEEP_ALIVE;
+        }
         return web::http::Connection::CLOSE;
       }();
       web::rest::Server::Response response{
@@ -121,9 +122,10 @@ bool Session::validate_symbol(std::string_view const &symbol) {
 }
 
 std::string_view Session::success() {
-  return format(R"({{)"
-                R"("status":"successs")"
-                R"(}})"sv);
+  return format(
+      R"({{)"
+      R"("status":"successs")"
+      R"(}})"sv);
 }
 
 std::string_view Session::error(std::string_view const &text) {

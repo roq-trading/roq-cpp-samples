@@ -13,10 +13,11 @@ Config::Config(Settings const &settings) : settings_{settings} {
 
 void Config::dispatch(Handler &handler) const {
   // callback for each subscription pattern
-  handler(client::Symbol{
-      .regex = settings_.symbols,
-      .exchange = {},
-  });
+  handler(
+      client::Symbol{
+          .regex = settings_.symbols,
+          .exchange = {},
+      });
 }
 
 }  // namespace metrics

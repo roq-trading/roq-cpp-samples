@@ -39,16 +39,18 @@ void Instrument::operator()(Disconnected const &) {
 }
 
 void Instrument::operator()(DownloadBegin const &download_begin) {
-  if (!std::empty(download_begin.account))  // we only care about market (not account)
+  if (!std::empty(download_begin.account)) {  // we only care about market (not account)
     return;
+  }
   assert(!download_);
   download_ = true;
   log::info("[{}:{}] download={}"sv, exchange_, symbol_, download_);
 }
 
 void Instrument::operator()(DownloadEnd const &download_end) {
-  if (!std::empty(download_end.account))  // we only care about market (not account)
+  if (!std::empty(download_end.account)) {  // we only care about market (not account)
     return;
+  }
   assert(download_);
   download_ = false;
   log::info("[{}:{}] download={}"sv, exchange_, symbol_, download_);
@@ -57,8 +59,9 @@ void Instrument::operator()(DownloadEnd const &download_end) {
 }
 
 void Instrument::operator()(GatewayStatus const &gateway_status) {
-  if (!std::empty(gateway_status.account))  // we only care about market (not account)
+  if (!std::empty(gateway_status.account)) {  // we only care about market (not account)
     return;
+  }
   // bit-mask of required message types
   static Mask const required{
       SupportType::REFERENCE_DATA,
@@ -67,8 +70,9 @@ void Instrument::operator()(GatewayStatus const &gateway_status) {
   };
   // readiness defined by full availability of all required message types
   auto market_data = gateway_status.available.has_all(required) && gateway_status.unavailable.has_none(required);
-  if (utils::update(market_data_, market_data))
+  if (utils::update(market_data_, market_data)) {
     log::info("[{}:{}] market_data={}"sv, exchange_, symbol_, market_data_);
+  }
   // sometimes useful to see what is missing
   if (!market_data_) {
     auto missing = required & ~gateway_status.available;
@@ -109,8 +113,9 @@ void Instrument::operator()(MarketStatus const &market_status) {
 void Instrument::operator()(MarketByPriceUpdate const &market_by_price_update) {
   assert(exchange_.compare(market_by_price_update.exchange) == 0);
   assert(symbol_.compare(market_by_price_update.symbol) == 0);
-  if (download_)
+  if (download_) {
     log::info("MarketByPriceUpdate={}"sv, market_by_price_update);
+  }
   // update depth
   // note!
   //   market by price only gives you *changes*.
@@ -122,17 +127,19 @@ void Instrument::operator()(MarketByPriceUpdate const &market_by_price_update) {
   (*market_by_price_)(market_by_price_update);
   auto depth = (*market_by_price_).extract(depth_, true);
   log::info<1>("[{}:{}] depth=[{}]"sv, exchange_, symbol_, fmt::join(depth_, ", "sv));
-  if (std::size(depth) > 0 && is_ready())
+  if (std::size(depth) > 0 && is_ready()) {
     update_model();
+  }
 }
 
 void Instrument::update_model() {
   // one sided market?
-  if (utils::is_zero(depth_[0].bid_quantity) || utils::is_zero(depth_[0].ask_quantity))
+  if (utils::is_zero(depth_[0].bid_quantity) || utils::is_zero(depth_[0].ask_quantity)) {
     return;
+  }
   // validate depth
   auto spread = depth_[0].ask_price - depth_[0].bid_price;
-  if (utils::is_less_or_equal(spread, 0.0))
+  if (utils::is_less_or_equal(spread, 0.0)) {
     log::fatal(
         "[{}:{}] Probably something wrong: "
         "choice price or price inversion detected. "
@@ -140,6 +147,7 @@ void Instrument::update_model() {
         exchange_,
         symbol_,
         fmt::join(depth_, ", "sv));
+  }
   // compute (weighted) mid
   double sum_1 = 0.0, sum_2 = 0.0;
   for (auto &[bid_price, bid_quantity, ask_price, ask_quantity] : depth_) {
@@ -148,10 +156,11 @@ void Instrument::update_model() {
   }
   mid_price_ = sum_1 / sum_2;
   // update (exponential) moving average
-  if (std::isnan(avg_price_))
+  if (std::isnan(avg_price_)) {
     avg_price_ = mid_price_;  // initialize
-  else
+  } else {
     avg_price_ = alpha_ * mid_price_ + (1.0 - alpha_) * avg_price_;
+  }
   // only verbose logging
   log::info<1>("[{}:{}] model={{mid_price={}, avg_price={}}}"sv, exchange_, symbol_, mid_price_, avg_price_);
 }
@@ -160,8 +169,9 @@ void Instrument::check_ready() {
   auto before = ready_;
   ready_ = connected_ && !download_ && utils::is_greater(tick_size_, 0.0) && utils::is_greater(min_trade_vol_, 0.0) && utils::is_greater(multiplier_, 0.0) &&
            trading_status_ == TradingStatus::OPEN && market_data_;
-  if (ready_ != before)
+  if (ready_ != before) {
     log::info("[{}:{}] ready={}"sv, exchange_, symbol_, ready_);
+  }
 }
 
 void Instrument::reset() {

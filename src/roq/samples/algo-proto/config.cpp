@@ -26,8 +26,9 @@ auto find(auto &node, auto const &key, Callback callback) {
   }
   auto table = node.as_table();
   auto iter = (*table).find(key);
-  if (iter == (*table).end())
+  if (iter == (*table).end()) {
     return false;
+  }
   callback((*iter).second);
   return true;
 }
@@ -48,8 +49,9 @@ auto parse_instrument(auto &node) {
       log::fatal(R"(Unexpected: key="{}")"sv, name);
     }
   }
-  if (std::empty(result.exchange) || std::empty(result.symbol))
+  if (std::empty(result.exchange) || std::empty(result.symbol)) {
     log::fatal("Unexpected: exchange and symbol required"sv);
+  }
   return result;
 }
 
@@ -78,8 +80,9 @@ auto parse_strategy(auto &node) {
       log::fatal(R"(Unexpected: key="{}")"sv, name);
     }
   }
-  if (std::empty(strategy.type) || std::empty(strategy.instruments))
+  if (std::empty(strategy.type) || std::empty(strategy.instruments)) {
     log::fatal("Unexpected: instruments is empty"sv);
+  }
   return strategy;
 }
 }  // namespace
@@ -90,36 +93,43 @@ Config::Config(Settings const &settings) : settings_{settings} {
   auto root = toml::parse_file(settings_.config_file);
   if (find(root, "strategies"sv, [&](auto &node) {
         auto table = node.as_table();
-        for (auto &[key, value] : *table)
+        for (auto &[key, value] : *table) {
           strategies.emplace(key, parse_strategy(value));
+        }
       })) {
   } else {
     log::fatal("Expected: strategies"sv);
   }
   // extract
   for (auto &[_, strategy] : strategies) {
-    for (auto &instrument : strategy.instruments)
+    for (auto &instrument : strategy.instruments) {
       exchange_symbols[static_cast<std::string_view>(instrument.exchange)].emplace(static_cast<std::string_view>(instrument.symbol));
+    }
   }
 }
 
 void Config::dispatch(Handler &handler) const {
   // settings
-  handler(client::Settings{
-      .order_cancel_policy = OrderCancelPolicy::BY_ACCOUNT,
-      .order_management = {},
-  });
-  // accounts
-  handler(client::Account{
-      .regex = settings_.account,
-  });
-  // symbols
-  for (auto &[exchange, symbols] : exchange_symbols)
-    for (auto &symbol : symbols)
-      handler(client::Symbol{
-          .regex = symbol,
-          .exchange = exchange,
+  handler(
+      client::Settings{
+          .order_cancel_policy = OrderCancelPolicy::BY_ACCOUNT,
+          .order_management = {},
       });
+  // accounts
+  handler(
+      client::Account{
+          .regex = settings_.account,
+      });
+  // symbols
+  for (auto &[exchange, symbols] : exchange_symbols) {
+    for (auto &symbol : symbols) {
+      handler(
+          client::Symbol{
+              .regex = symbol,
+              .exchange = exchange,
+          });
+    }
+  }
   // currencies
   // - don't care about funding
 }

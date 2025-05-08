@@ -29,8 +29,9 @@ void Model::reset() {
 Side Model::update(Depth const &depth) {
   auto result = Side::UNDEFINED;
 
-  if (!validate(depth))
+  if (!validate(depth)) {
     return result;
+  }
 
   auto bid_fast = weighted_bid(depth);
   auto bid_slow = bid_ema_.update(bid_fast);

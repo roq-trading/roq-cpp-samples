@@ -56,8 +56,9 @@ void Strategy::dispatch() {
       next_yield_ = now + YIELD_FREQUENCY;
       io::sys::Scheduler::yield();
     }
-    for (size_t i = 0; ok && i < DISPATCH_THIS_MANY_BEFORE_CHECKING_CLOCK; ++i)
+    for (size_t i = 0; ok && i < DISPATCH_THIS_MANY_BEFORE_CHECKING_CLOCK; ++i) {
       ok = (*dispatcher_).dispatch(*this);
+    }
   }
   log::info("The dispatch loop has stopped!"sv);
 }
@@ -71,8 +72,9 @@ void Strategy::operator()(State state) {
 }
 
 void Strategy::refresh(std::chrono::nanoseconds now) {
-  if (now < next_update_)
+  if (now < next_update_) {
     return;
+  }
   switch (state_) {
     using enum State;
     case UNDEFINED:
@@ -217,8 +219,9 @@ void Strategy::operator()(Event<OrderAck> const &event) {
   log::debug("event={}"sv, event);
   auto &order_ack = event.value;
   // waiting?
-  if (!utils::has_request_maybe_completed(order_ack.request_status))
+  if (!utils::has_request_maybe_completed(order_ack.request_status)) {
     return;
+  }
   // failed?
   if (utils::has_request_failed(order_ack.request_status)) {
     log::warn("Request has failed: status={}"sv, order_ack.request_status);

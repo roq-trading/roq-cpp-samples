@@ -35,12 +35,14 @@ auto create_routes(auto const &config) {
 template <typename Callback>
 bool find_route(auto &routes, std::string_view const &exchange, std::string_view const &symbol, Callback callback) {
   auto iter_1 = routes.find(exchange);
-  if (iter_1 == std::end(routes))
+  if (iter_1 == std::end(routes)) {
     return false;
+  }
   auto &tmp = (*iter_1).second;
   auto iter_2 = tmp.find(symbol);
-  if (iter_2 == std::end(tmp))
+  if (iter_2 == std::end(tmp)) {
     return false;
+  }
   auto &route = (*iter_2).second;
   callback(route);
   return true;
@@ -134,31 +136,35 @@ void Bridge::operator()(CancelOrder const &cancel_order) {
 // client::Handler
 
 void Bridge::operator()(Event<Timer> const &event) {
-  for (auto &[_, strategy] : strategies_)
+  for (auto &[_, strategy] : strategies_) {
     (*strategy)(event);
+  }
 }
 
 void Bridge::operator()(Event<Connected> const &event) {
   auto &[message_info, connected] = event;
   if (gateways_[message_info.source](event)) {
-    for (auto &[_, strategy] : strategies_)
+    for (auto &[_, strategy] : strategies_) {
       (*strategy)(event);
+    }
   }
 }
 
 void Bridge::operator()(Event<Disconnected> const &event) {
   auto &[message_info, disconnected] = event;
   if (gateways_[message_info.source](event)) {
-    for (auto &[_, strategy] : strategies_)
+    for (auto &[_, strategy] : strategies_) {
       (*strategy)(event);
+    }
   }
 }
 
 void Bridge::operator()(Event<DownloadBegin> const &event) {
   auto &[message_info, download_begin] = event;
   if (gateways_[message_info.source](event)) {
-    for (auto &[_, strategy] : strategies_)
+    for (auto &[_, strategy] : strategies_) {
       (*strategy)(event);
+    }
   }
 }
 
@@ -166,24 +172,27 @@ void Bridge::operator()(Event<DownloadEnd> const &event) {
   auto &[message_info, download_end] = event;
   max_order_id_ = std::max(max_order_id_, download_end.max_order_id);
   if (gateways_[message_info.source](event)) {
-    for (auto &[_, strategy] : strategies_)
+    for (auto &[_, strategy] : strategies_) {
       (*strategy)(event);
+    }
   }
 }
 
 void Bridge::operator()(Event<GatewaySettings> const &event) {
   auto &[message_info, gateway_settings] = event;
   if (gateways_[message_info.source](event)) {
-    for (auto &[_, strategy] : strategies_)
+    for (auto &[_, strategy] : strategies_) {
       (*strategy)(event);
+    }
   }
 }
 
 void Bridge::operator()(Event<GatewayStatus> const &event) {
   auto &[message_info, gateway_status] = event;
   if (gateways_[message_info.source](event)) {
-    for (auto &[_, strategy] : strategies_)
+    for (auto &[_, strategy] : strategies_) {
       (*strategy)(event);
+    }
   }
 }
 
@@ -275,11 +284,13 @@ void Bridge::create_strategy(CreateOrder const &create_order) {
 template <typename Callback>
 bool Bridge::find_strategy(std::string_view const &routing_id, Callback callback) {
   auto iter_1 = routing_id_to_strategy_.find(routing_id);
-  if (iter_1 == std::end(routing_id_to_strategy_))
+  if (iter_1 == std::end(routing_id_to_strategy_)) {
     return false;
+  }
   auto iter_2 = strategies_.find((*iter_1).second);
-  if (iter_2 == std::end(strategies_))
+  if (iter_2 == std::end(strategies_)) {
     return false;
+  }
   auto &strategy = *(*iter_2).second;
   callback(strategy);
   return true;
@@ -288,8 +299,9 @@ bool Bridge::find_strategy(std::string_view const &routing_id, Callback callback
 template <typename Callback>
 bool Bridge::find_source(uint64_t order_id, Callback callback) {
   auto iter = order_id_to_source_.find(order_id);
-  if (iter == std::end(order_id_to_source_))
+  if (iter == std::end(order_id_to_source_)) {
     return false;
+  }
   callback((*iter).second);
   return true;
 }

@@ -12,10 +12,11 @@ Config::Config(Settings const &settings) : settings_{settings} {
 }
 
 void Config::dispatch(Handler &handler) const {
-  handler(client::Symbol{
-      .regex = settings_.symbol,
-      .exchange = settings_.exchange,
-  });
+  handler(
+      client::Symbol{
+          .regex = settings_.symbol,
+          .exchange = settings_.exchange,
+      });
 }
 
 }  // namespace example_7

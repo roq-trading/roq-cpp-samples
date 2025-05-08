@@ -32,8 +32,9 @@ auto is_same(auto &lhs, auto &rhs) {
 void print(auto &market_by_price) {
   std::vector<Layer> depth;
   market_by_price.extract_2(depth);
-  for (size_t i = 0; i < std::size(depth); ++i)
+  for (size_t i = 0; i < std::size(depth); ++i) {
     log::warn("  [{:4}] {}"sv, i, depth[i]);
+  }
 }
 }  // namespace
 
@@ -107,13 +108,16 @@ void Strategy::operator()(Event<MarketByPriceUpdate> const &event) {
     // print(*mbp_depth_);
   }
   auto tmp = utils::compare(lhs_[0].bid_price, lhs_[0].ask_price);
-  if (tmp == 0)
+  if (tmp == 0) {
     ++choice_;
-  if (tmp > 0)
+  }
+  if (tmp > 0) {
     ++inversion_;
+  }
   log::info("issues={}, choice={}, inversion={}"sv, issues_, choice_, inversion_);
-  if ((*mbp_depth_).max_depth() > settings_.depth)
+  if ((*mbp_depth_).max_depth() > settings_.depth) {
     log::fatal("HERE"sv);
+  }
 }
 
 }  // namespace depth

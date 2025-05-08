@@ -24,8 +24,9 @@ void OrderManager::set_target(double quantity, double price) {
   auto changed = false;
   changed |= utils::update(target_quantity_, quantity);
   changed |= utils::update(target_price_, price);
-  if (!changed)
+  if (!changed) {
     return;
+  }
   log::debug("UPDATE!"sv);
   if (!order_id_) {
     log::debug("CREATE_ORDER"sv);

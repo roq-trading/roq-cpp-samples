@@ -15,24 +15,28 @@ Config::Config(Settings const &settings) : settings_{settings} {
 
 void Config::dispatch(Handler &handler) const {
   // settings
-  handler(client::Settings{
-      .order_cancel_policy = OrderCancelPolicy::MANAGED_ORDERS,
-      .order_management = {},
-  });
+  handler(
+      client::Settings{
+          .order_cancel_policy = OrderCancelPolicy::MANAGED_ORDERS,
+          .order_management = {},
+      });
   // accounts
-  handler(client::Account{
-      .regex = settings_.account,
-  });
+  handler(
+      client::Account{
+          .regex = settings_.account,
+      });
   // symbols
-  handler(client::Symbol{
-      .regex = settings_.symbol,
-      .exchange = settings_.exchange,
-  });
+  handler(
+      client::Symbol{
+          .regex = settings_.symbol,
+          .exchange = settings_.exchange,
+      });
   // currencies
-  handler(client::Symbol{
-      .regex = settings_.currencies,
-      .exchange = {},
-  });
+  handler(
+      client::Symbol{
+          .regex = settings_.currencies,
+          .exchange = {},
+      });
 }
 
 }  // namespace example_3

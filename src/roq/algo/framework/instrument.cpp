@@ -26,15 +26,19 @@ auto const REQUIRED_ORDER_MANAGEMENT = Mask{
 // === IMPLEMENTATION ===
 
 bool Instrument::ready(cache::Gateway const &gateway, cache::Market const &market, std::string_view const &account) const {
-  if (!gateway.ready(REQUIRED_MARKET_DATA))
+  if (!gateway.ready(REQUIRED_MARKET_DATA)) {
     return false;
-  if (utils::is_zero(market.reference_data.tick_size))
+  }
+  if (utils::is_zero(market.reference_data.tick_size)) {
     return false;
+  }
   // XXX this might not be the right place...
-  if (market.market_status.trading_status != TradingStatus::OPEN)
+  if (market.market_status.trading_status != TradingStatus::OPEN) {
     return false;
-  if (!gateway.ready(REQUIRED_ORDER_MANAGEMENT, account))
+  }
+  if (!gateway.ready(REQUIRED_ORDER_MANAGEMENT, account)) {
     return false;
+  }
   return true;
 }
 

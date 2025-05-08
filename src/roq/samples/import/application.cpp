@@ -17,8 +17,9 @@ namespace import {
 
 int Application::main(args::Parser const &args) {
   auto params = args.params();
-  if (std::size(params) != 1)
+  if (std::size(params) != 1) {
     log::fatal("Expected exactly 1 argument, got {}"sv, std::size(params));
+  }
   Settings settings;
   Processor{settings, params[0]}.dispatch();
   return EXIT_SUCCESS;

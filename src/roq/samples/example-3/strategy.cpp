@@ -23,10 +23,12 @@ Strategy::Strategy(client::Dispatcher &dispatcher, Settings const &settings)
 
 void Strategy::operator()(Event<Timer> const &event) {
   // note! using system clock (*not* the wall clock)
-  if (event.value.now < next_sample_)
+  if (event.value.now < next_sample_) {
     return;
-  if (next_sample_ != next_sample_.zero())  // initialized?
+  }
+  if (next_sample_ != next_sample_.zero()) {  // initialized?
     update_model();
+  }
   auto now = std::chrono::duration_cast<std::chrono::seconds>(event.value.now);
   next_sample_ = now + settings_.sample_freq;
   // possible extension: reset request timeout
@@ -112,8 +114,9 @@ void Strategy::operator()(Event<FundsUpdate> const &event) {
 template <typename T>
 void Strategy::dispatch(Event<T> const &event) {
   // assert(event.message_info.source == 0);
-  if (event.message_info.source == 0)
+  if (event.message_info.source == 0) {
     instrument_(event.value);
+  }
 }
 
 void Strategy::update_model() {

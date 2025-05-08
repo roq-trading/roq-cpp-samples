@@ -41,8 +41,9 @@ Strategy::Strategy(client::Dispatcher &dispatcher) : dispatcher_{dispatcher}, mo
 }
 
 void Strategy::operator()(Event<Timer> const &event) {
-  if (event.value.now < next_timer_)
+  if (event.value.now < next_timer_) {
     return;
+  }
   next_timer_ = event.value.now + TIMER_FREQUENCY;
   try {
     auto result = call<double>(module_, "bar"sv, layer_.bid_price, layer_.ask_price);

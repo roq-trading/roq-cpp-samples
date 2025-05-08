@@ -26,8 +26,9 @@ void Processor::dispatch() {
     while ((*reader_).dispatch(*this)) {
       updates = true;
     }
-    if (updates)
+    if (updates) {
       continue;
+    }
     // if you get here you're probably tailing an event-log...
     // use filesystem monitoring to detect updates, or simply wait
     auto const delay = 10s;

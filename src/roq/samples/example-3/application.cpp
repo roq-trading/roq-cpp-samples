@@ -22,8 +22,9 @@ namespace example_3 {
 
 int Application::main(args::Parser const &args) {
   auto params = args.params();
-  if (std::empty(params))
+  if (std::empty(params)) {
     log::fatal("Expected arguments"sv);
+  }
   // if (std::size(params) != 1)
   //   log::fatal("Expected exactly one argument"sv);
   Settings settings{args};

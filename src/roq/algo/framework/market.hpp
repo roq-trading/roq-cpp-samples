@@ -25,8 +25,9 @@ struct Market final {
 
   template <typename T>
   bool operator()(Event<T> const &event) {
-    if (source_ == SOURCE_SELF)
+    if (source_ == SOURCE_SELF) {
       source_ = event.message_info.source;
+    }
     return market_(event);
   }
 

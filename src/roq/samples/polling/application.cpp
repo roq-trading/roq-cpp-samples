@@ -19,8 +19,9 @@ namespace polling {
 
 int Application::main(args::Parser const &args) {
   auto params = args.params();
-  if (std::empty(params))
+  if (std::empty(params)) {
     log::fatal("Expected arguments"sv);
+  }
   Settings settings{args};
   Config config{settings};
   auto context = io::engine::ContextFactory::create(settings.engine);

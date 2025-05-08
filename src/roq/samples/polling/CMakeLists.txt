@@ -20,6 +20,6 @@ target_link_libraries(
           roq-api::roq-api
           fmt::fmt)
 
-target_compile_definitions(${TARGET_NAME} PRIVATE ROQ_PACKAGE_NAME="${PROJECT_NAME}")
+target_compile_definitions(${TARGET_NAME} PRIVATE ROQ_PACKAGE_NAME="${TARGET_NAME}" ROQ_BUILD_VERSION="${CMAKE_PROJECT_VERSION}")
 
 install(TARGETS ${TARGET_NAME})

@@ -28,8 +28,9 @@ struct State final {
 
   template <typename Callback>
   void dispatch(Callback callback) const {
-    for (auto &instrument : instruments_)
+    for (auto &instrument : instruments_) {
       callback(instrument);
+    }
   }
 
   bool ready(bool &result, size_t index, uint8_t source, std::string_view const &account) const;

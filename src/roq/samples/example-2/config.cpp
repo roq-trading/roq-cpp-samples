@@ -13,14 +13,16 @@ Config::Config(Settings const &settings) : settings_{settings} {
 
 void Config::dispatch(Handler &handler) const {
   // callback for each subscription pattern
-  handler(client::Symbol{
-      .regex = settings_.futures_symbol,
-      .exchange = settings_.futures_exchange,
-  });
-  handler(client::Symbol{
-      .regex = settings_.cash_symbol,
-      .exchange = settings_.cash_exchange,
-  });
+  handler(
+      client::Symbol{
+          .regex = settings_.futures_symbol,
+          .exchange = settings_.futures_exchange,
+      });
+  handler(
+      client::Symbol{
+          .regex = settings_.cash_symbol,
+          .exchange = settings_.cash_exchange,
+      });
 }
 
 }  // namespace example_2

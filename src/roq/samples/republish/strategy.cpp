@@ -24,33 +24,39 @@ namespace {
 auto create_socket(auto &settings, auto &address) {
   // create
   auto fd = ::socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
-  if (fd < 0)
+  if (fd < 0) {
     log::system_error("Failed to create socket"sv);
+  }
   // bind
   address.sin_family = AF_INET;
   address.sin_port = htons(settings.port);
   address.sin_addr.s_addr = htonl(INADDR_ANY);
-  if (::bind(fd, reinterpret_cast<struct sockaddr *>(&address), sizeof(address)) < 0)
+  if (::bind(fd, reinterpret_cast<struct sockaddr *>(&address), sizeof(address)) < 0) {
     log::system_error("Failed to bind socket"sv);
+  }
   // non-blocking
   auto flags = ::fcntl(fd, F_GETFL, 0);
-  if (flags < 0)
+  if (flags < 0) {
     log::system_error("Failed to get flags"sv);
+  }
   flags |= O_NONBLOCK;
-  if (::fcntl(fd, F_SETFL, flags) < 0)
+  if (::fcntl(fd, F_SETFL, flags) < 0) {
     log::system_error("Failed to set flags"sv);
+  }
   return fd;
 }
 
 void close_socket(auto fd) {
-  if (fd > 0)
+  if (fd > 0) {
     ::close(fd);
+  }
 }
 
 void socket_sendto(auto const socket, auto const &address, auto const &message) {
   auto res = ::sendto(socket, std::data(message), std::size(message), 0, reinterpret_cast<struct sockaddr const *>(&address), sizeof(address));
-  if (res < 0)
+  if (res < 0) {
     log::system_error("Failed to send"sv);
+  }
 }
 }  // namespace
 

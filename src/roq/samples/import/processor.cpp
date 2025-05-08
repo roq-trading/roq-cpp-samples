@@ -39,10 +39,12 @@ auto create_encoder() {
 }
 
 auto use_base64(auto &encoding) {
-  if (utils::case_insensitive_compare(encoding, "binary"sv) == 0)
+  if (utils::case_insensitive_compare(encoding, "binary"sv) == 0) {
     return false;
-  if (utils::case_insensitive_compare(encoding, "base64"sv) == 0)
+  }
+  if (utils::case_insensitive_compare(encoding, "base64"sv) == 0) {
     return true;
+  }
   throw RuntimeError{R"(Unknown encoding="{}")"sv, encoding};
 }
 }  // namespace
@@ -52,15 +54,17 @@ auto use_base64(auto &encoding) {
 Processor::Processor(Settings const &settings, std::string_view const &path)
     : encoder_{create_encoder()}, file_{std::string{path}, std::ios::out | std::ios::binary},
       encoding_{use_base64(settings.encoding) ? Encoding::BASE64 : Encoding::BINARY} {
-  if (!file_)
+  if (!file_) {
     throw RuntimeError{R"(Unable to open file for writing: path="{}")"sv, path};
+  }
 }
 
 Processor::~Processor() {
   try {
     // best effort
-    if (file_.is_open())
+    if (file_.is_open()) {
       file_.close();
+    }
   } catch (...) {
   }
 }

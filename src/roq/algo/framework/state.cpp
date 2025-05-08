@@ -17,8 +17,9 @@ State::State(std::span<Instrument const> const &instruments, std::span<Market co
 
 bool State::ready(bool &result, size_t index, uint8_t source, std::string_view const &account) const {
   auto &market = *markets_[index];
-  if (market.get_source() != source)
+  if (market.get_source() != source) {
     return false;
+  }
   auto &instrument = instruments_[index];
   return utils::update(result, instrument.ready(gateways_[source], market, account));
 }
@@ -26,8 +27,9 @@ bool State::ready(bool &result, size_t index, uint8_t source, std::string_view c
 bool State::supports(size_t index, SupportType const &type) const {
   auto &market = *markets_[index];
   auto source = market.get_source();
-  if (source == SOURCE_SELF)
+  if (source == SOURCE_SELF) {
     return false;
+  }
   return gateways_[source](type);
 }
 

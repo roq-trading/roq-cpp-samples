@@ -26,8 +26,9 @@ auto const IO_ENGINE = "libevent"sv;
 
 int Application::main(args::Parser const &args) {
   auto params = args.params();
-  if (std::empty(params))
+  if (std::empty(params)) {
     log::fatal("Expected arguments"sv);
+  }
   Settings settings{args};
   Config config{settings};
   // note!

@@ -19,10 +19,12 @@ namespace example_7 {
 
 int Application::main(args::Parser const &args) {
   auto params = args.params();
-  if (std::empty(params))
+  if (std::empty(params)) {
     log::fatal("Expected arguments"sv);
-  if (std::size(params) < 1)
+  }
+  if (std::size(params) < 1) {
     log::fatal("Expected at least one argument"sv);
+  }
   Settings settings{args};
   Config config{settings};
   client::Trader{settings, config, params}.dispatch<Strategy>(settings);
