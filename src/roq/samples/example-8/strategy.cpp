@@ -9,7 +9,7 @@
 #include "roq/utils/compare.hpp"
 
 using namespace std::literals;
-using namespace std::chrono_literals;  // NOLINT
+using namespace std::chrono_literals;
 
 namespace roq {
 namespace samples {

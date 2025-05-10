@@ -9,7 +9,7 @@
 #include "roq/samples/example-6/strategy.hpp"
 
 using namespace std::literals;
-using namespace std::chrono_literals;  // NOLINT
+using namespace std::chrono_literals;
 
 namespace roq {
 namespace samples {

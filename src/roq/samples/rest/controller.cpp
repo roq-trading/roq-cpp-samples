@@ -14,7 +14,7 @@
 #include "roq/utils/json/top_of_book.hpp"
 
 using namespace std::literals;
-using namespace std::chrono_literals;  // NOLINT
+using namespace std::chrono_literals;
 
 namespace roq {
 namespace samples {

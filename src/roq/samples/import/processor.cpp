@@ -12,7 +12,7 @@
 #include "roq/samples/import/base64.hpp"
 
 using namespace std::literals;
-using namespace std::chrono_literals;  // NOLINT
+using namespace std::chrono_literals;
 
 namespace roq {
 namespace samples {
