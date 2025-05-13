@@ -83,8 +83,8 @@ void Instrument::operator()(GatewayStatus const &gateway_status) {
 }
 
 void Instrument::operator()(ReferenceData const &reference_data) {
-  assert(exchange_.compare(reference_data.exchange) == 0);
-  assert(symbol_.compare(reference_data.symbol) == 0);
+  assert(exchange_ == reference_data.exchange);
+  assert(symbol_ == reference_data.symbol);
   // update our cache
   if (utils::update(tick_size_, reference_data.tick_size)) {
     log::info("[{}:{}] tick_size={}"sv, exchange_, symbol_, tick_size_);
@@ -100,8 +100,8 @@ void Instrument::operator()(ReferenceData const &reference_data) {
 }
 
 void Instrument::operator()(MarketStatus const &market_status) {
-  assert(exchange_.compare(market_status.exchange) == 0);
-  assert(symbol_.compare(market_status.symbol) == 0);
+  assert(exchange_ == market_status.exchange);
+  assert(symbol_ == market_status.symbol);
   // update our cache
   if (utils::update(trading_status_, market_status.trading_status)) {
     log::info("[{}:{}] trading_status={}"sv, exchange_, symbol_, trading_status_);
@@ -111,8 +111,8 @@ void Instrument::operator()(MarketStatus const &market_status) {
 }
 
 void Instrument::operator()(MarketByPriceUpdate const &market_by_price_update) {
-  assert(exchange_.compare(market_by_price_update.exchange) == 0);
-  assert(symbol_.compare(market_by_price_update.symbol) == 0);
+  assert(exchange_ == market_by_price_update.exchange);
+  assert(symbol_ == market_by_price_update.symbol);
   if (download_) {
     log::info("MarketByPriceUpdate={}"sv, market_by_price_update);
   }
@@ -149,7 +149,8 @@ void Instrument::update_model() {
         fmt::join(depth_, ", "sv));
   }
   // compute (weighted) mid
-  double sum_1 = 0.0, sum_2 = 0.0;
+  double sum_1 = 0.0;
+  double sum_2 = 0.0;
   for (auto &[bid_price, bid_quantity, ask_price, ask_quantity] : depth_) {
     sum_1 += bid_price * bid_quantity + ask_price * ask_quantity;
     sum_2 += bid_quantity + ask_quantity;
