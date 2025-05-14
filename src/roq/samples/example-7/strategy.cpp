@@ -70,7 +70,8 @@ void Strategy::operator()(Event<TopOfBook> const &event) {
   };
   log::debug("custom_metrics={}"sv, custom_metrics);
   // matrix
-  std::shift_right(std::begin(data_), std::end(data_), 1);
+  // note! gcc15 does not seem to have the ranges version
+  std::shift_right(std::begin(data_), std::end(data_), 1);  // NOLINT(modernize-use-ranges)
   data_[0] = 0.5 * (top_of_book.layer.bid_price + top_of_book.layer.ask_price);
   auto custom_matrix = CustomMatrix{
       .label = settings_.label,

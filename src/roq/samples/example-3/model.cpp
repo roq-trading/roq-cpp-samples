@@ -2,6 +2,7 @@
 
 #include "roq/samples/example-3/model.hpp"
 
+#include <algorithm>
 #include <numeric>
 
 #include "roq/logging.hpp"
@@ -101,8 +102,9 @@ bool Model::validate(Depth const &depth) {  // require full depth
 }
 
 double Model::weighted_bid(Depth const &depth) {
-  double sum_1 = 0.0, sum_2 = 0.0;
-  std::for_each(std::begin(depth), std::end(depth), [&](Layer const &layer) {
+  double sum_1 = 0.0;
+  double sum_2 = 0.0;
+  std::ranges::for_each(depth, [&](Layer const &layer) {
     sum_1 += layer.bid_quantity * layer.bid_price;
     sum_2 += layer.bid_quantity;
   });
@@ -110,8 +112,9 @@ double Model::weighted_bid(Depth const &depth) {
 }
 
 double Model::weighted_ask(Depth const &depth) {
-  double sum_1 = 0.0, sum_2 = 0.0;
-  std::for_each(std::begin(depth), std::end(depth), [&](Layer const &layer) {
+  double sum_1 = 0.0;
+  double sum_2 = 0.0;
+  std::ranges::for_each(depth, [&](Layer const &layer) {
     sum_1 += layer.ask_quantity * layer.ask_price;
     sum_2 += layer.ask_quantity;
   });

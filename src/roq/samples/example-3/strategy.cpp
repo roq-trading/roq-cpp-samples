@@ -26,7 +26,7 @@ void Strategy::operator()(Event<Timer> const &event) {
   if (event.value.now < next_sample_) {
     return;
   }
-  if (next_sample_ != next_sample_.zero()) {  // initialized?
+  if (next_sample_.count() != 0) {  // initialized?
     update_model();
   }
   auto now = std::chrono::duration_cast<std::chrono::seconds>(event.value.now);
@@ -150,7 +150,7 @@ void Strategy::try_trade(Side side, double price) {
   //   if position not long
   //     send buy order
   //
-  if (working_order_id_) {
+  if (working_order_id_ != 0) {
     log::info("*** ANOTHER ORDER IS WORKING ***"sv);
     if (side != working_side_) {
       log::info("*** CANCEL WORKING ORDER ***"sv);

@@ -12,7 +12,7 @@ struct Application final : public Service {
   using Service::Service;
 
  protected:
-  int main(args::Parser const &);
+  int main(args::Parser const &) override;
 };
 
 }  // namespace example_4

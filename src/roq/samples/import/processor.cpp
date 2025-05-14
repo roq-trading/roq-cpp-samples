@@ -69,6 +69,8 @@ Processor::~Processor() {
   }
 }
 
+// NOLINTBEGIN(readability-magic-numbers)
+
 void Processor::dispatch() {
   // first message *must* be GatewaySettings
   process(
@@ -242,6 +244,8 @@ void Processor::dispatch() {
       },
       5ns);
 }
+
+// NOLINTEND(readability-magic-numbers)
 
 MessageInfo Processor::create_message_info(std::chrono::nanoseconds timestamp_utc) {
   // note! just re-use the same timestamp for all trace points

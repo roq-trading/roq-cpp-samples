@@ -19,7 +19,7 @@ namespace import {
 struct Processor final {
   Processor(Settings const &, std::string_view const &path);
 
-  Processor(Processor &&) = default;
+  Processor(Processor &&) noexcept = default;
   Processor(Processor const &) = delete;
 
   ~Processor();

@@ -28,11 +28,11 @@ void OrderManager::set_target(double quantity, double price) {
     return;
   }
   log::debug("UPDATE!"sv);
-  if (!order_id_) {
+  if (order_id_ == 0) {
     log::debug("CREATE_ORDER"sv);
     auto order_id = base_.dispatcher_.next_order_id();
     auto &instrument = base_.state_.get_instrument(index_);
-    CreateOrder create_order{
+    auto create_order = CreateOrder{
         .account = base_.account_,
         .order_id = order_id,
         .exchange = instrument.exchange,
@@ -58,7 +58,7 @@ void OrderManager::set_target(double quantity, double price) {
   } else {
     log::debug("MODIFY_ORDER"sv);
     // XXX assuming it's target price
-    ModifyOrder modify_order{
+    auto modify_order = ModifyOrder{
         .account = base_.account_,
         .order_id = order_id_,
         .request_template = {},

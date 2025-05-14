@@ -23,7 +23,7 @@ Factory::Factory(
 }
 
 std::unique_ptr<framework::Handler> Factory::create(framework::Dispatcher &dispatcher, std::string_view const &routing_id, CreateOrder const &create_order) {
-  if (type_.compare("spread"sv) == 0) {
+  if (type_ == "spread"sv) {
     return std::make_unique<Spread>(dispatcher, state_, routing_id, create_order);
   }
   throw RuntimeError{R"(Unknown type="{}")"sv, type_};

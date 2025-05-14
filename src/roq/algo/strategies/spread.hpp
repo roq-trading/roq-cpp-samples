@@ -30,7 +30,6 @@ struct Spread final : public Base {
 
   void update();
 
- protected:
   double current_spread() const;
 
  private:

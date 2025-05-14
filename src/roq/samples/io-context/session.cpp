@@ -90,35 +90,34 @@ std::string_view Session::process_request(std::string_view const &message) {
   auto symbol = json.value("symbol"s, ""s);
   if (std::empty(action)) {
     return error("missing 'action'"sv);
-  } else if (action == "subscribe"sv) {
+  }
+  if (action == "subscribe"sv) {
     if (validate_symbol(symbol)) {
       // XXX maybe check if symbol already exists?
       shared_.symbols.emplace(symbol);
       return success();
-    } else {
-      return error("invalid symbol"sv);
     }
-  } else if (action == "unsubscribe"sv) {
+    return error("invalid symbol"sv);
+  }
+  if (action == "unsubscribe"sv) {
     if (validate_symbol(symbol)) {
       // XXX maybe check if symbol exists?
       shared_.symbols.erase(symbol);
       return success();
-    } else {
-      return error("invalid symbol"sv);
     }
-  } else {
-    return error("unknown 'action'"sv);
+    return error("invalid symbol"sv);
   }
+  return error("unknown 'action'"sv);
 }
 
 bool Session::validate_symbol(std::string_view const &symbol) {
   if (std::empty(symbol)) {
     return false;
-  } else if (std::size(symbol) > sizeof(decltype(Shared::symbols)::value_type)) {
-    return false;
-  } else {
-    return true;
   }
+  if (std::size(symbol) > sizeof(decltype(Shared::symbols)::value_type)) {
+    return false;
+  }
+  return true;
 }
 
 std::string_view Session::success() {

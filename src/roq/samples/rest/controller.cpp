@@ -26,8 +26,8 @@ namespace {
 auto const REQUEST_TIMEOUT = 5s;
 auto const USER_AGENT = "roq_samples"sv;
 auto const PING_FREQ = 10s;
-auto const DECODE_BUFFER_SIZE = 1048576uz;
-auto const ENCODE_BUFFER_SIZE = 1048576uz;
+auto const DECODE_BUFFER_SIZE = 1048576UZ;
+auto const ENCODE_BUFFER_SIZE = 1048576UZ;
 auto const PATH = "/api/v3/avgPrice"sv;
 auto const REQUEST_FREQ = 5s;
 }  // namespace

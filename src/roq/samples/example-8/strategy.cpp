@@ -26,7 +26,7 @@ Strategy::Strategy(client::Dispatcher &dispatcher, Settings const &settings)
 void Strategy::operator()(Event<DownloadBegin> const &event) {
   log::info("event={}"sv, event);
   auto &[message_info, download_begin] = event;
-  if (account_.compare(download_begin.account) == 0) {
+  if (account_ == download_begin.account) {
     downloading_ = true;
   }
 }
@@ -34,7 +34,7 @@ void Strategy::operator()(Event<DownloadBegin> const &event) {
 void Strategy::operator()(Event<DownloadEnd> const &event) {
   log::info("event={}"sv, event);
   auto &[message_info, download_end] = event;
-  if (account_.compare(download_end.account) == 0) {
+  if (account_ == download_end.account) {
     order_id_ = std::max(order_id_, download_end.max_order_id);
     downloading_ = false;
   }
@@ -87,7 +87,7 @@ void Strategy::create_order(MessageInfo const &message_info, Layer const &layer)
     return;
   }
   // ready?
-  if (next_request_.count()) {
+  if (next_request_.count() != 0) {
     if (message_info.receive_time < next_request_) {
       return;
     }
@@ -100,7 +100,7 @@ void Strategy::create_order(MessageInfo const &message_info, Layer const &layer)
     return;
   }
   // send order
-  auto price = layer.bid_price - tick_offset_ * tick_size_;
+  auto price = layer.bid_price - (tick_offset_ * tick_size_);
   auto create_order = CreateOrder{
       .account = account_,
       .order_id = ++order_id_,
@@ -122,7 +122,7 @@ void Strategy::create_order(MessageInfo const &message_info, Layer const &layer)
       .strategy_id = {},
   };
   log::info<1>("create_order={}"sv, create_order);
-  dispatcher_.send(create_order, 0u, true);
+  dispatcher_.send(create_order, 0, true);
   // update
   assert(countdown_ > 0);
   --countdown_;
