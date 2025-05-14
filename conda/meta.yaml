@@ -22,6 +22,7 @@ requirements:
     - catch2
     - fmt
     - libabseil
+    - magic_enum
     - nlohmann_json
     - pybind11
     - roq-algo
@@ -34,7 +35,6 @@ requirements:
     - roq-logging
     - roq-market
     - roq-oss-benchmark
-    - roq-oss-magic_enum
     - roq-oss-unordered_dense
     - roq-utils
     - roq-web
