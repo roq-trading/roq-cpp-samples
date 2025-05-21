@@ -39,11 +39,11 @@ auto parse_instrument(auto &node) {
   auto table = node.as_table();
   for (auto &[key, value] : *table) {
     auto name = static_cast<std::string_view>(key);
-    if (name.compare("exchange"sv) == 0) {
+    if (name == "exchange"sv) {
       result.exchange = *value.template value<std::string_view>();
-    } else if (name.compare("symbol"sv) == 0) {
+    } else if (name == "symbol"sv) {
       result.symbol = *value.template value<std::string_view>();
-    } else if (name.compare("weight"sv) == 0) {
+    } else if (name == "weight"sv) {
       result.weight = *value.template value<double>();
     } else {
       log::fatal(R"(Unexpected: key="{}")"sv, name);
@@ -72,9 +72,9 @@ auto parse_strategy(auto &node) {
   auto table = node.as_table();
   for (auto &[key, value] : *table) {
     auto name = static_cast<std::string_view>(key);
-    if (name.compare("type"sv) == 0) {
+    if (name == "type"sv) {
       strategy.type = *value.template value<std::string_view>();
-    } else if (name.compare("instruments"sv) == 0) {
+    } else if (name == "instruments"sv) {
       strategy.instruments = parse_instruments<decltype(strategy.instruments)>(value);
     } else {
       log::fatal(R"(Unexpected: key="{}")"sv, name);

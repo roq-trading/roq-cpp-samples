@@ -38,7 +38,6 @@ struct Bridge final : public client::Handler, public algo::framework::Dispatcher
   void operator()(ModifyOrder const &) override;
   void operator()(CancelOrder const &) override;
 
- protected:
   void operator()(Event<Timer> const &) override;
 
   void operator()(Event<Connected> const &) override;

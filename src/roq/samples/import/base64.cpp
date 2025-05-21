@@ -20,6 +20,8 @@ namespace roq {
 namespace samples {
 namespace import {
 
+// NOLINTBEGIN(readability-container-data-pointer,readability-magic-numbers)
+
 // === CONSTANTS ===
 
 namespace {
@@ -63,6 +65,8 @@ std::string Base64::encode(void const *data, size_t length) {
   assert(std::size(result) == std::strlen(result.c_str()));
   return result;
 }
+
+// NOLINTEND(readability-container-data-pointer,readability-magic-numbers)
 
 }  // namespace import
 }  // namespace samples

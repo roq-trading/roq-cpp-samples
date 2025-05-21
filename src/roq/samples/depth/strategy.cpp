@@ -21,10 +21,10 @@ auto is_same(auto &lhs, auto &rhs) {
   assert(std::size(lhs) == std::size(rhs));
   auto result = true;
   for (size_t i = 0; i < std::size(lhs) && result; ++i) {
-    auto &l = lhs[i];
-    auto &r = rhs[i];
-    result &= utils::compare(l.bid_price, r.bid_price) == 0 && utils::compare(l.bid_quantity, r.bid_quantity) == 0 &&
-              utils::compare(l.ask_price, r.ask_price) == 0 && utils::compare(l.ask_quantity, r.ask_quantity) == 0;
+    auto &lhs_2 = lhs[i];
+    auto &rhs_2 = rhs[i];
+    result &= utils::compare(lhs_2.bid_price, rhs_2.bid_price) == 0 && utils::compare(lhs_2.bid_quantity, rhs_2.bid_quantity) == 0 &&
+              utils::compare(lhs_2.ask_price, rhs_2.ask_price) == 0 && utils::compare(lhs_2.ask_quantity, rhs_2.ask_quantity) == 0;
   }
   return result;
 }
