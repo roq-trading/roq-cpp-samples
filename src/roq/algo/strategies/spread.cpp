@@ -74,8 +74,8 @@ void Spread::update() {
     return;
   }
   std::array<Layer, 2> best;
-  auto depth_0 = extract(0, std::span{&best[0], 1});
-  auto depth_1 = extract(1, std::span{&best[1], 1});
+  auto depth_0 = extract(0, std::span{&best[0], 1});  // NOLINT(readability-container-data-pointer)
+  auto depth_1 = extract(1, std::span{&best[1], 1});  // NOLINT(readability-container-data-pointer)
   if (std::size(depth_0) == 0 || std::size(depth_1) == 0) {
     return;
   }

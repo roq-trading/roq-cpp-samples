@@ -31,28 +31,29 @@ char const *const B64chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwx
 // === HELPERS ===
 
 namespace {
-std::string const b64encode(void const *data, size_t const &len) {
+std::string b64encode(void const *data, size_t const &len) {
   std::string result((len + 2) / 3 * 4, '=');
-  unsigned char const *p = reinterpret_cast<unsigned char const *>(data);
+  auto const *data_2 = reinterpret_cast<unsigned char const *>(data);
   char *str = &result[0];
-  size_t j = 0, pad = len % 3;
+  size_t j = 0;
+  size_t pad = len % 3;
   size_t const last = len - pad;
 
   for (size_t i = 0; i < last; i += 3) {
-    int n = static_cast<int>(p[i]) << 16 | static_cast<int>(p[i + 1]) << 8 | static_cast<int>(p[i + 2]);
+    int n = static_cast<int>(data_2[i]) << 16 | static_cast<int>(data_2[i + 1]) << 8 | static_cast<int>(data_2[i + 2]);
     assert(n >= 0 && n < (1 << 24));
     str[j++] = B64chars[n >> 18];
     str[j++] = B64chars[n >> 12 & 0x3F];
     str[j++] = B64chars[n >> 6 & 0x3F];
     str[j++] = B64chars[n & 0x3F];
   }
-  if (pad)  /// Set padding
+  if (pad != 0)  /// Set padding
   {
-    int n = --pad ? static_cast<int>(p[last]) << 8 | static_cast<int>(p[last + 1]) : static_cast<int>(p[last]);
+    int n = (--pad != 0) ? static_cast<int>(data_2[last]) << 8 | static_cast<int>(data_2[last + 1]) : static_cast<int>(data_2[last]);
     assert(n >= 0 && n < (1 << 16));
-    str[j++] = B64chars[pad ? n >> 10 & 0x3F : n >> 2];
-    str[j++] = B64chars[pad ? n >> 4 & 0x03F : n << 4 & 0x3F];
-    str[j++] = pad ? B64chars[n << 2 & 0x3F] : '=';
+    str[j++] = B64chars[(pad != 0) ? n >> 10 & 0x3F : n >> 2];
+    str[j++] = B64chars[(pad != 0) ? n >> 4 & 0x03F : n << 4 & 0x3F];
+    str[j++] = (pad != 0) ? B64chars[n << 2 & 0x3F] : '=';
   }
   return result;
 }
