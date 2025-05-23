@@ -68,6 +68,8 @@ void Spread::operator()(Event<MarketByPriceUpdate> const &) {
 void Spread::operator()(Event<PositionUpdate> const &) {
 }
 
+// NOLINTBEGIN(readability-container-data-pointer)
+
 // note! it's quicker to loop all instead of looking up what instrument has updated
 void Spread::update() {
   if (!ready()) {
@@ -118,6 +120,8 @@ double Spread::current_spread() const {
   }
   return NaN;
 }
+
+// NOLINTEND(readability-container-data-pointer)
 
 }  // namespace strategies
 }  // namespace algo

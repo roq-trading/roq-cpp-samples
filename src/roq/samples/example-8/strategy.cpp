@@ -15,6 +15,13 @@ namespace roq {
 namespace samples {
 namespace example_8 {
 
+// === CONSTANTS ===
+
+namespace {
+auto const DELAY_1 = 30s;
+auto const DELAY_2 = 100s;
+}  // namespace
+
 // === IMPLEMENTATION ===
 
 Strategy::Strategy(client::Dispatcher &dispatcher, Settings const &settings)
@@ -92,7 +99,7 @@ void Strategy::create_order(MessageInfo const &message_info, Layer const &layer)
       return;
     }
   } else {
-    next_request_ = message_info.receive_time + 30s;  // warmup
+    next_request_ = message_info.receive_time + DELAY_1;  // warmup
     return;
   }
   // tick size ?
@@ -126,7 +133,7 @@ void Strategy::create_order(MessageInfo const &message_info, Layer const &layer)
   // update
   assert(countdown_ > 0);
   --countdown_;
-  next_request_ = message_info.receive_time + 100ms;
+  next_request_ = message_info.receive_time + DELAY_2;
 }
 
 }  // namespace example_8
