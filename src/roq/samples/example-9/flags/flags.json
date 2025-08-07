@@ -1,0 +1,27 @@
+{
+  "name": "roq/samples/example-9/flags/Flags",
+  "type": "flags",
+  "values": [
+    {
+      "name": "exchange",
+      "type": "std/string",
+      "required": true,
+      "default": "deribit",
+      "description": "exchange"
+    },
+    {
+      "name": "symbol",
+      "type": "std/string",
+      "required": true,
+      "default": "BTC-PERPETUAL",
+      "description": "symbol"
+    },
+    {
+      "name": "max_history",
+      "type": "std/uint32",
+      "required": true,
+      "default": "10",
+      "description": "max-length of time-series history"
+    }
+  ]
+}

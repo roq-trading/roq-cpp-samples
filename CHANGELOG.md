@@ -4,6 +4,10 @@ All notable changes will be documented in this file.
 
 ## Head
 
+### Added
+
+* Example-9: Auto-generate time-series from history of event-logs and live data (#515)
+
 ## 1.0.7 &ndash; 2025-07-02
 
 ## 1.0.6 &ndash; 2025-05-16
