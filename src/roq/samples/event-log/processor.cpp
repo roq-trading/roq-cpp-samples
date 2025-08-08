@@ -109,6 +109,10 @@ void Processor::operator()(Event<StatisticsUpdate> const &event) {
   log::info("{}"sv, event);
 }
 
+void Processor::operator()(Event<TimeSeriesUpdate> const &event) {
+  log::info("{}"sv, event);
+}
+
 void Processor::operator()(Event<CreateOrder> const &event) {
   log::info("{}"sv, event);
 }

@@ -45,6 +45,7 @@ struct Processor final : public client::EventLogReader::Handler {
   void operator()(Event<MarketByOrderUpdate> const &) override;
   void operator()(Event<TradeSummary> const &) override;
   void operator()(Event<StatisticsUpdate> const &) override;
+  void operator()(Event<TimeSeriesUpdate> const &) override;
 
   // order actions (from client, note! source == user)
   void operator()(Event<CreateOrder> const &) override;

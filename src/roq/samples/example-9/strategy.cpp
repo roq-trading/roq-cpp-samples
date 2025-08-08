@@ -46,7 +46,7 @@ void Strategy::operator()(Event<TimeSeriesUpdate> const &event) {
   debug_print(event);
   auto &[message_info, time_series_update] = event;
   // filter
-  if (time_series_update.origin != Origin::GATEWAY || time_series_update.type != TimeSeriesType::TRADES || time_series_update.frequency != 1min) {
+  if (time_series_update.source != TimeSeriesSource::TRADES || time_series_update.frequency != 1min || time_series_update.origin != Origin::GATEWAY) {
     return;
   }
   // process (on change)
