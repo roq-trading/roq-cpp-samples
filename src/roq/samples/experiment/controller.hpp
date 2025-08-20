@@ -15,6 +15,7 @@
 #include "roq/samples/experiment/config.hpp"
 #include "roq/samples/experiment/settings.hpp"
 
+#include "roq/samples/experiment/shared.hpp"
 #include "roq/samples/experiment/strategy.hpp"
 #include "roq/samples/experiment/test.hpp"
 
@@ -93,6 +94,8 @@ struct Controller final : public io::sys::Signal::Handler, public client::Poller
   std::unique_ptr<client::Poller> dispatcher_;
   std::chrono::nanoseconds next_yield_ = {};
   std::chrono::nanoseconds next_timer_ = {};
+  //
+  Shared shared_;
   // EXPERIMENTAL
   // timer
   using TimerKey = int64_t;  // note! unordered_map doesn't like std::chrono::nanoseconds

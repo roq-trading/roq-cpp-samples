@@ -7,6 +7,7 @@ set(SOURCES
     config.cpp
     controller.cpp
     settings.cpp
+    shared.cpp
     strategy.cpp
     test.cpp
     main.cpp)

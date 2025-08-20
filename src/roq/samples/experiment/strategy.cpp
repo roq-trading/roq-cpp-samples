@@ -66,8 +66,8 @@ auto create_cancel_order_request([[maybe_unused]] auto &settings) -> CancelOrder
 
 // === IMPLEMENTATION ===
 
-Strategy::Strategy(Dispatcher &dispatcher, Settings const &settings)
-    : dispatcher_{dispatcher}, settings_{settings}, leg_1_{*this, Side::BUY, settings_.quantity}, leg_2_{*this, Side::SELL, settings_.quantity} {
+Strategy::Strategy(Shared &shared)
+    : shared_{shared}, leg_1_{shared_, Side::BUY, shared_.settings.quantity}, leg_2_{shared_, Side::SELL, shared_.settings.quantity} {
 }
 
 void Strategy::operator()(Event<Disconnected> const &) {
@@ -98,10 +98,10 @@ void Strategy::operator()(Event<OrderUpdate> const &, Order const &) {
   if (done_1 && done_2) {
     stop();
   } else if (done_1 && !done_2) {
-    auto price = (2.0 * settings_.price_low + settings_.price_high) / 3.0;
+    auto price = (2.0 * shared_.settings.price_low + shared_.settings.price_high) / 3.0;
     leg_2_.modify(price);
   } else if (!done_1 && done_2) {
-    auto price = (settings_.price_low + 2 * settings_.price_high) / 3.0;
+    auto price = (shared_.settings.price_low + 2 * shared_.settings.price_high) / 3.0;
     leg_1_.modify(price);
   }
 }
@@ -109,12 +109,12 @@ void Strategy::operator()(Event<OrderUpdate> const &, Order const &) {
 // state machine
 
 void Strategy::start() {
-  leg_1_.create(settings_.price_low);
-  leg_2_.create(settings_.price_high);
+  leg_1_.create(shared_.settings.price_low);
+  leg_2_.create(shared_.settings.price_high);
 }
 
 void Strategy::stop() {
-  dispatcher_.stop();
+  shared_.dispatcher.stop();
 }
 
 // -
@@ -129,7 +129,7 @@ void Strategy::maybe_create_orders(Market const &market) {
 
 // Leg
 
-Strategy::Leg::Leg(Strategy &strategy, Side side, double quantity) : strategy_{strategy}, side_{side}, quantity_{quantity} {
+Strategy::Leg::Leg(Shared &shared, Side side, double quantity) : shared_{shared}, side_{side}, quantity_{quantity} {
 }
 
 bool Strategy::Leg::ready() const {
@@ -148,7 +148,7 @@ void Strategy::Leg::operator()(Market const &market) {
   // create an order management object
   // notice that we can attach order and trade update handlers so we can later receive the callbacks
   auto order_update_handler = [this](auto &event, auto &order) { update(event, order); };
-  order_ = strategy_.dispatcher_.create_order(strategy_.settings_.account, market, order_update_handler);
+  order_ = shared_.dispatcher.create_order(shared_.settings.account, market, order_update_handler);
   state_ = State::READY;
 }
 
@@ -168,13 +168,13 @@ void Strategy::Leg::create_helper(size_t retry_counter) {
   assert(state_ == State::CREATING);
   auto failure_handler = [this, retry_counter](auto &event, [[maybe_unused]] auto &order) {
     assert(state_ == State::CREATING);
-    if (retry_counter >= strategy_.settings_.max_retries) {
+    if (retry_counter >= shared_.settings.max_retries) {
       log::fatal("Too many retries"sv);
     }
     auto &[message_info, order_ack] = event;
     if (order_ack.error == Error::REQUEST_RATE_LIMIT_REACHED) {
       auto timer_handler = [this, retry_counter]([[maybe_unused]] auto &event) { create_helper(retry_counter + 1); };
-      strategy_.dispatcher_.add_timer(strategy_.settings_.retry_delay, timer_handler);
+      shared_.dispatcher.add_timer(shared_.settings.retry_delay, timer_handler);
     } else {
       state_ = State::FAILED;
       log::fatal("Unexpected: error={}"sv, order_ack.error);
@@ -190,7 +190,7 @@ void Strategy::Leg::create_helper(size_t retry_counter) {
       state_ = State::WORKING;
     }
   };
-  auto request = create_limit_order_request(strategy_.settings_, side_, quantity_, price_);
+  auto request = create_limit_order_request(shared_.settings, side_, quantity_, price_);
   (*order_)(request, failure_handler, success_handler);
 }
 
@@ -247,13 +247,13 @@ void Strategy::Leg::modify_helper(size_t retry_counter) {
   }
   auto failure_handler = [this, retry_counter](auto &event, [[maybe_unused]] auto &order) {
     assert(state_ == State::MODIFYING);
-    if (retry_counter >= strategy_.settings_.max_retries) {
+    if (retry_counter >= shared_.settings.max_retries) {
       log::fatal("Too many retries"sv);
     }
     auto &[message_info, order_ack] = event;
     if (order_ack.error == Error::REQUEST_RATE_LIMIT_REACHED) {
       auto timer_handler = [this, retry_counter]([[maybe_unused]] auto &event) { modify_helper(retry_counter + 1); };
-      strategy_.dispatcher_.add_timer(strategy_.settings_.retry_delay, timer_handler);
+      shared_.dispatcher.add_timer(shared_.settings.retry_delay, timer_handler);
     } else if (order_ack.error == Error::TOO_LATE_TO_MODIFY_OR_CANCEL) {
       state_ = State::DONE;
     } else {
@@ -271,7 +271,7 @@ void Strategy::Leg::modify_helper(size_t retry_counter) {
       state_ = State::WORKING;
     }
   };
-  auto request = create_modify_order_request(strategy_.settings_, price_);
+  auto request = create_modify_order_request(shared_.settings, price_);
   (*order_)(request, failure_handler, success_handler);
 }
 

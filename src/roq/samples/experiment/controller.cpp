@@ -36,7 +36,7 @@ auto create_dispatcher(auto &settings, auto &config, auto &context, auto &connec
 Controller::Controller(Settings const &settings, Config const &config, io::Context &context, std::span<std::string_view const> const &params)
     : settings_{settings}, terminate_{context.create_signal(*this, io::sys::Signal::Type::TERMINATE)},
       interrupt_{context.create_signal(*this, io::sys::Signal::Type::INTERRUPT)}, dispatcher_{create_dispatcher(settings, config, context, params)},
-      source_(std::numeric_limits<uint8_t>::max()), strategy_{*this, settings_}, handler_{strategy_} {
+      shared_{*this, settings_}, source_(std::numeric_limits<uint8_t>::max()), strategy_{shared_}, handler_{strategy_} {
 }
 
 void Controller::dispatch() {

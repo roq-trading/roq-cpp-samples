@@ -6,6 +6,7 @@
 
 #include "roq/samples/experiment/settings.hpp"
 
+#include "roq/samples/experiment/shared.hpp"
 #include "roq/samples/experiment/test.hpp"
 
 namespace roq {
@@ -33,7 +34,7 @@ namespace experiment {
 //   fail after N unsuccessful retries
 
 struct Strategy final : public Handler {
-  Strategy(Dispatcher &, Settings const &);
+  explicit Strategy(Shared &);
 
   Strategy(Strategy &&) = default;
   Strategy(Strategy const &) = delete;
@@ -55,12 +56,12 @@ struct Strategy final : public Handler {
   void maybe_create_orders(Market const &);
 
  private:
-  Dispatcher &dispatcher_;
-  Settings const &settings_;
+  Shared &shared_;
+
   bool ready_ = {};
 
   struct Leg final {
-    Leg(Strategy &, Side, double quantity);
+    Leg(Shared &, Side, double quantity);
 
     bool ready() const;
     bool done() const;
@@ -76,7 +77,7 @@ struct Strategy final : public Handler {
     void update(Event<OrderUpdate> const &, Order const &);
 
    private:
-    Strategy &strategy_;
+    Shared &shared_;
     Side const side_;
     double const quantity_;
     double price_ = NaN;
