@@ -55,12 +55,9 @@ struct Market final {
 struct Order;
 
 struct Response final {
-  Response() = delete;
+  Response() = default;
 
-  Response(Response &&) = default;
-  Response(Response const &) = delete;
-
-  Response &success(SuccessHandler const &);
+  void success(SuccessHandler const &);
   Response &failure(FailureHandler const &);
 
  protected:
@@ -71,7 +68,7 @@ struct Response final {
   void operator()(Event<OrderAck> const &, Order &);
 
  private:
-  uint32_t const version_;
+  uint32_t version_ = {};
   FailureHandler failure_handler_;
   SuccessHandler success_handler_;
 };
@@ -131,7 +128,7 @@ struct Order final {
   //
   uint64_t order_id_ = {};
   uint32_t version_ = {};
-  utils::unordered_map<uint32_t, std::unique_ptr<Response>> response_;  // XXX TODO replace with std::deque
+  utils::unordered_map<uint32_t, Response> response_;  // XXX TODO replace with std::deque
   bool stale_ = {};
   // XXX TODO more order state variables
 };

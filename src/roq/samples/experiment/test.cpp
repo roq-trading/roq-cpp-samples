@@ -42,7 +42,6 @@ void Market::operator()(Event<MarketStatus> const &event) {
   if (market_status.trading_status != TradingStatus{}) {
     trading_status = market_status.trading_status;
   }
-  log::warn("{}"sv, trading_status);
 }
 
 void Market::operator()(Event<TopOfBook> const &event) {
@@ -59,24 +58,30 @@ bool Market::is_ready() const {
 Response::Response(uint32_t version) : version_{version} {
 }
 
-Response &Response::success(SuccessHandler const &success_handler) {
-  assert(!success_handler_);
-  success_handler_ = success_handler;
-  return *this;
-}
-
 Response &Response::failure(FailureHandler const &failure_handler) {
+  assert(version_);
   assert(!failure_handler_);
   failure_handler_ = failure_handler;
   return *this;
 }
 
+void Response::success(SuccessHandler const &success_handler) {
+  assert(version_);
+  assert(!success_handler_);
+  success_handler_ = success_handler;
+}
+
 void Response::operator()(Event<OrderAck> const &event, Order &order) {
+  assert(version_);
   auto &[message_info, order_ack] = event;
   if (order_ack.error == Error{}) {
-    success_handler_(event, order);
+    if (success_handler_) {
+      success_handler_(event, order);
+    }
   } else {
-    failure_handler_(event, order);
+    if (failure_handler_) {
+      failure_handler_(event, order);
+    }
   }
 }
 
@@ -148,9 +153,11 @@ Response &Order::operator()(CreateOrder const &create_order) {
   // note! remember to remove this order_id if the request can't be sent
   try {
     controller_(create_order_2, source);
-    auto [iter, res] = response_.try_emplace(++version_);
+    auto version = ++version_;
+    Response response{version};
+    auto [iter, res] = response_.emplace(version, std::move(response));
     assert(res);
-    return *(*iter).second;
+    return (*iter).second;
   } catch (...) {
     controller_.remove_order_mapping(*this, true);
     throw;
@@ -185,10 +192,13 @@ Response &Order::operator()(ModifyOrder const &modify_order) {
   }
   // note! no need to catch exceptions, there are no resource leaks here
   // XXX TODO dispatch
-  auto [iter, res] = response_.try_emplace(++version_);
+  assert(version_ >= 1);
+  auto version = ++version_;
+  Response response{version};
+  auto [iter, res] = response_.emplace(version, std::move(response));
   assert(res);
   assert(modify_order_2.version == version_);
-  return *(*iter).second;
+  return (*iter).second;
 }
 
 Response &Order::operator()(CancelOrder const &cancel_order) {
@@ -219,10 +229,13 @@ Response &Order::operator()(CancelOrder const &cancel_order) {
   }
   // note! no need to catch exceptions, there are no resource leaks here
   // XXX TODO dispatch
-  auto [iter, res] = response_.try_emplace(++version_);
+  assert(version_ >= 1);
+  auto version = ++version_;
+  Response response{version};
+  auto [iter, res] = response_.emplace(version, std::move(response));
   assert(res);
   assert(cancel_order_2.version == version_);
-  return *(*iter).second;
+  return (*iter).second;
 }
 
 void Order::operator()(Event<Disconnected> const &) {
@@ -274,7 +287,7 @@ void Order::operator()(Event<OrderAck> const &event) {
   }
   auto iter = response_.find(order_ack.version);
   assert(iter != std::end(response_));
-  (*(*iter).second)(event, *this);
+  (*iter).second(event, *this);
   response_.erase(iter);
   // note! special case where the order never exists
   if (order_ack.request_type == RequestType::CREATE_ORDER && utils::has_request_failed(order_ack.request_status)) {

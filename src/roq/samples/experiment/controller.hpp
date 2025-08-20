@@ -84,8 +84,8 @@ struct Controller final : public io::sys::Signal::Handler, public client::Poller
   template <typename T>
   Market &get_market(Event<T> const &);
 
-  template <typename T>
-  Order &get_order(Event<T> const &);
+  template <typename T, typename Callback>
+  bool get_order(Event<T> const &, Callback);
 
  private:
   Settings const &settings_;

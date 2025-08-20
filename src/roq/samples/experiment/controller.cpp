@@ -5,6 +5,8 @@
 #include "roq/clock.hpp"
 #include "roq/logging.hpp"
 
+#include "roq/utils/update.hpp"
+
 #include "roq/io/sys/scheduler.hpp"
 
 using namespace std::literals;
@@ -166,8 +168,8 @@ void Controller::operator()(Event<Disconnected> const &event) {
 void Controller::operator()(Event<DownloadEnd> const &event) {
   auto &[message_info, download_end] = event;
   auto &source = source_[message_info.source];
-  if (source.max_order_id < download_end.max_order_id) {
-    source.max_order_id = download_end.max_order_id;
+  if (utils::update_max(source.max_order_id, download_end.max_order_id)) {
+    log::info("max_order_id={} (source={})"sv, source.max_order_id, message_info.source);
   }
   source.accounts.emplace(download_end.account);
 }
@@ -203,7 +205,6 @@ void Controller::operator()(Event<TradeUpdate> const &event) {
 // outbound
 
 void Controller::operator()(CreateOrder const &create_order, uint8_t source) {
-  log::warn("create_order={}, source={}"sv, create_order, source);
   (*dispatcher_).send(create_order, source);
 }
 
@@ -218,7 +219,7 @@ void Controller::operator()(CancelOrder const &cancel_order, uint8_t source) {
 // helpers
 
 void Controller::create_order_mapping(Order &order) {
-  assert(order.source != SOURCE_NONE);
+  assert(order.source != SOURCE_SELF);
   if (!order.order_id_) {
     auto &source = source_[order.source];
     auto order_id = ++source.max_order_id;
@@ -232,7 +233,7 @@ void Controller::create_order_mapping(Order &order) {
 }
 
 void Controller::remove_order_mapping(Order &order, bool rollback) {
-  assert(order.source != SOURCE_NONE);
+  assert(order.source != SOURCE_SELF);
   if (!order.order_id_) {
     return;
   }
@@ -268,9 +269,13 @@ void Controller::dispatch_market(Event<T> const &event) {
 
 template <typename T>
 void Controller::dispatch_order(Event<T> const &event) {
-  auto &order = get_order(event);
-  order(event);
-  dispatch(event, order);
+  if (get_order(event, [&](auto &order) {
+        order(event);
+        dispatch(event, order);
+      })) {
+  } else {
+    log::warn("*** EXTERNAL ORDER ***"sv);
+  }
 }
 
 template <typename T>
@@ -314,15 +319,17 @@ bool Controller::has_market(std::string_view const &exchange, std::string_view c
   return iter_2 != std::end(tmp);
 }
 
-template <typename T>
-Order &Controller::get_order(Event<T> const &event) {
+template <typename T, typename Callback>
+bool Controller::get_order(Event<T> const &event, Callback callback) {
   auto &[message_info, value] = event;
   auto &source = source_[message_info.source];
   auto iter = source.order_lookup.find(value.order_id);
-  if (iter == std::end(source.order_lookup)) [[unlikely]] {
-    log::fatal("Unexpected: source={}, order_id={}"sv, message_info.source, value.order_id);
+  if (iter != std::end(source.order_lookup)) {
+    callback(*(*iter).second);
+    return true;
+  } else {
+    return false;
   }
-  return *(*iter).second;
 }
 
 bool Controller::has_account(uint8_t source, std::string_view const &account) const {

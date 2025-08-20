@@ -87,7 +87,7 @@ void Strategy::operator()(Event<MarketStatus> const &, Market const &market) {
 }
 
 void Strategy::operator()(Event<TopOfBook> const &, Market const &) {
-  if (leg_1_.ready() && leg_2_.ready()) {
+  if (ready_ && leg_1_.ready() && leg_2_.ready()) {
     start();
   }
 }
@@ -122,7 +122,7 @@ void Strategy::stop() {
 void Strategy::maybe_create_orders(Market const &market) {
   leg_1_(market);
   leg_2_(market);
-  if (leg_1_.ready() && leg_2_.ready()) {
+  if (ready_ && leg_1_.ready() && leg_2_.ready()) {
     start();
   }
 }
