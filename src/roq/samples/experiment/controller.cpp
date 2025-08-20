@@ -218,7 +218,7 @@ void Controller::operator()(CancelOrder const &cancel_order, uint8_t source) {
 // helpers
 
 void Controller::create_order_mapping(Order &order) {
-  assert(order.source_ != SOURCE_NONE);
+  assert(order.source != SOURCE_NONE);
   if (!order.order_id_) {
     auto &source = source_[order.source];
     auto order_id = ++source.max_order_id;
@@ -232,7 +232,7 @@ void Controller::create_order_mapping(Order &order) {
 }
 
 void Controller::remove_order_mapping(Order &order, bool rollback) {
-  assert(order.source_ != SOURCE_NONE);
+  assert(order.source != SOURCE_NONE);
   if (!order.order_id_) {
     return;
   }

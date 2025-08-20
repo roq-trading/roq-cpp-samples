@@ -12,6 +12,26 @@ namespace roq {
 namespace samples {
 namespace experiment {
 
+// initially:
+//   place a bid at a price expected to be the low of the period
+//   place an offer at a price expected to be the high of the period
+//
+// if one order is completed:
+//   the price of the other order will be modified to a 1/3 retracement of the initial range
+//
+// if both orders are completed:
+//   done
+//
+// if either of the orders have failed:
+//   fail
+//
+// if too many retries:
+//   fail
+//
+// if any request fails:
+//   delay and retry if due to rate-limiter
+//   fail after N unsuccessful retries
+
 struct Strategy final : public Handler {
   Strategy(Dispatcher &, Settings const &);
 

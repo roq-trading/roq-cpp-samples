@@ -13,16 +13,6 @@ namespace roq {
 namespace samples {
 namespace experiment {
 
-// === CONSTANTS ===
-
-namespace {
-auto QUANTITY = 1.0;
-auto LOW_PRICE = 50'000.0;
-auto HIGH_PRICE = 150'000.0;
-auto RETRY_DELAY = 10s;
-size_t MAX_RETRIES = 3;
-}  // namespace
-
 // === HELPERS ===
 
 namespace {
@@ -77,7 +67,7 @@ auto create_cancel_order_request([[maybe_unused]] auto &settings) -> CancelOrder
 // === IMPLEMENTATION ===
 
 Strategy::Strategy(Dispatcher &dispatcher, Settings const &settings)
-    : dispatcher_{dispatcher}, settings_{settings}, leg_1_{*this, Side::BUY, QUANTITY}, leg_2_{*this, Side::SELL, QUANTITY} {
+    : dispatcher_{dispatcher}, settings_{settings}, leg_1_{*this, Side::BUY, settings_.quantity}, leg_2_{*this, Side::SELL, settings_.quantity} {
 }
 
 void Strategy::operator()(Event<Disconnected> const &) {
@@ -108,10 +98,10 @@ void Strategy::operator()(Event<OrderUpdate> const &, Order const &) {
   if (done_1 && done_2) {
     stop();
   } else if (done_1 && !done_2) {
-    auto price = (2.0 * LOW_PRICE + HIGH_PRICE) / 3.0;
+    auto price = (2.0 * settings_.price_low + settings_.price_high) / 3.0;
     leg_2_.modify(price);
   } else if (!done_1 && done_2) {
-    auto price = (LOW_PRICE + 2 * HIGH_PRICE) / 3.0;
+    auto price = (settings_.price_low + 2 * settings_.price_high) / 3.0;
     leg_1_.modify(price);
   }
 }
@@ -119,8 +109,8 @@ void Strategy::operator()(Event<OrderUpdate> const &, Order const &) {
 // state machine
 
 void Strategy::start() {
-  leg_1_.create(LOW_PRICE);
-  leg_1_.create(HIGH_PRICE);
+  leg_1_.create(settings_.price_low);
+  leg_2_.create(settings_.price_high);
 }
 
 void Strategy::stop() {
@@ -178,13 +168,13 @@ void Strategy::Leg::create_helper(size_t retry_counter) {
   assert(state_ == State::CREATING);
   auto failure_handler = [this, retry_counter](auto &event, [[maybe_unused]] auto &order) {
     assert(state_ == State::CREATING);
-    if (retry_counter >= MAX_RETRIES) {
+    if (retry_counter >= strategy_.settings_.max_retries) {
       log::fatal("Too many retries"sv);
     }
     auto &[message_info, order_ack] = event;
     if (order_ack.error == Error::REQUEST_RATE_LIMIT_REACHED) {
       auto timer_handler = [this, retry_counter]([[maybe_unused]] auto &event) { create_helper(retry_counter + 1); };
-      strategy_.dispatcher_.add_timer(RETRY_DELAY, timer_handler);
+      strategy_.dispatcher_.add_timer(strategy_.settings_.retry_delay, timer_handler);
     } else {
       state_ = State::FAILED;
       log::fatal("Unexpected: error={}"sv, order_ack.error);
@@ -257,13 +247,13 @@ void Strategy::Leg::modify_helper(size_t retry_counter) {
   }
   auto failure_handler = [this, retry_counter](auto &event, [[maybe_unused]] auto &order) {
     assert(state_ == State::MODIFYING);
-    if (retry_counter >= MAX_RETRIES) {
+    if (retry_counter >= strategy_.settings_.max_retries) {
       log::fatal("Too many retries"sv);
     }
     auto &[message_info, order_ack] = event;
     if (order_ack.error == Error::REQUEST_RATE_LIMIT_REACHED) {
       auto timer_handler = [this, retry_counter]([[maybe_unused]] auto &event) { modify_helper(retry_counter + 1); };
-      strategy_.dispatcher_.add_timer(RETRY_DELAY, timer_handler);
+      strategy_.dispatcher_.add_timer(strategy_.settings_.retry_delay, timer_handler);
     } else if (order_ack.error == Error::TOO_LATE_TO_MODIFY_OR_CANCEL) {
       state_ = State::DONE;
     } else {

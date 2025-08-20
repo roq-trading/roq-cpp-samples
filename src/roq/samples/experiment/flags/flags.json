@@ -29,6 +29,39 @@
       "required": true,
       "default": "BTC-PERPETUAL",
       "description": "symbol (regex)"
+    },
+    {
+      "name": "max_retries",
+      "type": "std/uint32",
+      "required": true,
+      "default": 3,
+      "description": "maximum number of retries"
+    },
+    {
+      "name": "retry_delay",
+      "type": "std/nanoseconds",
+      "required": true,
+      "validator": "roq/flags/validators/TimePeriod",
+      "default": "10s",
+      "description": "Retry delay"
+    },
+    {
+      "name": "quantity",
+      "type": "std/double",
+      "required": true,
+      "description": "quantity or amount"
+    },
+    {
+      "name": "price_low",
+      "type": "std/double",
+      "required": true,
+      "description": "low price"
+    },
+    {
+      "name": "price_high",
+      "type": "std/double",
+      "required": true,
+      "description": "high price"
     }
   ]
 }
