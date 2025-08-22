@@ -18,7 +18,7 @@ add_dependencies(${TARGET_NAME} ${TARGET_NAME}-flags-autogen-headers)
 target_link_libraries(
   ${TARGET_NAME}
   PRIVATE ${TARGET_NAME}-flags
-          roq-execution::roq-execution
+          roq-strategy::roq-strategy
           roq-client::roq-client
           roq-client::roq-client-flags
           roq-logging::roq-logging

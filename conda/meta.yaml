@@ -30,13 +30,13 @@ requirements:
     - roq-cache
     - roq-client
     - roq-codec
-    - roq-execution
     - roq-flags
     - roq-io
     - roq-logging
     - roq-market
     - roq-oss-benchmark
     - roq-oss-unordered_dense
+    - roq-strategy
     - roq-utils
     - roq-web
     - tomlplusplus

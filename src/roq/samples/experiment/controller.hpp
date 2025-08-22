@@ -12,7 +12,7 @@
 
 #include "roq/client/poller.hpp"
 
-#include "roq/execution/bridge.hpp"
+#include "roq/strategy/bridge.hpp"
 
 #include "roq/samples/experiment/config.hpp"
 #include "roq/samples/experiment/settings.hpp"
@@ -24,7 +24,7 @@ namespace roq {
 namespace samples {
 namespace experiment {
 
-struct Controller final : public io::sys::Signal::Handler, public client::Poller::Handler, public execution::Bridge::Dispatcher {
+struct Controller final : public io::sys::Signal::Handler, public client::Poller::Handler, public strategy::Bridge::Dispatcher {
   Controller(Settings const &, Config const &, io::Context &, std::span<std::string_view const> const &);
 
   Controller(Controller &&) = default;
@@ -34,16 +34,16 @@ struct Controller final : public io::sys::Signal::Handler, public client::Poller
 
   // bridge
 
-  void add_timer(std::chrono::nanoseconds delay, execution::Bridge::TimerHandler const &);
+  void add_timer(std::chrono::nanoseconds delay, strategy::Bridge::TimerHandler const &);
 
-  std::unique_ptr<execution::Order> create_order(std::string_view const &account, execution::Market const &, execution::Bridge::OrderUpdateHandler const &);
+  std::unique_ptr<strategy::Order> create_order(std::string_view const &account, strategy::Market const &, strategy::Bridge::OrderUpdateHandler const &);
 
-  std::unique_ptr<execution::Order> create_order(
-      std::string_view const &account, execution::Market const &, execution::Bridge::OrderUpdateHandler const &, execution::Bridge::TradeUpdateHandler const &);
+  std::unique_ptr<strategy::Order> create_order(
+      std::string_view const &account, strategy::Market const &, strategy::Bridge::OrderUpdateHandler const &, strategy::Bridge::TradeUpdateHandler const &);
 
   bool has_account(uint8_t source, std::string_view const &account) const;
 
-  execution::Market const &get_market(std::string_view const &exchange, std::string_view const &symbol) const;
+  strategy::Market const &get_market(std::string_view const &exchange, std::string_view const &symbol) const;
 
   bool has_market(std::string_view const &exchange, std::string_view const &symbol) const;
 
@@ -63,7 +63,7 @@ struct Controller final : public io::sys::Signal::Handler, public client::Poller
   void operator()(Event<OrderUpdate> const &) override;
   void operator()(Event<TradeUpdate> const &) override;
 
-  // execution::Bridge::Dispatcher
+  // strategy::Bridge::Dispatcher
   void operator()(CreateOrder const &, uint8_t source) override;
   void operator()(ModifyOrder const &, uint8_t source) override;
   void operator()(CancelOrder const &, uint8_t source) override;
@@ -84,7 +84,7 @@ struct Controller final : public io::sys::Signal::Handler, public client::Poller
   //
   Strategy strategy_;
   //
-  std::unique_ptr<execution::Bridge> bridge_;
+  std::unique_ptr<strategy::Bridge> bridge_;
 };
 
 }  // namespace experiment

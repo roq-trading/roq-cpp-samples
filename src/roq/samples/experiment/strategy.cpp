@@ -80,21 +80,21 @@ void Strategy::operator()(Event<Ready> const &) {
   ready_ = true;
 }
 
-void Strategy::operator()(Event<ReferenceData> const &, execution::Market const &market) {
+void Strategy::operator()(Event<ReferenceData> const &, strategy::Market const &market) {
   maybe_create_orders(market);
 }
 
-void Strategy::operator()(Event<MarketStatus> const &, execution::Market const &market) {
+void Strategy::operator()(Event<MarketStatus> const &, strategy::Market const &market) {
   maybe_create_orders(market);
 }
 
-void Strategy::operator()(Event<TopOfBook> const &, execution::Market const &) {
+void Strategy::operator()(Event<TopOfBook> const &, strategy::Market const &) {
   if (ready_ && leg_1_.ready() && leg_2_.ready()) {
     start();
   }
 }
 
-void Strategy::operator()(Event<OrderUpdate> const &, execution::Order const &) {
+void Strategy::operator()(Event<OrderUpdate> const &, strategy::Order const &) {
   auto done_1 = leg_1_.done();
   auto done_2 = leg_2_.done();
   if (done_1 && done_2) {
@@ -121,7 +121,7 @@ void Strategy::stop() {
 
 // -
 
-void Strategy::maybe_create_orders(execution::Market const &market) {
+void Strategy::maybe_create_orders(strategy::Market const &market) {
   leg_1_(market);
   leg_2_(market);
   if (ready_ && leg_1_.ready() && leg_2_.ready()) {
@@ -142,7 +142,7 @@ bool Strategy::Leg::done() const {
   return state_ == State::DONE;
 }
 
-void Strategy::Leg::operator()(execution::Market const &market) {
+void Strategy::Leg::operator()(strategy::Market const &market) {
   if (order_) [[likely]] {
     return;
   }
@@ -277,7 +277,7 @@ void Strategy::Leg::modify_helper(size_t retry_counter) {
   (*order_)(request, failure_handler, success_handler);
 }
 
-void Strategy::Leg::update(Event<OrderUpdate> const &event, execution::Order const &) {
+void Strategy::Leg::update(Event<OrderUpdate> const &event, strategy::Order const &) {
   auto &[message_info, order_update] = event;
   // note! here we don't have to check for rejected because the order-ack will have triggered the failure handler
   if (order_update.order_status == OrderStatus::COMPLETED) {

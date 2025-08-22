@@ -38,7 +38,7 @@ auto create_dispatcher(auto &settings, auto &config, auto &context, auto &connec
 Controller::Controller(Settings const &settings, Config const &config, io::Context &context, std::span<std::string_view const> const &params)
     : settings_{settings}, terminate_{context.create_signal(*this, io::sys::Signal::Type::TERMINATE)},
       interrupt_{context.create_signal(*this, io::sys::Signal::Type::INTERRUPT)}, dispatcher_{create_dispatcher(settings, config, context, params)},
-      shared_{settings_, *this}, strategy_{shared_}, bridge_{execution::Bridge::create(strategy_, *this)} {
+      shared_{settings_, *this}, strategy_{shared_}, bridge_{strategy::Bridge::create(strategy_, *this)} {
 }
 
 void Controller::dispatch() {
@@ -99,20 +99,20 @@ void Controller::refresh(std::chrono::nanoseconds now) {
   create_event_and_dispatch(*bridge_, message_info, timer);
 }
 
-void Controller::add_timer(std::chrono::nanoseconds delay, execution::Bridge::TimerHandler const &timer_handler) {
+void Controller::add_timer(std::chrono::nanoseconds delay, strategy::Bridge::TimerHandler const &timer_handler) {
   return (*bridge_).add_timer(delay, timer_handler);
 }
 
-std::unique_ptr<execution::Order> Controller::create_order(
-    std::string_view const &account, execution::Market const &market, execution::Bridge::OrderUpdateHandler const &order_update_handler) {
+std::unique_ptr<strategy::Order> Controller::create_order(
+    std::string_view const &account, strategy::Market const &market, strategy::Bridge::OrderUpdateHandler const &order_update_handler) {
   return (*bridge_).create_order(account, market, order_update_handler);
 }
 
-std::unique_ptr<execution::Order> Controller::create_order(
+std::unique_ptr<strategy::Order> Controller::create_order(
     std::string_view const &account,
-    execution::Market const &market,
-    execution::Bridge::OrderUpdateHandler const &order_update_handler,
-    execution::Bridge::TradeUpdateHandler const &trade_update_handler) {
+    strategy::Market const &market,
+    strategy::Bridge::OrderUpdateHandler const &order_update_handler,
+    strategy::Bridge::TradeUpdateHandler const &trade_update_handler) {
   return (*bridge_).create_order(account, market, order_update_handler, trade_update_handler);
 }
 
@@ -120,7 +120,7 @@ bool Controller::has_account(uint8_t source, std::string_view const &account) co
   return (*bridge_).has_account(source, account);
 }
 
-execution::Market const &Controller::get_market(std::string_view const &exchange, std::string_view const &symbol) const {
+strategy::Market const &Controller::get_market(std::string_view const &exchange, std::string_view const &symbol) const {
   return (*bridge_).get_market(exchange, symbol);
 }
 
