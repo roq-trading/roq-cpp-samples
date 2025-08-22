@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-./roq-cpp-samples-experiment \
+./roq-cpp-samples-strategy-1 \
   --name "trader" \
   --account "A1" \
   --exchange "deribit" \

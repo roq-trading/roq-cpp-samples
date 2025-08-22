@@ -1,19 +1,19 @@
 /* Copyright (c) 2017-2025, Hans Erik Thrane */
 
-#include "roq/samples/experiment/strategy.hpp"
+#include "roq/samples/strategy-1/strategy.hpp"
 
 #include "roq/logging.hpp"
 
 #include "roq/utils/compare.hpp"
 #include "roq/utils/update.hpp"
 
-#include "roq/samples/experiment/controller.hpp"
+#include "roq/samples/strategy-1/controller.hpp"
 
 using namespace std::literals;
 
 namespace roq {
 namespace samples {
-namespace experiment {
+namespace strategy_1 {
 
 // === HELPERS ===
 
@@ -95,24 +95,24 @@ void Strategy::operator()(Event<TopOfBook> const &, strategy::Market const &) {
 }
 
 void Strategy::operator()(Event<OrderUpdate> const &, strategy::Order const &) {
-  auto done_1 = leg_1_.done();
-  auto done_2 = leg_2_.done();
+  auto done_1 = leg_1_.finished();
+  auto done_2 = leg_2_.finished();
   if (done_1 && done_2) {
     stop();
   } else if (done_1 && !done_2) {
     auto price = (2.0 * shared_.settings.price_low + shared_.settings.price_high) / 3.0;
-    leg_2_.modify(price);
+    leg_2_.modify_order(price);
   } else if (!done_1 && done_2) {
     auto price = (shared_.settings.price_low + 2 * shared_.settings.price_high) / 3.0;
-    leg_1_.modify(price);
+    leg_1_.modify_order(price);
   }
 }
 
 // state machine
 
 void Strategy::start() {
-  leg_1_.create(shared_.settings.price_low);
-  leg_2_.create(shared_.settings.price_high);
+  leg_1_.submit_order(shared_.settings.price_low);
+  leg_2_.submit_order(shared_.settings.price_high);
 }
 
 void Strategy::stop() {
@@ -138,69 +138,82 @@ bool Strategy::Leg::ready() const {
   return state_ == State::READY;
 }
 
-bool Strategy::Leg::done() const {
-  return state_ == State::DONE;
+bool Strategy::Leg::finished() const {
+  return state_ == State::FINISHED;
 }
 
+// note! we can only create the order object when the framework knows about the market
+
 void Strategy::Leg::operator()(strategy::Market const &market) {
+  assert(market.exchange == shared_.settings.exchange);
+  assert(market.symbol == shared_.settings.symbol);
+
   if (order_) [[likely]] {
     return;
   }
+
   assert(state_ == State::UNDEFINED);
-  // create an order management object
-  // notice that we can attach order and trade update handlers so we can later receive the callbacks
+
   auto order_update_handler = [this](auto &event, auto &order) { update(event, order); };
+
   order_ = shared_.controller.create_order(shared_.settings.account, market, order_update_handler);
   state_ = State::READY;
 }
 
-void Strategy::Leg::create(double price) {
+void Strategy::Leg::submit_order(double price) {
   assert(order_);
   assert(state_ == State::READY);
   assert(std::isnan(price_));
   assert(!std::isnan(price));
+
   price_ = price;
   state_ = State::CREATING;
-  create_helper(0);
+  submit_order_helper(0);
 }
 
-// remember to throttle
-void Strategy::Leg::create_helper(size_t retry_counter) {
+// XXX TODO remember to throttle
+void Strategy::Leg::submit_order_helper(size_t retry_counter) {
   assert(order_);
   assert(state_ == State::CREATING);
+
   auto failure_handler = [this, retry_counter](auto &event, [[maybe_unused]] auto &order) {
     assert(state_ == State::CREATING);
+
     if (retry_counter >= shared_.settings.max_retries) {
       log::fatal("Too many retries"sv);
     }
     auto &[message_info, order_ack] = event;
     if (order_ack.error == Error::REQUEST_RATE_LIMIT_REACHED) {
-      auto timer_handler = [this, retry_counter]([[maybe_unused]] auto &event) { create_helper(retry_counter + 1); };
+      auto timer_handler = [this, retry_counter]([[maybe_unused]] auto &event) { submit_order_helper(retry_counter + 1); };
       shared_.controller.add_timer(shared_.settings.retry_delay, timer_handler);
     } else {
       state_ = State::FAILED;
       log::fatal("Unexpected: error={}"sv, order_ack.error);
     }
   };
+
   auto success_handler = [this, retry_counter](auto &event, [[maybe_unused]] auto &order) {
     assert(state_ == State::CREATING);
+
     auto &[message_info, order_ack] = event;
     if (!utils::is_equal(order_ack.price, price_)) {
-      state_ = State::MODIFYING;
-      modify_helper(0);
+      state_ = State::CHANGING;
+      modify_order_helper(0);
     } else {
-      state_ = State::WORKING;
+      state_ = State::WAITING;
     }
   };
+
   auto request = create_limit_order_request(shared_.settings, side_, quantity_, price_);
   (*order_)(request, failure_handler, success_handler);
 }
 
-// remember to throttle
-void Strategy::Leg::modify(double price) {
+// XXX TODO remember to throttle
+void Strategy::Leg::modify_order(double price) {
   assert(order_);
   assert(!std::isnan(price_));
   assert(!std::isnan(price));
+
   if (utils::update(price_, price)) {
     switch (state_) {
       using enum State;
@@ -209,14 +222,14 @@ void Strategy::Leg::modify(double price) {
         assert(false);
         break;
       case CREATING:
-      case MODIFYING:
+      case CHANGING:
         // will be handled by the response callbacks
         break;
-      case WORKING:
-        state_ = State::MODIFYING;
-        modify_helper(0);
+      case WAITING:
+        state_ = State::CHANGING;
+        modify_order_helper(0);
         break;
-      case DONE:
+      case FINISHED:
       case FAILED:
         log::warn("Unexpected: is this a race condition?"sv);  // XXX TODO unsure about this
         break;
@@ -224,7 +237,7 @@ void Strategy::Leg::modify(double price) {
   }
 }
 
-void Strategy::Leg::modify_helper(size_t retry_counter) {
+void Strategy::Leg::modify_order_helper(size_t retry_counter) {
   switch (state_) {
     using enum State;
     case UNDEFINED:
@@ -235,56 +248,60 @@ void Strategy::Leg::modify_helper(size_t retry_counter) {
       log::fatal("Unexpected"sv);
 #endif
       break;
-    case MODIFYING:
+    case CHANGING:
       break;
-    case WORKING:
+    case WAITING:
       assert(false);  // forgot to set state before calling this function?
 #ifndef NDEBUG
       log::fatal("Unexpected"sv);
 #endif
       break;
-    case DONE:
+    case FINISHED:
     case FAILED:
       return;  // possible due to async updates
   }
+
   auto failure_handler = [this, retry_counter](auto &event, [[maybe_unused]] auto &order) {
-    assert(state_ == State::MODIFYING);
+    assert(state_ == State::CHANGING);
+
     if (retry_counter >= shared_.settings.max_retries) {
       log::fatal("Too many retries"sv);
     }
     auto &[message_info, order_ack] = event;
     if (order_ack.error == Error::REQUEST_RATE_LIMIT_REACHED) {
-      auto timer_handler = [this, retry_counter]([[maybe_unused]] auto &event) { modify_helper(retry_counter + 1); };
+      auto timer_handler = [this, retry_counter]([[maybe_unused]] auto &event) { modify_order_helper(retry_counter + 1); };
       shared_.controller.add_timer(shared_.settings.retry_delay, timer_handler);
     } else if (order_ack.error == Error::TOO_LATE_TO_MODIFY_OR_CANCEL) {
-      state_ = State::DONE;
+      state_ = State::FINISHED;
     } else {
       state_ = State::FAILED;
       log::fatal("Unexpected: error={}"sv, order_ack.error);
     }
   };
+
   auto success_handler = [this, retry_counter](auto &event, [[maybe_unused]] auto &order) {
-    assert(state_ == State::MODIFYING);
+    assert(state_ == State::CHANGING);
+
     auto &[message_info, order_ack] = event;
     if (!utils::is_equal(order_ack.price, price_)) {
-      state_ = State::MODIFYING;
-      modify_helper(0);
+      state_ = State::CHANGING;
+      modify_order_helper(0);
     } else {
-      state_ = State::WORKING;
+      state_ = State::WAITING;
     }
   };
+
   auto request = create_modify_order_request(shared_.settings, price_);
   (*order_)(request, failure_handler, success_handler);
 }
 
 void Strategy::Leg::update(Event<OrderUpdate> const &event, strategy::Order const &) {
   auto &[message_info, order_update] = event;
-  // note! here we don't have to check for rejected because the order-ack will have triggered the failure handler
   if (order_update.order_status == OrderStatus::COMPLETED) {
-    state_ = State::DONE;
+    state_ = State::FINISHED;
   }
 }
 
-}  // namespace experiment
+}  // namespace strategy_1
 }  // namespace samples
 }  // namespace roq

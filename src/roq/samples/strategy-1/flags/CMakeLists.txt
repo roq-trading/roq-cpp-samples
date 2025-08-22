@@ -1,4 +1,4 @@
-set(TARGET_NAME ${PROJECT_NAME}-experiment-flags)
+set(TARGET_NAME ${PROJECT_NAME}-strategy-1-flags)
 
 include(RoqAutogen)
 

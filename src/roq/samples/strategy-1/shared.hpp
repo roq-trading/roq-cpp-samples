@@ -2,11 +2,11 @@
 
 #pragma once
 
-#include "roq/samples/experiment/settings.hpp"
+#include "roq/samples/strategy-1/settings.hpp"
 
 namespace roq {
 namespace samples {
-namespace experiment {
+namespace strategy_1 {
 
 struct Controller;
 
@@ -17,6 +17,6 @@ struct Shared final {
   Controller &controller;
 };
 
-}  // namespace experiment
+}  // namespace strategy_1
 }  // namespace samples
 }  // namespace roq

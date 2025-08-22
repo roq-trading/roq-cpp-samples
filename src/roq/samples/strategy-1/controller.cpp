@@ -1,6 +1,6 @@
 /* Copyright (c) 2017-2025, Hans Erik Thrane */
 
-#include "roq/samples/experiment/controller.hpp"
+#include "roq/samples/strategy-1/controller.hpp"
 
 #include "roq/clock.hpp"
 #include "roq/logging.hpp"
@@ -13,7 +13,7 @@ using namespace std::literals;
 
 namespace roq {
 namespace samples {
-namespace experiment {
+namespace strategy_1 {
 
 // === CONSTANTS ===
 
@@ -199,6 +199,6 @@ void Controller::dispatch(Event<T> const &event, Args &&...args) {
   (*bridge_)(event);
 }
 
-}  // namespace experiment
+}  // namespace strategy_1
 }  // namespace samples
 }  // namespace roq

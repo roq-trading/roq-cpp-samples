@@ -8,11 +8,11 @@
 
 #include "roq/client.hpp"
 
-#include "roq/samples/experiment/settings.hpp"
+#include "roq/samples/strategy-1/settings.hpp"
 
 namespace roq {
 namespace samples {
-namespace experiment {
+namespace strategy_1 {
 
 struct Config final : public client::Config {
   explicit Config(Settings const &);
@@ -28,6 +28,6 @@ struct Config final : public client::Config {
   std::map<std::string, std::set<std::string>> const exchange_symbols_;
 };
 
-}  // namespace experiment
+}  // namespace strategy_1
 }  // namespace samples
 }  // namespace roq

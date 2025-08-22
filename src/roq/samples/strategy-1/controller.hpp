@@ -14,15 +14,15 @@
 
 #include "roq/strategy/bridge.hpp"
 
-#include "roq/samples/experiment/config.hpp"
-#include "roq/samples/experiment/settings.hpp"
+#include "roq/samples/strategy-1/config.hpp"
+#include "roq/samples/strategy-1/settings.hpp"
 
-#include "roq/samples/experiment/shared.hpp"
-#include "roq/samples/experiment/strategy.hpp"
+#include "roq/samples/strategy-1/shared.hpp"
+#include "roq/samples/strategy-1/strategy.hpp"
 
 namespace roq {
 namespace samples {
-namespace experiment {
+namespace strategy_1 {
 
 struct Controller final : public io::sys::Signal::Handler, public client::Poller::Handler, public strategy::Bridge::Dispatcher {
   Controller(Settings const &, Config const &, io::Context &, std::span<std::string_view const> const &);
@@ -87,6 +87,6 @@ struct Controller final : public io::sys::Signal::Handler, public client::Poller
   std::unique_ptr<strategy::Bridge> bridge_;
 };
 
-}  // namespace experiment
+}  // namespace strategy_1
 }  // namespace samples
 }  // namespace roq

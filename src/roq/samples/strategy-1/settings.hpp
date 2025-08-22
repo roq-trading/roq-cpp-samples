@@ -6,16 +6,16 @@
 
 #include "roq/client/flags/settings.hpp"
 
-#include "roq/samples/experiment/flags/flags.hpp"
+#include "roq/samples/strategy-1/flags/flags.hpp"
 
 namespace roq {
 namespace samples {
-namespace experiment {
+namespace strategy_1 {
 
 struct Settings final : public client::flags::Settings, public flags::Flags {
   explicit Settings(args::Parser const &);
 };
 
-}  // namespace experiment
+}  // namespace strategy_1
 }  // namespace samples
 }  // namespace roq

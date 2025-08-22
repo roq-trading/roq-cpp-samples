@@ -6,13 +6,13 @@
 
 #include "roq/strategy/bridge.hpp"
 
-#include "roq/samples/experiment/settings.hpp"
+#include "roq/samples/strategy-1/settings.hpp"
 
-#include "roq/samples/experiment/shared.hpp"
+#include "roq/samples/strategy-1/shared.hpp"
 
 namespace roq {
 namespace samples {
-namespace experiment {
+namespace strategy_1 {
 
 // initially:
 //   place a bid at a price expected to be the low of the period
@@ -64,15 +64,15 @@ struct Strategy final : public strategy::Bridge::Handler {
     Leg(Shared &, Side, double quantity);
 
     bool ready() const;
-    bool done() const;
+    bool finished() const;
 
     void operator()(strategy::Market const &);
 
-    void create(double price);
-    void create_helper(size_t retry_counter);
+    void submit_order(double price);
+    void submit_order_helper(size_t retry_counter);
 
-    void modify(double price);
-    void modify_helper(size_t retry_counter);
+    void modify_order(double price);
+    void modify_order_helper(size_t retry_counter);
 
     void update(Event<OrderUpdate> const &, strategy::Order const &);
 
@@ -80,15 +80,15 @@ struct Strategy final : public strategy::Bridge::Handler {
     Shared &shared_;
     Side const side_;
     double const quantity_;
-    double price_ = NaN;
+    double price_ = NaN;  // note! dynamic
     enum class State {
       UNDEFINED,
-      READY,
-      CREATING,
-      MODIFYING,
-      WORKING,
-      DONE,
-      FAILED,
+      READY,     // ready for action
+      CREATING,  // request was sent to create an order on the exchange
+      CHANGING,  // request was sent to change order attributes on the exchange
+      WAITING,   // waiting for order to be filled
+      FINISHED,  // finished successfully
+      FAILED,    // something failed
     } state_ = {};
     std::unique_ptr<strategy::Order> order_;
   };
@@ -99,6 +99,6 @@ struct Strategy final : public strategy::Bridge::Handler {
   Leg leg_2_;
 };
 
-}  // namespace experiment
+}  // namespace strategy_1
 }  // namespace samples
 }  // namespace roq

@@ -1,19 +1,19 @@
 /* Copyright (c) 2017-2025, Hans Erik Thrane */
 
-#include "roq/samples/experiment/application.hpp"
+#include "roq/samples/strategy-1/application.hpp"
 
 #include "roq/logging.hpp"
 
 #include "roq/io/engine/context_factory.hpp"
 
-#include "roq/samples/experiment/config.hpp"
-#include "roq/samples/experiment/controller.hpp"
+#include "roq/samples/strategy-1/config.hpp"
+#include "roq/samples/strategy-1/controller.hpp"
 
 using namespace std::literals;
 
 namespace roq {
 namespace samples {
-namespace experiment {
+namespace strategy_1 {
 
 // === IMPLEMENTATION ===
 
@@ -29,6 +29,6 @@ int Application::main(args::Parser const &args) {
   return EXIT_SUCCESS;
 }
 
-}  // namespace experiment
+}  // namespace strategy_1
 }  // namespace samples
 }  // namespace roq

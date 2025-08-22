@@ -5,7 +5,7 @@
 #include "roq/flags/args.hpp"
 #include "roq/logging/flags/settings.hpp"
 
-#include "roq/samples/experiment/application.hpp"
+#include "roq/samples/strategy-1/application.hpp"
 
 using namespace std::literals;
 
@@ -24,5 +24,5 @@ auto const INFO = roq::Service::Info{
 int main(int argc, char **argv) {
   roq::flags::Args args{argc, argv, INFO.description, INFO.build_version};
   roq::logging::flags::Settings settings{args};
-  return roq::samples::experiment::Application{args, settings, INFO}.run();
+  return roq::samples::strategy_1::Application{args, settings, INFO}.run();
 }

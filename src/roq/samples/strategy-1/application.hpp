@@ -6,7 +6,7 @@
 
 namespace roq {
 namespace samples {
-namespace experiment {
+namespace strategy_1 {
 
 // Service is a base class used to initialize the environment
 // it is not required, only for your convenience
@@ -18,6 +18,6 @@ struct Application final : public Service {
   int main(args::Parser const &) override;
 };
 
-}  // namespace experiment
+}  // namespace strategy_1
 }  // namespace samples
 }  // namespace roq

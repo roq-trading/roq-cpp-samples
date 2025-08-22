@@ -1,4 +1,4 @@
-set(TARGET_NAME ${PROJECT_NAME}-experiment)
+set(TARGET_NAME ${PROJECT_NAME}-strategy-1)
 
 add_subdirectory(flags)
 

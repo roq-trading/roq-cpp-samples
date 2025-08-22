@@ -1,10 +1,10 @@
 /* Copyright (c) 2017-2025, Hans Erik Thrane */
 
-#include "roq/samples/experiment/config.hpp"
+#include "roq/samples/strategy-1/config.hpp"
 
 namespace roq {
 namespace samples {
-namespace experiment {
+namespace strategy_1 {
 
 // === HELPERS ===
 
@@ -55,6 +55,6 @@ void Config::dispatch(Handler &handler) const {
   }
 }
 
-}  // namespace experiment
+}  // namespace strategy_1
 }  // namespace samples
 }  // namespace roq
