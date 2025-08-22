@@ -7,6 +7,8 @@
 #include "roq/utils/compare.hpp"
 #include "roq/utils/update.hpp"
 
+#include "roq/samples/experiment/controller.hpp"
+
 using namespace std::literals;
 
 namespace roq {
@@ -16,7 +18,7 @@ namespace experiment {
 // === HELPERS ===
 
 namespace {
-auto create_limit_order_request([[maybe_unused]] auto &settings, auto side, auto quantity, auto price) -> CreateOrder {
+auto create_limit_order_request(auto &settings, auto side, auto quantity, auto price) -> CreateOrder {
   return {
       .account = {},   // note! managed
       .order_id = {},  // note! managed
@@ -35,7 +37,7 @@ auto create_limit_order_request([[maybe_unused]] auto &settings, auto side, auto
       .price = price,
       .stop_price = NaN,
       .routing_id = {},
-      .strategy_id = {},
+      .strategy_id = settings.strategy_id,
   };
 }
 
@@ -78,21 +80,21 @@ void Strategy::operator()(Event<Ready> const &) {
   ready_ = true;
 }
 
-void Strategy::operator()(Event<ReferenceData> const &, Market const &market) {
+void Strategy::operator()(Event<ReferenceData> const &, execution::Market const &market) {
   maybe_create_orders(market);
 }
 
-void Strategy::operator()(Event<MarketStatus> const &, Market const &market) {
+void Strategy::operator()(Event<MarketStatus> const &, execution::Market const &market) {
   maybe_create_orders(market);
 }
 
-void Strategy::operator()(Event<TopOfBook> const &, Market const &) {
+void Strategy::operator()(Event<TopOfBook> const &, execution::Market const &) {
   if (ready_ && leg_1_.ready() && leg_2_.ready()) {
     start();
   }
 }
 
-void Strategy::operator()(Event<OrderUpdate> const &, Order const &) {
+void Strategy::operator()(Event<OrderUpdate> const &, execution::Order const &) {
   auto done_1 = leg_1_.done();
   auto done_2 = leg_2_.done();
   if (done_1 && done_2) {
@@ -114,12 +116,12 @@ void Strategy::start() {
 }
 
 void Strategy::stop() {
-  shared_.dispatcher.stop();
+  // XXX TODO shared_.dispatcher.stop();
 }
 
 // -
 
-void Strategy::maybe_create_orders(Market const &market) {
+void Strategy::maybe_create_orders(execution::Market const &market) {
   leg_1_(market);
   leg_2_(market);
   if (ready_ && leg_1_.ready() && leg_2_.ready()) {
@@ -140,7 +142,7 @@ bool Strategy::Leg::done() const {
   return state_ == State::DONE;
 }
 
-void Strategy::Leg::operator()(Market const &market) {
+void Strategy::Leg::operator()(execution::Market const &market) {
   if (order_) [[likely]] {
     return;
   }
@@ -148,7 +150,7 @@ void Strategy::Leg::operator()(Market const &market) {
   // create an order management object
   // notice that we can attach order and trade update handlers so we can later receive the callbacks
   auto order_update_handler = [this](auto &event, auto &order) { update(event, order); };
-  order_ = shared_.dispatcher.create_order(shared_.settings.account, market, order_update_handler);
+  order_ = shared_.controller.create_order(shared_.settings.account, market, order_update_handler);
   state_ = State::READY;
 }
 
@@ -174,7 +176,7 @@ void Strategy::Leg::create_helper(size_t retry_counter) {
     auto &[message_info, order_ack] = event;
     if (order_ack.error == Error::REQUEST_RATE_LIMIT_REACHED) {
       auto timer_handler = [this, retry_counter]([[maybe_unused]] auto &event) { create_helper(retry_counter + 1); };
-      shared_.dispatcher.add_timer(shared_.settings.retry_delay, timer_handler);
+      shared_.controller.add_timer(shared_.settings.retry_delay, timer_handler);
     } else {
       state_ = State::FAILED;
       log::fatal("Unexpected: error={}"sv, order_ack.error);
@@ -253,7 +255,7 @@ void Strategy::Leg::modify_helper(size_t retry_counter) {
     auto &[message_info, order_ack] = event;
     if (order_ack.error == Error::REQUEST_RATE_LIMIT_REACHED) {
       auto timer_handler = [this, retry_counter]([[maybe_unused]] auto &event) { modify_helper(retry_counter + 1); };
-      shared_.dispatcher.add_timer(shared_.settings.retry_delay, timer_handler);
+      shared_.controller.add_timer(shared_.settings.retry_delay, timer_handler);
     } else if (order_ack.error == Error::TOO_LATE_TO_MODIFY_OR_CANCEL) {
       state_ = State::DONE;
     } else {
@@ -275,7 +277,7 @@ void Strategy::Leg::modify_helper(size_t retry_counter) {
   (*order_)(request, failure_handler, success_handler);
 }
 
-void Strategy::Leg::update(Event<OrderUpdate> const &event, Order const &) {
+void Strategy::Leg::update(Event<OrderUpdate> const &event, execution::Order const &) {
   auto &[message_info, order_update] = event;
   // note! here we don't have to check for rejected because the order-ack will have triggered the failure handler
   if (order_update.order_status == OrderStatus::COMPLETED) {

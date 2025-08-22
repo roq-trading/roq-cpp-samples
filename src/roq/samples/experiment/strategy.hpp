@@ -4,10 +4,11 @@
 
 #include "roq/api.hpp"
 
+#include "roq/execution/bridge.hpp"
+
 #include "roq/samples/experiment/settings.hpp"
 
 #include "roq/samples/experiment/shared.hpp"
-#include "roq/samples/experiment/test.hpp"
 
 namespace roq {
 namespace samples {
@@ -33,27 +34,26 @@ namespace experiment {
 //   delay and retry if due to rate-limiter
 //   fail after N unsuccessful retries
 
-struct Strategy final : public Handler {
+struct Strategy final : public execution::Bridge::Handler {
   explicit Strategy(Shared &);
 
   Strategy(Strategy &&) = default;
   Strategy(Strategy const &) = delete;
 
  protected:
+  // execution::Bridge::Handler
   void operator()(Event<Disconnected> const &) override;
   void operator()(Event<Ready> const &) override;
-
-  void operator()(Event<ReferenceData> const &, Market const &) override;
-  void operator()(Event<MarketStatus> const &, Market const &) override;
-  void operator()(Event<TopOfBook> const &, Market const &) override;
-
-  void operator()(Event<OrderUpdate> const &, Order const &) override;
+  void operator()(Event<ReferenceData> const &, execution::Market const &) override;
+  void operator()(Event<MarketStatus> const &, execution::Market const &) override;
+  void operator()(Event<TopOfBook> const &, execution::Market const &) override;
+  void operator()(Event<OrderUpdate> const &, execution::Order const &) override;
 
  protected:
   void start();
   void stop();
   // -
-  void maybe_create_orders(Market const &);
+  void maybe_create_orders(execution::Market const &);
 
  private:
   Shared &shared_;
@@ -66,7 +66,7 @@ struct Strategy final : public Handler {
     bool ready() const;
     bool done() const;
 
-    void operator()(Market const &);
+    void operator()(execution::Market const &);
 
     void create(double price);
     void create_helper(size_t retry_counter);
@@ -74,7 +74,7 @@ struct Strategy final : public Handler {
     void modify(double price);
     void modify_helper(size_t retry_counter);
 
-    void update(Event<OrderUpdate> const &, Order const &);
+    void update(Event<OrderUpdate> const &, execution::Order const &);
 
    private:
     Shared &shared_;
@@ -90,7 +90,7 @@ struct Strategy final : public Handler {
       DONE,
       FAILED,
     } state_ = {};
-    std::unique_ptr<Order> order_;
+    std::unique_ptr<execution::Order> order_;
   };
 
   friend Leg;  // XXX TODO move to Shared

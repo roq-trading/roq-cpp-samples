@@ -12,18 +12,19 @@
 
 #include "roq/client/poller.hpp"
 
+#include "roq/execution/bridge.hpp"
+
 #include "roq/samples/experiment/config.hpp"
 #include "roq/samples/experiment/settings.hpp"
 
 #include "roq/samples/experiment/shared.hpp"
 #include "roq/samples/experiment/strategy.hpp"
-#include "roq/samples/experiment/test.hpp"
 
 namespace roq {
 namespace samples {
 namespace experiment {
 
-struct Controller final : public io::sys::Signal::Handler, public client::Poller::Handler, public Dispatcher {
+struct Controller final : public io::sys::Signal::Handler, public client::Poller::Handler, public execution::Bridge::Dispatcher {
   Controller(Settings const &, Config const &, io::Context &, std::span<std::string_view const> const &);
 
   Controller(Controller &&) = default;
@@ -31,18 +32,20 @@ struct Controller final : public io::sys::Signal::Handler, public client::Poller
 
   void dispatch();
 
-  void stop() override;
+  // bridge
 
-  std::unique_ptr<Order> create_order(
-      std::string_view const &account, Market const &, OrderUpdateHandler const & = {}, TradeUpdateHandler const & = {}) override;
+  void add_timer(std::chrono::nanoseconds delay, execution::Bridge::TimerHandler const &);
 
-  void add_timer(std::chrono::nanoseconds delay, TimerHandler const &) override;
+  std::unique_ptr<execution::Order> create_order(std::string_view const &account, execution::Market const &, execution::Bridge::OrderUpdateHandler const &);
 
-  Market const &get_market(std::string_view const &exchange, std::string_view const &symbol) const override;
+  std::unique_ptr<execution::Order> create_order(
+      std::string_view const &account, execution::Market const &, execution::Bridge::OrderUpdateHandler const &, execution::Bridge::TradeUpdateHandler const &);
 
-  bool has_market(std::string_view const &exchange, std::string_view const &symbol) const override;
+  bool has_account(uint8_t source, std::string_view const &account) const;
 
-  bool has_account(uint8_t source, std::string_view const &account) const override;
+  execution::Market const &get_market(std::string_view const &exchange, std::string_view const &symbol) const;
+
+  bool has_market(std::string_view const &exchange, std::string_view const &symbol) const;
 
  protected:
   // io::sys::Signal::Handler
@@ -60,32 +63,15 @@ struct Controller final : public io::sys::Signal::Handler, public client::Poller
   void operator()(Event<OrderUpdate> const &) override;
   void operator()(Event<TradeUpdate> const &) override;
 
-  friend Order;
-
-  // outbound
-  void operator()(CreateOrder const &, uint8_t source);
-  void operator()(ModifyOrder const &, uint8_t source);
-  void operator()(CancelOrder const &, uint8_t source);
-
-  void create_order_mapping(Order &);
-  void remove_order_mapping(Order &, bool rollback = false);
+  // execution::Bridge::Dispatcher
+  void operator()(CreateOrder const &, uint8_t source) override;
+  void operator()(ModifyOrder const &, uint8_t source) override;
+  void operator()(CancelOrder const &, uint8_t source) override;
 
   void refresh(std::chrono::nanoseconds now);
 
   template <typename T, typename... Args>
   void dispatch(Event<T> const &, Args &&...);
-
-  template <typename T>
-  void dispatch_market(Event<T> const &);
-
-  template <typename T>
-  void dispatch_order(Event<T> const &);
-
-  template <typename T>
-  Market &get_market(Event<T> const &);
-
-  template <typename T, typename Callback>
-  bool get_order(Event<T> const &, Callback);
 
  private:
   Settings const &settings_;
@@ -94,27 +80,11 @@ struct Controller final : public io::sys::Signal::Handler, public client::Poller
   std::unique_ptr<client::Poller> dispatcher_;
   std::chrono::nanoseconds next_yield_ = {};
   std::chrono::nanoseconds next_timer_ = {};
-  //
   Shared shared_;
-  // EXPERIMENTAL
-  // timer
-  using TimerKey = int64_t;  // note! unordered_map doesn't like std::chrono::nanoseconds
-  std::priority_queue<TimerKey, std::vector<TimerKey>, std::greater<TimerKey>> timer_queue_;
-  utils::unordered_map<TimerKey, std::vector<TimerHandler>> timer_handlers_;
-  // source
-  struct Source final {
-    bool ready = {};
-    uint64_t max_order_id = {};
-    utils::unordered_map<uint64_t, Order *> order_lookup;
-    utils::unordered_set<std::string> accounts;
-  };
-  std::vector<Source> source_;
-  // market
-  // XXX TODO use opaque for faster lookup
-  utils::unordered_map<std::string, utils::unordered_map<std::string, Market>> exchange_symbol_to_market_;
-  // STRATEGY
+  //
   Strategy strategy_;
-  experiment::Handler &handler_;  // note!
+  //
+  std::unique_ptr<execution::Bridge> bridge_;
 };
 
 }  // namespace experiment

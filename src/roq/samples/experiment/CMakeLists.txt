@@ -9,7 +9,6 @@ set(SOURCES
     settings.cpp
     shared.cpp
     strategy.cpp
-    test.cpp
     main.cpp)
 
 add_executable(${TARGET_NAME} ${SOURCES})
@@ -19,6 +18,7 @@ add_dependencies(${TARGET_NAME} ${TARGET_NAME}-flags-autogen-headers)
 target_link_libraries(
   ${TARGET_NAME}
   PRIVATE ${TARGET_NAME}-flags
+          roq-execution::roq-execution
           roq-client::roq-client
           roq-client::roq-client-flags
           roq-logging::roq-logging

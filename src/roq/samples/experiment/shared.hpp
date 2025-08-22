@@ -3,17 +3,18 @@
 #pragma once
 
 #include "roq/samples/experiment/settings.hpp"
-#include "roq/samples/experiment/test.hpp"
 
 namespace roq {
 namespace samples {
 namespace experiment {
 
-struct Shared final {
-  Shared(Dispatcher &, Settings const &);
+struct Controller;
 
-  Dispatcher &dispatcher;
+struct Shared final {
+  Shared(Settings const &, Controller &);
+
   Settings const &settings;
+  Controller &controller;
 };
 
 }  // namespace experiment

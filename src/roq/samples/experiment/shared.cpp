@@ -6,7 +6,7 @@ namespace roq {
 namespace samples {
 namespace experiment {
 
-Shared::Shared(Dispatcher &dispatcher, Settings const &settings) : dispatcher{dispatcher}, settings{settings} {
+Shared::Shared(Settings const &settings, Controller &controller) : settings{settings}, controller{controller} {
 }
 
 }  // namespace experiment
