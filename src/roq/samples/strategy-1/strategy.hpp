@@ -7,7 +7,6 @@
 #include "roq/strategy/bridge.hpp"
 
 #include "roq/samples/strategy-1/settings.hpp"
-
 #include "roq/samples/strategy-1/shared.hpp"
 
 namespace roq {
@@ -42,61 +41,55 @@ struct Strategy final : public strategy::Bridge::Handler {
 
  protected:
   // strategy::Bridge::Handler
-  void operator()(Event<Disconnected> const &) override;
-  void operator()(Event<Ready> const &) override;
-  void operator()(Event<ReferenceData> const &, strategy::Market const &) override;
-  void operator()(Event<MarketStatus> const &, strategy::Market const &) override;
-  void operator()(Event<TopOfBook> const &, strategy::Market const &) override;
+  void operator()(Event<AddMarket> const &, strategy::Market const &) override;
   void operator()(Event<OrderUpdate> const &, strategy::Order const &) override;
-
- protected:
-  void start();
-  void stop();
-  // -
-  void maybe_create_orders(strategy::Market const &);
 
  private:
   Shared &shared_;
 
-  bool ready_ = {};
+  struct Leg final : public strategy::Market::Handler, public strategy::Market::Subscriber, public strategy::Order::Handler {
+    Leg(Shared &, strategy::Market const &, Side, double quantity, double price);
 
-  struct Leg final {
-    Leg(Shared &, Side, double quantity);
-
-    bool ready() const;
     bool finished() const;
 
-    void operator()(strategy::Market const &);
+    void modify_order(double price);
 
-    void submit_order(double price);
+   protected:
+    // strategy::Market::Handler
+    void operator()(Event<Ready> const &, strategy::Market const &) override;
+    void operator()(Event<ReferenceData> const &, strategy::Market const &) override;
+    void operator()(Event<MarketStatus> const &, strategy::Market const &) override;
+    void operator()(Event<TopOfBook> const &, strategy::Market const &) override;
+
+    // strategy::Order::Handler
+    void operator()(Event<OrderUpdate> const &, strategy::Order const &) override;
+
+    // helpers
+    void maybe_submit_order(strategy::Market const &);
+
+    void submit_order();
     void submit_order_helper(size_t retry_counter);
 
-    void modify_order(double price);
     void modify_order_helper(size_t retry_counter);
-
-    void update(Event<OrderUpdate> const &, strategy::Order const &);
 
    private:
     Shared &shared_;
+    std::unique_ptr<strategy::Order> order_;
     Side const side_;
     double const quantity_;
-    double price_ = NaN;  // note! dynamic
+    double price_;  // note! dynamic
     enum class State {
       UNDEFINED,
-      READY,     // ready for action
       CREATING,  // request was sent to create an order on the exchange
       CHANGING,  // request was sent to change order attributes on the exchange
       WAITING,   // waiting for order to be filled
       FINISHED,  // finished successfully
       FAILED,    // something failed
     } state_ = {};
-    std::unique_ptr<strategy::Order> order_;
   };
 
-  friend Leg;  // XXX TODO move to Shared
-
-  Leg leg_1_;
-  Leg leg_2_;
+  std::unique_ptr<Leg> high_;
+  std::unique_ptr<Leg> low_;
 };
 
 }  // namespace strategy_1

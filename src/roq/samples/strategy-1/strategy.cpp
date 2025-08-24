@@ -68,112 +68,119 @@ auto create_cancel_order_request([[maybe_unused]] auto &settings) -> CancelOrder
 
 // === IMPLEMENTATION ===
 
-Strategy::Strategy(Shared &shared)
-    : shared_{shared}, leg_1_{shared_, Side::BUY, shared_.settings.quantity}, leg_2_{shared_, Side::SELL, shared_.settings.quantity} {
+Strategy::Strategy(Shared &shared) : shared_{shared} {
 }
 
-void Strategy::operator()(Event<Disconnected> const &) {
-  ready_ = false;
+// strategy::Bridge::Handler
+
+// note!
+//   we create two managed orders when the market becomes known to the framework
+//   creating a managed order is *not* the same as creating an order on the exchange, this will happen later
+
+void Strategy::operator()(Event<AddMarket> const &, strategy::Market const &market) {
+  assert(market.exchange == shared_.settings.exchange);
+  assert(market.symbol == shared_.settings.symbol);
+
+  high_ = std::make_unique<Leg>(shared_, market, Side::SELL, shared_.settings.quantity, shared_.settings.price_high);
+  low_ = std::make_unique<Leg>(shared_, market, Side::BUY, shared_.settings.quantity, shared_.settings.price_low);
 }
 
-void Strategy::operator()(Event<Ready> const &) {
-  ready_ = true;
-}
-
-void Strategy::operator()(Event<ReferenceData> const &, strategy::Market const &market) {
-  maybe_create_orders(market);
-}
-
-void Strategy::operator()(Event<MarketStatus> const &, strategy::Market const &market) {
-  maybe_create_orders(market);
-}
-
-void Strategy::operator()(Event<TopOfBook> const &, strategy::Market const &) {
-  if (ready_ && leg_1_.ready() && leg_2_.ready()) {
-    start();
-  }
-}
+// note!
+//   we check the status of the two managed orders, if either is filled (completed), we will try to modify the price of the other
+//   although this handler will receive updates for *any* order, we don't have to route the updates because each of the
+//   two managed orders will have set up their own handler
 
 void Strategy::operator()(Event<OrderUpdate> const &, strategy::Order const &) {
-  auto done_1 = leg_1_.finished();
-  auto done_2 = leg_2_.finished();
-  if (done_1 && done_2) {
-    stop();
-  } else if (done_1 && !done_2) {
-    auto price = (2.0 * shared_.settings.price_low + shared_.settings.price_high) / 3.0;
-    leg_2_.modify_order(price);
-  } else if (!done_1 && done_2) {
-    auto price = (shared_.settings.price_low + 2 * shared_.settings.price_high) / 3.0;
-    leg_1_.modify_order(price);
-  }
-}
+  auto high = (*high_).finished();
+  auto low = (*low_).finished();
 
-// state machine
-
-void Strategy::start() {
-  leg_1_.submit_order(shared_.settings.price_low);
-  leg_2_.submit_order(shared_.settings.price_high);
-}
-
-void Strategy::stop() {
-  // XXX TODO shared_.dispatcher.stop();
-}
-
-// -
-
-void Strategy::maybe_create_orders(strategy::Market const &market) {
-  leg_1_(market);
-  leg_2_(market);
-  if (ready_ && leg_1_.ready() && leg_2_.ready()) {
-    start();
+  if (high && low) {
+    // stop(); // XXX TODO we're done
+  } else if (high && !low) {
+    auto price = (shared_.settings.price_low + 2 * shared_.settings.price_high) / 3.0;  // 1/3 pull-back from high
+    (*low_).modify_order(price);
+  } else if (!high && low) {
+    auto price = (2.0 * shared_.settings.price_low + shared_.settings.price_high) / 3.0;  // 1/3 pull-back from low
+    (*high_).modify_order(price);
   }
 }
 
 // Leg
 
-Strategy::Leg::Leg(Shared &shared, Side side, double quantity) : shared_{shared}, side_{side}, quantity_{quantity} {
-}
+// note!
+//   this creates an order manager (*not* the actual order on the exchange, see the submit_order method)
 
-bool Strategy::Leg::ready() const {
-  return state_ == State::READY;
+Strategy::Leg::Leg(Shared &shared, strategy::Market const &market, Side side, double quantity, double price)
+    : strategy::Market::Subscriber{*this, market}, shared_{shared}, order_{shared_.controller.create_order(shared_.settings.account, market, *this)},
+      side_{side}, quantity_{quantity}, price_{price} {
+  assert(order_);
+  assert(side_ != Side::UNDEFINED);
+  assert(!std::isnan(quantity_));
+  assert(!std::isnan(price_));
+  assert(state_ == State::UNDEFINED);
 }
 
 bool Strategy::Leg::finished() const {
   return state_ == State::FINISHED;
 }
 
-// note! we can only create the order object when the framework knows about the market
+// note!
+//   following market handlers are used to trigger the initial order submission
 
-void Strategy::Leg::operator()(strategy::Market const &market) {
-  assert(market.exchange == shared_.settings.exchange);
-  assert(market.symbol == shared_.settings.symbol);
-
-  if (order_) [[likely]] {
-    return;
-  }
-
-  assert(state_ == State::UNDEFINED);
-
-  auto order_update_handler = [this](auto &event, auto &order) { update(event, order); };
-
-  order_ = shared_.controller.create_order(shared_.settings.account, market, order_update_handler);
-  state_ = State::READY;
+void Strategy::Leg::operator()(Event<Ready> const &, strategy::Market const &market) {
+  maybe_submit_order(market);
 }
 
-void Strategy::Leg::submit_order(double price) {
-  assert(order_);
-  assert(state_ == State::READY);
-  assert(std::isnan(price_));
-  assert(!std::isnan(price));
+void Strategy::Leg::operator()(Event<ReferenceData> const &, strategy::Market const &market) {
+  maybe_submit_order(market);
+}
 
-  price_ = price;
+void Strategy::Leg::operator()(Event<MarketStatus> const &, strategy::Market const &market) {
+  maybe_submit_order(market);
+}
+
+void Strategy::Leg::operator()(Event<TopOfBook> const &, strategy::Market const &market) {
+  maybe_submit_order(market);
+}
+
+// note!
+//   the order update is used to detect order completion
+
+void Strategy::Leg::operator()(Event<OrderUpdate> const &event, strategy::Order const &) {
+  auto &[message_info, order_update] = event;
+  if (order_update.order_status == OrderStatus::COMPLETED) {
+    state_ = State::FINISHED;
+  }
+}
+
+// note!
+//   here we submit an order *if*
+//     (a) we haven't already started and
+//     (b) the market is "ready"
+//   the market does not become "ready" before
+//     (a) the download procedure has complted and
+//     (b) the market's trading status is "open"
+
+void Strategy::Leg::maybe_submit_order(strategy::Market const &market) {
+  if (state_ == State::UNDEFINED && market.ready) {
+    submit_order();
+  }
+}
+
+void Strategy::Leg::submit_order() {
+  assert(state_ == State::UNDEFINED);
   state_ = State::CREATING;
   submit_order_helper(0);
 }
 
-// XXX TODO remember to throttle
+// note!
+//   this helper function can be called repeatedly with an increasing retry counter following certain errors, mainly
+//   rejects due to the exchange's rate limiter
+//   it is important to recognize that this function is *not* called recursively due to the asynchronous nature of
+//   request and response, resubmission only happens *after* we receive an order ack with a specific error
+//   it is also important to notice that the request allows you to assign handlers for failure and success
+
 void Strategy::Leg::submit_order_helper(size_t retry_counter) {
-  assert(order_);
   assert(state_ == State::CREATING);
 
   auto failure_handler = [this, retry_counter](auto &event, [[maybe_unused]] auto &order) {
@@ -196,7 +203,7 @@ void Strategy::Leg::submit_order_helper(size_t retry_counter) {
     assert(state_ == State::CREATING);
 
     auto &[message_info, order_ack] = event;
-    if (!utils::is_equal(order_ack.price, price_)) {
+    if (!utils::is_equal(order_ack.price, price_)) {  // check if price has been modified while we were waiting for the response
       state_ = State::CHANGING;
       modify_order_helper(0);
     } else {
@@ -204,26 +211,26 @@ void Strategy::Leg::submit_order_helper(size_t retry_counter) {
     }
   };
 
+  // XXX TODO remember to throttle
   auto request = create_limit_order_request(shared_.settings, side_, quantity_, price_);
   (*order_)(request, failure_handler, success_handler);
 }
 
-// XXX TODO remember to throttle
+// note!
+//   same concerns as for order submission
+
 void Strategy::Leg::modify_order(double price) {
-  assert(order_);
-  assert(!std::isnan(price_));
   assert(!std::isnan(price));
 
   if (utils::update(price_, price)) {
     switch (state_) {
       using enum State;
       case UNDEFINED:
-      case READY:
         assert(false);
         break;
       case CREATING:
       case CHANGING:
-        // will be handled by the response callbacks
+        // nothing to do, the response handlers will use the latest price to decide the next action
         break;
       case WAITING:
         state_ = State::CHANGING;
@@ -231,7 +238,7 @@ void Strategy::Leg::modify_order(double price) {
         break;
       case FINISHED:
       case FAILED:
-        log::warn("Unexpected: is this a race condition?"sv);  // XXX TODO unsure about this
+        log::warn("Unexpected: is this a race condition?"sv);  // XXX TODO unsure if this is possible
         break;
     }
   }
@@ -241,7 +248,6 @@ void Strategy::Leg::modify_order_helper(size_t retry_counter) {
   switch (state_) {
     using enum State;
     case UNDEFINED:
-    case READY:
     case CREATING:
       assert(false);  // should never happen
 #ifndef NDEBUG
@@ -251,7 +257,7 @@ void Strategy::Leg::modify_order_helper(size_t retry_counter) {
     case CHANGING:
       break;
     case WAITING:
-      assert(false);  // forgot to set state before calling this function?
+      assert(false);  // XXX FIXME forgot to set state before calling this function?
 #ifndef NDEBUG
       log::fatal("Unexpected"sv);
 #endif
@@ -283,7 +289,7 @@ void Strategy::Leg::modify_order_helper(size_t retry_counter) {
     assert(state_ == State::CHANGING);
 
     auto &[message_info, order_ack] = event;
-    if (!utils::is_equal(order_ack.price, price_)) {
+    if (!utils::is_equal(order_ack.price, price_)) {  // check if price has been modified while we were waiting for the response
       state_ = State::CHANGING;
       modify_order_helper(0);
     } else {
@@ -291,15 +297,9 @@ void Strategy::Leg::modify_order_helper(size_t retry_counter) {
     }
   };
 
+  // XXX TODO remember to throttle
   auto request = create_modify_order_request(shared_.settings, price_);
   (*order_)(request, failure_handler, success_handler);
-}
-
-void Strategy::Leg::update(Event<OrderUpdate> const &event, strategy::Order const &) {
-  auto &[message_info, order_update] = event;
-  if (order_update.order_status == OrderStatus::COMPLETED) {
-    state_ = State::FINISHED;
-  }
 }
 
 }  // namespace strategy_1

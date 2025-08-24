@@ -104,6 +104,11 @@ void Controller::add_timer(std::chrono::nanoseconds delay, strategy::Bridge::Tim
 }
 
 std::unique_ptr<strategy::Order> Controller::create_order(
+    std::string_view const &account, strategy::Market const &market, strategy::Order::Handler const &handler) {
+  return (*bridge_).create_order(account, market, handler);
+}
+
+std::unique_ptr<strategy::Order> Controller::create_order(
     std::string_view const &account, strategy::Market const &market, strategy::Bridge::OrderUpdateHandler const &order_update_handler) {
   return (*bridge_).create_order(account, market, order_update_handler);
 }

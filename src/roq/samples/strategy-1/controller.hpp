@@ -36,6 +36,8 @@ struct Controller final : public io::sys::Signal::Handler, public client::Poller
 
   void add_timer(std::chrono::nanoseconds delay, strategy::Bridge::TimerHandler const &);
 
+  std::unique_ptr<strategy::Order> create_order(std::string_view const &account, strategy::Market const &, strategy::Order::Handler const &);
+
   std::unique_ptr<strategy::Order> create_order(std::string_view const &account, strategy::Market const &, strategy::Bridge::OrderUpdateHandler const &);
 
   std::unique_ptr<strategy::Order> create_order(
