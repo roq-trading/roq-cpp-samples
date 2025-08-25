@@ -8,7 +8,7 @@ namespace roq {
 namespace samples {
 namespace strategy_1 {
 
-Settings::Settings(args::Parser const &args) : client::flags::Settings{args}, flags::Flags{flags::Flags::create()} {
+Settings::Settings(args::Parser const &args) : client::flags::Settings{args}, flags::Flags{flags::Flags::create()}, rate_limiter{flags::RateLimiter::create()} {
 }
 
 }  // namespace strategy_1

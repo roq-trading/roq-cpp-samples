@@ -2,7 +2,7 @@ set(TARGET_NAME ${PROJECT_NAME}-strategy-1-flags)
 
 include(RoqAutogen)
 
-set(AUTOGEN_SCHEMAS flags.json)
+set(AUTOGEN_SCHEMAS flags.json rate_limiter.json)
 
 roq_autogen_hpp(
   OUTPUT

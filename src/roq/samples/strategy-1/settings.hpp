@@ -7,6 +7,7 @@
 #include "roq/client/flags/settings.hpp"
 
 #include "roq/samples/strategy-1/flags/flags.hpp"
+#include "roq/samples/strategy-1/flags/rate_limiter.hpp"
 
 namespace roq {
 namespace samples {
@@ -14,6 +15,8 @@ namespace strategy_1 {
 
 struct Settings final : public client::flags::Settings, public flags::Flags {
   explicit Settings(args::Parser const &);
+
+  flags::RateLimiter rate_limiter;
 };
 
 }  // namespace strategy_1

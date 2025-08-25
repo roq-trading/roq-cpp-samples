@@ -1,0 +1,22 @@
+{
+  "name": "roq/samples/strategy-1/flags/RateLimiter",
+  "type": "flags",
+  "prefix": "rate_limiter_",
+  "values": [
+    {
+      "name": "request_limit",
+      "type": "std/uint32",
+      "description": "events allowed per period"
+    },
+    {
+      "name": "monitor_period",
+      "type": "std/nanoseconds",
+      "description": "monitor period"
+    },
+    {
+      "name": "ban_period",
+      "type": "std/nanoseconds",
+      "description": "ban period"
+    }
+  ]
+}

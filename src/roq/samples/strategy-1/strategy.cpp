@@ -162,7 +162,7 @@ void Strategy::Leg::operator()(Event<OrderUpdate> const &event, strategy::Order 
 //     (b) the market's trading status is "open"
 
 void Strategy::Leg::maybe_submit_order(strategy::Market const &market) {
-  if (state_ == State::UNDEFINED && market.ready) {
+  if (state_ == State::UNDEFINED && market.ready && market.trading_status == TradingStatus::OPEN) {
     submit_order();
   }
 }
@@ -174,35 +174,47 @@ void Strategy::Leg::submit_order() {
 }
 
 // note!
-//   this helper function can be called repeatedly with an increasing retry counter following certain errors, mainly
-//   rejects due to the exchange's rate limiter
+//   this helper function can be called repeatedly with an increasing retry counter following certain errors,
+//   mainly rejects due to the exchange's rate limiter.
 //   it is important to recognize that this function is *not* called recursively due to the asynchronous nature of
-//   request and response, resubmission only happens *after* we receive an order ack with a specific error
-//   it is also important to notice that the request allows you to assign handlers for failure and success
+//   request and response, resubmission only happens *after* we receive an order ack with a specific error.
+//   it is also important to notice that the request allows you to assign callback handlers for failure and success.
+//   the callback is managed by the order object and the lifetime of the capture must therefore align with the lifetime of
+//   the order object.
 
 void Strategy::Leg::submit_order_helper(size_t retry_counter) {
   assert(state_ == State::CREATING);
 
-  auto failure_handler = [this, retry_counter](auto &event, [[maybe_unused]] auto &order) {
+  auto retry = [this](auto delay, auto retry_counter) {
     assert(state_ == State::CREATING);
 
     if (retry_counter >= shared_.settings.max_retries) {
       log::fatal("Too many retries"sv);
     }
+
+    auto timer_handler = [this, retry_counter]([[maybe_unused]] auto &event) { submit_order_helper(retry_counter + 1); };
+
+    shared_.controller.add_timer(delay, timer_handler);
+  };
+
+  auto failure_handler = [this, &retry, retry_counter](auto &event, [[maybe_unused]] auto &order) {
+    assert(state_ == State::CREATING);
+
     auto &[message_info, order_ack] = event;
+
     if (order_ack.error == Error::REQUEST_RATE_LIMIT_REACHED) {
-      auto timer_handler = [this, retry_counter]([[maybe_unused]] auto &event) { submit_order_helper(retry_counter + 1); };
-      shared_.controller.add_timer(shared_.settings.retry_delay, timer_handler);
+      retry(shared_.settings.retry_delay, retry_counter);
     } else {
       state_ = State::FAILED;
       log::fatal("Unexpected: error={}"sv, order_ack.error);
     }
   };
 
-  auto success_handler = [this, retry_counter](auto &event, [[maybe_unused]] auto &order) {
+  auto success_handler = [this](auto &event, [[maybe_unused]] auto &order) {
     assert(state_ == State::CREATING);
 
     auto &[message_info, order_ack] = event;
+
     if (!utils::is_equal(order_ack.price, price_)) {  // check if price has been modified while we were waiting for the response
       state_ = State::CHANGING;
       modify_order_helper(0);
@@ -211,9 +223,12 @@ void Strategy::Leg::submit_order_helper(size_t retry_counter) {
     }
   };
 
-  // XXX TODO remember to throttle
-  auto request = create_limit_order_request(shared_.settings, side_, quantity_, price_);
-  (*order_)(request, failure_handler, success_handler);
+  if (shared_.rate_limiter.ready()) {
+    auto request = create_limit_order_request(shared_.settings, side_, quantity_, price_);
+    (*order_)(request, failure_handler, success_handler);
+  } else {
+    retry(shared_.rate_limiter.delay(), retry_counter);
+  }
 }
 
 // note!
@@ -249,17 +264,19 @@ void Strategy::Leg::modify_order_helper(size_t retry_counter) {
     using enum State;
     case UNDEFINED:
     case CREATING:
-      assert(false);  // should never happen
 #ifndef NDEBUG
       log::fatal("Unexpected"sv);
+#else
+      assert(false);  // should never happen
 #endif
       break;
     case CHANGING:
       break;
     case WAITING:
-      assert(false);  // XXX FIXME forgot to set state before calling this function?
 #ifndef NDEBUG
       log::fatal("Unexpected"sv);
+#else
+      assert(false);  // should never happen
 #endif
       break;
     case FINISHED:
@@ -267,16 +284,25 @@ void Strategy::Leg::modify_order_helper(size_t retry_counter) {
       return;  // possible due to async updates
   }
 
-  auto failure_handler = [this, retry_counter](auto &event, [[maybe_unused]] auto &order) {
+  auto retry = [this](auto delay, auto retry_counter) {
     assert(state_ == State::CHANGING);
 
     if (retry_counter >= shared_.settings.max_retries) {
       log::fatal("Too many retries"sv);
     }
+
+    auto timer_handler = [this, retry_counter]([[maybe_unused]] auto &event) { modify_order_helper(retry_counter + 1); };
+
+    shared_.controller.add_timer(delay, timer_handler);
+  };
+
+  auto failure_handler = [this, &retry, retry_counter](auto &event, [[maybe_unused]] auto &order) {
+    assert(state_ == State::CHANGING);
+
     auto &[message_info, order_ack] = event;
+
     if (order_ack.error == Error::REQUEST_RATE_LIMIT_REACHED) {
-      auto timer_handler = [this, retry_counter]([[maybe_unused]] auto &event) { modify_order_helper(retry_counter + 1); };
-      shared_.controller.add_timer(shared_.settings.retry_delay, timer_handler);
+      retry(shared_.settings.retry_delay, retry_counter);
     } else if (order_ack.error == Error::TOO_LATE_TO_MODIFY_OR_CANCEL) {
       state_ = State::FINISHED;
     } else {
@@ -289,6 +315,7 @@ void Strategy::Leg::modify_order_helper(size_t retry_counter) {
     assert(state_ == State::CHANGING);
 
     auto &[message_info, order_ack] = event;
+
     if (!utils::is_equal(order_ack.price, price_)) {  // check if price has been modified while we were waiting for the response
       state_ = State::CHANGING;
       modify_order_helper(0);
@@ -297,9 +324,12 @@ void Strategy::Leg::modify_order_helper(size_t retry_counter) {
     }
   };
 
-  // XXX TODO remember to throttle
-  auto request = create_modify_order_request(shared_.settings, price_);
-  (*order_)(request, failure_handler, success_handler);
+  if (shared_.rate_limiter.ready()) {
+    auto request = create_modify_order_request(shared_.settings, price_);
+    (*order_)(request, failure_handler, success_handler);
+  } else {
+    retry(shared_.rate_limiter.delay(), retry_counter);
+  }
 }
 
 }  // namespace strategy_1

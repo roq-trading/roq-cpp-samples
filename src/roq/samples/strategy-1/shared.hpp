@@ -2,6 +2,8 @@
 
 #pragma once
 
+#include "roq/strategy/tools/rate_limiter.hpp"
+
 #include "roq/samples/strategy-1/settings.hpp"
 
 namespace roq {
@@ -15,6 +17,8 @@ struct Shared final {
 
   Settings const &settings;
   Controller &controller;
+
+  strategy::tools::RateLimiter rate_limiter;
 };
 
 }  // namespace strategy_1

@@ -1,4 +1,6 @@
 !!! THIS FILE HAS BEEN AUTO-GENERATED !!!
 roq-cpp-samples-strategy-1-flags
 flags.hpp
+rate_limiter.hpp
 flags.cpp
+rate_limiter.cpp
