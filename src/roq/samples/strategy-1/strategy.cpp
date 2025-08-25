@@ -223,11 +223,29 @@ void Strategy::Leg::submit_order_helper(size_t retry_counter) {
     }
   };
 
-  if (shared_.rate_limiter.ready()) {
-    auto request = create_limit_order_request(shared_.settings, side_, quantity_, price_);
-    (*order_)(request, failure_handler, success_handler);
-  } else {
-    retry(shared_.rate_limiter.delay(), retry_counter);
+  // need something like this
+
+  // rate_limiter.send(try_send, failure, success);
+  //
+  // try-catch => don't use
+  //
+  // order_ack from gateway => don't use ?
+  //
+  // order_ack from echange => use
+  //
+  // async issues
+  //
+  // GatewayStatus ==> supports order management for account ???
+
+  try {
+    if (shared_.rate_limiter.ready()) {
+      auto request = create_limit_order_request(shared_.settings, side_, quantity_, price_);
+      (*order_)(request, failure_handler, success_handler);
+    } else {
+      retry(shared_.rate_limiter.delay(), retry_counter);
+    }
+  } catch (NotConnected &) {
+    // XXX TODO what ???
   }
 }
 
@@ -324,11 +342,15 @@ void Strategy::Leg::modify_order_helper(size_t retry_counter) {
     }
   };
 
-  if (shared_.rate_limiter.ready()) {
-    auto request = create_modify_order_request(shared_.settings, price_);
-    (*order_)(request, failure_handler, success_handler);
-  } else {
-    retry(shared_.rate_limiter.delay(), retry_counter);
+  try {
+    if (shared_.rate_limiter.ready()) {
+      auto request = create_modify_order_request(shared_.settings, price_);
+      (*order_)(request, failure_handler, success_handler);
+    } else {
+      retry(shared_.rate_limiter.delay(), retry_counter);
+    }
+  } catch (NotConnected &) {
+    // XXX TODO what ???
   }
 }
 
