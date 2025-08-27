@@ -185,32 +185,32 @@ void Strategy::Leg::submit_order() {
 void Strategy::Leg::submit_order_helper(size_t retry_counter) {
   assert(state_ == State::CREATING);
 
-  auto retry = [this](auto delay, auto retry_counter) {
+  auto handle_retry = [this](auto delay, auto retry_counter) {
     assert(state_ == State::CREATING);
 
     if (retry_counter >= shared_.settings.max_retries) {
       log::fatal("Too many retries"sv);
     }
 
-    auto timer_handler = [this, retry_counter]([[maybe_unused]] auto &event) { submit_order_helper(retry_counter + 1); };
+    auto handle_timer = [this, retry_counter]([[maybe_unused]] auto &event) { submit_order_helper(retry_counter + 1); };
 
-    shared_.controller.add_timer(delay, timer_handler);
+    shared_.controller.add_timer(delay, handle_timer);
   };
 
-  auto failure_handler = [this, &retry, retry_counter](auto &event, [[maybe_unused]] auto &order) {
+  auto handle_failure = [this, &handle_retry, retry_counter](auto &event, [[maybe_unused]] auto &order) {
     assert(state_ == State::CREATING);
 
     auto &[message_info, order_ack] = event;
 
     if (order_ack.error == Error::REQUEST_RATE_LIMIT_REACHED) {
-      retry(shared_.settings.retry_delay, retry_counter);
+      handle_retry(shared_.settings.retry_delay, retry_counter);
     } else {
       state_ = State::FAILED;
       log::fatal("Unexpected: error={}"sv, order_ack.error);
     }
   };
 
-  auto success_handler = [this](auto &event, [[maybe_unused]] auto &order) {
+  auto handle_success = [this](auto &event, [[maybe_unused]] auto &order) {
     assert(state_ == State::CREATING);
 
     auto &[message_info, order_ack] = event;
@@ -240,9 +240,9 @@ void Strategy::Leg::submit_order_helper(size_t retry_counter) {
   try {
     if (shared_.rate_limiter.ready()) {
       auto request = create_limit_order_request(shared_.settings, side_, quantity_, price_);
-      (*order_)(request, failure_handler, success_handler);
+      (*order_)(request, handle_failure, handle_success);
     } else {
-      retry(shared_.rate_limiter.delay(), retry_counter);
+      handle_retry(shared_.rate_limiter.delay(), retry_counter);
     }
   } catch (NotConnected &) {
     // XXX TODO what ???
@@ -302,25 +302,25 @@ void Strategy::Leg::modify_order_helper(size_t retry_counter) {
       return;  // possible due to async updates
   }
 
-  auto retry = [this](auto delay, auto retry_counter) {
+  auto handle_retry = [this](auto delay, auto retry_counter) {
     assert(state_ == State::CHANGING);
 
     if (retry_counter >= shared_.settings.max_retries) {
       log::fatal("Too many retries"sv);
     }
 
-    auto timer_handler = [this, retry_counter]([[maybe_unused]] auto &event) { modify_order_helper(retry_counter + 1); };
+    auto handle_timer = [this, retry_counter]([[maybe_unused]] auto &event) { modify_order_helper(retry_counter + 1); };
 
-    shared_.controller.add_timer(delay, timer_handler);
+    shared_.controller.add_timer(delay, handle_timer);
   };
 
-  auto failure_handler = [this, &retry, retry_counter](auto &event, [[maybe_unused]] auto &order) {
+  auto handle_failure = [this, &handle_retry, retry_counter](auto &event, [[maybe_unused]] auto &order) {
     assert(state_ == State::CHANGING);
 
     auto &[message_info, order_ack] = event;
 
     if (order_ack.error == Error::REQUEST_RATE_LIMIT_REACHED) {
-      retry(shared_.settings.retry_delay, retry_counter);
+      handle_retry(shared_.settings.retry_delay, retry_counter);
     } else if (order_ack.error == Error::TOO_LATE_TO_MODIFY_OR_CANCEL) {
       state_ = State::FINISHED;
     } else {
@@ -329,7 +329,7 @@ void Strategy::Leg::modify_order_helper(size_t retry_counter) {
     }
   };
 
-  auto success_handler = [this, retry_counter](auto &event, [[maybe_unused]] auto &order) {
+  auto handle_success = [this, retry_counter](auto &event, [[maybe_unused]] auto &order) {
     assert(state_ == State::CHANGING);
 
     auto &[message_info, order_ack] = event;
@@ -345,9 +345,9 @@ void Strategy::Leg::modify_order_helper(size_t retry_counter) {
   try {
     if (shared_.rate_limiter.ready()) {
       auto request = create_modify_order_request(shared_.settings, price_);
-      (*order_)(request, failure_handler, success_handler);
+      (*order_)(request, handle_failure, handle_success);
     } else {
-      retry(shared_.rate_limiter.delay(), retry_counter);
+      handle_retry(shared_.rate_limiter.delay(), retry_counter);
     }
   } catch (NotConnected &) {
     // XXX TODO what ???
