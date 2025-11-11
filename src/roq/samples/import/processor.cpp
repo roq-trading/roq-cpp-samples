@@ -32,10 +32,10 @@ auto const MIN_TRADE_VOL = 1.0;  // 1 lot
 
 namespace {
 auto create_encoder() {
-  auto options = codec::fbs::Encoder::Options{
+  auto options = codec::flatbuffers::Encoder::Options{
       .size_prefixed = true,
   };
-  return codec::fbs::Encoder::create(options);
+  return codec::flatbuffers::Encoder::create(options);
 }
 
 auto use_base64(auto &encoding) {

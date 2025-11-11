@@ -8,7 +8,7 @@
 
 #include "roq/api.hpp"
 
-#include "roq/codec/fbs/encoder.hpp"
+#include "roq/codec/flatbuffers/encoder.hpp"
 
 #include "roq/samples/import/settings.hpp"
 
@@ -34,7 +34,7 @@ struct Processor final {
 
  private:
   uint64_t seqno_ = {};
-  std::unique_ptr<codec::fbs::Encoder> encoder_;
+  std::unique_ptr<codec::flatbuffers::Encoder> encoder_;
   std::ofstream file_;
   enum class Encoding {
     BINARY,
