@@ -48,6 +48,7 @@ void OrderManager::set_target(double quantity, double price) {
         .quantity = target_quantity_,
         .price = target_price_,
         .stop_price = NaN,
+        .leverage = NaN,
         .routing_id = base_.routing_id_,
         .strategy_id = {},
     };

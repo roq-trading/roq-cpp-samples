@@ -36,6 +36,7 @@ auto create_limit_order_request(auto &settings, auto side, auto quantity, auto p
       .quantity = quantity,
       .price = price,
       .stop_price = NaN,
+      .leverage = NaN,
       .routing_id = {},
       .strategy_id = settings.strategy_id,
   };

@@ -125,6 +125,7 @@ void Strategy::create_order(MessageInfo const &message_info, Layer const &layer)
       .quantity = quantity_,
       .price = price,
       .stop_price = NaN,
+      .leverage = NaN,
       .routing_id = {},
       .strategy_id = {},
   };

@@ -131,6 +131,7 @@ void Strategy::create_order() {
       .quantity = settings_.quantity,
       .price = settings_.price,
       .stop_price = NaN,
+      .leverage = NaN,
       .routing_id = {},
       .strategy_id = {},
   };

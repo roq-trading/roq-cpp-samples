@@ -188,6 +188,7 @@ void Strategy::try_trade(Side side, double price) {
       .quantity = instrument_.min_trade_vol(),
       .price = price,
       .stop_price = NaN,
+      .leverage = NaN,
       .routing_id = {},
       .strategy_id = {},
   };

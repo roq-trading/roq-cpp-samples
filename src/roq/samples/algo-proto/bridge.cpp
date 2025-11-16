@@ -93,6 +93,7 @@ Bridge::Bridge(client::Dispatcher &dispatcher, Settings const &settings, Config 
       .quantity = settings.quantity,
       .price = settings.price,
       .stop_price = NaN,
+      .leverage = NaN,
       .routing_id = {},
       .strategy_id = {},
   };
