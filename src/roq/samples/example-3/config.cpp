@@ -1,4 +1,4 @@
-/* Copyright (c) 2017-2025, Hans Erik Thrane */
+/* Copyright (c) 2017-2026, Hans Erik Thrane */
 
 #include "roq/samples/example-3/config.hpp"
 
