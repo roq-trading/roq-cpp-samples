@@ -19,7 +19,6 @@ namespace strategy_1 {
 
 namespace {
 auto const DISPATCH_THIS_MANY_BEFORE_CHECKING_CLOCK = 1000uz;
-auto const WAIT_THIS_LONG_BEFORE_NEXT_STATE_CHANGE = 10s;
 auto const YIELD_FREQUENCY = 1000ms;
 auto const TIMER_FREQUENCY = 100ms;
 
@@ -201,7 +200,7 @@ void Controller::operator()(CancelOrder const &cancel_order, uint8_t source) {
 
 template <typename T, typename... Args>
 void Controller::dispatch(Event<T> const &event, Args &&...args) {
-  (*bridge_)(event);
+  (*bridge_)(event, std::forward<Args>(args)...);
 }
 
 }  // namespace strategy_1

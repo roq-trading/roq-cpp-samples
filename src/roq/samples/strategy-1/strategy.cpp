@@ -330,7 +330,7 @@ void Strategy::Leg::modify_order_helper(size_t retry_counter) {
     }
   };
 
-  auto handle_success = [this, retry_counter](auto &event, [[maybe_unused]] auto &order) {
+  auto handle_success = [this](auto &event, [[maybe_unused]] auto &order) {
     assert(state_ == State::CHANGING);
 
     auto &[message_info, order_ack] = event;
