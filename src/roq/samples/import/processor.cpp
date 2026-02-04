@@ -95,6 +95,7 @@ void Processor::dispatch() {
           .symbol = SYMBOL,      // required
           .description = {},
           .security_type = {},
+          .external_security_id = {},
           .cfi_code = {},
           .base_currency = {},
           .quote_currency = {},
