@@ -19,6 +19,7 @@ requirements:
     - make
     - roq-autogen
   host:
+    - benchmark
     - catch2
     - fmt
     - libabseil
@@ -34,12 +35,13 @@ requirements:
     - roq-io
     - roq-logging
     - roq-market
-    - benchmark
     - roq-oss-unordered_dense
     - roq-strategy
     - roq-utils
     - roq-web
     - tomlplusplus
+  host:
+    - benchmark
 
 about:
   license: BSD-3-Clause
