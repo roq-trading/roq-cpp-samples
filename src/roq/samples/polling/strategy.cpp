@@ -134,6 +134,7 @@ void Strategy::create_order() {
       .leverage = NaN,
       .routing_id = {},
       .strategy_id = {},
+      .release_time_utc = {},
   };
   try {
     (*dispatcher_).send(create_order, 0);
@@ -153,6 +154,7 @@ void Strategy::cancel_order() {
       .routing_id = {},
       .version = {},
       .conditional_on_version = {},
+      .release_time_utc = {},
   };
   try {
     (*dispatcher_).send(cancel_order, 0);

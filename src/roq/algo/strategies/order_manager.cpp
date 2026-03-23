@@ -51,6 +51,7 @@ void OrderManager::set_target(double quantity, double price) {
         .leverage = NaN,
         .routing_id = base_.routing_id_,
         .strategy_id = {},
+        .release_time_utc = {},
     };
     base_.dispatcher_(create_order);
     order_id_ = order_id;
@@ -68,6 +69,7 @@ void OrderManager::set_target(double quantity, double price) {
         .routing_id = base_.routing_id_,
         .version = {},
         .conditional_on_version = {},
+        .release_time_utc = {},
     };
     base_.dispatcher_(modify_order);
   }

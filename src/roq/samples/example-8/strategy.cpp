@@ -128,6 +128,7 @@ void Strategy::create_order(MessageInfo const &message_info, Layer const &layer)
       .leverage = NaN,
       .routing_id = {},
       .strategy_id = {},
+      .release_time_utc = {},
   };
   log::info<1>("create_order={}"sv, create_order);
   dispatcher_.send(create_order, 0, true);

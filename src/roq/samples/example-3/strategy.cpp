@@ -161,6 +161,7 @@ void Strategy::try_trade(Side side, double price) {
           .routing_id = {},
           .version = {},
           .conditional_on_version = {},
+          .release_time_utc = {},
       };
       dispatcher_.send(cancel_order, 0);
     }
@@ -191,6 +192,7 @@ void Strategy::try_trade(Side side, double price) {
       .leverage = NaN,
       .routing_id = {},
       .strategy_id = {},
+      .release_time_utc = {},
   };
   dispatcher_.send(create_order, 0);
   working_order_id_ = order_id;
