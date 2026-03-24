@@ -47,21 +47,6 @@ void Controller::dispatch() {
   while (ok) {
     auto now = clock::get_system();
     if (next_timer_ < now) {
-      auto now_utc = clock::get_realtime();
-      auto message_info = MessageInfo{
-          .source = SOURCE_SELF,
-          .source_name = {},
-          .source_session_id = {},
-          .source_seqno = {},
-          .receive_time_utc = now_utc,
-          .receive_time = now,
-          .source_send_time = now,
-          .source_receive_time = now,
-          .origin_create_time = now,
-          .origin_create_time_utc = now_utc,
-          .is_last = true,
-          .opaque = {},
-      };
       refresh(now);
       next_timer_ = now + TIMER_FREQUENCY;
     }
