@@ -35,11 +35,11 @@ requirements:
     - roq-io
     - roq-logging
     - roq-market
-    - roq-oss-unordered_dense
     - roq-strategy
     - roq-utils
     - roq-web
     - tomlplusplus
+    - unordered_dense
   host:
     - benchmark
 
