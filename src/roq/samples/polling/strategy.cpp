@@ -25,9 +25,9 @@ namespace polling {
 // === CONSTANTS ===
 
 namespace {
-auto const DISPATCH_THIS_MANY_BEFORE_CHECKING_CLOCK = 1000uz;
+auto const YIELD_FREQUENCY = 100ms;
+size_t const DISPATCH_THIS_MANY_BEFORE_CHECKING_CLOCK = 1000;
 auto const WAIT_THIS_LONG_BEFORE_NEXT_STATE_CHANGE = 10s;
-auto const YIELD_FREQUENCY = 1000ms;
 }  // namespace
 
 // === HELPERS ===
