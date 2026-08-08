@@ -69,8 +69,12 @@ void Strategy::operator()(Event<TopOfBook> const &event) {
       .update_type = UpdateType::INCREMENTAL,
   };
   log::debug("custom_metrics={}"sv, custom_metrics);
-  // matrix
+// matrix
+#if defined(__clang__)
+  std::shift_right(std::begin(data_), std::end(data_), 1);
+#else
   std::ranges::shift_right(data_, 1);
+#endif
   data_[0] = 0.5 * (top_of_book.layer.bid_price + top_of_book.layer.ask_price);
   auto custom_matrix = CustomMatrix{
       .label = settings_.label,
