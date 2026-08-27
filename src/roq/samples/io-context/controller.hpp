@@ -51,7 +51,6 @@ struct Controller final : public client::Handler, public io::net::udp::Sender::H
   void send(fmt::format_string<Args...> const &, Args &&...);
 
  private:
-  client::Dispatcher &dispatcher_;
   Settings const &settings_;
   io::Context &context_;
   std::unique_ptr<io::Sender> const sender_;
