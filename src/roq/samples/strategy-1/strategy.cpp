@@ -54,17 +54,6 @@ auto create_modify_order_request([[maybe_unused]] auto &settings, auto price) ->
       .conditional_on_version = {},  // note! managed
   };
 }
-
-auto create_cancel_order_request([[maybe_unused]] auto &settings) -> CancelOrder {
-  return {
-      .account = {},   // note! managed
-      .order_id = {},  // note! managed
-      .request_template = {},
-      .routing_id = {},
-      .version = {},                 // note! managed
-      .conditional_on_version = {},  // note! managed
-  };
-}
 }  // namespace
 
 // === IMPLEMENTATION ===
