@@ -40,8 +40,6 @@ requirements:
     - roq-web
     - tomlplusplus
     - unordered_dense
-  host:
-    - benchmark
 
 about:
   license: BSD-3-Clause
