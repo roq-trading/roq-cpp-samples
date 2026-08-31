@@ -77,7 +77,10 @@ endif()
 
 # include
 
-include_directories(${CMAKE_SOURCE_DIR}/src)
+include_directories(
+  ${CMAKE_SOURCE_DIR}/src
+  # >>> autogen >>>
+  ${CMAKE_BINARY_DIR}/src)
 
 # sub-projects
 
