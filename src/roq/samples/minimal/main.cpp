@@ -23,16 +23,20 @@ auto const INFO = roq::Service::Info{
     .build_version = ROQ_VERSION,
 };
 
-auto const EXCHANGE = "deribit"sv;
-auto const SYMBOL = "BTC-PERPETUAL"sv;
+auto const ORDER_CANCEL_POLICY = roq::OrderCancelPolicy::BY_ACCOUNT;
 
 auto const ACCOUNT = "A1"sv;
+
+auto const EXCHANGE = "deribit"sv;
+auto const SYMBOL = "BTC-PERPETUAL"sv;
 }  // namespace
 
 // === HELPERS ===
 
 namespace {
+
 // A Config object is used to define static subscriptions and various policies.
+
 struct Config final : public roq::client::Config {
  protected:
   // When requested, this method must call back with static subscriptions and various policies.
@@ -40,7 +44,7 @@ struct Config final : public roq::client::Config {
     // Define settings.
     handler(
         roq::client::Settings{
-            .order_cancel_policy = roq::OrderCancelPolicy::BY_ACCOUNT,
+            .order_cancel_policy = ORDER_CANCEL_POLICY,
             .order_management = {},
         });
     // Define accounts.
@@ -48,7 +52,6 @@ struct Config final : public roq::client::Config {
         roq::client::Account{
             .regex = ACCOUNT,
         });
-    // symbols
     // Define static subscriptions.
     handler(
         roq::client::Symbol{
@@ -59,6 +62,7 @@ struct Config final : public roq::client::Config {
 };
 
 // A Strategy object is used to implement event handlers.
+
 struct Strategy final : public roq::client::Handler {
   // The dispatcher is used for sending requests, e.g. order actions.
   explicit Strategy(roq::client::Dispatcher &dispatcher) : dispatcher_{dispatcher} {}
@@ -139,11 +143,11 @@ struct Strategy final : public roq::client::Handler {
 };
 
 // An Application object is used to configure an appropriate environment, including a logging facility.
+
 struct Application final : public roq::Service {
   using roq::Service::Service;
 
  protected:
-  // This is the main function.
   int main(roq::args::Parser const &args) override {
     // Params are command-line arguments which hasn't been parsed as flags (options).
     auto params = args.params();
