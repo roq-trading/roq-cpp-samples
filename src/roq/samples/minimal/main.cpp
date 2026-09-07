@@ -118,7 +118,9 @@ struct Strategy final : public roq::client::Handler {
 
   void operator()(roq::Event<roq::TradeUpdate> const &event) override { print<0>(event); }
 
-  // Helpers:
+  // Debug logging.
+  // Note that the ROQ_v environment variable controls what levels are being logged.
+  // With ROQ_v=1 you will see all logging with level<=1, for example.
 
   template <size_t level, typename T>
   void print(roq::Event<T> const &event) {
