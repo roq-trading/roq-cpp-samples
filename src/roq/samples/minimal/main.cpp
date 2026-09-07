@@ -79,7 +79,17 @@ struct Strategy final : public roq::client::Handler {
 
   void operator()(roq::Event<roq::DownloadBegin> const &event) override { print<0>(event); }
 
-  void operator()(roq::Event<roq::DownloadEnd> const &event) override { print<0>(event); }
+  void operator()(roq::Event<roq::DownloadEnd> const &event) override {
+    print<0>(event);
+
+    // Record the last known max(order_id) so we can later choose the next in the sequence.
+
+    auto &[message_info, download_end] = event;
+    if (max_order_id_ < download_end.max_order_id) {
+      max_order_id_ = download_end.max_order_id;
+      roq::log::warn("max_order_id={}"sv, max_order_id_);
+    }
+  }
 
   void operator()(roq::Event<roq::Ready> const &event) override {
     print<0>(event);
@@ -144,6 +154,7 @@ struct Strategy final : public roq::client::Handler {
  private:
   roq::client::Dispatcher &dispatcher_;
   bool ready_ = false;
+  uint64_t max_order_id_ = {};
 };
 
 // An Application object is used to configure an appropriate environment, including a logging facility.
