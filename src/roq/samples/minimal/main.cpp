@@ -118,14 +118,7 @@ struct Strategy final : public roq::client::Handler {
 
   void operator()(roq::Event<roq::TradeUpdate> const &event) override { print<0>(event); }
 
-  // Debug logging.
-  // Note that the ROQ_v environment variable controls what levels are being logged.
-  // With ROQ_v=1 you will see all logging with level<=1, for example.
-
-  template <size_t level, typename T>
-  void print(roq::Event<T> const &event) {
-    roq::log::info<level>("event={}"sv, event);
-  }
+  // Request all working orders to be canceled.
 
   void cancel_all_orders() {
     auto cancel_all_orders = roq::CancelAllOrders{
@@ -137,6 +130,15 @@ struct Strategy final : public roq::client::Handler {
         .side = {},
     };
     dispatcher_.send(cancel_all_orders, 0);
+  }
+
+  // Debug logging.
+  // Note that the ROQ_v environment variable controls what levels are being logged.
+  // With ROQ_v=1 you will see all logging with level<=1, for example.
+
+  template <size_t level, typename T>
+  void print(roq::Event<T> const &event) {
+    roq::log::info<level>("event={}"sv, event);
   }
 
  private:
