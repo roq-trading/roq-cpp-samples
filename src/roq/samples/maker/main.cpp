@@ -39,7 +39,7 @@ auto const ACCOUNT = "A1"sv;
 auto const EXCHANGE = "deribit"sv;
 auto const SYMBOL = "BTC-PERPETUAL"sv;
 
-auto const SPREAD = 1.0;
+auto const SPREAD = 1.5;
 
 auto const QUANTITY = 1.0;
 }  // namespace
@@ -87,6 +87,7 @@ struct Quote final {
 
   bool update_target_price(double price) {
     if (roq::utils::update(target_price_, price)) {
+      roq::log::warn("[{}] TARGET {}"sv, side_, target_price_);
       update_order_ = true;
       return true;
     }
@@ -110,40 +111,59 @@ struct Quote final {
         cancel_order();
         break;
     }
+    update_order_ = false;
   }
 
   void operator()(roq::Event<roq::OrderAck> const &event) {
     auto &[message_info, order_ack] = event;
-    if (roq::utils::has_request_failed(order_ack.request_status)) {
-      // could be valid rejects like too-late to cancel
-      roq::log::fatal("Unexpected"sv);
+    auto failure = roq::utils::has_request_failed(order_ack.request_status);
+    auto success = roq::utils::has_request_succeeded(order_ack.request_status);
+    if (failure || success) {
+      roq::log::info("[{}] order_ack={}"sv, side_, order_ack);
+    }
+    if (failure) {
+      switch (order_ack.error) {
+        using enum roq::Error;
+        case TOO_LATE_TO_MODIFY_OR_CANCEL:
+          break;
+        default:
+          roq::log::fatal("[{}] Unexpected"sv, side_);
+      }
     }
     if (roq::utils::has_request_completed(order_ack.request_status)) {
       switch (order_ack.request_type) {
         using enum roq::RequestType;
         case UNDEFINED:
-          roq::log::fatal("Unexpected"sv);
+          roq::log::fatal("[{}] Unexpected"sv, side_);
         case CREATE_ORDER:
           if (state_ != State::CREATE) {
-            roq::log::fatal("Unexpected: state={}"sv, state_);
+            roq::log::fatal("[{}] Unexpected: state={}"sv, side_, state_);
           }
           (*this)(State::WORKING);
           break;
         case MODIFY_ORDER:
           if (state_ != State::MODIFY) {
-            roq::log::fatal("Unexpected: state={}"sv, state_);
+            roq::log::fatal("[{}] Unexpected: state={}"sv, side_, state_);
           }
           (*this)(State::WORKING);
           break;
         case CANCEL_ORDER:
           if (state_ != State::CANCEL) {
-            roq::log::fatal("Unexpected: state={}"sv, state_);
+            roq::log::fatal("[{}] Unexpected: state={}"sv, side_, state_);
           }
-          (*this)(State::WORKING);
+          (*this)(State::UNDEFINED);
           break;
       }
     }
     // - rate limit
+  }
+
+  void operator()(roq::Event<roq::OrderUpdate> const &event) {
+    auto &[message_info, order_update] = event;
+    roq::log::info("[{}] order_update={}"sv, side_, order_update);
+    if (order_update.order_status == roq::OrderStatus::COMPLETED) {
+      roq::log::warn("[{}] FILL {} @ {}"sv, side_, order_update.quantity, order_update.price);
+    }
   }
 
  protected:
@@ -157,21 +177,21 @@ struct Quote final {
 
   void operator()(State state) {
     if (roq::utils::update(state_, state)) {
-      roq::log::warn("state={}"sv, state_);
+      roq::log::info("[{}] state={}"sv, side_, state_);
     }
   }
 
   void create_order() {
     // TODO try-catch
     if (state_ != State::UNDEFINED) [[unlikely]] {
-      roq::log::fatal("Unexpected: state={}"sv, state_);
+      roq::log::fatal("[{}] Unexpected: state={}"sv, side_, state_);
     }
     if (std::isnan(target_price_)) {
-      roq::log::fatal("Unexpected: target_price={}"sv, target_price_);
+      roq::log::fatal("[{}] Unexpected: target_price={}"sv, side_, target_price_);
     }
     auto order_id = ++shared_.max_order_id;
     limit_price_ = target_price_;
-    roq::log::warn("side={}, limit_price={} ==> {}"sv, side_, limit_price_, order_id);
+    roq::log::warn("[{}] CREATE {} {}"sv, side_, order_id, limit_price_);
     auto create_order = roq::CreateOrder{
         .account = ACCOUNT,
         .order_id = order_id,
@@ -194,6 +214,7 @@ struct Quote final {
         .strategy_id = {},
         .release_time_utc = {},
     };
+    roq::log::info("[{}] create_order={}"sv, side_, create_order);
     shared_.dispatcher.send(create_order, 0);
     order_id_ = order_id;
     (*this)(State::CREATE);
@@ -202,8 +223,9 @@ struct Quote final {
   void cancel_order() {
     // TODO try-catch
     if (state_ != State::WORKING) [[unlikely]] {
-      roq::log::fatal("Unexpected: state={}"sv, state_);
+      roq::log::fatal("[{}] Unexpected: state={}"sv, side_, state_);
     }
+    roq::log::warn("[{}] CANCEL {}"sv, side_, order_id_);
     auto cancel_order = roq::CancelOrder{
         .account = ACCOUNT,
         .order_id = order_id_,
@@ -213,6 +235,7 @@ struct Quote final {
         .conditional_on_version = {},
         .release_time_utc = {},
     };
+    roq::log::info("[{}] cancel_order={}"sv, side_, cancel_order);
     shared_.dispatcher.send(cancel_order, 0);
     (*this)(State::CANCEL);
   }
@@ -255,7 +278,7 @@ struct Strategy final : public roq::client::Handler {
   void operator()(roq::Event<roq::DownloadEnd> const &event) override {
     auto &[message_info, download_end] = event;
     if (roq::utils::update_max(shared_.max_order_id, download_end.max_order_id)) {
-      roq::log::warn("max_order_id={}"sv, shared_.max_order_id);
+      roq::log::info("max_order_id={}"sv, shared_.max_order_id);
     }
   }
 
@@ -268,14 +291,14 @@ struct Strategy final : public roq::client::Handler {
   void operator()(roq::Event<roq::ReferenceData> const &event) override {
     auto &[message_info, reference_data] = event;
     if (roq::utils::update(tick_size_, reference_data.tick_size)) {
-      roq::log::warn("tick_size={}"sv, tick_size_);
+      roq::log::info("tick_size={}"sv, tick_size_);
     }
   }
 
   void operator()(roq::Event<roq::MarketStatus> const &event) override {
     auto &[message_info, market_status] = event;
     if (roq::utils::update(trading_status_, market_status.trading_status)) {
-      roq::log::warn("trading_status={}"sv, trading_status_);
+      roq::log::info("trading_status={}"sv, trading_status_);
     }
   }
 
@@ -301,21 +324,13 @@ struct Strategy final : public roq::client::Handler {
 
   void operator()(roq::Event<roq::OrderAck> const &event) override {
     auto &[message_info, order_ack] = event;
-    switch (order_ack.side) {
-      using enum roq::Side;
-      case UNDEFINED:
-        roq::log::fatal("Unexpected"sv);
-      case BUY:
-        bid_(event);
-        break;
-      case SELL:
-        ask_(event);
-        break;
-    }
+    get_quote(order_ack.side)(event);
   }
 
-  void operator()(roq::Event<roq::OrderUpdate> const &) override {
-    // update virtual position
+  // XXX TODO update virtual position
+  void operator()(roq::Event<roq::OrderUpdate> const &event) override {
+    auto &[message_info, order_update] = event;
+    get_quote(order_update.side)(event);
   }
 
   void operator()(roq::Event<roq::TradeUpdate> const &) override {}
@@ -328,14 +343,22 @@ struct Strategy final : public roq::client::Handler {
 
   void operator()(State state) {
     if (roq::utils::update(state_, state)) {
-      roq::log::warn("state={}"sv, state_);
+      switch (state_) {
+        using enum State;
+        case UNDEFINED:
+        case CANCEL_ALL:
+          roq::log::info("Cancel all..."sv);
+          break;
+        case QUOTE:
+          roq::log::info("Quote..."sv);
+          break;
+      }
     }
   }
 
   bool can_trade() const { return ready_ && state_ == State::QUOTE && !std::isnan(tick_size_) && trading_status_ == roq::TradingStatus::OPEN; }
 
   void cancel_all_orders() const {
-    roq::log::warn("*** CANCEL ALL ORDERS ***"sv);
     auto cancel_all_orders = roq::CancelAllOrders{
         .account = ACCOUNT,
         .order_id = {},
@@ -344,6 +367,7 @@ struct Strategy final : public roq::client::Handler {
         .strategy_id = {},
         .side = {},
     };
+    roq::log::info("cancel_all_orders={}"sv, cancel_all_orders);
     shared_.dispatcher.send(cancel_all_orders, 0);
   }
 
@@ -356,6 +380,19 @@ struct Strategy final : public roq::client::Handler {
       bid_.update_target_price(bid_price);
       ask_.update_target_price(ask_price);
     }
+  }
+
+  Quote &get_quote(roq::Side side) {
+    switch (side) {
+      using enum roq::Side;
+      case UNDEFINED:
+        break;
+      case BUY:
+        return bid_;
+      case SELL:
+        return ask_;
+    }
+    roq::log::fatal("Unexpected"sv);
   }
 
  private:
