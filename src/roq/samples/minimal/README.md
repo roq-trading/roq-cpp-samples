@@ -1,1 +1,1 @@
-This example demonstrates a single-file implementatoin of a strategy
+This example demonstrates a single-file implementation of a minimal client

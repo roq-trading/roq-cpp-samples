@@ -6,6 +6,7 @@ All notable changes will be documented in this file.
 
 ### Added
 
+* Single-file example showing how to create a very simple market maker strategy
 * Single-file example showing how to create a minimal implementation of a strategy (#630)
 
 ## 1.1.8 &ndash; 2026-09-04
