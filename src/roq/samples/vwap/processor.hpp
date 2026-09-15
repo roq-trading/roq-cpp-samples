@@ -35,6 +35,7 @@ struct Processor final : public client::EventLogReader::Handler {
   void operator()(Event<GatewayStatus> const &) override {}
   void operator()(Event<ReferenceData> const &) override {}
   void operator()(Event<MarketStatus> const &) override {}
+  void operator()(Event<MarketSegmentStatus> const &) override {}
   void operator()(Event<TopOfBook> const &) override {}
   void operator()(Event<MarketByPriceUpdate> const &) override;
   void operator()(Event<MarketByOrderUpdate> const &) override {}

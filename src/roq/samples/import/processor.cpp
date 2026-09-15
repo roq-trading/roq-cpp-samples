@@ -96,6 +96,7 @@ void Processor::dispatch() {
           .description = {},
           .security_type = {},
           .external_security_id = {},
+          .market_segment = {},
           .cfi_code = {},
           .base_currency = {},
           .quote_currency = {},

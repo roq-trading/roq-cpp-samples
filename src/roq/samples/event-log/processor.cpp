@@ -89,6 +89,10 @@ void Processor::operator()(Event<MarketStatus> const &event) {
   log::info("{}"sv, event);
 }
 
+void Processor::operator()(Event<MarketSegmentStatus> const &event) {
+  log::info("{}"sv, event);
+}
+
 void Processor::operator()(Event<TopOfBook> const &event) {
   log::info("{}"sv, event);
 }
