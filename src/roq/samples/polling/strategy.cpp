@@ -127,6 +127,7 @@ void Strategy::create_order() {
       .order_type = OrderType::LIMIT,
       .time_in_force = TimeInForce::GTC,
       .execution_instructions = {},
+      .execution_destination = {},
       .request_template = {},
       .quantity = settings_.quantity,
       .price = settings_.price,

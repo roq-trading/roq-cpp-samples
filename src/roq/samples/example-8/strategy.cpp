@@ -121,6 +121,7 @@ void Strategy::create_order(MessageInfo const &message_info, Layer const &layer)
       .order_type = OrderType::LIMIT,
       .time_in_force = TimeInForce::GTC,
       .execution_instructions = {},
+      .execution_destination = {},
       .request_template = {},
       .quantity = quantity_,
       .price = price,

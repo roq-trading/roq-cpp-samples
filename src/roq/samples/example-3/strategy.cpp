@@ -185,6 +185,7 @@ void Strategy::try_trade(Side side, double price) {
       .order_type = OrderType::LIMIT,
       .time_in_force = TimeInForce::GTC,
       .execution_instructions = {},
+      .execution_destination = {},
       .request_template = {},
       .quantity = instrument_.min_trade_vol(),
       .price = price,

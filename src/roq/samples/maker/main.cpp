@@ -258,6 +258,7 @@ struct Quote final {
         .order_type = OrderType::LIMIT,
         .time_in_force = TimeInForce::GTC,
         .execution_instructions = EXECUTION_INSTRUCTIONS,
+        .execution_destination = {},
         .request_template = {},
         .quantity = QUANTITY,
         .price = target_price_,

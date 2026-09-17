@@ -32,6 +32,7 @@ auto create_limit_order_request(auto &settings, auto side, auto quantity, auto p
       .order_type = OrderType::LIMIT,
       .time_in_force = TimeInForce::GTC,
       .execution_instructions = {ExecutionInstruction::PARTICIPATE_DO_NOT_INITIATE},  // don't cross the market
+      .execution_destination = {},
       .request_template = {},
       .quantity = quantity,
       .price = price,

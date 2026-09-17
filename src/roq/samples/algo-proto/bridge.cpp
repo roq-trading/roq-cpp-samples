@@ -89,6 +89,7 @@ Bridge::Bridge(client::Dispatcher &dispatcher, Settings const &settings, Config 
       .order_type = OrderType::LIMIT,
       .time_in_force = TimeInForce::GTC,
       .execution_instructions = {},
+      .execution_destination = {},
       .request_template{},
       .quantity = settings.quantity,
       .price = settings.price,

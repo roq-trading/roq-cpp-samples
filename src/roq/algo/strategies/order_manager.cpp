@@ -44,6 +44,7 @@ void OrderManager::set_target(double quantity, double price) {
         .order_type = OrderType::LIMIT,
         .time_in_force = TimeInForce::GTC,
         .execution_instructions = {},
+        .execution_destination = {},
         .request_template = {},
         .quantity = target_quantity_,
         .price = target_price_,
