@@ -83,12 +83,13 @@ void Controller::operator()(Event<Stop> const &) {
 }
 
 void Controller::operator()(Event<Timer> const &event) {
-  auto now = event.value.now;
+  auto &[message_info, timer] = event;
   context_.drain();
-  (*client_).refresh(now);
-  if (next_request_time_ < now) {
-    next_request_time_ = now + REQUEST_FREQ;
-    try_request();
+  if ((*client_).refresh(timer.now)) {
+    if (next_request_time_ < timer.now) {
+      next_request_time_ = timer.now + REQUEST_FREQ;
+      try_request();
+    }
   }
 }
 
