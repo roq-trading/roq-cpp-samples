@@ -98,15 +98,15 @@ void Controller::operator()(Event<TopOfBook> const &) {
 
 // web::rest::Client::Handler
 
-void Controller::operator()(Trace<web::rest::Client::Connected> const &) {
+void Controller::operator()(Trace<web::rest::Connected> const &) {
   (*this)(State::CONNECTED);
 }
 
-void Controller::operator()(Trace<web::rest::Client::Disconnected> const &) {
+void Controller::operator()(Trace<web::rest::Disconnected> const &) {
   (*this)(State::DISCONNECTED);
 }
 
-void Controller::operator()(Trace<web::rest::Client::Latency> const &event) {
+void Controller::operator()(Trace<web::rest::Latency> const &event) {
   log::info("latency={}"sv, event.value.sample);
 }
 
