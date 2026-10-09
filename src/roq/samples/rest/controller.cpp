@@ -130,11 +130,12 @@ void Controller::try_request() {
       .quality_of_service = {},
   };
   log::info("request={}"sv, request);
-  auto callback = [this]([[maybe_unused]] auto &request_id, auto &response) {
+  auto callback = [this](auto &event, [[maybe_unused]] auto &request_id) {
+    auto &[trace_info, response] = event;
     log::debug("response={}"sv, response);
     (*this)(response);
   };
-  (*client_)("test"sv, request, callback);
+  (*client_)(request, callback, "test"sv);
 }
 
 void Controller::operator()(web::rest::Response const &response) {
