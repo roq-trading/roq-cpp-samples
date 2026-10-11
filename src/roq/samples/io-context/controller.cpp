@@ -41,12 +41,14 @@ Controller::Controller(client::Dispatcher &, Settings const &settings, io::Conte
 // client::Handler
 
 void Controller::operator()(Event<Timer> const &event) {
+  auto &[message_info, timer] = event;
   context_.drain();
-  remove_zombies(event.value.now);
+  remove_zombies(timer.now);
 }
 
 void Controller::operator()(Event<TopOfBook> const &event) {
-  if (settings_.filter_symbols && shared_.symbols.find(event.value.symbol) == std::end(shared_.symbols)) {
+  auto &[message_info, top_of_book] = event;
+  if (settings_.filter_symbols && shared_.symbols.find(top_of_book.symbol) == std::end(shared_.symbols)) {
     return;
   }
   utils::json::Context context;  // note! a better implementation would get decimals from reference data

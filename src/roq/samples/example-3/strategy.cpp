@@ -22,14 +22,15 @@ Strategy::Strategy(client::Dispatcher &dispatcher, Settings const &settings)
 }
 
 void Strategy::operator()(Event<Timer> const &event) {
+  auto &[message_info, timer] = event;
   // note! using system clock (*not* the wall clock)
-  if (event.value.now < next_sample_) {
+  if (timer.now < next_sample_) {
     return;
   }
   if (next_sample_.count() != 0) {  // initialized?
     update_model();
   }
-  auto now = std::chrono::duration_cast<std::chrono::seconds>(event.value.now);
+  auto now = std::chrono::duration_cast<std::chrono::seconds>(timer.now);
   next_sample_ = now + settings_.sample_freq;
   // possible extension: reset request timeout
 }
@@ -47,11 +48,12 @@ void Strategy::operator()(Event<DownloadBegin> const &event) {
 }
 
 void Strategy::operator()(Event<DownloadEnd> const &event) {
+  auto &[message_info, download_end] = event;
   dispatch(event);
   // note!
   // never recycle order_id's
   // by updating to the maximum of both, we guarantee not to recycle while either side is alive
-  if (utils::update_max(max_order_id_, event.value.max_order_id)) {
+  if (utils::update_max(max_order_id_, download_end.max_order_id)) {
     log::info("max_order_id={}"sv, max_order_id_);
   }
 }
@@ -81,17 +83,17 @@ void Strategy::operator()(Event<MarketByOrderUpdate> const &event) {
 }
 
 void Strategy::operator()(Event<OrderAck> const &event) {
-  log::info("OrderAck={}"sv, event.value);
-  auto &order_ack = event.value;
+  auto &[message_info, order_ack] = event;
+  log::info("OrderAck={}"sv, order_ack);
   if (utils::has_request_completed(order_ack.request_status)) {
     // possible extension: reset request timeout
   }
 }
 
 void Strategy::operator()(Event<OrderUpdate> const &event) {
-  log::info("OrderUpdate={}"sv, event.value);
+  auto &[message_info, order_update] = event;
+  log::info("OrderUpdate={}"sv, order_update);
   dispatch(event);  // update position
-  auto &order_update = event.value;
   if (utils::is_order_complete(order_update.order_status)) {
     working_order_id_ = {};
     working_side_ = {};
@@ -99,7 +101,8 @@ void Strategy::operator()(Event<OrderUpdate> const &event) {
 }
 
 void Strategy::operator()(Event<TradeUpdate> const &event) {
-  log::info("TradeUpdate={}"sv, event.value);
+  auto &[message_info, trade_update] = event;
+  log::info("TradeUpdate={}"sv, trade_update);
 }
 
 void Strategy::operator()(Event<PositionUpdate> const &event) {
@@ -107,15 +110,17 @@ void Strategy::operator()(Event<PositionUpdate> const &event) {
 }
 
 void Strategy::operator()(Event<FundsUpdate> const &event) {
-  log::info("FundsUpdate={}"sv, event.value);
+  auto &[message_info, funds_update] = event;
+  log::info("FundsUpdate={}"sv, funds_update);
 }
 
 // helper - dispatch event to instrument
 template <typename T>
 void Strategy::dispatch(Event<T> const &event) {
+  auto &[message_info, value] = event;
   // assert(event.message_info.source == 0);
   if (event.message_info.source == 0) {
-    instrument_(event.value);
+    instrument_(value);
   }
 }
 

@@ -41,10 +41,11 @@ Strategy::Strategy(client::Dispatcher &dispatcher) : dispatcher_{dispatcher}, mo
 }
 
 void Strategy::operator()(Event<Timer> const &event) {
-  if (event.value.now < next_timer_) {
+  auto &[message_info, timer] = event;
+  if (timer.now < next_timer_) {
     return;
   }
-  next_timer_ = event.value.now + TIMER_FREQUENCY;
+  next_timer_ = timer.now + TIMER_FREQUENCY;
   try {
     auto result = call<double>(module_, "bar"sv, layer_.bid_price, layer_.ask_price);
     log::debug("bid={}, ask={}, mid={}"sv, layer_.bid_price, layer_.ask_price, result);
@@ -54,8 +55,9 @@ void Strategy::operator()(Event<Timer> const &event) {
 }
 
 void Strategy::operator()(Event<TopOfBook> const &event) {
-  log::info("[{}:{}] TopOfBook={}"sv, event.message_info.source, event.message_info.source_name, event.value);
-  layer_ = event.value.layer;
+  auto &[message_info, top_of_book] = event;
+  log::info("[{}:{}] TopOfBook={}"sv, event.message_info.source, event.message_info.source_name, top_of_book);
+  layer_ = top_of_book.layer;
 }
 
 }  // namespace python

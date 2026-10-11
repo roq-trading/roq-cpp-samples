@@ -107,7 +107,8 @@ void Controller::operator()(Trace<web::rest::Disconnected> const &) {
 }
 
 void Controller::operator()(Trace<web::rest::Latency> const &event) {
-  log::info("latency={}"sv, event.value.sample);
+  auto &[message_info, latency] = event;
+  log::info("latency={}"sv, latency.sample);
 }
 
 // helpers

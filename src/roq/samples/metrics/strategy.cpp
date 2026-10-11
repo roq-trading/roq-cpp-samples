@@ -27,7 +27,8 @@ void Strategy::operator()(Event<Disconnected> const &) {
 }
 
 void Strategy::operator()(Event<ExternalLatency> const &event) {
-  histogram_.update(event.value.latency.count());
+  auto &[message_info, external_latency] = event;
+  histogram_.update(external_latency.latency.count());
 }
 
 // note! the writer is called from another thread -- always only use atomic variables!

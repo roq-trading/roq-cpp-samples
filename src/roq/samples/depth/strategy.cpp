@@ -59,13 +59,13 @@ void Strategy::operator()(Event<GatewaySettings> const &) {
 }
 
 void Strategy::operator()(Event<ReferenceData> const &event) {
-  auto &reference_data = event.value;
+  auto &[message_info, reference_data] = event;
   (*mbp_full_)(reference_data);
   (*mbp_depth_)(reference_data);
 }
 
 void Strategy::operator()(Event<MarketByPriceUpdate> const &event) {
-  auto &market_by_price_update = event.value;
+  auto &[message_info, market_by_price_update] = event;
   log::info("market_by_price_update={}"sv, market_by_price_update);
   // note! the depth update *must* be computed before applying the update to the full book
   (*mbp_full_).create_depth_update(market_by_price_update, settings_.depth, bids_, asks_);
@@ -86,7 +86,7 @@ void Strategy::operator()(Event<MarketByPriceUpdate> const &event) {
   };
   log::info("depth_update={}"sv, depth_update);
   (*mbp_depth_)(depth_update);
-  (*mbp_full_)(event.value);
+  (*mbp_full_)(market_by_price_update);
   log::warn("DEPTH:"sv);
   print(*mbp_depth_);
   log::warn("FULL:"sv);

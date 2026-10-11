@@ -184,7 +184,7 @@ void Strategy::operator()(Event<DownloadBegin> const &event) {
 
 void Strategy::operator()(Event<DownloadEnd> const &event) {
   log::debug("event={}"sv, event);
-  auto &download_end = event.value;
+  auto &[message_info, download_end] = event;
   auto max_order_id = download_end.max_order_id;
   if (max_order_id_ < max_order_id) {
     max_order_id_ = max_order_id;
@@ -221,7 +221,7 @@ void Strategy::operator()(Event<MarketByPriceUpdate> const &) {
 
 void Strategy::operator()(Event<OrderAck> const &event) {
   log::debug("event={}"sv, event);
-  auto &order_ack = event.value;
+  auto &[message_info, order_ack] = event;
   // waiting?
   if (!utils::has_request_maybe_completed(order_ack.request_status)) {
     return;

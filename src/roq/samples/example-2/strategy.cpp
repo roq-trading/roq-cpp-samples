@@ -51,12 +51,13 @@ void Strategy::operator()(Event<MarketByPriceUpdate> const &event) {
 // helper - dispatch event to the relevant instrument
 template <typename T>
 void Strategy::dispatch(Event<T> const &event) {
+  auto &[message_info, value] = event;
   switch (event.message_info.source) {
     case 0:
-      futures_(event.value);
+      futures_(value);
       break;
     case 1:
-      cash_(event.value);
+      cash_(value);
       break;
     default:
       assert(false);  // should never happen
