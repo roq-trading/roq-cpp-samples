@@ -4,6 +4,8 @@ All notable changes will be documented in this file.
 
 ## Head
 
+## 1.1.9 &ndash; 2026-10-18
+
 ### Added
 
 * Single-file example showing how to create a very simple market maker strategy
