@@ -25,11 +25,12 @@ Session::Session(uint64_t session_id, io::net::tcp::Connection::Factory &factory
 
 // web::rest::Server::Handler
 
-void Session::operator()(web::rest::Server::Disconnected const &) {
+void Session::operator()(Trace<web::rest::Server::Disconnected> const &) {
   shared_.sessions_to_remove.emplace(session_id_);
 }
 
-void Session::operator()(web::rest::Server::Request const &request) {
+void Session::operator()(Trace<web::rest::Server::Request> const &event) {
+  auto &[trace_info, request] = event;
   if (request.headers.connection.has(web::http::Connection::UPGRADE)) {
     log::info("Upgrading session_id={} to websocket..."sv, session_id_);
     (*server_).upgrade(request);
@@ -63,7 +64,8 @@ void Session::operator()(web::rest::Server::Request const &request) {
   }
 }
 
-void Session::operator()(web::rest::Server::Text const &text) {
+void Session::operator()(Trace<web::rest::Server::Text> const &event) {
+  auto &[trace_info, text] = event;
   log::info(R"(message="{})"sv, text.payload);
   try {
     auto result = process_request(text.payload);
@@ -77,7 +79,7 @@ void Session::operator()(web::rest::Server::Text const &text) {
   }
 }
 
-void Session::operator()(web::rest::Server::Binary const &) {
+void Session::operator()(Trace<web::rest::Server::Binary> const &) {
   log::warn("Unexpected"sv);
   (*server_).close();
 }

@@ -51,7 +51,7 @@ struct Controller final : public io::sys::Signal::Handler, public client::Poller
 
  protected:
   // io::sys::Signal::Handler
-  void operator()(io::sys::Signal::Event const &) override;
+  void operator()(Trace<io::sys::Signal::Event> const &) override;
 
   // client::Poller::Handler
   void operator()(Event<Connected> const &) override;

@@ -57,11 +57,11 @@ void Controller::operator()(Event<TopOfBook> const &event) {
 
 // io::net::udp::Sender::Handler
 
-void Controller::operator()(io::net::udp::Sender::Error const &) {
+void Controller::operator()(Trace<io::net::udp::Sender::Error> const &) {
   log::fatal("Unexpected"sv);
 }
 
-void Controller::operator()(io::net::udp::Sender::Write const &) {
+void Controller::operator()(Trace<io::net::udp::Sender::Write> const &) {
 }
 
 // io::net::tcp::Listener::Handler

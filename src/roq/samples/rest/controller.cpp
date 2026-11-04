@@ -85,9 +85,9 @@ void Controller::operator()(Event<Stop> const &) {
 void Controller::operator()(Event<Timer> const &event) {
   auto &[message_info, timer] = event;
   context_.drain();
-  if ((*client_).refresh(timer.now)) {
-    if (next_request_time_ < timer.now) {
-      next_request_time_ = timer.now + REQUEST_FREQ;
+  if ((*client_).refresh(message_info)) {
+    if (next_request_time_ < message_info.origin_create_time) {
+      next_request_time_ = message_info.origin_create_time + REQUEST_FREQ;
       try_request();
     }
   }

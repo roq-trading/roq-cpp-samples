@@ -36,8 +36,8 @@ struct Controller final : public client::Handler, public io::net::udp::Sender::H
   void operator()(Event<TopOfBook> const &) override;
 
   // io::net::udp::Sender::Handler
-  void operator()(io::net::udp::Sender::Error const &) override;
-  void operator()(io::net::udp::Sender::Write const &) override;
+  void operator()(Trace<io::net::udp::Sender::Error> const &) override;
+  void operator()(Trace<io::net::udp::Sender::Write> const &) override;
 
   // io::net::tcp::Listener::Handler
   void operator()(io::net::tcp::Connection::Factory &) override;

@@ -71,7 +71,7 @@ struct Strategy final : public client::Poller::Handler, public io::sys::Signal::
   void operator()(Event<OrderUpdate> const &) override;
 
   // io::sys::Signal::Handler
-  void operator()(io::sys::Signal::Event const &) override;
+  void operator()(Trace<io::sys::Signal::Event> const &) override;
 
  private:
   Settings const &settings_;

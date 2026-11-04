@@ -119,8 +119,9 @@ bool Controller::has_market(std::string_view const &exchange, std::string_view c
 
 // io::sys::Signal::Handler
 
-void Controller::operator()(io::sys::Signal::Event const &event) {
-  log::warn("*** SIGNAL: {} ***"sv, event.type);
+void Controller::operator()(Trace<io::sys::Signal::Event> const &event) {
+  auto &[trace_info, signal] = event;
+  log::warn("*** SIGNAL: {} ***"sv, signal.type);
   (*dispatcher_).stop();
 }
 
